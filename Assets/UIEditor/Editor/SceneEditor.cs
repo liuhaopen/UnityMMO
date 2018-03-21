@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace U3DExtends { 
 public class SceneEditor {
 
-    static Object LastSelectObj = null;
+    static Object LastSelectObj = null;//用来记录上次选中的GameObject，只有它带有Image组件时才把图片赋值给它
     static Object CurSelectObj = null;
     [InitializeOnLoadMethod]
     static void Init()
@@ -30,15 +30,15 @@ public class SceneEditor {
             {
                 string assetPath = AssetDatabase.GetAssetPath(arr[0]);
                 Image image = selectObj.GetComponent<Image>();
-                Button btn = selectObj.GetComponent<Button>();
                 bool isImgWidget = false;
-                if (image != null && btn == null)
+                if (image != null)
                 {
                     isImgWidget = true;
                     UIEditorHelper.SetImageByPath(assetPath, image);
-                    }
+                }
                 if (isImgWidget)
                 {
+                    //赋完图后把焦点还给Image节点
                     EditorApplication.delayCall = delegate
                     {
                         Selection.activeGameObject = LastSelectObj as GameObject;
@@ -58,13 +58,12 @@ public class SceneEditor {
             Object handleObj = DragAndDrop.objectReferences[0];
             if (!IsNeedHandleAsset(handleObj))
             {
-                Debug.Log("No Need Handle Drag Assets handleObj:" + handleObj.ToString());
-                //让系统自己处理。
+                //让系统自己处理
                 return;
             }
             DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
 
-            //松开鼠标
+            //当松开鼠标时
             if (Event.current.type == EventType.DragPerform)
             {
                 DragAndDrop.AcceptDrag();

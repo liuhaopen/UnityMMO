@@ -133,7 +133,7 @@ public class PrefabWin : EditorWindow
             
 			foreach (string s in allAssets)
 			{
-                //search prefab files in folder:Assets/Resources/Prefab
+                //search prefab files in folder:Configure.PrefabWinFirstSearchPath
                 bool isComeFromPrefab = Regex.IsMatch(s, Configure.PrefabWinFirstSearchPath+@"/((?!/).)*\.prefab");
                 if (isComeFromPrefab)
 					filtered.Add(s);

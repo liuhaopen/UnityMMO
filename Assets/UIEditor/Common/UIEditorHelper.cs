@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -13,7 +13,7 @@ namespace U3DExtends
         public static void SetImageByPath(string assetPath, Image image, bool isNativeSize = true)
         {
             Object newImg = UnityEditor.AssetDatabase.LoadAssetAtPath(assetPath, typeof(Sprite));
-            Undo.RecordObject(image, "Change Image");
+            Undo.RecordObject(image, "Change Image");//有了这句才可以用ctrl+z撤消此赋值操作
             image.sprite = newImg as Sprite;
             if (isNativeSize)
                 image.SetNativeSize();
@@ -69,8 +69,9 @@ namespace U3DExtends
             {
                 testUI = new GameObject(Configure.UITestNodeName, typeof(RectTransform));
             }
-            List<Canvas> list = new List<Canvas>();
+            List<RectTransform> list = new List<RectTransform>();
             Canvas[] containers = Transform.FindObjectsOfType<Canvas>();
+            Vector3[] corners = new Vector3[4];
             foreach (var item in containers)
             {
                 if (ignore_obj == item.gameObject || item.transform.parent != testUI.transform)
@@ -78,23 +79,19 @@ namespace U3DExtends
                 RectTransform trans = item.transform as RectTransform;
                 if (trans != null)
                 {
-                    double halfWidth = trans.sizeDelta.x / 2.0;
-                    double halfHeight = trans.sizeDelta.y / 2.0;
-                    double l_t_x = trans.position.x - halfWidth;
-                    double l_t_y = trans.position.y + halfHeight;
-                    double r_b_x = trans.position.x + halfWidth;
-                    double r_b_y = trans.position.y - halfHeight;
-                    //UnityEngine.Debug.Log("item name : " + item.gameObject.name + " pos:" + trans.position.ToString() + " l_t_x:" + l_t_x + " l_t_y:" + l_t_y + " r_b_x:" + r_b_x + " r_b_y:" + r_b_y);
-                    if (mouse_abs_pos.x >= l_t_x && mouse_abs_pos.y <= l_t_y && mouse_abs_pos.x <= r_b_x && mouse_abs_pos.y >= r_b_y)
+                    //获取节点的四个角的世界坐标，分别按顺序为左下左上，右上右下
+                    trans.GetWorldCorners(corners);
+                    if (mouse_abs_pos.x >= corners[0].x && mouse_abs_pos.y <= corners[1].y && mouse_abs_pos.x <= corners[2].x && mouse_abs_pos.y >= corners[3].y)
                     {
-                        list.Add(item);
-                        break;
+                        list.Add(trans);
                     }
                 }
             }
             if (list.Count <= 0)
                 return null;
-            return GetRootLayout(list[0].transform);
+            list.Sort((RectTransform a, RectTransform b) => { return (a.GetSiblingIndex() == b.GetSiblingIndex()) ? 0 : ((a.GetSiblingIndex() < b.GetSiblingIndex()) ? 1 : -1); }
+            );
+            return GetRootLayout(list[0]);
         }
 
         public static GameObject CreatNewLayout(bool isNeedLayout = true)
@@ -229,6 +226,14 @@ namespace U3DExtends
             }
         }
 
+        //是否支持解体
+        public static bool IsNodeCanDivide(GameObject obj)
+        {
+            if (obj == null)
+                return false;
+            return obj.transform.childCount > 0 && obj.GetComponent<Canvas>() == null && obj.transform.parent.GetComponent<Canvas>() == null;
+        }
+
         public static bool SaveTextureToPNG(Texture inputTex, string save_file_name)
         {
             RenderTexture temp = RenderTexture.GetTemporary(inputTex.width, inputTex.height, 0, RenderTextureFormat.ARGB32);
@@ -237,14 +242,6 @@ namespace U3DExtends
             RenderTexture.ReleaseTemporary(temp);
             return ret;
 
-        }
-
-        //是否支持解体
-        public static bool IsNodeCanDivide(GameObject obj)
-        {
-            if (obj == null)
-                return false;
-            return obj.transform.childCount > 0 && obj.GetComponent<Canvas>() == null && obj.transform.parent.GetComponent<Canvas>() == null;
         }
 
         //将RenderTexture保存成一张png图片  
@@ -308,13 +305,14 @@ namespace U3DExtends
             bool isUINode = false;
             if (cloneTransform is RectTransform)
             {
+                //如果是UGUI节点的话就要把它们放在Canvas下了
                 canvas_obj = new GameObject("render canvas", typeof(Canvas));
                 Canvas canvas = canvas_obj.GetComponent<Canvas>();
                 cloneTransform.parent = canvas_obj.transform;
                 cloneTransform.localPosition = Vector3.zero;
 
                 canvas_obj.transform.position = new Vector3(-1000, -1000, -1000);
-                canvas_obj.layer = 21;
+                canvas_obj.layer = 21;//放在21层，摄像机也只渲染此层的，避免混入了奇怪的东西
                 isUINode = true;
             }
             else
@@ -346,7 +344,7 @@ namespace U3DExtends
                 float width = Max.x - Min.x;
                 float height = Max.y - Min.y;
                 float max_camera_size = width > height ? width : height;
-                renderCamera.orthographicSize = max_camera_size / 2;
+                renderCamera.orthographicSize = max_camera_size / 2;//预览图要尽量少点空白
             }
             else
             {
