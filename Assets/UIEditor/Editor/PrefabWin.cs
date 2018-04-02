@@ -166,7 +166,7 @@ public class PrefabWin : EditorWindow
 		Item ent = new Item();
 		ent.prefab = go;
 		ent.guid = guid;
-		GeneratePreview(ent, null);
+		GeneratePreview(ent);
 		RectivateLights();
 
 		if (index < mItems.size) mItems.Insert(index, ent);
@@ -183,7 +183,7 @@ public class PrefabWin : EditorWindow
 			Item ent = new Item();
 			ent.prefab = go;
 			ent.guid = guid;
-			GeneratePreview(ent, null);
+			GeneratePreview(ent);
 			if (index < mItems.size) mItems.Insert(index, ent);
 			else mItems.Add(ent);
 			return ent;
@@ -276,21 +276,6 @@ public class PrefabWin : EditorWindow
 		}
 	}
 
-	public void RegenerateTexture (GameObject prefab, UISnapshotPoint point)
-	{
-		for (int i = 0; i < mItems.size; ++i)
-		{
-			Item item = mItems[i];
-
-			if (item.prefab == prefab)
-			{
-				GeneratePreview(item, point);
-				RectivateLights();
-				break;
-			}
-		}
-	}
-
 	void UpdateVisual ()
 	{
 		if (draggedObject == null) DragAndDrop.visualMode = DragAndDropVisualMode.Rejected;
@@ -311,7 +296,7 @@ public class PrefabWin : EditorWindow
 				Item ent = new Item();
 				ent.prefab = go;
 				ent.guid = guid;
-				GeneratePreview(ent, null);
+				GeneratePreview(ent);
 				return ent;
 			}
 			else Debug.Log("No GUID");
@@ -319,26 +304,12 @@ public class PrefabWin : EditorWindow
 		return null;
 	}
 
-	static UISnapshotPoint GetSnapshotPoint (Transform t)
-	{
-		UISnapshotPoint point = t.GetComponent<UISnapshotPoint>();
-		if (point != null) return point;
-		
-		for (int i = 0, imax = t.childCount; i < imax; ++i)
-		{
-			Transform c = t.GetChild(i);
-			point = GetSnapshotPoint(c);
-			if (point != null) return point;
-		}
-		return null;
-	}
-
-	void GeneratePreview (Item item, UISnapshotPoint point)
+	void GeneratePreview (Item item, bool isReCreate = true)
 	{
 		if (item == null || item.prefab == null) return;
 		{
             string preview_path = Application.dataPath + "/" + Configure.ResPath + "Preview/" + item.prefab.name + ".png";
-            if (File.Exists(preview_path))
+            if (!isReCreate && File.Exists(preview_path))
             {
                 Texture texture = UIEditorHelper.LoadTextureInLocal(preview_path);
                 item.tex = texture;
@@ -451,7 +422,7 @@ public class PrefabWin : EditorWindow
 		if (mReset && type == EventType.Repaint)
 		{
 			mReset = false;
-			foreach (Item item in mItems) GeneratePreview(item, null);
+			foreach (Item item in mItems) GeneratePreview(item, false);
 			RectivateLights();
 		}
 
