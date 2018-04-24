@@ -199,12 +199,12 @@ namespace U3DExtends
 
                 Object prefab = AssetDatabase.LoadAssetAtPath(select_path, typeof(Object));
                 GameObject new_view = PrefabUtility.InstantiateAttachedAsset(prefab) as GameObject;
-                PrefabUtility.ReconnectToLastPrefab(new_view);
                 new_view.transform.parent = new_layout.transform;
                 new_view.transform.localPosition = Vector3.zero;
                 string just_name = System.IO.Path.GetFileNameWithoutExtension(select_path);
                 new_view.name = just_name;
                 new_layout.gameObject.name = just_name + "_Canvas";
+                PrefabUtility.DisconnectPrefabInstance(new_view);//链接中的话删里面的子节点时会报警告，所以还是一直失联的好，保存时直接覆盖prefab就行了
             }
         }
 
@@ -289,6 +289,7 @@ namespace U3DExtends
         }
 
         private static Vector2 HalfVec = new Vector2(0.5f, 0.5f);
+        //加载外部资源为Sprite
         public static Sprite LoadSpriteInLocal(string file_path)
         {
             Texture2D texture = LoadTextureInLocal(file_path);
@@ -308,7 +309,7 @@ namespace U3DExtends
                 //如果是UGUI节点的话就要把它们放在Canvas下了
                 canvas_obj = new GameObject("render canvas", typeof(Canvas));
                 Canvas canvas = canvas_obj.GetComponent<Canvas>();
-                cloneTransform.parent = canvas_obj.transform;
+                cloneTransform.SetParent(canvas_obj.transform);
                 cloneTransform.localPosition = Vector3.zero;
 
                 canvas_obj.transform.position = new Vector3(-1000, -1000, -1000);
@@ -337,7 +338,7 @@ namespace U3DExtends
             if (isUINode)
             {
                 cameraObj.transform.position = new Vector3((Max.x + Min.x) / 2f, (Max.y + Min.y) / 2f, cloneTransform.position.z-100);
-                Vector3 center = new Vector3(cloneTransform.position.x, (Max.y + Min.y) / 2f, cloneTransform.position.z);
+                Vector3 center = new Vector3(cloneTransform.position.x+0.01f, (Max.y + Min.y) / 2f, cloneTransform.position.z);//+0.01f是为了去掉Unity自带的摄像机旋转角度为0的打印，太烦人了
                 cameraObj.transform.LookAt(center);
 
                 renderCamera.orthographic = true;
@@ -441,15 +442,12 @@ namespace U3DExtends
 
                 //判断选择的物体，是否为预设  
                 PrefabType cur_prefab_type = PrefabUtility.GetPrefabType(child_obj);
-                if (cur_prefab_type == PrefabType.DisconnectedPrefabInstance)
-                {
-                    PrefabUtility.ReconnectToLastPrefab(child_obj);
-                }
-                if (PrefabUtility.GetPrefabType(child_obj) == PrefabType.PrefabInstance)
+
+                if (PrefabUtility.GetPrefabType(child_obj) == PrefabType.PrefabInstance || cur_prefab_type == PrefabType.DisconnectedPrefabInstance)
                 {
                     UnityEngine.Object parentObject = PrefabUtility.GetPrefabParent(child_obj);
                     //替换预设  
-                    PrefabUtility.ReplacePrefab(child_obj, parentObject, ReplacePrefabOptions.ConnectToPrefab);
+                    PrefabUtility.ReplacePrefab(child_obj, parentObject, ReplacePrefabOptions.Default);
                     //刷新  
                     AssetDatabase.Refresh();
                     if (Configure.IsShowDialogWhenSaveLayout)

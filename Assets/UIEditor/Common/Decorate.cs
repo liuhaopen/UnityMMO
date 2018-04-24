@@ -25,14 +25,12 @@ namespace U3DExtends
         public void LoadSpr(string path)
         {
             InitComponent();
-            //Debug.Log("path : " + path);
             if (spr_path != path)
             {
                 spr_path = path;
                 _image.sprite = UIEditorHelper.LoadSpriteInLocal(path);
                 _image.SetNativeSize();
                 gameObject.name = CommonHelper.GetFileNameByPath(path);
-                //Debug.Log("_image.sprite :" + (_image.sprite != null).ToString());
             }
         }
 
@@ -46,8 +44,6 @@ namespace U3DExtends
             if (_image == null)
                 _image = GetComponent<Image>();
         }
-
-
     }
 }
 #endif

@@ -183,7 +183,7 @@ public class PrefabWin : EditorWindow
 			Item ent = new Item();
 			ent.prefab = go;
 			ent.guid = guid;
-			GeneratePreview(ent);
+			GeneratePreview(ent, false);
 			if (index < mItems.size) mItems.Insert(index, ent);
 			else mItems.Add(ent);
 			return ent;

@@ -120,7 +120,7 @@ public class SceneEditor {
         //    mouse_abs_pos = sceneView.camera.ScreenToWorldPoint(mouse_abs_pos);
         //    Debug.Log("mouse_abs_pos : " + mouse_abs_pos.ToString());
         //}
-        if (Event.current != null && Event.current.button == 1 && Event.current.type <= EventType.mouseUp && Configure.IsShowSceneMenu)
+        if (Event.current != null && Event.current.button == 1 && Event.current.type == EventType.mouseUp && Configure.IsShowSceneMenu)
         {
             if (Selection.gameObjects == null || Selection.gameObjects.Length==0 || Selection.gameObjects[0].transform is RectTransform)
             {
