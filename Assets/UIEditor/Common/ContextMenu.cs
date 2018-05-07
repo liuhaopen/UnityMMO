@@ -89,6 +89,7 @@ static public class ContextMenu
             if (targets != null && targets.Length > 0)
             {
                 AddItem("保存", false, UIEditorHelper.SaveLayout, null);
+                AddItem("另存为", false, UIEditorHelper.SaveAnotherLayoutContextMenu, null);
 
                 AddSeparator("///");
                 AddItem("复制选中控件名", false, UIEditorHelper.CopySelectWidgetName, null);

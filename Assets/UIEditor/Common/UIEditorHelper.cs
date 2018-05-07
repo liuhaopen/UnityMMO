@@ -62,13 +62,20 @@ namespace U3DExtends
             return result;
         }
 
-        static public Transform GetContainerUnderMouse(Vector3 mouse_abs_pos, GameObject ignore_obj = null)
+        static public GameObject GetUITestRootNode()
         {
             GameObject testUI = GameObject.Find(Configure.UITestNodeName);
             if (!testUI)
             {
                 testUI = new GameObject(Configure.UITestNodeName, typeof(RectTransform));
+                testUI.GetComponent<Transform>().localPosition = new Vector3(10000, 10000, 10000);
             }
+            return testUI;
+        }
+
+        static public Transform GetContainerUnderMouse(Vector3 mouse_abs_pos, GameObject ignore_obj = null)
+        {
+            GameObject testUI = UIEditorHelper.GetUITestRootNode();
             List<RectTransform> list = new List<RectTransform>();
             Canvas[] containers = Transform.FindObjectsOfType<Canvas>();
             Vector3[] corners = new Vector3[4];
@@ -96,20 +103,16 @@ namespace U3DExtends
 
         public static GameObject CreatNewLayout(bool isNeedLayout = true)
         {
-            GameObject testUI = GameObject.Find(Configure.UITestNodeName);
-            if (!testUI)
-            {
-                testUI = new GameObject(Configure.UITestNodeName, typeof(RectTransform));
-            }
+            GameObject testUI = UIEditorHelper.GetUITestRootNode();
             const string file_path = Configure.ResAssetsPath + "Canvas.prefab";
             GameObject layout_prefab = UnityEditor.AssetDatabase.LoadAssetAtPath(file_path, typeof(UnityEngine.Object)) as GameObject;
             GameObject layout = GameObject.Instantiate(layout_prefab) as GameObject;
-            layout.transform.parent = testUI.transform;
+            layout.transform.SetParent(testUI.transform);
             if (!isNeedLayout)
             {
                 Transform child = layout.transform.GetChild(0);
                 layout.transform.DetachChildren();
-                GameObject.DestroyImmediate(child.gameObject);
+                Undo.DestroyObjectImmediate(child.gameObject);
             }
 
             Selection.activeGameObject = layout;
@@ -231,7 +234,7 @@ namespace U3DExtends
         {
             if (obj == null)
                 return false;
-            return obj.transform.childCount > 0 && obj.GetComponent<Canvas>() == null && obj.transform.parent.GetComponent<Canvas>() == null;
+            return obj.transform != null && obj.transform.childCount > 0 && obj.GetComponent<Canvas>() == null && obj.transform.parent != null && obj.transform.parent.GetComponent<Canvas>() == null;
         }
 
         public static bool SaveTextureToPNG(Texture inputTex, string save_file_name)
@@ -350,7 +353,7 @@ namespace U3DExtends
             else
             {
                 cameraObj.transform.position = new Vector3((Max.x + Min.x) / 2f, (Max.y + Min.y) / 2f, Max.z + (Max.z - Min.z));
-                Vector3 center = new Vector3(cloneTransform.position.x, (Max.y + Min.y) / 2f, cloneTransform.position.z);
+                Vector3 center = new Vector3(cloneTransform.position.x+0.01f, (Max.y + Min.y) / 2f, cloneTransform.position.z);
                 cameraObj.transform.LookAt(center);
 
                 int angle = (int)(Mathf.Atan2((Max.y - Min.y) / 2, (Max.z - Min.z)) * 180 / 3.1415f * 2);
@@ -423,8 +426,8 @@ namespace U3DExtends
             return new Bounds(center, size);
         }
 
-        [MenuItem("UIEditor/保存界面 " + Configure.ShortCut.SaveUIPrefab, false, 2)]
-        public static void SaveLayout(object o)
+        [MenuItem("UIEditor/另存为 ")]
+        public static void SaveAnotherLayoutMenu()
         {
             if (Selection.activeGameObject == null)
             {
@@ -442,7 +445,64 @@ namespace U3DExtends
 
                 //判断选择的物体，是否为预设  
                 PrefabType cur_prefab_type = PrefabUtility.GetPrefabType(child_obj);
+                UIEditorHelper.SaveAnotherLayout(layout, child);
+            }
+        }
 
+        public static void SaveAnotherLayoutContextMenu(object o)
+        {
+            SaveAnotherLayoutMenu();
+        }
+
+        public static void SaveAnotherLayout(Canvas layout, Transform child)
+        {
+            if (child.GetComponent<Decorate>() != null)
+                return;
+            GameObject child_obj = child.gameObject;
+            //Debug.Log("child type :" + PrefabUtility.GetPrefabType(child_obj));
+
+            //判断选择的物体，是否为预设  
+            PrefabType cur_prefab_type = PrefabUtility.GetPrefabType(child_obj);
+            //不是预设的话说明还没保存过的，弹出保存框
+            string default_path = PathSaver.GetInstance().GetLastPath(PathType.SaveLayout);
+            string save_path = EditorUtility.SaveFilePanel("Save Layout", default_path, "prefab_name", "prefab");
+            if (save_path == "")
+                return;
+            PathSaver.GetInstance().SetLastPath(PathType.SaveLayout, save_path);
+            save_path = FileUtil.GetProjectRelativePath(save_path);
+
+            Object new_prefab = PrefabUtility.CreateEmptyPrefab(save_path);
+            PrefabUtility.ReplacePrefab(child_obj, new_prefab, ReplacePrefabOptions.ConnectToPrefab);
+
+            string just_name = System.IO.Path.GetFileNameWithoutExtension(save_path);
+            child_obj.name = just_name;
+            layout.gameObject.name = just_name + "_Canvas";
+            //刷新  
+            AssetDatabase.Refresh();
+            if (Configure.IsShowDialogWhenSaveLayout)
+                EditorUtility.DisplayDialog("Tip", "Save Succeed!", "Ok");
+            Debug.Log("Save Succeed!");
+        }
+
+        [MenuItem("UIEditor/保存 " + Configure.ShortCut.SaveUIPrefab, false, 2)]
+        public static void SaveLayout(object o=null)
+        {
+            if (Selection.activeGameObject == null)
+            {
+                EditorUtility.DisplayDialog("Warning", "I don't know which prefab you want to save", "Ok");
+                return;
+            }
+            Canvas layout = Selection.activeGameObject.GetComponentInParent<Canvas>();
+            for (int i = 0; i < layout.transform.childCount; i++)
+            {
+                Transform child = layout.transform.GetChild(i);
+                if (child.GetComponent<Decorate>() != null)
+                    continue;
+                GameObject child_obj = child.gameObject;
+                //Debug.Log("child type :" + PrefabUtility.GetPrefabType(child_obj));
+
+                //判断选择的物体，是否为预设  
+                PrefabType cur_prefab_type = PrefabUtility.GetPrefabType(child_obj);
                 if (PrefabUtility.GetPrefabType(child_obj) == PrefabType.PrefabInstance || cur_prefab_type == PrefabType.DisconnectedPrefabInstance)
                 {
                     UnityEngine.Object parentObject = PrefabUtility.GetPrefabParent(child_obj);
@@ -456,25 +516,7 @@ namespace U3DExtends
                 }
                 else
                 {
-                    //不是预设的话说明还没保存过的，弹出保存框
-                    string default_path = PathSaver.GetInstance().GetLastPath(PathType.SaveLayout);
-                    string save_path = EditorUtility.SaveFilePanel("Save Layout", default_path, "prefab_name", "prefab");
-                    if (save_path == "")
-                        continue;
-                    PathSaver.GetInstance().SetLastPath(PathType.SaveLayout, save_path);
-                    save_path = FileUtil.GetProjectRelativePath(save_path);
-
-                    Object new_prefab = PrefabUtility.CreateEmptyPrefab(save_path);
-                    PrefabUtility.ReplacePrefab(child_obj, new_prefab, ReplacePrefabOptions.ConnectToPrefab);
-
-                    string just_name = System.IO.Path.GetFileNameWithoutExtension(save_path);
-                    child_obj.name = just_name;
-                    layout.gameObject.name = just_name + "_Canvas";
-                    //刷新  
-                    AssetDatabase.Refresh();
-                    if (Configure.IsShowDialogWhenSaveLayout)
-                        EditorUtility.DisplayDialog("Tip", "Save Succeed!", "Ok");
-                    Debug.Log("Save Succeed!");
+                    UIEditorHelper.SaveAnotherLayout(layout, child);
                 }
             }
         }
