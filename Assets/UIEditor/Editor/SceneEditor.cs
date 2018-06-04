@@ -51,7 +51,7 @@ public class SceneEditor {
     static void OnSceneGUI(SceneView sceneView)
     {
         Event e = Event.current;
-
+        bool is_handled = false;
         if (Configure.IsEnableDragUIToScene && (Event.current.type == EventType.DragUpdated || Event.current.type == EventType.DragPerform))
         {
             //拉UI prefab或者图片入scene界面时帮它找到鼠标下的Canvas并挂在其上，若鼠标下没有画布就创建一个
@@ -72,7 +72,7 @@ public class SceneEditor {
                     HandleDragAsset(sceneView, item);
                 }
             }
-            Event.current.Use();
+            is_handled = true;
         }
         else if (e.type == EventType.KeyDown && Configure.IsMoveNodeByArrowKey)
         {
@@ -82,34 +82,40 @@ public class SceneEditor {
                 Transform trans = item;
                 if (trans != null)
                 {
-                    bool handled = false;
                     if (e.keyCode == KeyCode.UpArrow)
                     {
                         Vector3 newPos = new Vector3(trans.localPosition.x, trans.localPosition.y + 1, trans.localPosition.z);
                         trans.localPosition = newPos;
-                        handled = true;
+                        is_handled = true;
                     }
                     else if (e.keyCode == KeyCode.DownArrow)
                     {
                         Vector3 newPos = new Vector3(trans.localPosition.x, trans.localPosition.y - 1, trans.localPosition.z);
                         trans.localPosition = newPos;
-                        handled = true;
+                        is_handled = true;
                     }
                     else if (e.keyCode == KeyCode.LeftArrow)
                     {
                         Vector3 newPos = new Vector3(trans.localPosition.x - 1, trans.localPosition.y, trans.localPosition.z);
                         trans.localPosition = newPos;
-                        handled = true;
+                        is_handled = true;
                     }
                     else if (e.keyCode == KeyCode.RightArrow)
                     {
                         Vector3 newPos = new Vector3(trans.localPosition.x + 1, trans.localPosition.y, trans.localPosition.z);
                         trans.localPosition = newPos;
-                        handled = true;
+                        is_handled = true;
                     }
-                    if (handled)
-                        Event.current.Use();
                 }
+            }
+        }
+        else if (Event.current != null && Event.current.button == 1 && Event.current.type == EventType.mouseUp && Configure.IsShowSceneMenu)
+        {
+            if (Selection.gameObjects == null || Selection.gameObjects.Length==0 || Selection.gameObjects[0].transform is RectTransform)
+            {
+                ContextMenu.AddCommonItems(Selection.gameObjects);
+                ContextMenu.Show();
+                is_handled = true;
             }
         }
         //else if (e.type == EventType.MouseMove)//show cur mouse pos
@@ -120,15 +126,9 @@ public class SceneEditor {
         //    mouse_abs_pos = sceneView.camera.ScreenToWorldPoint(mouse_abs_pos);
         //    Debug.Log("mouse_abs_pos : " + mouse_abs_pos.ToString());
         //}
-        if (Event.current != null && Event.current.button == 1 && Event.current.type == EventType.mouseUp && Configure.IsShowSceneMenu)
-        {
-            if (Selection.gameObjects == null || Selection.gameObjects.Length==0 || Selection.gameObjects[0].transform is RectTransform)
-            {
-                ContextMenu.AddCommonItems(Selection.gameObjects);
-                ContextMenu.Show();
-            }
-        }
-     }
+        if (is_handled)
+            Event.current.Use();
+    }
 
     static bool HandleDragAsset(SceneView sceneView, Object handleObj)
     {
