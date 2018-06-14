@@ -34,7 +34,7 @@ public class SceneEditor {
                 if (image != null)
                 {
                     isImgWidget = true;
-                    UIEditorHelper.SetImageByPath(assetPath, image);
+                    UIEditorHelper.SetImageByPath(assetPath, image, Configure.IsAutoSizeOnFastSelectImg);
                 }
                 if (isImgWidget)
                 {

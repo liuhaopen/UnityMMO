@@ -1,57 +1,59 @@
-namespace U3DExtends
+ï»¿namespace U3DExtends
 {
-    //¹¦ÄÜºÍ¿ì½İ¼üµÄÅäÖÃ
+    //åŠŸèƒ½å’Œå¿«æ·é”®çš„é…ç½®
     public static class Configure
     {
-        //ÊÇ·ñ¿ªÆô³¡¾°ÖĞµÄÓÒ¼ü²Ëµ¥
+        //æ˜¯å¦å¼€å¯åœºæ™¯ä¸­çš„å³é”®èœå•
         public static bool IsShowSceneMenu = true;
 
-        //Ñ¡ÖĞÍ¼Æ¬½ÚµãÔÙÑ¡Í¼Æ¬Ê±£¬¼´°ï½Úµã¸³ÉÏ¸ÃÍ¼
+        //é€‰ä¸­å›¾ç‰‡èŠ‚ç‚¹å†é€‰å›¾ç‰‡æ—¶ï¼Œå³å¸®èŠ‚ç‚¹èµ‹ä¸Šè¯¥å›¾
         public static bool IsEnableFastSelectImage = true;
+        //é€‰ä¸­å›¾ç‰‡èŠ‚ç‚¹å†é€‰å›¾ç‰‡æ—¶ï¼Œå¸®èŠ‚ç‚¹èµ‹ä¸Šè¯¥å›¾æ—¶è‡ªåŠ¨è®¾ä¸ºåŸå›¾å¤§å°
+        public static bool IsAutoSizeOnFastSelectImg = false;
 
-        //À­UI prefab»òÕßÍ¼Æ¬Èëscene½çÃæÊ±°ïËüÕÒµ½Êó±êÏÂµÄCanvas²¢¹ÒÔÚÆäÉÏ£¬ÈôÊó±êÏÂÃ»ÓĞ»­²¼¾Í´´½¨Ò»¸ö
+        //æ‹‰UI prefabæˆ–è€…å›¾ç‰‡å…¥sceneç•Œé¢æ—¶å¸®å®ƒæ‰¾åˆ°é¼ æ ‡ä¸‹çš„Canvaså¹¶æŒ‚åœ¨å…¶ä¸Šï¼Œè‹¥é¼ æ ‡ä¸‹æ²¡æœ‰ç”»å¸ƒå°±åˆ›å»ºä¸€ä¸ª
         public static bool IsEnableDragUIToScene = true;
 
-        //ÊÇ·ñ¿ªÆôÓÃ¼ıÍ·°´¼üÒÆ¶¯UI½Úµã
+        //æ˜¯å¦å¼€å¯ç”¨ç®­å¤´æŒ‰é”®ç§»åŠ¨UIèŠ‚ç‚¹
         public static bool IsMoveNodeByArrowKey = true;
 
-        //±£´æ½çÃæÊ±ÊÇ·ñĞèÒªÏÔÊ¾±£´æ³É¹¦µÄÌáÊ¾¿ò
+        //ä¿å­˜ç•Œé¢æ—¶æ˜¯å¦éœ€è¦æ˜¾ç¤ºä¿å­˜æˆåŠŸçš„æç¤ºæ¡†
         public static bool IsShowDialogWhenSaveLayout = true;
 
-        //ÔËĞĞÓÎÏ·Ê±ÏÈÒş²ØµôUITestNodeName½Úµã
+        //è¿è¡Œæ¸¸æˆæ—¶å…ˆéšè—æ‰UITestNodeNameèŠ‚ç‚¹
         public static bool HideAllUIWhenRunGame = true;
         
-        //Ò»Ìí¼Ó²Î¿¼Í¼¾Í´ò¿ªÑ¡ÔñÍ¼Æ¬¿ò
+        //ä¸€æ·»åŠ å‚è€ƒå›¾å°±æ‰“å¼€é€‰æ‹©å›¾ç‰‡æ¡†
         public static bool OpenSelectPicDialogWhenAddDecorate = true;
 
-        //´ËÂ·¾¶¿ÉÒÔÎª¿Õ£¬ÉèÖÃºóÊ×´Îµ¼Èë±¾²å¼şÊ±¾Í»á¼ÓÔØ¸ÃÄ¿Â¼ÏÂµÄËùÓĞprefab
+        //æ­¤è·¯å¾„å¯ä»¥ä¸ºç©ºï¼Œè®¾ç½®åé¦–æ¬¡å¯¼å…¥æœ¬æ’ä»¶æ—¶å°±ä¼šåŠ è½½è¯¥ç›®å½•ä¸‹çš„æ‰€æœ‰prefab
         //public const string PrefabWinFirstSearchPath = "Assets/LuaFramework/AssetBundleRes/ui/uiComponent/prefab";
         public const string PrefabWinFirstSearchPath = "";
 
-        //¿ì½İ¼üÅäÖÃ  ²Ëµ¥Ïî¿ì½İ¼ü£º%#&1 ´ú±íµÄ¾ÍÊÇ£ºCtrl + Shift + Alt + 1
+        //å¿«æ·é”®é…ç½®  èœå•é¡¹å¿«æ·é”®ï¼š%#&1 ä»£è¡¨çš„å°±æ˜¯ï¼šCtrl + Shift + Alt + 1
         public static class ShortCut
         { 
-            //¸´ÖÆÑ¡ÖĞ½ÚµãÈ«ÃûµÄ×Ö·û´®µ½ÏµÍ³¼ôÇĞ°å
+            //å¤åˆ¶é€‰ä¸­èŠ‚ç‚¹å…¨åçš„å­—ç¬¦ä¸²åˆ°ç³»ç»Ÿå‰ªåˆ‡æ¿
             public const string CopyNodesName = "%#c";
 
-            //µ÷½ÚÏÔÊ¾²ã´ÎµÄ¿ì½İ¼ü
+            //è°ƒèŠ‚æ˜¾ç¤ºå±‚æ¬¡çš„å¿«æ·é”®
             public const string MoveNodeUp = "%UP";
             public const string MoveNodeTop = "%#UP";
             public const string MoveNodeDown = "%DOWN";
             public const string MoveNodeBottom = "%#DOWN";
 
-            //Õû½àµØÅÅĞòËùÓĞ½çÃæ
+            //æ•´æ´åœ°æ’åºæ‰€æœ‰ç•Œé¢
             public const string SortAllCanvas = "";
-            //É¾µôUITestNodeName½ÚµãÏÂµÄËùÓĞ½çÃæ
+            //åˆ æ‰UITestNodeNameèŠ‚ç‚¹ä¸‹çš„æ‰€æœ‰ç•Œé¢
             public const string ClearAllCanvas = "";
 
-            //¼ÓÔØ½çÃæ
+            //åŠ è½½ç•Œé¢
             public const string LoadUIPrefab = "%#l";
-            //±£´æ½çÃæ
-            public const string SaveUIPrefab = "%#s";//Cat!TODO:ÈÎºÎsÏà¹Ø¿ì½İ¼ü¶¼ÎŞĞ§£¿¿ÉÄÜÖ»ÄÜÔÚSceneView.onSceneGUIDelegateÀï´¦ÀíÁË
+            //ä¿å­˜ç•Œé¢
+            public const string SaveUIPrefab = "%#s";//Cat!TODO:ä»»ä½•sç›¸å…³å¿«æ·é”®éƒ½æ— æ•ˆï¼Ÿå¯èƒ½åªèƒ½åœ¨SceneView.onSceneGUIDelegateé‡Œå¤„ç†äº†
         }
 
-        //ËùÓĞ±à¼­½çÃæµÄCanvas¶¼·Åµ½´Ë½ÚµãÉÏ£¬¿É¶¨ÖÆ½ÚµãÃû
+        //æ‰€æœ‰ç¼–è¾‘ç•Œé¢çš„Canvaséƒ½æ”¾åˆ°æ­¤èŠ‚ç‚¹ä¸Šï¼Œå¯å®šåˆ¶èŠ‚ç‚¹å
         public static string UITestNodeName = "UITestNode";
         public const string ResPath = "UIEditor/Res/";
         public const string ResAssetsPath = "Assets/" + ResPath;
