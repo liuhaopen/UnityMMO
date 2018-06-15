@@ -60,7 +60,16 @@ static public class ContextMenu
         AddItem("层次/往里挤 ↑", false, PriorityTool.MoveUpWidget, null);
         AddItem("层次/往外挤 ↓", false, PriorityTool.MoveDownWidget, null);
     }
-    
+
+    //增加UI控件菜单
+    static public void AddUIMenu()
+    {
+        AddItem("添加控件/Image", false, UIEditorHelper.CreateImageObj, null);
+        AddItem("添加控件/RawImage", false, UIEditorHelper.CreateRawImageObj, null);
+        AddItem("添加控件/Button", false, UIEditorHelper.CreateButtonObj, null);
+        AddItem("添加控件/Text", false, UIEditorHelper.CreateTextObj, null);
+    }
+
     //增加显示隐藏菜单
     static public void AddShowOrHideMenu()
     {
@@ -103,6 +112,7 @@ static public class ContextMenu
                 AddSeparator("///");
                 if (targets.Length == 1)
                 {
+                    AddUIMenu();
                     AddPriorityMenu();
 
                     if (UIEditorHelper.IsNodeCanDivide(targets[0]))

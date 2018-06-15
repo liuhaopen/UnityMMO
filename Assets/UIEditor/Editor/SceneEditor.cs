@@ -158,6 +158,7 @@ public class SceneEditor {
             Image imageBoxCom = box.GetComponent<Image>();
             if (imageBoxCom != null)
             {
+                imageBoxCom.raycastTarget = false;
                 string assetPath = AssetDatabase.GetAssetPath(handleObj);
                 UIEditorHelper.SetImageByPath(assetPath, imageBoxCom);
                 return true;

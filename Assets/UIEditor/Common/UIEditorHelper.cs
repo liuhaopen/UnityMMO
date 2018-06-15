@@ -622,6 +622,56 @@ namespace U3DExtends
                 return mBackdropTex;
             }
         }
+
+        static public void CreateImageObj(object o)
+        {
+            if (Selection.activeTransform && Selection.activeTransform.GetComponentInParent<Canvas>())
+            {
+                GameObject go = new GameObject(CommonHelper.GenerateUniqueName(Selection.activeGameObject, "Image"), typeof(Image));
+                go.GetComponent<Image>().raycastTarget = false;
+                go.transform.SetParent(Selection.activeTransform, false);
+                Selection.activeGameObject = go;
+            }
+        }
+
+        static public void CreateRawImageObj(object o)
+        {
+            if (Selection.activeTransform && Selection.activeTransform.GetComponentInParent<Canvas>())
+            {
+                GameObject go = new GameObject(CommonHelper.GenerateUniqueName(Selection.activeGameObject, "Image"), typeof(RawImage));
+                go.GetComponent<RawImage>().raycastTarget = false;
+                go.transform.SetParent(Selection.activeTransform, false);
+                Selection.activeGameObject = go;
+            }
+        }
+
+        static public void CreateButtonObj(object o)
+        {
+            if (Selection.activeTransform && Selection.activeTransform.GetComponentInParent<Canvas>())
+            {
+                Transform last_trans = Selection.activeTransform;
+                bool isOk = EditorApplication.ExecuteMenuItem("GameObject/UI/Button");
+                if (isOk)
+                {
+                    Selection.activeGameObject.name = CommonHelper.GenerateUniqueName(Selection.activeGameObject, "Button");
+                    Selection.activeTransform.SetParent(last_trans, false);
+                }
+            }
+        }
+
+        static public void CreateTextObj(object o)
+        {
+            if (Selection.activeTransform && Selection.activeTransform.GetComponentInParent<Canvas>())
+            {
+                GameObject go = new GameObject(CommonHelper.GenerateUniqueName(Selection.activeGameObject, "Text"), typeof(Text));
+                Text txt = go.GetComponent<Text>();
+                txt.raycastTarget = false;
+                txt.text = "I am a Text";
+                go.transform.SetParent(Selection.activeTransform, false);
+                go.transform.localPosition = Vector3.zero;
+                Selection.activeGameObject = go;
+            }
+        }
     }
 }
 #endif
