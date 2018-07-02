@@ -91,7 +91,6 @@ namespace U3DExtends
                 EditorUtility.DisplayDialog("Error", "当前没有选中节点", "Ok");
                 return;
             }
-
             //先判断选中的节点是不是挂在同个父节点上的
             Transform parent = Selection.gameObjects[0].transform.parent;
             foreach (var item in Selection.gameObjects)
@@ -103,7 +102,7 @@ namespace U3DExtends
                     return;
                 }
             }
-            GameObject box = new GameObject("group", typeof(RectTransform));
+            GameObject box = new GameObject("container", typeof(RectTransform));
             RectTransform rectTrans = box.GetComponent<RectTransform>();
             if (rectTrans != null)
             {
@@ -111,27 +110,18 @@ namespace U3DExtends
                 Vector2 right_bottom_pos = new Vector2(-99999, 99999);
                 foreach (var item in Selection.gameObjects)
                 {
-                    RectTransform itemRectTrans = item.GetComponent<RectTransform>();
-                    //Debug.Log("item name : " + item.name + " itemRectTrans:" + (itemRectTrans!=null).ToString());
-                    if (itemRectTrans != null)
-                    {
-                        float item_x = itemRectTrans.localPosition.x;
-                        float item_y = itemRectTrans.localPosition.y;
-                        float item_left_top_x = item_x - itemRectTrans.sizeDelta.x / 2;
-                        float item_left_top_y = item_y + itemRectTrans.sizeDelta.y / 2;
-                        if (item_left_top_x < left_top_pos.x)
-                            left_top_pos.x = item_left_top_x;
-                        if (item_left_top_y > left_top_pos.y)
-                            left_top_pos.y = item_left_top_y;
-                        float item_bottom_right_x = item_x + itemRectTrans.sizeDelta.x/2;
-                        float item_bottom_right_y = item_y - itemRectTrans.sizeDelta.y/2;
-                        //Debug.Log(" item_bottom_right_y" + item_bottom_right_y + " item_y:" + item_y);
-                        if (item_bottom_right_x > right_bottom_pos.x)
-                            right_bottom_pos.x = item_bottom_right_x;
-                        if (item_bottom_right_y < right_bottom_pos.y)
-                            right_bottom_pos.y = item_bottom_right_y;
-                        //Debug.Log("right_bottom_pos : " + right_bottom_pos.ToString());
-                    }
+                    Bounds bound = UIEditorHelper.GetBounds(item);
+                    Vector3 boundMin = item.transform.parent.InverseTransformPoint(bound.min);
+                    Vector3 boundMax = item.transform.parent.InverseTransformPoint(bound.max);
+                    Debug.Log("bound : " + boundMin.ToString() + " max:" + boundMax.ToString());
+                    if (boundMin.x < left_top_pos.x)
+                        left_top_pos.x = boundMin.x;
+                    if (boundMax.y > left_top_pos.y)
+                        left_top_pos.y = boundMax.y;
+                    if (boundMax.x > right_bottom_pos.x)
+                        right_bottom_pos.x = boundMax.x;
+                    if (boundMin.y < right_bottom_pos.y)
+                        right_bottom_pos.y = boundMin.y;
                 }
                 rectTrans.SetParent(parent);
                 rectTrans.sizeDelta = new Vector2(right_bottom_pos.x - left_top_pos.x,  left_top_pos.y - right_bottom_pos.y);
