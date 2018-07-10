@@ -109,7 +109,7 @@ public class SceneEditor {
                 }
             }
         }
-        else if (Event.current != null && Event.current.button == 1 && Event.current.type == EventType.mouseUp && Configure.IsShowSceneMenu)
+        else if (Event.current != null && Event.current.button == 1 && Event.current.type == EventType.MouseUp && Configure.IsShowSceneMenu)
         {
             if (Selection.gameObjects == null || Selection.gameObjects.Length==0 || Selection.gameObjects[0].transform is RectTransform)
             {

@@ -4,7 +4,6 @@
 /[Bb]uild/
 /[Bb]uilds/
 /Assets/Resources*
-/ProjectSettings/
 Assets/UIEditor/Res/Preview/
 /Assets/AssetStoreTools*
 

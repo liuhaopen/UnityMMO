@@ -20,7 +20,11 @@ namespace U3DExtends
             EditorUtility.SetDirty(image);
         }
 
-        [MenuItem("UIEditor/复制节点名 " + Configure.ShortCut.CopyNodesName)]
+        [MenuItem("Edit/Copy Names " + Configure.ShortCut.CopyNodesName, false, 2)]
+        public static void CopySelectWidgetNameShortCut()
+        {
+            CopySelectWidgetName(null);
+        }
         public static void CopySelectWidgetName(object o)
         {
             string result = "";
@@ -184,30 +188,77 @@ namespace U3DExtends
             }
         }
 
+        private static GameObject GetLoadedLayout(string layoutPath)
+        {
+            GameObject testUI = UIEditorHelper.GetUITestRootNode();
+            if (testUI != null)
+            {
+                LayoutInfo[] layoutInfos = testUI.GetComponentsInChildren<LayoutInfo>(true);
+                foreach (var item in layoutInfos)
+                {
+                    if (item.LayoutPath == layoutPath)
+                        return item.gameObject;
+                }
+            }
+            return null;
+        }
+
+        public static void ReLoadLayout(object o)
+        {
+            if (Selection.activeGameObject == null)
+                return;
+            LayoutInfo layoutInfo = Selection.activeGameObject.GetComponentInParent<LayoutInfo>();
+            if (layoutInfo != null)
+            {
+                bool is_reopen = EditorUtility.DisplayDialog("警告", "是否重新加载？", "来吧", "不了");
+                if (is_reopen)
+                {
+                    Undo.DestroyObjectImmediate(layoutInfo.gameObject);
+                    LoadLayoutByPath(layoutInfo.LayoutPath);
+                }
+            }
+        }
+
+        public static void LoadLayoutByPath(string select_path)
+        {
+            GameObject new_layout = CreatNewLayout(false);
+            new_layout.transform.localPosition = new Vector3(new_layout.transform.localPosition.x, new_layout.transform.localPosition.y, 0);
+            LayoutInfo layoutInfo = new_layout.GetComponent<LayoutInfo>();
+            layoutInfo.LayoutPath = select_path;
+
+            select_path = FileUtil.GetProjectRelativePath(select_path);
+
+            Object prefab = AssetDatabase.LoadAssetAtPath(select_path, typeof(Object));
+            GameObject new_view = PrefabUtility.InstantiateAttachedAsset(prefab) as GameObject;
+            new_view.transform.parent = new_layout.transform;
+            new_view.transform.localPosition = Vector3.zero;
+            string just_name = System.IO.Path.GetFileNameWithoutExtension(select_path);
+            new_view.name = just_name;
+            new_layout.gameObject.name = just_name + "_Canvas";
+            PrefabUtility.DisconnectPrefabInstance(new_view);//链接中的话删里面的子节点时会报警告，所以还是一直失联的好，保存时直接覆盖prefab就行了
+        }
+
         [MenuItem("UIEditor/加载界面 " + Configure.ShortCut.LoadUIPrefab, false, 1)]
         public static void LoadLayout(object o)
         {
             string default_path = PathSaver.GetInstance().GetLastPath(PathType.SaveLayout);
             string select_path = EditorUtility.OpenFilePanel("Open Layout", default_path, "prefab");
             PathSaver.GetInstance().SetLastPath(PathType.SaveLayout, select_path);
-            //Debug.Log(string.Format("select_path : {0}", select_path));
             if (select_path.Length > 0)
             {
-                //Cat!TODO:检查是否已打开同名界面
-
-                GameObject new_layout = CreatNewLayout(false);
-                new_layout.transform.localPosition = new Vector3(new_layout.transform.localPosition.x, new_layout.transform.localPosition.y, 0);
-
-                select_path = FileUtil.GetProjectRelativePath(select_path);
-
-                Object prefab = AssetDatabase.LoadAssetAtPath(select_path, typeof(Object));
-                GameObject new_view = PrefabUtility.InstantiateAttachedAsset(prefab) as GameObject;
-                new_view.transform.parent = new_layout.transform;
-                new_view.transform.localPosition = Vector3.zero;
-                string just_name = System.IO.Path.GetFileNameWithoutExtension(select_path);
-                new_view.name = just_name;
-                new_layout.gameObject.name = just_name + "_Canvas";
-                PrefabUtility.DisconnectPrefabInstance(new_view);//链接中的话删里面的子节点时会报警告，所以还是一直失联的好，保存时直接覆盖prefab就行了
+                //检查是否已打开同名界面
+                GameObject loaded_layout = GetLoadedLayout(select_path);
+                if (loaded_layout!=null)
+                {
+                    bool is_reopen = EditorUtility.DisplayDialog("警告", "已打开同名界面,是否重新加载？", "来吧", "不了");
+                    if (is_reopen)
+                    {
+                        Undo.DestroyObjectImmediate(loaded_layout);
+                    }
+                    else
+                        return;
+                }
+                LoadLayoutByPath(select_path);
             }
         }
 
@@ -426,7 +477,7 @@ namespace U3DExtends
             return new Bounds(center, size);
         }
 
-        [MenuItem("UIEditor/另存为 ")]
+        //[MenuItem("UIEditor/另存为 ")]
         public static void SaveAnotherLayoutMenu()
         {
             if (Selection.activeGameObject == null)
@@ -468,12 +519,21 @@ namespace U3DExtends
             string save_path = EditorUtility.SaveFilePanel("Save Layout", default_path, "prefab_name", "prefab");
             if (save_path == "")
                 return;
+            string full_path = save_path;
             PathSaver.GetInstance().SetLastPath(PathType.SaveLayout, save_path);
             save_path = FileUtil.GetProjectRelativePath(save_path);
+            if (save_path == "")
+            {
+                Debug.Log("wrong path to save layout, is this project path? : " + full_path);
+                EditorUtility.DisplayDialog("error", "wrong path to save layout, is this project path? : " + full_path, "ok");
+                return;
+            }
 
             Object new_prefab = PrefabUtility.CreateEmptyPrefab(save_path);
             PrefabUtility.ReplacePrefab(child_obj, new_prefab, ReplacePrefabOptions.ConnectToPrefab);
-
+            LayoutInfo layoutInfo = layout.GetComponent<LayoutInfo>();
+            if (layoutInfo != null)
+                layoutInfo.LayoutPath = full_path;
             string just_name = System.IO.Path.GetFileNameWithoutExtension(save_path);
             child_obj.name = just_name;
             layout.gameObject.name = just_name + "_Canvas";
