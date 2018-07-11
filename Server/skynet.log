@@ -1,0 +1,32 @@
+[:01000001] LAUNCH logger /mnt/hgfs/UnityMMO/Server/skynet.log
+[:01000002] LAUNCH snlua bootstrap
+[:01000003] LAUNCH snlua launcher
+[:01000004] LAUNCH snlua cmaster
+[:01000004] master listen socket 0.0.0.0:2013
+[:01000005] LAUNCH snlua cslave
+[:01000005] slave connect to master 127.0.0.1:2013
+[:01000004] connect from 127.0.0.1:39890 4
+[:01000006] LAUNCH harbor 1 16777221
+[:01000004] Harbor 1 (fd=4) report 127.0.0.1:2526
+[:01000005] Waiting for 0 harbors
+[:01000005] Shakehand ready
+[:01000007] LAUNCH snlua datacenterd
+[:01000008] LAUNCH snlua service_mgr
+[:01000009] LAUNCH snlua main
+[:01000009] Server start
+[:0100000a] LAUNCH snlua test_socket
+[:01000009] KILL self
+[:01000002] KILL self
+[:0100000a] client say : ||| 
+[:0100000a] lua call [0 to :100000a : 0 msgsz = 24] error : [31m/mnt/hgfs/UnityMMO/Server/skynet/lualib/skynet.lua:615: /mnt/hgfs/UnityMMO/Server/skynet/lualib/skynet.lua:172: /mnt/hgfs/UnityMMO/Server/../Common/sproto.lua:218: session not found
+stack traceback:
+	[C]: in function 'assert'
+	/mnt/hgfs/UnityMMO/Server/../Common/sproto.lua:218: in method 'dispatch'
+	/mnt/hgfs/UnityMMO/Server/service/test_socket.lua:21: in upvalue 'echo'
+	/mnt/hgfs/UnityMMO/Server/service/test_socket.lua:44: in field 'callback'
+	/mnt/hgfs/UnityMMO/Server/skynet/lualib/skynet/socket.lua:105: in field '?'
+	/mnt/hgfs/UnityMMO/Server/skynet/lualib/skynet/socket.lua:161: in upvalue 'f'
+	/mnt/hgfs/UnityMMO/Server/skynet/lualib/skynet.lua:121: in function </mnt/hgfs/UnityMMO/Server/skynet/lualib/skynet.lua:107>
+stack traceback:
+	[C]: in function 'assert'
+	/mnt/hgfs/UnityMMO/Server/skynet/lualib/skynet.lua:615: in function 'skynet.dispatch_message'[0m
