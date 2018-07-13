@@ -8,7 +8,7 @@ namespace U3DExtends
     {
         //[HideInInspector]
         [SerializeField]
-        private string _layoutPath;
+        private string _layoutPath = string.Empty;
 
         public string LayoutPath
         {
@@ -22,5 +22,7 @@ namespace U3DExtends
                 _layoutPath = value;
             }
         }
+
+
     }
 }

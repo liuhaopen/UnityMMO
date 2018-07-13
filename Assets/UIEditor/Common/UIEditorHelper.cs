@@ -164,11 +164,6 @@ namespace U3DExtends
             }
         }
 
-        public static void CreatNewLayoutForMenu(object o)
-        {
-            CreatNewLayout();
-        }
-
         [MenuItem("UIEditor/清空界面 " + Configure.ShortCut.ClearAllCanvas)]
         public static void ClearAllCanvas(object o)
         {
@@ -188,6 +183,12 @@ namespace U3DExtends
             }
         }
 
+        [MenuItem("UIEditor/加载文件夹", false, 1)]
+        public static void LoadLayoutWithFolder(object o)
+        {
+
+        }
+
         private static GameObject GetLoadedLayout(string layoutPath)
         {
             GameObject testUI = UIEditorHelper.GetUITestRootNode();
@@ -203,20 +204,84 @@ namespace U3DExtends
             return null;
         }
 
-        public static void ReLoadLayout(object o)
+        //从界面的Canvas里取到真实的界面prefab
+        private static Transform GetRealLayout(GameObject anyObj)
         {
-            if (Selection.activeGameObject == null)
-                return;
-            LayoutInfo layoutInfo = Selection.activeGameObject.GetComponentInParent<LayoutInfo>();
-            if (layoutInfo != null)
+            LayoutInfo layoutInfo = anyObj.GetComponentInParent<LayoutInfo>();
+            Transform real_layout = null;
+            if (layoutInfo == null)
+                return real_layout;
+            if (layoutInfo.LayoutPath != string.Empty)
             {
-                bool is_reopen = EditorUtility.DisplayDialog("警告", "是否重新加载？", "来吧", "不了");
-                if (is_reopen)
+                string just_name = System.IO.Path.GetFileNameWithoutExtension(layoutInfo.LayoutPath);
+                for (int i = 0; i < layoutInfo.transform.childCount; i++)
                 {
-                    Undo.DestroyObjectImmediate(layoutInfo.gameObject);
-                    LoadLayoutByPath(layoutInfo.LayoutPath);
+                    Transform child = layoutInfo.transform.GetChild(i);
+                    if (child.name.StartsWith(just_name))
+                    {
+                        real_layout = child;
+                        break;
+                    }
                 }
             }
+            else
+            {
+                //界面是新建的,未保存过的情况下取其子节点
+                Canvas layout = anyObj.GetComponentInParent<Canvas>();
+                for (int i = 0; i < layout.transform.childCount; i++)
+                {
+                    Transform child = layout.transform.GetChild(i);
+                    if (child.GetComponent<Decorate>() != null)
+                        continue;
+
+                    real_layout = child.transform;
+                    break;
+                }
+            }
+            return real_layout;
+        }
+
+        public static void DelayReLoadLayout(GameObject o, bool isQuiet)
+        {
+            System.Action<PlayModeStateChange> p = null;
+            p = new System.Action<PlayModeStateChange>((PlayModeStateChange c) => {
+                Debug.Log("reload !");
+                ReLoadLayout(o, isQuiet);
+                UnityEditor.EditorApplication.playModeStateChanged -= p;
+            });
+            UnityEditor.EditorApplication.playModeStateChanged += p;
+        }
+
+        public static void ReLoadLayout(GameObject o, bool isQuiet)
+        {
+            GameObject saveObj = o == null ? Selection.activeGameObject : (o as GameObject);
+            if (saveObj == null)
+                return;
+            LayoutInfo layoutInfo = saveObj.GetComponentInParent<LayoutInfo>();
+            if (layoutInfo != null && layoutInfo.LayoutPath != string.Empty)
+            {
+                bool is_reopen = isQuiet || EditorUtility.DisplayDialog("警告", "是否重新加载？", "来吧", "不了");
+                if (is_reopen)
+                {
+                    string just_name = System.IO.Path.GetFileNameWithoutExtension(layoutInfo.LayoutPath);
+                    Transform real_layout = GetRealLayout(layoutInfo.gameObject);
+
+                    if (real_layout)
+                    {
+                        string select_path = FileUtil.GetProjectRelativePath(layoutInfo.LayoutPath);
+                        Object prefab = AssetDatabase.LoadAssetAtPath(select_path, typeof(Object));
+                        GameObject new_view = PrefabUtility.InstantiateAttachedAsset(prefab) as GameObject;
+                        new_view.transform.SetParent(layoutInfo.transform);
+                        new_view.transform.localPosition = real_layout.localPosition;
+                        new_view.name = just_name;
+                        PrefabUtility.DisconnectPrefabInstance(new_view);//链接中的话删里面的子节点时会报警告，所以还是一直失联的好，保存时直接覆盖pref
+                        Undo.DestroyObjectImmediate(real_layout.gameObject);
+                        Debug.Log("Reload Layout Succeed!");
+                    }
+                }
+            }
+            else
+                Debug.Log("Try to reload unsaved layout failed");
         }
 
         public static void LoadLayoutByPath(string select_path)
@@ -238,7 +303,7 @@ namespace U3DExtends
             PrefabUtility.DisconnectPrefabInstance(new_view);//链接中的话删里面的子节点时会报警告，所以还是一直失联的好，保存时直接覆盖prefab就行了
         }
 
-        [MenuItem("UIEditor/加载界面 " + Configure.ShortCut.LoadUIPrefab, false, 1)]
+        //[MenuItem("UIEditor/加载界面 " + Configure.ShortCut.LoadUIPrefab, false, 1)]
         public static void LoadLayout(object o)
         {
             string default_path = PathSaver.GetInstance().GetLastPath(PathType.SaveLayout);
@@ -253,10 +318,10 @@ namespace U3DExtends
                     bool is_reopen = EditorUtility.DisplayDialog("警告", "已打开同名界面,是否重新加载？", "来吧", "不了");
                     if (is_reopen)
                     {
-                        Undo.DestroyObjectImmediate(loaded_layout);
+                        //Undo.DestroyObjectImmediate(loaded_layout);
+                        ReLoadLayout(loaded_layout, true);
                     }
-                    else
-                        return;
+                    return;
                 }
                 LoadLayoutByPath(select_path);
             }
@@ -500,11 +565,6 @@ namespace U3DExtends
             }
         }
 
-        public static void SaveAnotherLayoutContextMenu(object o)
-        {
-            SaveAnotherLayoutMenu();
-        }
-
         public static void SaveAnotherLayout(Canvas layout, Transform child)
         {
             if (child.GetComponent<Decorate>() != null)
@@ -541,26 +601,33 @@ namespace U3DExtends
             AssetDatabase.Refresh();
             if (Configure.IsShowDialogWhenSaveLayout)
                 EditorUtility.DisplayDialog("Tip", "Save Succeed!", "Ok");
+
+            //保存时先记录一下,如果是运行游戏时保存了,结束游戏时就要重新加载界面了,不然会重置回运行游戏前的
+            ReloadLayoutOnExitGame reloadCom = layout.GetComponent<ReloadLayoutOnExitGame>();
+            if (reloadCom)
+                reloadCom.SetHadSaveOnRunTime(true);
             Debug.Log("Save Succeed!");
         }
 
-        [MenuItem("UIEditor/保存 " + Configure.ShortCut.SaveUIPrefab, false, 2)]
-        public static void SaveLayout(object o=null)
+        //[MenuItem("UIEditor/保存 " + Configure.ShortCut.SaveUIPrefab, false, 2)]
+        public static void SaveLayout(GameObject o, bool isQuiet)
         {
-            if (Selection.activeGameObject == null)
+            GameObject saveObj = o == null ? Selection.activeGameObject : (o as GameObject);
+            if (saveObj == null)
             {
                 EditorUtility.DisplayDialog("Warning", "I don't know which prefab you want to save", "Ok");
                 return;
             }
-            Canvas layout = Selection.activeGameObject.GetComponentInParent<Canvas>();
-            for (int i = 0; i < layout.transform.childCount; i++)
+            Canvas layout = saveObj.GetComponentInParent<Canvas>();
+            if (layout == null)
             {
-                Transform child = layout.transform.GetChild(i);
-                if (child.GetComponent<Decorate>() != null)
-                    continue;
-                GameObject child_obj = child.gameObject;
-                //Debug.Log("child type :" + PrefabUtility.GetPrefabType(child_obj));
-
+                EditorUtility.DisplayDialog("Warning", "select any layout below UITestNode/canvas to save", "Ok");
+                return;
+            }
+            Transform real_layout = GetRealLayout(saveObj);
+            if (real_layout != null)
+            {
+                GameObject child_obj = real_layout.gameObject;
                 //判断选择的物体，是否为预设  
                 PrefabType cur_prefab_type = PrefabUtility.GetPrefabType(child_obj);
                 if (PrefabUtility.GetPrefabType(child_obj) == PrefabType.PrefabInstance || cur_prefab_type == PrefabType.DisconnectedPrefabInstance)
@@ -570,14 +637,23 @@ namespace U3DExtends
                     PrefabUtility.ReplacePrefab(child_obj, parentObject, ReplacePrefabOptions.Default);
                     //刷新  
                     AssetDatabase.Refresh();
-                    if (Configure.IsShowDialogWhenSaveLayout)
+                    if (Configure.IsShowDialogWhenSaveLayout && !isQuiet)
                         EditorUtility.DisplayDialog("Tip", "Save Succeed!", "Ok");
+
+                    //保存时先记录一下,如果是运行游戏时保存了,结束游戏时就要重新加载界面了,不然会重置回运行游戏前的
+                    ReloadLayoutOnExitGame reloadCom = layout.GetComponent<ReloadLayoutOnExitGame>();
+                    if (reloadCom)
+                        reloadCom.SetHadSaveOnRunTime(true);
                     Debug.Log("Save Succeed!");
                 }
                 else
                 {
-                    UIEditorHelper.SaveAnotherLayout(layout, child);
+                    UIEditorHelper.SaveAnotherLayout(layout, real_layout);
                 }
+            }
+            else
+            {
+                Debug.Log("save failed!are you select any widget below canvas?");
             }
         }
 
@@ -683,13 +759,22 @@ namespace U3DExtends
             }
         }
 
+        static private Transform GetGoodContainer(Transform trans)
+        {
+            if (trans == null)
+                return null;
+            if (trans.GetComponent<Canvas>() != null || trans.GetComponent<Decorate>() != null)
+                return GetRealLayout(trans.gameObject);
+            return trans;
+        }
+
         static public void CreateImageObj(object o)
         {
             if (Selection.activeTransform && Selection.activeTransform.GetComponentInParent<Canvas>())
             {
                 GameObject go = new GameObject(CommonHelper.GenerateUniqueName(Selection.activeGameObject, "Image"), typeof(Image));
                 go.GetComponent<Image>().raycastTarget = false;
-                go.transform.SetParent(Selection.activeTransform, false);
+                go.transform.SetParent(GetGoodContainer(Selection.activeTransform), false);
                 Selection.activeGameObject = go;
             }
         }
@@ -700,7 +785,7 @@ namespace U3DExtends
             {
                 GameObject go = new GameObject(CommonHelper.GenerateUniqueName(Selection.activeGameObject, "Image"), typeof(RawImage));
                 go.GetComponent<RawImage>().raycastTarget = false;
-                go.transform.SetParent(Selection.activeTransform, false);
+                go.transform.SetParent(GetGoodContainer(Selection.activeTransform), false);
                 Selection.activeGameObject = go;
             }
         }
@@ -714,7 +799,7 @@ namespace U3DExtends
                 if (isOk)
                 {
                     Selection.activeGameObject.name = CommonHelper.GenerateUniqueName(Selection.activeGameObject, "Button");
-                    Selection.activeTransform.SetParent(last_trans, false);
+                    Selection.activeTransform.SetParent(GetGoodContainer(last_trans), false);
                 }
             }
         }
@@ -727,10 +812,29 @@ namespace U3DExtends
                 Text txt = go.GetComponent<Text>();
                 txt.raycastTarget = false;
                 txt.text = "I am a Text";
-                go.transform.SetParent(Selection.activeTransform, false);
+                go.transform.SetParent(GetGoodContainer(Selection.activeTransform), false);
                 go.transform.localPosition = Vector3.zero;
                 Selection.activeGameObject = go;
             }
+        }
+
+        public static void SaveAnotherLayoutContextMenu(object o)
+        {
+            SaveAnotherLayoutMenu();
+        }
+
+        public static void SaveLayoutForMenu(object o)
+        {
+            SaveLayout(o as GameObject, false);
+        }
+
+        public static void CreatNewLayoutForMenu(object o)
+        {
+            CreatNewLayout();
+        }
+        public static void ReLoadLayoutForMenu(object o)
+        {
+            ReLoadLayout(o as GameObject, false);
         }
     }
 }

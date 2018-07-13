@@ -20,8 +20,8 @@
         //保存界面时是否需要显示保存成功的提示框
         public static bool IsShowDialogWhenSaveLayout = true;
 
-        //运行游戏时先隐藏掉UITestNodeName节点
-        public static bool HideAllUIWhenRunGame = true;
+        //结束游戏运行时是否重新加载运行期间修改过的界面
+        public static bool ReloadLayoutOnExitGame = true;
         
         //一添加参考图就打开选择图片框
         public static bool OpenSelectPicDialogWhenAddDecorate = true;
@@ -47,10 +47,6 @@
             //删掉UITestNodeName节点下的所有界面
             public const string ClearAllCanvas = "";
 
-            //加载界面
-            public const string LoadUIPrefab = "%#l";
-            //保存界面
-            public const string SaveUIPrefab = "%#s";//Cat!TODO:任何s相关快捷键都无效？可能只能在SceneView.onSceneGUIDelegate里处理了
         }
 
         //所有编辑界面的Canvas都放到此节点上，可定制节点名
