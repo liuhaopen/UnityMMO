@@ -170,11 +170,11 @@ function _M:Fire(...)
 assert(self.handlers, "no handler table")
     for k, v in pairs(self.handlers) do
         i = i + 1
-        spawn(function() 
+        -- spawn(function() 
             v(unpack(self.args)) 
             i = i - 1
             if i == 0 then self.executing = false end
-        end)
+        -- end)
     end
     self:WaitForWaiters()
     self.args = nil
