@@ -125,7 +125,7 @@ namespace U3DExtends
             return layout;
         }
 
-        public static void SelectPicForDecorate(Decorate decorate)
+        public static bool SelectPicForDecorate(Decorate decorate)
         {
             if (decorate != null)
             {
@@ -135,8 +135,10 @@ namespace U3DExtends
                 {
                     decorate.SprPath = spr_path;
                     PathSaver.GetInstance().SetLastPath(PathType.OpenDecorate, spr_path);
+                    return true;
                 }
             }
+            return false;
         }
 
         public static void CreateDecorate(object o)
@@ -158,7 +160,9 @@ namespace U3DExtends
                     if (Configure.OpenSelectPicDialogWhenAddDecorate)
                     {
                         Decorate decor = rectTrans.GetComponent<Decorate>();
-                        UIEditorHelper.SelectPicForDecorate(decor);
+                        bool isSucceed = UIEditorHelper.SelectPicForDecorate(decor);
+                        if (!isSucceed)
+                            GameObject.DestroyImmediate(decor.gameObject);
                     }
                 }
             }
