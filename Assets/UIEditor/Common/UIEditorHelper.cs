@@ -637,8 +637,8 @@ namespace U3DExtends
                 if (PrefabUtility.GetPrefabType(child_obj) == PrefabType.PrefabInstance || cur_prefab_type == PrefabType.DisconnectedPrefabInstance)
                 {
                     UnityEngine.Object parentObject = PrefabUtility.GetPrefabParent(child_obj);
-                    //替换预设  
-                    PrefabUtility.ReplacePrefab(child_obj, parentObject, ReplacePrefabOptions.Default);
+                    //替换预设,Note:只能用ConnectToPrefab,不然会重复加多几个同名控件的
+                    PrefabUtility.ReplacePrefab(child_obj, parentObject, ReplacePrefabOptions.ConnectToPrefab);
                     //刷新  
                     AssetDatabase.Refresh();
                     if (Configure.IsShowDialogWhenSaveLayout && !isQuiet)
