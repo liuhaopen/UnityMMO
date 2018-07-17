@@ -34,7 +34,7 @@ namespace U3DExtends
 
         public string GetLastPath(PathType type)
         {
-            return EditorPrefs.GetString("PathSaver_" + type.ToString(), GeDefaultPath(type));
+            return EditorPrefs.GetString("PathSaver_" + U3DExtends.Configure.ProjectUUID + "_" + type.ToString(), GeDefaultPath(type));
         }
 
         public void SetLastPath(PathType type, string path)
@@ -42,7 +42,7 @@ namespace U3DExtends
             if (path == "")
                 return;
             path = System.IO.Path.GetDirectoryName(path);
-            EditorPrefs.SetString("PathSaver_" + type.ToString(), path);
+            EditorPrefs.SetString("PathSaver_" + U3DExtends.Configure.ProjectUUID + "_" + type.ToString(), path);
         }
 	  
     }

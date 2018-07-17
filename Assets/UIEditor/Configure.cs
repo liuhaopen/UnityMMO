@@ -1,4 +1,6 @@
-﻿namespace U3DExtends
+﻿using UnityEngine;
+
+namespace U3DExtends
 {
     //功能和快捷键的配置
     public static class Configure
@@ -53,5 +55,23 @@
         public static string UITestNodeName = "UITestNode";
         public const string ResPath = "UIEditor/Res/";
         public const string ResAssetsPath = "Assets/" + ResPath;
+
+        static string projectUUID = string.Empty;
+        public static string ProjectUUID
+        {
+            get
+            {
+#if UNITY_EDITOR
+                if (projectUUID == string.Empty)
+                {
+                    System.Security.Cryptography.MD5CryptoServiceProvider md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
+                    projectUUID = System.BitConverter.ToString(md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(Application.dataPath)), 4, 8);
+                    projectUUID = projectUUID.Replace("-", "");
+                    Debug.Log("projectUUID : " + projectUUID);
+                }
+#endif
+                return projectUUID;
+            }
+        }
     }
 }
