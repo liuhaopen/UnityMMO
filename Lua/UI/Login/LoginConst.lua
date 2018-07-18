@@ -1,4 +1,4 @@
-local LoginConst = {
+LoginConst = LoginConst or {
 	--LoginConst.Status.WaitForGameServerHandshake
 	Status = {
 		WaitForLoginServerChanllenge = 1,--刚连接上登录服务器后就等收challenge了
@@ -10,6 +10,10 @@ local LoginConst = {
 	-- LoginConst.Event.StartLogin
 	Event = {
 		StartLogin = "LoginConst.Event.StartLogin",
+		LoginSucceed = "LoginConst.Event.LoginSucceed",
+		CreateRole = "LoginConst.Event.CreateRole",
+		DeleteRole = "LoginConst.Event.DeleteRole",
+		SelectRoleEnterGame = "LoginConst.Event.SelectRoleEnterGame",
 	},
 }
 

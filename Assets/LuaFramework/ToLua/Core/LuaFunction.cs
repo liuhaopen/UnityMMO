@@ -70,7 +70,7 @@ namespace LuaInterface
         {
             if (luaState == null)
             {
-                throw new LuaException("LuaFunction has been disposed");
+                LuaFramework.Util.ThrowLuaException("LuaFunction has been disposed");
             }
 
             stack.Push(new FuncData(oldTop, stackPos));

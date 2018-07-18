@@ -2,14 +2,16 @@ require "Common/define"
 require "Common/protocal"
 require "Common/functions"
 Event = require 'events'
-local proto = require "proto"
 local sproto = require "sproto"
 local sprotoparser = require "sprotoparser"
 local crypt = require "crypt"
-local print_r = require "print_r"
+-- local print_r = require "print_r"
 
 Network = {};
 local this = Network;
+
+local print_net = function() end
+-- print_net = print --注释掉就不打印网络信息了
 
 function Network.Start() 
     logWarn("Network.Start!!");
@@ -18,21 +20,22 @@ function Network.Start()
 
     this.InitSpb()
 
+    Event.AddListener(Protocal.Connect, this.OnConnect)
     Event.AddListener(Protocal.Message, this.OnMessage)
     Event.AddListener(Protocal.Exception, this.OnException)
 end
 
 function Network.InitSpb()
-    print('Cat:Network.lua[27] AppConst.SprotoBinMode', AppConst.SprotoBinMode)
+    print_net('Cat:Network.lua[27] AppConst.SprotoBinMode', AppConst.SprotoBinMode)
     if AppConst.SprotoBinMode then
         local c2s_path = Util.DataPath.."sproto_c2s.spb";
         local c2s_file = io.open(c2s_path,'r')
-        print('Cat:Network.lua[29] c2s_file', c2s_file, c2s_path)
+        print_net('Cat:Network.lua[29] c2s_file', c2s_file, c2s_path)
         local c2s_data
         if c2s_file then
             c2s_data = c2s_file:read("*a")
         else
-            print('Cat:Network.lua[had not find spb file : ', c2s_path)
+            print_net('Cat:Network.lua[had not find spb file : ', c2s_path)
         end
         this.sproto_c2s = sproto.new(c2s_data)
     else
@@ -41,7 +44,7 @@ function Network.InitSpb()
         local proto_c2s_tb = {}
         for k,v in pairs(fileNames or {}) do
             local proto_str = require("Proto."..v)
-            -- print('Cat:Network.lua[35] c2s : ', proto_str)
+            -- print_net('Cat:Network.lua[35] c2s : ', proto_str)
             if proto_str then
                 table.insert(proto_c2s_tb, proto_str)
             end
@@ -59,6 +62,7 @@ end
 
 --当连接建立时--
 function Network.OnConnect() 
+
     logWarn("Game Server connected!!");
 end
 
@@ -69,27 +73,26 @@ function Network.OnException()
 end
 
 --连接中断，或者被踢掉--
-function Network.OnDisconnect() 
-    logError("OnDisconnect------->>>>");
-end
+-- function Network.OnDisconnect() 
+--     logError("OnDisconnect------->>>>");
+-- end
 
 function Network.SendMessage( req_name, req_arg, response_call_back )
-    print('Cat:Network.lua[57] req_name, req_arg, response_call_back', req_name, req_arg, response_call_back)
+    print_net('Cat:Network.lua[57] req_name, req_arg, response_call_back', req_name, req_arg, response_call_back)
     this.session = this.session + 1
     local buffer = ByteBuffer.New();
     local code, tag = this.sproto_c2s:request_encode(req_name, req_arg)
-    print('Cat:Network.lua[129] tag', tag)
-    print('Cat:Network.lua[117] code', code)
+    print_net('Cat:Network.lua[129] tag', tag)
+    print_net('Cat:Network.lua[117] code', code)
     if response_call_back then
         this.response_call_back[this.session] = {req_name, response_call_back}
     else
     end
-    --Cat_Todo : tag测试下够不够大啊
     local pack_str = string.pack(">IA>I", tag, code, this.session)
-    print('Cat:LoginController.lua[82] pack_str', pack_str)
-    print('Cat:Network.lua[139] len :', #pack_str)
+    print_net('Cat:LoginController.lua[82] pack_str', pack_str)
+    print_net('Cat:Network.lua[139] len :', #pack_str)
     -- for i=1,#pack_str do
-    --     print(pack_str:byte(i))
+    --     print_net(pack_str:byte(i))
     -- end
     buffer:WriteBuffer(pack_str);
     NetMgr:SendMessage(buffer);
@@ -102,41 +105,40 @@ function Network.SwitchToWaitForGameServerHandshake()
 end
 
 function Network.OnMessageForGameServerHandshake(buffer) 
-    print('Cat:Network.lua[handshake result] 11111 code', code)
+    local code = buffer:ToLuaString()
+    print_net('Cat:Network.lua[handshake] code', code)
     Event.RemoveListener(Protocal.Message)
     Event.AddListener(Protocal.Message, Network.OnMessage)
-    --Cat_Todo : 处理握手失败
+    local result = string.sub(code, 1, 3)
+    print_net('Cat:Network.lua[handshake] result code', result, tonumber(result))
+    if tonumber(result) == 200 then
+        Event.Brocast(LoginConst.Event.LoginSucceed)
 
-    --测试向游戏服务器发送sproto协议
-    do
-        local buffer = ByteBuffer.New()
-        local req_name = "get"
-        local req_arg = { what = "login" }
-        local on_ack = function ( arge )
-            print("Cat:Network [start:218] arge:", arge)
-            PrintTable(arge)
-            print("Cat:Network [end]")
+        local on_server_time_ack = function ( server_time_info )
+            print_net('Cat:Network.lua[118]', server_time_info.server_time)
+            this.server_time = server_time_info.server_time
         end
-        this.SendMessage(req_name, req_arg, on_ack)
+        this.SendMessage("account_get_server_time", nil, on_server_time_ack)
+    else
+        --Cat_Todo : 处理握手失败
     end
-    
 end
 
 function Network.OnMessage(buffer) 
     local code = buffer:ToLuaString()
-    print('Cat:Network.lua[OnMessage] code:|'..code.."|", #code)
+    print_net('Cat:Network.lua[OnMessage] code:|'..code.."|", #code)
     local content_size = #code - 5
     assert(content_size >= 0)
     local _, content, result, session = string.unpack(code, "A"..content_size.."b>I")
-    print('Cat:Network.lua[149] content|'..content.."|")
-    print('Cat:Network.lua[179] result, session', result, session)
+    print_net('Cat:Network.lua[149] content|'..content.."|")
+    print_net('Cat:Network.lua[179] result, session', result, session)
     if session and this.response_call_back[session] and #this.response_call_back[session]==2 then
-        print('Cat:Network.lua[168] this.sproto_c2s', this.sproto_c2s, this.response_call_back[session][1])
+        print_net('Cat:Network.lua[168] this.sproto_c2s', this.sproto_c2s, this.response_call_back[session][1])
         for i=1,#code do
-            print(code:byte(i))
+            print_net(code:byte(i))
         end
         local encode = this.sproto_c2s:response_decode(this.response_call_back[session][1], content)
-        print('Cat:Network.lua[168] encode', encode)
+        print_net('Cat:Network.lua[168] encode', encode)
         this.response_call_back[session][2](encode)
         this.response_call_back[session] = nil
     end

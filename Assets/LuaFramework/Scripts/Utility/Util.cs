@@ -213,14 +213,31 @@ namespace LuaFramework {
                 return data_path;
             }
         }
+        private static string relative_Path = null;
 
         public static string GetRelativePath() {
-            if (Application.isEditor)
-                return "file://" + System.Environment.CurrentDirectory.Replace("\\", "/") + "/" + AppConst.AssetDir + "/";
-            else if (Application.isMobilePlatform || Application.isConsolePlatform)
-                return "file:///" + DataPath.Replace("\\", "/");
-            else // For standalone player.
-                return "file://" + Application.streamingAssetsPath + "/";
+            if (!AppConst.UpdateMode)
+            {
+                if (relative_Path == null)
+                {
+                    relative_Path = "file://" + System.Environment.CurrentDirectory.Replace("\\", "/") + "/" + AppConst.AssetDir + "/";
+                }
+                return relative_Path;
+            }
+            else
+            {
+                if (relative_Path == null)
+                {
+                    relative_Path = "file:///" + DataPath.Replace("\\", "/");
+                }
+                return relative_Path;
+            }
+            //if (Application.isEditor)
+            //    return "file://" + System.Environment.CurrentDirectory.Replace("\\", "/") + "/" + AppConst.AssetDir + "/";
+            //else if (Application.isMobilePlatform || Application.isConsolePlatform)
+            //    return "file:///" + DataPath.Replace("\\", "/");
+            //else // For standalone player.
+            //    return "file://" + Application.streamingAssetsPath + "/";
         }
 
         /// <summary>
@@ -350,6 +367,18 @@ namespace LuaFramework {
             //}
 #endif
             return true;
+        }
+
+        public static void ThrowLuaException(string error, Exception exception = null, int skip = 1)
+        {
+            if (Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.Android)
+            {
+                Debug.LogWarning(error);
+            }
+            else
+            {
+                Debug.LogError(error);
+            }
         }
     }
 }

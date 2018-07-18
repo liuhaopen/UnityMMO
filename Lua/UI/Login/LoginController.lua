@@ -1,4 +1,5 @@
-local LoginConst = require("UI/Login/LoginConst")
+require("UI/Login/LoginConst")
+require("UI/Login/LoginModel")
 
 local LoginController = {}
 
@@ -6,21 +7,53 @@ local this = LoginController
 
 function LoginController.Init(  )
 	print('Cat:LoginController.lua[Init]')
-	
+
 	this.InitEvents()
+
+    this.loginView = require("UI/Login/LoginView")
+    this.loginView:Open()
 end
 
 function LoginController.InitEvents(  )
 
-	local start_login = function ( login_info )
+	local StartLogin = function ( login_info )
         this.StartLogin(login_info)
 		-- this.login_co = coroutine.create(LoginController.StartLogin)
 		-- coroutine.resume(this.login_co, login_info)
 	end
-    Event.AddListener(LoginConst.Event.StartLogin, start_login); 
+    Event.AddListener(LoginConst.Event.StartLogin, StartLogin); 
     Event.AddListener(Protocal.Connect, LoginController.Connect); 
     Event.AddListener(Protocal.Disconnect, LoginController.Disconnect); 
     Event.AddListener(Protocal.MessageLine, LoginController.MessageLine)
+
+    local LoginSucceed = function (  )
+        print('Cat:LoginController.lua[LoginSucceed]')
+
+        --登录成功后就请求角色列表
+        local on_ack = function ( ack_data )
+            print("Cat:LoginController [start:27] ack_data:", ack_data)
+            PrintTable(ack_data)
+            print("Cat:LoginController [end]")
+            this.loginView:Close()
+            this.loginView = nil
+            local role_list = ack_data.role_list
+            LoginModel:GetInstance():SetRoleList(role_list)
+            if role_list and #role_list > 0 then
+                --已有角色就先进入选择角色界面
+                this.loginView = require("UI/Login/LoginSelectRoleView")
+                this.loginView:Open()
+            else
+                --还没有角色就先进入创建角色界面
+                this.loginView = require("UI/Login/LoginCreateRoleView")
+                this.loginView:Open()
+            end
+        end
+        Network.SendMessage("account_get_role_list", nil, on_ack)
+
+
+    end
+    Event.AddListener(LoginConst.Event.LoginSucceed, LoginSucceed); 
+
 end
 
 function LoginController.StartLogin(login_info)

@@ -209,7 +209,6 @@ namespace LuaFramework
             if (btn == null || luafunc == null) return;
             btn.onClick.AddListener(
                 delegate () {
-                    Debug.Log("on click!");
                     luafunc.Call(btn);
                 }
             );

@@ -11,6 +11,7 @@ StreamingAssetsAndroid/
 Server/lsocket/
 Assets/UIEditor/
 Server/skynet/
+App/
 
 # Visual Studio cache directory
 .vs/

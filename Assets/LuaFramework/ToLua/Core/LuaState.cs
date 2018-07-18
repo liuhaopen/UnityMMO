@@ -727,8 +727,8 @@ namespace LuaInterface
             if (LuaDLL.lua_pcall(L, args, LuaDLL.LUA_MULTRET, oldTop) != 0)
             {
                 string error = LuaToString(-1);
-                throw new LuaException(error, LuaException.GetLastError());
-            }            
+                LuaFramework.Util.ThrowLuaException(error, LuaException.GetLastError());
+            }
         }
 
         public void EndPCall(int oldTop)

@@ -12,8 +12,6 @@ skynet.register_protocol {
 local gate
 local userid, subid
 local c2s_sproto
--- local host
--- local send_request
 local CMD = {}
 
 function CMD.login(source, uid, sid, secret)
@@ -25,8 +23,6 @@ function CMD.login(source, uid, sid, secret)
 	-- you may load user data from database
 
 	c2s_sproto = sprotoloader.load(1)
-	-- host = sprotoloader.load(1):host "package"
-	-- send_request = host:attach(sprotoloader.load(2))
 end
 
 local function logout()
@@ -53,6 +49,25 @@ function CMD.get(req_data)
 	return { result = "ackget" }
 end
 
+function CMD.account_get_role_list(req_data)
+	print('Cat:msgagent.lua[57]account_get_role_list')
+	-- local result = {role_list = {
+	-- 	{role_id = 1, sex = 1, career = 1,},
+	-- 	{role_id = 2, sex = 2, career = 2,}
+	-- }}
+	local result = {}
+	return 	result
+end
+
+function CMD.account_create_role( req_data )
+	print('Cat:msgagent.lua[63] req_data.name, req_data.career', req_data.name, req_data.career)
+	return {result=1, role_id=1}
+end
+
+function CMD.account_get_server_time( req_data )
+	return {server_time = 1531569879}
+end
+
 skynet.start(function()
 	-- If you want to fork a work thread , you MUST do it in CMD.login
 	skynet.dispatch("lua", function(session, source, command, ...)
@@ -63,7 +78,6 @@ skynet.start(function()
 	skynet.dispatch("client", function(_,_, msg)
 		-- print('Cat:msgagent.lua[50] msg|'..msg.."| c2s_sproto:", c2s_sproto)
 		local tag, msg = string.unpack(">I4c"..#msg-4, msg)
-		
 			--收到前端的请求,先解析再分发
 			--Cat_Todo : 分发给各模块
 			local proto_info = c2s_sproto:query_proto(tag)

@@ -1,10 +1,9 @@
 -- module proto as examples/proto.lua
-package.path = "./examples/?.lua;" .. package.path
+-- package.path = "./examples/?.lua;" .. package.path
 
 local skynet = require "skynet"
 local sprotoparser = require "sprotoparser"
 local sprotoloader = require "sprotoloader"
-local proto = require "proto"
 require "util.util"
 
 skynet.start(function()

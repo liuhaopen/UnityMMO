@@ -29,6 +29,7 @@ public class LuaFramework_UtilWrap
 		L.RegFunction("CheckRuntimeFile", CheckRuntimeFile);
 		L.RegFunction("CallMethod", CallMethod);
 		L.RegFunction("CheckEnvironment", CheckEnvironment);
+		L.RegFunction("ThrowLuaException", ThrowLuaException);
 		L.RegFunction("New", _CreateLuaFramework_Util);
 		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("DataPath", get_DataPath, null);
@@ -470,6 +471,45 @@ public class LuaFramework_UtilWrap
 			bool o = LuaFramework.Util.CheckEnvironment();
 			LuaDLL.lua_pushboolean(L, o);
 			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int ThrowLuaException(IntPtr L)
+	{
+		try
+		{
+			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 1)
+			{
+				string arg0 = ToLua.CheckString(L, 1);
+				LuaFramework.Util.ThrowLuaException(arg0);
+				return 0;
+			}
+			else if (count == 2)
+			{
+				string arg0 = ToLua.CheckString(L, 1);
+				System.Exception arg1 = (System.Exception)ToLua.CheckObject<System.Exception>(L, 2);
+				LuaFramework.Util.ThrowLuaException(arg0, arg1);
+				return 0;
+			}
+			else if (count == 3)
+			{
+				string arg0 = ToLua.CheckString(L, 1);
+				System.Exception arg1 = (System.Exception)ToLua.CheckObject<System.Exception>(L, 2);
+				int arg2 = (int)LuaDLL.luaL_checknumber(L, 3);
+				LuaFramework.Util.ThrowLuaException(arg0, arg1, arg2);
+				return 0;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: LuaFramework.Util.ThrowLuaException");
+			}
 		}
 		catch (Exception e)
 		{

@@ -151,7 +151,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
     Android: com.cat.unitymmo
-    Standalone: unity.DefaultCompany.LuaFramework_UGUI
+    Standalone: unity.cat.unitymmo
     Tizen: com.junfine.luaframework
     iOS: com.junfine.luaframework
     tvOS: com.junfine.luaframework
