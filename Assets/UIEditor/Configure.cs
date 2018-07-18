@@ -64,10 +64,7 @@ namespace U3DExtends
 #if UNITY_EDITOR
                 if (projectUUID == string.Empty)
                 {
-                    System.Security.Cryptography.MD5CryptoServiceProvider md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
-                    projectUUID = System.BitConverter.ToString(md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(Application.dataPath)), 4, 8);
-                    projectUUID = projectUUID.Replace("-", "");
-                    Debug.Log("projectUUID : " + projectUUID);
+                    projectUUID = UIEditorHelper.GenMD5String(Application.dataPath);
                 }
 #endif
                 return projectUUID;

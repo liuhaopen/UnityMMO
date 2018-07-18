@@ -141,25 +141,31 @@ namespace U3DExtends
             return false;
         }
 
+        public static Decorate CreateEmptyDecorate(Transform parent)
+        {
+            const string file_path = Configure.ResAssetsPath + "Decorate.prefab";
+            GameObject decorate_prefab = UnityEditor.AssetDatabase.LoadAssetAtPath(file_path, typeof(UnityEngine.Object)) as GameObject;
+            GameObject decorate = GameObject.Instantiate(decorate_prefab) as GameObject;
+            decorate.transform.SetParent(parent);
+            RectTransform rectTrans = decorate.transform as RectTransform;
+            rectTrans.SetAsFirstSibling();
+            rectTrans.localPosition = Vector3.zero;
+            Decorate decor = rectTrans.GetComponent<Decorate>();
+            return decor;
+        }
+
         public static void CreateDecorate(object o)
         {
             if (Selection.activeTransform != null)
             {
                 Canvas canvas = Selection.activeTransform.GetComponentInParent<Canvas>();
                 if (canvas != null)
-                {
-                    const string file_path = Configure.ResAssetsPath + "Decorate.prefab";
-                    GameObject decorate_prefab = UnityEditor.AssetDatabase.LoadAssetAtPath(file_path, typeof(UnityEngine.Object)) as GameObject;
-                    GameObject decorate = GameObject.Instantiate(decorate_prefab) as GameObject;
-                    decorate.transform.parent = canvas.transform;
-                    RectTransform rectTrans = decorate.transform as RectTransform;
-                    rectTrans.SetAsFirstSibling();
-                    rectTrans.localPosition = Vector3.zero;
-                    Selection.activeTransform = rectTrans;
+                {                    
+                    Decorate decor = CreateEmptyDecorate(canvas.transform);
+                    Selection.activeTransform = decor.transform;
 
                     if (Configure.OpenSelectPicDialogWhenAddDecorate)
                     {
-                        Decorate decor = rectTrans.GetComponent<Decorate>();
                         bool isSucceed = UIEditorHelper.SelectPicForDecorate(decor);
                         if (!isSucceed)
                             GameObject.DestroyImmediate(decor.gameObject);
@@ -209,7 +215,7 @@ namespace U3DExtends
         }
 
         //从界面的Canvas里取到真实的界面prefab
-        private static Transform GetRealLayout(GameObject anyObj)
+        public static Transform GetRealLayout(GameObject anyObj)
         {
             LayoutInfo layoutInfo = anyObj.GetComponentInParent<LayoutInfo>();
             Transform real_layout = null;
@@ -299,12 +305,14 @@ namespace U3DExtends
 
             Object prefab = AssetDatabase.LoadAssetAtPath(select_path, typeof(Object));
             GameObject new_view = PrefabUtility.InstantiateAttachedAsset(prefab) as GameObject;
-            new_view.transform.parent = new_layout.transform;
+            new_view.transform.SetParent(new_layout.transform);
             new_view.transform.localPosition = Vector3.zero;
             string just_name = System.IO.Path.GetFileNameWithoutExtension(select_path);
             new_view.name = just_name;
             new_layout.gameObject.name = just_name + "_Canvas";
             PrefabUtility.DisconnectPrefabInstance(new_view);//链接中的话删里面的子节点时会报警告，所以还是一直失联的好，保存时直接覆盖prefab就行了
+            //打开界面时,从项目临时文件夹找到对应界面的参照图配置,然后生成参照图
+            layoutInfo.ApplyConfig(select_path);
         }
 
         //[MenuItem("UIEditor/加载界面 " + Configure.ShortCut.LoadUIPrefab, false, 1)]
@@ -611,6 +619,7 @@ namespace U3DExtends
             if (reloadCom)
                 reloadCom.SetHadSaveOnRunTime(true);
             Debug.Log("Save Succeed!");
+            layoutInfo.SaveToConfigFile();
         }
 
         //[MenuItem("UIEditor/保存 " + Configure.ShortCut.SaveUIPrefab, false, 2)]
@@ -649,6 +658,9 @@ namespace U3DExtends
                     if (reloadCom)
                         reloadCom.SetHadSaveOnRunTime(true);
                     Debug.Log("Save Succeed!");
+                    LayoutInfo layoutInfo = layout.GetComponent<LayoutInfo>();
+                    if (layoutInfo != null)
+                        layoutInfo.SaveToConfigFile();
                 }
                 else
                 {
@@ -772,6 +784,61 @@ namespace U3DExtends
             return trans;
         }
 
+        static public void AddImageComponent(object o)
+        {
+            if (Selection.activeGameObject == null)
+                return;
+            Image old_img = Selection.activeGameObject.GetComponent<Image>();
+            if (old_img != null)
+            {
+                bool isOk = EditorUtility.DisplayDialog("警告", "该GameObject已经有Image组件了,你想替换吗?", "来吧", "算了");
+                if (isOk)
+                {
+                    //Selection.activeGameObject.
+                }
+            }
+            Image img = Selection.activeGameObject.AddComponent<Image>();
+            img.raycastTarget = false;
+        }
+
+        static public void AddHorizontalLayoutComponent(object o)
+        {
+            if (Selection.activeGameObject == null)
+                return;
+            HorizontalLayoutGroup layout = Selection.activeGameObject.AddComponent<HorizontalLayoutGroup>();
+            layout.childForceExpandWidth = false;
+            layout.childForceExpandHeight = false;
+            layout.childControlWidth = false;
+            layout.childControlHeight = false;
+        }
+
+        static public void AddVerticalLayoutComponent(object o)
+        {
+            if (Selection.activeGameObject == null)
+                return;
+            VerticalLayoutGroup layout = Selection.activeGameObject.AddComponent<VerticalLayoutGroup>();
+            layout.childForceExpandWidth = false;
+            layout.childForceExpandHeight = false;
+            layout.childControlWidth = false;
+            layout.childControlHeight = false;
+        }
+
+        static public void AddGridLayoutGroupComponent(object o)
+        {
+            if (Selection.activeGameObject == null)
+                return;
+            GridLayoutGroup layout = Selection.activeGameObject.AddComponent<GridLayoutGroup>();
+        }
+
+        static public void CreateEmptyObj(object o)
+        {
+            if (Selection.activeGameObject == null)
+                return;
+            GameObject go = new GameObject(CommonHelper.GenerateUniqueName(Selection.activeGameObject, "GameObject"), typeof(RectTransform));
+            go.transform.SetParent(GetGoodContainer(Selection.activeTransform), false);
+            Selection.activeGameObject = go;
+        }
+
         static public void CreateImageObj(object o)
         {
             if (Selection.activeTransform && Selection.activeTransform.GetComponentInParent<Canvas>())
@@ -820,6 +887,13 @@ namespace U3DExtends
                 go.transform.localPosition = Vector3.zero;
                 Selection.activeGameObject = go;
             }
+        }
+
+        static public string GenMD5String(string str)
+        {
+            System.Security.Cryptography.MD5CryptoServiceProvider md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
+            str = System.BitConverter.ToString(md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(str)), 4, 8);
+            return str.Replace("-", "");
         }
 
         public static void SaveAnotherLayoutContextMenu(object o)

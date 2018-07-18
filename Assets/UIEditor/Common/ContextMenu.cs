@@ -64,14 +64,28 @@ static public class ContextMenu
     //增加UI控件菜单
     static public void AddUIMenu()
     {
+        AddItem("添加控件/Empty", false, UIEditorHelper.CreateEmptyObj, null);
         AddItem("添加控件/Image", false, UIEditorHelper.CreateImageObj, null);
         AddItem("添加控件/RawImage", false, UIEditorHelper.CreateRawImageObj, null);
         AddItem("添加控件/Button", false, UIEditorHelper.CreateButtonObj, null);
         AddItem("添加控件/Text", false, UIEditorHelper.CreateTextObj, null);
     }
 
-    //增加显示隐藏菜单
-    static public void AddShowOrHideMenu()
+    //增加UI组件菜单
+    static public void AddUIComponentMenu()
+    {
+        AddItem("添加组件/Image", false, UIEditorHelper.AddImageComponent, null);
+        //AddItem("添加组件/RawImage", false, UIEditorHelper.CreateRawImageObj, null);
+        //AddItem("添加组件/Button", false, UIEditorHelper.CreateButtonObj, null);
+        //AddItem("添加组件/Text", false, UIEditorHelper.CreateTextObj, null);
+        AddItem("添加组件/HLayout", false, UIEditorHelper.AddHorizontalLayoutComponent, null);
+        AddItem("添加组件/VLayout", false, UIEditorHelper.AddVerticalLayoutComponent, null);
+        AddItem("添加组件/GridLayout", false, UIEditorHelper.AddGridLayoutGroupComponent, null);
+            
+        }
+
+        //增加显示隐藏菜单
+        static public void AddShowOrHideMenu()
     {
         bool hasHideWidget = false;
         foreach (var item in Selection.gameObjects)
@@ -114,6 +128,7 @@ static public class ContextMenu
                 if (targets.Length == 1)
                 {
                     AddUIMenu();
+                    AddUIComponentMenu();
                     AddPriorityMenu();
 
                     if (UIEditorHelper.IsNodeCanDivide(targets[0]))
