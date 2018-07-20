@@ -1,6 +1,7 @@
 require "Common/ui/UIHelper"
 require "Logic/LuaClass"
 require "Common/functions"
+require "UI/Common/UIManager"
 -- local lpeg = require "lpeg"
 -- local json = require "cjson"
 -- local util = require "3rd/cjson/util"
@@ -22,16 +23,19 @@ function Game.OnInitOK()
 
     local ctrl_paths = {
         -- "UI/Error/ErrorController", 
+        "UI/Test/TestController",
         "UI/Login/LoginController", 
+
     }
     for i,v in ipairs(ctrl_paths) do
         local ctrl = require(v)
         if type(ctrl) ~= "boolean" then
+            --调用每个Controller的Init函数
             ctrl.Init()
             table.insert(Ctrls, ctrl)
         else
             --Controller类忘记了在最后return
-            print('Cat:Main.lua error : you must forgot write a return in you controller file :', v)
+            assert(false, 'Cat:Main.lua error : you must forgot write a return in you controller file :'..v)
         end
     end
 
