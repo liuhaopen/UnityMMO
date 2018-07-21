@@ -173,7 +173,7 @@ public static class CustomSettings
         _GT(typeof(ResourceManager)),		  
         _GT(typeof(NetPackageType)),
         _GT(typeof(RuntimePlatform)),
-        
+
     };
 
     public static List<Type> dynamicList = new List<Type>()

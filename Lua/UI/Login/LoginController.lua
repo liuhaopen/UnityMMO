@@ -11,7 +11,8 @@ function LoginController.Init(  )
 	this.InitEvents()
 
     this.loginView = require("UI/Login/LoginView")
-    this.loginView:Open()
+    UIMgr:Show(this.loginView)
+    -- this.loginView:Open()
 end
 
 function LoginController.InitEvents(  )
@@ -34,7 +35,8 @@ function LoginController.InitEvents(  )
             print("Cat:LoginController [start:27] ack_data:", ack_data)
             PrintTable(ack_data)
             print("Cat:LoginController [end]")
-            this.loginView:Close()
+            -- this.loginView:Close()
+            UIMgr:Close(this.loginView)
             this.loginView = nil
             local role_list = ack_data.role_list
             LoginModel:GetInstance():SetRoleList(role_list)

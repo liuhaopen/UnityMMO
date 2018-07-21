@@ -1,7 +1,9 @@
 require "Common/ui/UIHelper"
-require "Logic/LuaClass"
+require "Common/BaseClass"
 require "Common/functions"
 require "UI/Common/UIManager"
+require "UI/Common/UIComponent"
+
 -- local lpeg = require "lpeg"
 -- local json = require "cjson"
 -- local util = require "3rd/cjson/util"
@@ -20,6 +22,7 @@ Ctrls = {}
 --初始化完成，发送链接服务器信息--
 function Game.OnInitOK()
     print('Cat:Game.lua[Game.OnInitOK()]')
+    UIMgr:Init({"UICanvas/Normal","UICanvas/MainUI"}, "Normal")
 
     local ctrl_paths = {
         -- "UI/Error/ErrorController", 
