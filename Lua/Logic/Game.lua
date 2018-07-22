@@ -2,11 +2,8 @@ require "Common/ui/UIHelper"
 require "Common/BaseClass"
 require "Common/functions"
 require "UI/Common/UIManager"
+require "UI/Common/UIWidgetPool"
 require "UI/Common/UIComponent"
-
--- local lpeg = require "lpeg"
--- local json = require "cjson"
--- local util = require "3rd/cjson/util"
 
 --管理器--
 Game = {}
@@ -15,15 +12,30 @@ local this = Game
 local game
 local transform
 local gameObject
--- local WWW = UnityEngine.WWW
 
 Ctrls = {}
 
---初始化完成，发送链接服务器信息--
+--初始化完成
 function Game.OnInitOK()
     print('Cat:Game.lua[Game.OnInitOK()]')
-    UIMgr:Init({"UICanvas/Normal","UICanvas/MainUI"}, "Normal")
+    Game.InitUI()
+    Game.InitControllers()
 
+    logWarn('LuaFramework InitOK--->>>');
+end
+
+function Game.InitUI()
+    UIMgr:Init({"UICanvas/Normal","UICanvas/MainUI"}, "Normal")
+    --增加默认的UI组件
+    UIMgr:AddBeforeShowFunc(function ( view )
+        if view.UIConfig.canvas_name == "Normal" then
+            
+        end
+    end)
+    UIWidgetPool:Init({})
+end
+
+function Game.InitControllers()
     local ctrl_paths = {
         -- "UI/Error/ErrorController", 
         "UI/Test/TestController",
@@ -41,8 +53,6 @@ function Game.OnInitOK()
             assert(false, 'Cat:Main.lua error : you must forgot write a return in you controller file :'..v)
         end
     end
-
-    logWarn('LuaFramework InitOK--->>>');
 end
 
 --测试lpeg--

@@ -3,14 +3,20 @@ local _class={}
 function BaseClass(super)
 	local class_type={}
 	class_type.Constructor=false
+	class_type.DefaultVar=false
 	class_type.super=super
 	class_type.New=function(...) 
-			local obj={}
+			local obj=nil
 			do
 				local create
 				create = function(c,...)
 					if c.super then
 						create(c.super,...)
+					end
+					if c.DefaultVar then
+						obj = c.DefaultVar(obj)
+					else
+						obj = {}
 					end
 					if c.Constructor then
 						c.Constructor(obj,...)

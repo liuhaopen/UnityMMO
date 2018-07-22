@@ -23,7 +23,7 @@ function TestController.Update(  )
 	if UnityEngine.Input.GetKeyUp(UnityEngine.KeyCode.F) then 
 		print('Cat:TestController.lua[25] f up')
 		local testView = require("UI/Test/TestView")
-		UIMgr:Show(testView)
+		UIMgr:Show(testView.New())
 	else
 	end
 end

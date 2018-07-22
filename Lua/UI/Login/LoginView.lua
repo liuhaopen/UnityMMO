@@ -2,7 +2,8 @@
 
 local LoginView = {
 	UIConfig = {
-		prefab = "Assets/AssetBundleRes/ui/prefab/login/LoginView.prefab",
+		prefab_path = "Assets/AssetBundleRes/ui/prefab/login/LoginView.prefab",
+		canvas_name = "Normal",
 		-- create_bg = true,--是否在界面底下创建半透明黑色背景
 		-- bg_alpha = 0.5,--背景的透明度,create_bg为true时才有效
 		-- click_bg_to_close = true,--是否点击背景就关闭界面,create_bg为true时才有效
@@ -12,7 +13,7 @@ local LoginView = {
 	},
 }
 
-function LoginView:OnLoadOk(  )
+function LoginView:OnLoad(  )
 	-- local on_load_succeed = function ( view )
 	-- 	print('Cat:LoginView.lua[on_load_succeed]')
 	-- 	self.view = view
