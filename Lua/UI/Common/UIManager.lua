@@ -31,7 +31,8 @@ function UIMgr:GetViewStack(  )
 end
 
 function UIMgr:AddUIComponent( view, component )
-	view.UIConfig = view.UIConfig or {}
+	assert(view, "cannot add component for a nil view")
+	assert(view.UIConfig, "cannot find UIConfig in view", view)
 	view.UIConfig.components = view.UIConfig.components or {}
 	local had_component = false
 	for i,v in ipairs(view.UIConfig.components) do

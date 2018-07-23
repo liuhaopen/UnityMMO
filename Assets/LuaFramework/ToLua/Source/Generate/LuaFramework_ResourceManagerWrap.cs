@@ -10,6 +10,7 @@ public class LuaFramework_ResourceManagerWrap
 		L.RegFunction("Initialize", Initialize);
 		L.RegFunction("LoadPrefab", LoadPrefab);
 		L.RegFunction("UnloadAssetBundle", UnloadAssetBundle);
+		L.RegFunction("LoadPrefabInLocalByFile", LoadPrefabInLocalByFile);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.EndClass();
@@ -104,6 +105,24 @@ public class LuaFramework_ResourceManagerWrap
 			{
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: LuaFramework.ResourceManager.UnloadAssetBundle");
 			}
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int LoadPrefabInLocalByFile(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			LuaFramework.ResourceManager obj = (LuaFramework.ResourceManager)ToLua.CheckObject<LuaFramework.ResourceManager>(L, 1);
+			string arg0 = ToLua.CheckString(L, 2);
+			UnityEngine.Object o = obj.LoadPrefabInLocalByFile(arg0);
+			ToLua.Push(L, o);
+			return 1;
 		}
 		catch (Exception e)
 		{

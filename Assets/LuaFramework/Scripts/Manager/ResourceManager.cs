@@ -240,6 +240,17 @@ namespace LuaFramework {
                 Debug.Log(abName + " has been unloaded successfully");
             }
         }
+
+        //////////新增
+        public UnityEngine.Object LoadPrefabInLocalByFile(string file_path)
+        {
+            UnityEngine.Object new_obj = null;
+#if UNITY_EDITOR
+            //这个接口只在编辑器模式下生效
+            new_obj = UnityEditor.AssetDatabase.LoadAssetAtPath(file_path, typeof(UnityEngine.Object));
+#endif
+            return new_obj;
+        }
     }
 }
 #else
@@ -380,6 +391,7 @@ namespace LuaFramework {
             if (manifest != null) manifest = null;
             Debug.Log("~ResourceManager was destroy!");
         }
+
     }
 }
 #endif

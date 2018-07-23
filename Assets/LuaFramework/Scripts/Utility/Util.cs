@@ -380,5 +380,18 @@ namespace LuaFramework {
                 Debug.LogError(error);
             }
         }
+
+        public static GameObject InstantiateObject(GameObject prefab)
+        {
+            try
+            {
+                return GameObject.Instantiate(prefab);
+            }
+            catch (Exception e)
+            {
+                Util.ThrowLuaException(e.Message);
+                return null;
+            }
+        }
     }
 }

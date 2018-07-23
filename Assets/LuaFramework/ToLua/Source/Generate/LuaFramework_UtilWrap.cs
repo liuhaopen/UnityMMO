@@ -30,6 +30,7 @@ public class LuaFramework_UtilWrap
 		L.RegFunction("CallMethod", CallMethod);
 		L.RegFunction("CheckEnvironment", CheckEnvironment);
 		L.RegFunction("ThrowLuaException", ThrowLuaException);
+		L.RegFunction("InstantiateObject", InstantiateObject);
 		L.RegFunction("New", _CreateLuaFramework_Util);
 		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("DataPath", get_DataPath, null);
@@ -510,6 +511,23 @@ public class LuaFramework_UtilWrap
 			{
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: LuaFramework.Util.ThrowLuaException");
 			}
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int InstantiateObject(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			UnityEngine.GameObject arg0 = (UnityEngine.GameObject)ToLua.CheckObject(L, 1, typeof(UnityEngine.GameObject));
+			UnityEngine.GameObject o = LuaFramework.Util.InstantiateObject(arg0);
+			ToLua.PushSealed(L, o);
+			return 1;
 		}
 		catch (Exception e)
 		{

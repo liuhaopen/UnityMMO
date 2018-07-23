@@ -32,7 +32,12 @@ function Game.InitUI()
             
         end
     end)
-    UIWidgetPool:Init({})
+
+    local pre_load_prefab = {
+        "Assets/AssetBundleRes/ui/prefab/common/Background.prefab",
+    }
+    UIWidgetPool:Init("UICanvas/HideUI")
+    UIWidgetPool:RegisterWidgets(pre_load_prefab, call_back)
 end
 
 function Game.InitControllers()

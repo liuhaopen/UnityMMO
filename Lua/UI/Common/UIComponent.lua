@@ -5,17 +5,21 @@ UIComponent.Background = {}
 function UIComponent.Background.OnLoad(view)
 	print('Cat:UIComponent.lua[Background OnLoad]', view)
 	local bg = UIWidgetPool:CreateWidget("Background")
-	bg:GetComponent("Image").alpha = self.background_alpha
-	bg.transform.sizeDelta = Vector2(1280 ,720)
+	if view.UIConfig.background_alpha then
+		bg.gameObject:GetComponent("RawImage").alpha = view.UIConfig.background_alpha
+	end
+	bg.transform:SetParent(view.transform)
+	UIHelper.SetLocalPosition(bg.transform, 0, 0, 0)
+	UIHelper.SetSizeDelta(bg.transform, 1280 ,720)
 	bg.transform:SetAsFirstSibling()
-	view.UIConfig.bg_obj = bg
+	view.UIConfig.bg_widget = bg
 end
 
 function UIComponent.Background.OnClose(view)
 	print('Cat:UIComponent.lua[Background OnClose]', view)
-	if view.UIConfig.bg_obj then
-		UIWidgetPool:RecycleWidget(view.UIConfig.bg_obj)
-		view.UIConfig.bg_obj = nil
+	if view.UIConfig.bg_widget then
+		UIWidgetPool:RecycleWidget(view.UIConfig.bg_widget)
+		view.UIConfig.bg_widget = nil
 	end
 end
 
