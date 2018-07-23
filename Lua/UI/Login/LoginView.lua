@@ -26,8 +26,8 @@ function LoginView:OnLoad(  )
 	-- end
 	-- PanelMgr:CreatePanel('Assets/AssetBundleRes/ui/prefab/login/LoginView.prefab', on_load_succeed)
 	local names = {"login", "account",}
-	GetChildren(self, self.gameObject, names)
-	self.login_btn = self.login:GetComponent("Button")
+	GetChildren(self, self.transform, names)
+	self.login_btn = self.login.gameObject
     self.account_txt = self.account:GetComponent("InputField")
 	self:AddEvents()
 end

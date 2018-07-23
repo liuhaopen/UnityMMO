@@ -204,14 +204,22 @@ namespace LuaFramework
             return 0;
         }
 
-        public static void BindClickEvent(Button btn, LuaFunction luafunc)
+        public static void BindClickEvent(GameObject obj, LuaFunction luafunc)
         {
-            if (btn == null || luafunc == null) return;
-            btn.onClick.AddListener(
-                delegate () {
-                    luafunc.Call(btn);
-                }
-            );
+            if (obj == null || luafunc == null) return;
+            ClickTriggerListener listener = ClickTriggerListener.Get(obj);
+            if (listener != null)
+                listener.onClick = luafunc;
         }
+
+        //public static void BindClickEvent(Button btn, LuaFunction luafunc)
+        //{
+        //    if (btn == null || luafunc == null) return;
+        //    btn.onClick.AddListener(
+        //        delegate () {
+        //            luafunc.Call(btn);
+        //        }
+        //    );
+        //}
     }
 }

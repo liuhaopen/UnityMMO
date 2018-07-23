@@ -469,7 +469,7 @@ public class LuaFramework_UIHelperWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 2);
-			UnityEngine.UI.Button arg0 = (UnityEngine.UI.Button)ToLua.CheckObject<UnityEngine.UI.Button>(L, 1);
+			UnityEngine.GameObject arg0 = (UnityEngine.GameObject)ToLua.CheckObject(L, 1, typeof(UnityEngine.GameObject));
 			LuaFunction arg1 = ToLua.CheckLuaFunction(L, 2);
 			LuaFramework.UIHelper.BindClickEvent(arg0, arg1);
 			return 0;

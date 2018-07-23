@@ -1,7 +1,7 @@
 local TestView = BaseClass()
 
 function TestView:DefaultVar( )
-	return {
+	return { 
 	UIConfig = {
 		prefab_path = "Assets/AssetBundleRes/ui/prefab/test/TestView.prefab",
 		canvas_name = "Normal",
@@ -15,38 +15,42 @@ end
 
 function TestView:OnLoad(  )
 	print('Cat:TestView.lua[OnLoad]')
-	
+	print('Cat:TestView.lua[18] self.close, self.open_hide_other_view', self.gameObject, self)
 	local names = {"close","open_hide_other_view","open_normal_view",}
-	GetChildren(self, self.gameObject, names)
+	GetChildren(self, self.transform, names)
 
-	self.close_btn = self.close:GetComponent("Button")
-	self.open_hide_other_view_btn = self.open_hide_other_view:GetComponent("Button")
-	self.open_normal_view_btn = self.open_normal_view:GetComponent("Button")
+	self.close_btn = self.close.gameObject
+	self.open_hide_other_view_btn = self.open_hide_other_view.gameObject
+	self.open_normal_view_btn = self.open_normal_view.gameObject
+
+	print('Cat:TestView.lua[50] tostring(self.close_btn)', self.close, self.close_btn)
 
 	self:AddEvent()
 	self:UpdateView()
 end
 
 function TestView:AddEvent(  )
-	local on_click = function ( click_btn )
-		print('Cat:TestView.lua[on_click ok]', tostring(click_btn))
+	local on_click = function ( click_btn, x, y )
+		print('Cat:TestView.lua[on_click ok]', tostring(click_btn), x, y)
 		if self.close_btn == click_btn then
 			UIMgr:Close(self)
-		elseif self.open_hide_other_view_btn == click_btn then
-			local hide_other_view = require("UI/Test/TestHideOtherView").New()
-			UIMgr:Show(hide_other_view)
-		elseif self.open_normal_view_btn == click_btn then
-			local view = require("UI/Test/TestNormalView").New()
-			UIMgr:Show(view)
 		-- elseif self.open_hide_other_view_btn == click_btn then
-		-- 	local hide_other_view = TestView.New()
-		-- 	UIMgr:AddUIComponent(UIComponent.HideOtherView)
+		-- 	local hide_other_view = require("UI/Test/TestHideOtherView").New()
 		-- 	UIMgr:Show(hide_other_view)
 		-- elseif self.open_normal_view_btn == click_btn then
-		-- 	local view = TestView.New()
+		-- 	local view = require("UI/Test/TestNormalView").New()
 		-- 	UIMgr:Show(view)
+		elseif self.open_hide_other_view_btn == click_btn then
+			local hide_other_view = TestView.New()
+			print('Cat:TestView.lua[43] hide_other_view, ', hide_other_view, TestView)
+			UIMgr:AddUIComponent(UIComponent.HideOtherView)
+			UIMgr:Show(hide_other_view)
+		elseif self.open_normal_view_btn == click_btn then
+			local view = TestView.New()
+			UIMgr:Show(view)
 		end
 	end
+	-- print('Cat:TestView.lua[50] tostring(self.close_btn)', self.close_btn, self.open_hide_other_view_btn, self.open_normal_view_btn)
 	UIHelper.BindClickEvent(self.close_btn, on_click)
 	UIHelper.BindClickEvent(self.open_hide_other_view_btn, on_click)
 	UIHelper.BindClickEvent(self.open_normal_view_btn, on_click)

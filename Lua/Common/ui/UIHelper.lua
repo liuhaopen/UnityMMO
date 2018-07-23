@@ -83,7 +83,7 @@ function GetChildren( self, parent, names )
 		end
 		assert(self[key] == nil, key .. " already exists")
 		if key then
-			self[key] = parent.Find(names[i])
+			self[key] = parent:Find(names[i])
 		end
 	end
 end

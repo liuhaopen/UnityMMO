@@ -73,7 +73,6 @@ function UIMgr:Show( view )
 	end
 
 	local on_load_succeed = function ( gameObject )
-		print('Cat:UIMgr.lua[on_load_succeed]')
 		view.gameObject = gameObject
 		view.transform = gameObject.transform
 		view.gameObject.layer = LayerMask.NameToLayer("UI")
