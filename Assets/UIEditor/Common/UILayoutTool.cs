@@ -95,7 +95,6 @@ namespace U3DExtends
             Transform parent = Selection.gameObjects[0].transform.parent;
             foreach (var item in Selection.gameObjects)
             {
-                Debug.Log("item name :" + item.name);
                 if (item.transform.parent != parent)
                 {
                     EditorUtility.DisplayDialog("Error", "不能跨容器组合", "Ok");
@@ -103,6 +102,10 @@ namespace U3DExtends
                 }
             }
             GameObject box = new GameObject("container", typeof(RectTransform));
+            Undo.IncrementCurrentGroup();
+            int group_index = Undo.GetCurrentGroup();
+            Undo.SetCurrentGroupName("Make Group");
+            Undo.RegisterCreatedObjectUndo(box, "create group object");
             RectTransform rectTrans = box.GetComponent<RectTransform>();
             if (rectTrans != null)
             {
@@ -113,7 +116,7 @@ namespace U3DExtends
                     Bounds bound = UIEditorHelper.GetBounds(item);
                     Vector3 boundMin = item.transform.parent.InverseTransformPoint(bound.min);
                     Vector3 boundMax = item.transform.parent.InverseTransformPoint(bound.max);
-                    Debug.Log("bound : " + boundMin.ToString() + " max:" + boundMax.ToString());
+                    //Debug.Log("bound : " + boundMin.ToString() + " max:" + boundMax.ToString());
                     if (boundMin.x < left_top_pos.x)
                         left_top_pos.x = boundMin.x;
                     if (boundMax.y > left_top_pos.y)
@@ -133,10 +136,11 @@ namespace U3DExtends
                 GameObject[] sorted_objs = Selection.gameObjects.OrderBy(x => x.transform.GetSiblingIndex()).ToArray();
                 for (int i = 0; i < sorted_objs.Length; i++)
                 {
-                    sorted_objs[i].transform.SetParent(rectTrans, true);
+                    Undo.SetTransformParent(sorted_objs[i].transform, rectTrans, "move item to group");
                 }
             }
             Selection.activeGameObject = box;
+            Undo.CollapseUndoOperations(group_index);
         }
 
         
