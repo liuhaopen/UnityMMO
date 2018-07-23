@@ -204,6 +204,16 @@ namespace LuaFramework
             return 0;
         }
 
+        public static void SetParent(Transform transform, Transform parent)
+        {
+            if (transform != null)
+            {
+                transform.SetParent(parent);
+                SetLocalPosition(transform, 1, 1, 1);
+                SetLocalScale(transform, 1, 1, 1);
+            }
+        }
+
         public static void BindClickEvent(GameObject obj, LuaFunction luafunc)
         {
             if (obj == null || luafunc == null) return;

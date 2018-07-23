@@ -18,7 +18,7 @@ namespace LuaFramework {
         //    }
         //}
 
-        public void CreatePanel(string name, LuaFunction func = null) {
+        public void CreatePanel(string name, LuaFunction func = null, bool is_sync_load = false) {
             string assetName = System.IO.Path.GetFileNameWithoutExtension(name);
             string abName = PackRule.PathToAssetBundleName(name);
 
@@ -32,55 +32,38 @@ namespace LuaFramework {
 
                 GameObject go = Instantiate(prefab) as GameObject;
                 go.name = assetName;
-                //go.layer = LayerMask.NameToLayer("Default");
-                //go.transform.SetParent(Parent);
-                //go.transform.localScale = Vector3.one;
-                //go.transform.localPosition = Vector3.zero;
-                //go.AddComponent<LuaBehaviour>();
                 if (func != null) func.Call(go);
                 return;
             }
 #endif
 
-#if ASYNC_MODE
-            ResManager.LoadPrefab(abName, assetName, delegate(UnityEngine.Object[] objs) {
-                if (objs.Length == 0) return;
-                GameObject prefab = objs[0] as GameObject;
-                if (prefab == null) return;
+            if (!is_sync_load)
+            {
+                ResManager.LoadPrefab(abName, assetName, delegate(UnityEngine.Object[] objs) {
+                    if (objs.Length == 0) return;
+                    GameObject prefab = objs[0] as GameObject;
+                    if (prefab == null) return;
 
-                GameObject go = Instantiate(prefab) as GameObject;
-                go.name = assetName;
-                //go.layer = LayerMask.NameToLayer("Default");
-                //go.transform.SetParent(Parent);
-                //go.transform.localScale = Vector3.one;
-                //go.transform.localPosition = Vector3.zero;
-                //go.AddComponent<LuaBehaviour>();
+                    GameObject go = Instantiate(prefab) as GameObject;
+                    go.name = assetName;
 
-                if (func != null) func.Call(go);
-                Debug.LogWarning("CreatePanel::>> " + name + " " + prefab);
-            });
-#else
-            GameObject prefab = ResManager.LoadAsset<GameObject>(name, assetName);
-            if (prefab == null) return;
+                    if (func != null) func.Call(go);
+                    Debug.LogWarning("CreatePanel::>> " + name + " " + prefab);
+                });
+            }
+            else
+            {
+                //Cat_Todo : luaframework资源想同步加载的话好像只能通过宏?有空处理下
+                //GameObject prefab = ResManager.LoadAsset<GameObject>(name, assetName);
+                //if (prefab == null) return;
 
-            GameObject go = Instantiate(prefab) as GameObject;
-            go.name = assetName;
-            go.layer = LayerMask.NameToLayer("Default");
-            go.transform.SetParent(Parent);
-            go.transform.localScale = Vector3.one;
-            go.transform.localPosition = Vector3.zero;
-            go.AddComponent<LuaBehaviour>();
+                //GameObject go = Instantiate(prefab) as GameObject;
+                //go.name = assetName;
 
-            if (func != null) func.Call(go);
-            Debug.LogWarning("CreatePanel::>> " + name + " " + prefab);
-#endif
+                //if (func != null) func.Call(go);
+                //Debug.LogWarning("CreatePanel::>> " + name + " " + prefab);
+            }
         }
 
-        //public void ClosePanel(string name) {
-        //    var panelName = name + "Panel";
-        //    var panelObj = Parent.Find(panelName);
-        //    if (panelObj == null) return;
-        //    Destroy(panelObj.gameObject);
-        //}
     }
 }

@@ -15,7 +15,7 @@ end
 
 function TestView:OnLoad(  )
 	print('Cat:TestView.lua[OnLoad]')
-	local names = {"close","open_hide_other_view","open_normal_view","title",}
+	local names = {"close","open_hide_other_view","open_normal_view","title","ScrollView/Viewport/item_con",}
 	GetChildren(self, self.transform, names)
 
 	self.close_btn = self.close.gameObject
@@ -33,15 +33,8 @@ function TestView:AddEvent(  )
 		print('Cat:TestView.lua[on_click ok]', tostring(click_btn), x, y)
 		if self.close_btn == click_btn then
 			UIMgr:Close(self)
-		-- elseif self.open_hide_other_view_btn == click_btn then
-		-- 	local hide_other_view = require("UI/Test/TestHideOtherView").New()
-		-- 	UIMgr:Show(hide_other_view)
-		-- elseif self.open_normal_view_btn == click_btn then
-		-- 	local view = require("UI/Test/TestNormalView").New()
-		-- 	UIMgr:Show(view)
 		elseif self.open_hide_other_view_btn == click_btn then
 			local hide_other_view = TestView.New()
-			print('Cat:TestView.lua[43] hide_other_view, ', hide_other_view, TestView)
 			hide_other_view:SetData((self.data or 1) + 1)
 			UIMgr:AddUIComponent(hide_other_view, UIComponent.HideOtherView)
 			UIMgr:Show(hide_other_view)
@@ -51,7 +44,6 @@ function TestView:AddEvent(  )
 			UIMgr:Show(view)
 		end
 	end
-	-- print('Cat:TestView.lua[50] tostring(self.close_btn)', self.close_btn, self.open_hide_other_view_btn, self.open_normal_view_btn)
 	UIHelper.BindClickEvent(self.close_btn, on_click)
 	UIHelper.BindClickEvent(self.open_hide_other_view_btn, on_click)
 	UIHelper.BindClickEvent(self.open_normal_view_btn, on_click)
@@ -63,17 +55,22 @@ end
 
 function TestView:UpdateView( )
 	self.title_txt.text = self.data or 1
-	do return end
-	local item = {
+	for i=1,5 do
+		local item = {
 		UIConfig={
-		prefab = "Assets/AssetBundleRes/ui/prefab/test/TestItem.prefab",
-		is_sync_load=true,--同步加载
+			prefab_path = "Assets/AssetBundleRes/ui/prefab/test/TestItem.prefab",
+			is_sync_load=true,--同步加载
+			}
 		}
-	}
-	UIMgr:Show(item)
-	local names = {"close","open_hide_other_view","open_normal_view",}
-	GetChildren(item, item.gameObject, names)
-	item.transform:SetParent(self.transform)
+		UIMgr:Show(item)
+		local names = {"title","icon",}
+		GetChildren(item, item.transform, names)
+		print('Cat:TestView.lua[68] self.item_con', self.item_con)
+		UIHelper.SetParent(item.transform, self.item_con)
+		item.title_txt = item.title:GetComponent("Text")
+		item.icon_img = item.title:GetComponent("Image")
+		item.title_txt.text = "I am item No."..i
+	end
 end
 
 function TestView:OnVisibleChanged( is_focus )

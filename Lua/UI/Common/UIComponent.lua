@@ -8,9 +8,10 @@ function UIComponent.Background.OnLoad(view)
 	if view.UIConfig.background_alpha then
 		bg.gameObject:GetComponent("RawImage").alpha = view.UIConfig.background_alpha
 	end
-	bg.transform:SetParent(view.transform)
+	UIHelper.SetParent(bg.transform, view.transform)
 	UIHelper.SetLocalPosition(bg.transform, 0, 0, 0)
 	UIHelper.SetSizeDelta(bg.transform, 1280 ,720)
+	UIHelper.SetLocalScale(bg.transform, 1.2 , 1.2, 1)
 	bg.transform:SetAsFirstSibling()
 	view.UIConfig.bg_widget = bg
 end

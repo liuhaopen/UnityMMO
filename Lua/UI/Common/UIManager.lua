@@ -23,7 +23,8 @@ end
 
 --界面堆栈的大小,当显示的界面数量超过此大小时,每打开一新界面都会移除最旧一个的界面
 function UIMgr:SetViewMaxStackSize( max_stack )
-	UIMgr.max_stack = max_stack
+	--Cat_Todo : 优化:界面堆栈大过某大小时自动清理旧界面
+	self.max_stack = max_stack
 end
 
 function UIMgr:GetViewStack(  )
@@ -95,7 +96,7 @@ function UIMgr:Show( view )
 			view:OnLoad()
 		end
 	end
-	PanelMgr:CreatePanel(view.UIConfig.prefab_path, on_load_succeed)
+	PanelMgr:CreatePanel(view.UIConfig.prefab_path, on_load_succeed, view.UIConfig.is_sync_load)
 end
 
 function UIMgr:Close( view )

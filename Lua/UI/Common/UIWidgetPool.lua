@@ -32,7 +32,9 @@ function UIWidgetPool:RegisterWidgets( names, call_back )
 				call_back()
 			end
 		end
-		ResMgr:LoadPrefab(assets_bundle, names, on_load_succeed)
+		assert(false, "not support assets bundle yet")
+		--Cat_Todo : 有空再把Luaframework原来的资源管理改成用全路径的
+		-- ResMgr:LoadPrefab(names, on_load_succeed)
 	end
 end
 

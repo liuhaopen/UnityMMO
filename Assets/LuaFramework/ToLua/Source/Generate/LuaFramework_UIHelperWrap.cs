@@ -30,6 +30,7 @@ public class LuaFramework_UIHelperWrap
 		L.RegFunction("SetSizeDeltaY", SetSizeDeltaY);
 		L.RegFunction("GetSizeDeltaX", GetSizeDeltaX);
 		L.RegFunction("GetSizeDeltaY", GetSizeDeltaY);
+		L.RegFunction("SetParent", SetParent);
 		L.RegFunction("BindClickEvent", BindClickEvent);
 		L.RegFunction("New", _CreateLuaFramework_UIHelper);
 		L.RegFunction("__tostring", ToLua.op_ToString);
@@ -456,6 +457,23 @@ public class LuaFramework_UIHelperWrap
 			float o = LuaFramework.UIHelper.GetSizeDeltaY(arg0);
 			LuaDLL.lua_pushnumber(L, o);
 			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int SetParent(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			UnityEngine.Transform arg0 = (UnityEngine.Transform)ToLua.CheckObject<UnityEngine.Transform>(L, 1);
+			UnityEngine.Transform arg1 = (UnityEngine.Transform)ToLua.CheckObject<UnityEngine.Transform>(L, 2);
+			LuaFramework.UIHelper.SetParent(arg0, arg1);
+			return 0;
 		}
 		catch (Exception e)
 		{
