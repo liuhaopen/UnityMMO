@@ -572,7 +572,7 @@ public class PrefabWin : EditorWindow
 					else if (currentEvent.button == 1)
 					{
                         //ContextMenu.AddItem("Update Preview", false, UpdatePreView, index);
-                        ContextMenu.AddItem("Delete", false, RemoveItem, index);
+                        ContextMenu.AddItemWithArge("Delete", false, RemoveItem, index);
                         ContextMenu.Show();
                     }
 				}
@@ -581,6 +581,7 @@ public class PrefabWin : EditorWindow
 
 				if (ent != null)
 				{
+
 					if (ent.tex != null)
 					{
 						GUI.DrawTexture(inner, ent.tex);

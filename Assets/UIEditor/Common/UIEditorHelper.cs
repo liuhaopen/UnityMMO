@@ -21,11 +21,7 @@ namespace U3DExtends
         }
 
         [MenuItem("Edit/Copy Names " + Configure.ShortCut.CopyNodesName, false, 2)]
-        public static void CopySelectWidgetNameShortCut()
-        {
-            CopySelectWidgetName(null);
-        }
-        public static void CopySelectWidgetName(object o)
+        public static void CopySelectWidgetName()
         {
             string result = "";
             foreach (var item in Selection.gameObjects)
@@ -154,7 +150,7 @@ namespace U3DExtends
             return decor;
         }
 
-        public static void CreateDecorate(object o)
+        public static void CreateDecorate()
         {
             if (Selection.activeTransform != null)
             {
@@ -175,7 +171,7 @@ namespace U3DExtends
         }
 
         [MenuItem("UIEditor/清空界面 " + Configure.ShortCut.ClearAllCanvas)]
-        public static void ClearAllCanvas(object o)
+        public static void ClearAllCanvas()
         {
             bool isDeleteAll = EditorUtility.DisplayDialog("警告", "是否清空掉所有界面？", "干！", "不了");
             if (isDeleteAll)
@@ -194,7 +190,7 @@ namespace U3DExtends
         }
 
         [MenuItem("UIEditor/加载文件夹", false, 1)]
-        public static void LoadLayoutWithFolder(object o)
+        public static void LoadLayoutWithFolder()
         {
 
         }
@@ -316,7 +312,7 @@ namespace U3DExtends
         }
 
         //[MenuItem("UIEditor/加载界面 " + Configure.ShortCut.LoadUIPrefab, false, 1)]
-        public static void LoadLayout(object o)
+        public static void LoadLayout()
         {
             string default_path = PathSaver.GetInstance().GetLastPath(PathType.SaveLayout);
             string select_path = EditorUtility.OpenFilePanel("Open Layout", default_path, "prefab");
@@ -340,7 +336,7 @@ namespace U3DExtends
         }
 
         //[MenuItem("UIEditor/Operate/锁定")]
-        public static void LockWidget(object o)
+        public static void LockWidget()
         {
             if (Selection.gameObjects.Length > 0)
             {
@@ -349,7 +345,7 @@ namespace U3DExtends
         }
 
         //[MenuItem("UIEditor/Operate/解锁")]
-        public static void UnLockWidget(object o)
+        public static void UnLockWidget()
         {
             if (Selection.gameObjects.Length > 0)
             {
@@ -784,7 +780,7 @@ namespace U3DExtends
             return trans;
         }
 
-        static public void AddImageComponent(object o)
+        static public void AddImageComponent()
         {
             if (Selection.activeGameObject == null)
                 return;
@@ -801,7 +797,7 @@ namespace U3DExtends
             img.raycastTarget = false;
         }
 
-        static public void AddHorizontalLayoutComponent(object o)
+        static public void AddHorizontalLayoutComponent()
         {
             if (Selection.activeGameObject == null)
                 return;
@@ -812,7 +808,7 @@ namespace U3DExtends
             layout.childControlHeight = false;
         }
 
-        static public void AddVerticalLayoutComponent(object o)
+        static public void AddVerticalLayoutComponent()
         {
             if (Selection.activeGameObject == null)
                 return;
@@ -823,14 +819,14 @@ namespace U3DExtends
             layout.childControlHeight = false;
         }
 
-        static public void AddGridLayoutGroupComponent(object o)
+        static public void AddGridLayoutGroupComponent()
         {
             if (Selection.activeGameObject == null)
                 return;
             GridLayoutGroup layout = Selection.activeGameObject.AddComponent<GridLayoutGroup>();
         }
 
-        static public void CreateEmptyObj(object o)
+        static public void CreateEmptyObj()
         {
             if (Selection.activeGameObject == null)
                 return;
@@ -839,7 +835,7 @@ namespace U3DExtends
             Selection.activeGameObject = go;
         }
 
-        static public void CreateImageObj(object o)
+        static public void CreateImageObj()
         {
             if (Selection.activeTransform && Selection.activeTransform.GetComponentInParent<Canvas>())
             {
@@ -850,18 +846,18 @@ namespace U3DExtends
             }
         }
 
-        static public void CreateRawImageObj(object o)
+        static public void CreateRawImageObj()
         {
             if (Selection.activeTransform && Selection.activeTransform.GetComponentInParent<Canvas>())
             {
-                GameObject go = new GameObject(CommonHelper.GenerateUniqueName(Selection.activeGameObject, "Image"), typeof(RawImage));
+                GameObject go = new GameObject(CommonHelper.GenerateUniqueName(Selection.activeGameObject, "RawImage"), typeof(RawImage));
                 go.GetComponent<RawImage>().raycastTarget = false;
                 go.transform.SetParent(GetGoodContainer(Selection.activeTransform), false);
                 Selection.activeGameObject = go;
             }
         }
 
-        static public void CreateButtonObj(object o)
+        static public void CreateButtonObj()
         {
             if (Selection.activeTransform && Selection.activeTransform.GetComponentInParent<Canvas>())
             {
@@ -875,7 +871,7 @@ namespace U3DExtends
             }
         }
 
-        static public void CreateTextObj(object o)
+        static public void CreateTextObj()
         {
             if (Selection.activeTransform && Selection.activeTransform.GetComponentInParent<Canvas>())
             {
@@ -889,6 +885,57 @@ namespace U3DExtends
             }
         }
 
+        static private void InitScrollView(bool isHorizontal)
+        {
+            ScrollRect scroll = Selection.activeTransform.GetComponent<ScrollRect>();
+            scroll.horizontal = isHorizontal;
+            scroll.vertical = !isHorizontal;
+            scroll.horizontalScrollbar = null;
+            scroll.verticalScrollbar = null;
+            Transform horizontalObj = Selection.activeTransform.Find("Scrollbar Horizontal");
+            if (horizontalObj != null)
+                GameObject.DestroyImmediate(horizontalObj.gameObject);
+            Transform verticalObj = Selection.activeTransform.Find("Scrollbar Vertical");
+            if (verticalObj != null)
+                GameObject.DestroyImmediate(verticalObj.gameObject);
+            RectTransform viewPort = Selection.activeTransform.Find("Viewport") as RectTransform;
+            if (viewPort != null)
+            {
+                viewPort.offsetMin = new Vector2(0, 0);
+                viewPort.offsetMax = new Vector2(0, 0);
+            }
+        }
+
+        static public void CreateHScrollViewObj()
+        {
+            if (Selection.activeTransform && Selection.activeTransform.GetComponentInParent<Canvas>())
+            {
+                Transform last_trans = Selection.activeTransform;
+                bool isOk = EditorApplication.ExecuteMenuItem("GameObject/UI/Scroll View");
+                if (isOk)
+                {
+                    Selection.activeGameObject.name = CommonHelper.GenerateUniqueName(Selection.activeGameObject, "ScrollView");
+                    Selection.activeTransform.SetParent(GetGoodContainer(last_trans), false);
+                    InitScrollView(true);
+                }
+            }
+        }
+
+        static public void CreateVScrollViewObj()
+        {
+            if (Selection.activeTransform && Selection.activeTransform.GetComponentInParent<Canvas>())
+            {
+                Transform last_trans = Selection.activeTransform;
+                bool isOk = EditorApplication.ExecuteMenuItem("GameObject/UI/Scroll View");
+                if (isOk)
+                {
+                    Selection.activeGameObject.name = CommonHelper.GenerateUniqueName(Selection.activeGameObject, "ScrollView");
+                    Selection.activeTransform.SetParent(GetGoodContainer(last_trans), false);
+                    InitScrollView(false);
+                }
+            }
+        }
+
         static public string GenMD5String(string str)
         {
             System.Security.Cryptography.MD5CryptoServiceProvider md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
@@ -896,23 +943,23 @@ namespace U3DExtends
             return str.Replace("-", "");
         }
 
-        public static void SaveAnotherLayoutContextMenu(object o)
+        public static void SaveAnotherLayoutContextMenu()
         {
             SaveAnotherLayoutMenu();
         }
 
-        public static void SaveLayoutForMenu(object o)
+        public static void SaveLayoutForMenu()
         {
-            SaveLayout(o as GameObject, false);
+            SaveLayout(null, false);
         }
 
-        public static void CreatNewLayoutForMenu(object o)
+        public static void CreatNewLayoutForMenu()
         {
             CreatNewLayout();
         }
-        public static void ReLoadLayoutForMenu(object o)
+        public static void ReLoadLayoutForMenu()
         {
-            ReLoadLayout(o as GameObject, false);
+            ReLoadLayout(null, false);
         }
     }
 }

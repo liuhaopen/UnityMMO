@@ -2,13 +2,15 @@
 using UnityEngine;
 using UnityEditor;
 using System.Linq;
+using System.Collections.Generic;
+using UnityEngine.UI;
 
 namespace U3DExtends
 {
     public class UILayoutTool : MonoBehaviour
     {
         [MenuItem("UIEditor/排序所有界面 " + Configure.ShortCut.SortAllCanvas)]
-        public static void ResortAllLayout(object o)
+        public static void ResortAllLayout()
         {
             GameObject testUI = GameObject.Find(Configure.UITestNodeName);
             if (testUI != null)
@@ -31,8 +33,84 @@ namespace U3DExtends
             }
         }
 
+        public static void OptimizeBatchForMenu()
+        {
+            OptimizeBatch(Selection.activeTransform);
+        }
+
+        public static void OptimizeBatch(Transform trans)
+        {
+            if (trans == null)
+                return;
+            Dictionary<string, List<Transform>> imageGroup = new Dictionary<string, List<Transform>>();
+            Dictionary<string, List<Transform>> textGroup = new Dictionary<string, List<Transform>>();
+            for (int i = 0; i < trans.childCount; i++)
+            {
+                Transform child = trans.GetChild(i);
+                Texture cur_texture = null;
+                Image img = child.GetComponent<Image>();
+                if (img != null)
+                {
+                    cur_texture = img.mainTexture;
+                }
+                else
+                {
+                    RawImage rimg = child.GetComponent<RawImage>();
+                    if (rimg != null)
+                        cur_texture = rimg.mainTexture;
+                }
+                if (cur_texture != null)
+                {
+                    string cur_path = AssetDatabase.GetAssetPath(cur_texture);
+                    TextureImporter importer = AssetImporter.GetAtPath(cur_path) as TextureImporter;
+                    //Debug.Log("cur_path : " + cur_path + " importer:"+(importer!=null).ToString());
+                    if (importer != null)
+                    {
+                        string atlas = importer.spritePackingTag;
+                        //Debug.Log("atlas : " + atlas);
+                        if (atlas != "")
+                        {
+                            if (!imageGroup.ContainsKey(atlas))
+                                imageGroup.Add(atlas, new List<Transform>());
+                            imageGroup[atlas].Add(child);
+                        }
+                    }
+                }
+                else
+                {
+                    Text text = child.GetComponent<Text>();
+                    if (text != null)
+                    {
+                        string fontName = text.font.name;
+                        //Debug.Log("fontName : " + fontName);
+                        if (!textGroup.ContainsKey(fontName))
+                            textGroup.Add(fontName, new List<Transform>());
+                        textGroup[fontName].Add(child);
+                    }
+                }
+                OptimizeBatch(child);
+            }
+            //同一图集的Image间层级顺序继续保留,不同图集的顺序就按每组第一张的来
+            foreach (var item in imageGroup)
+            {
+                List<Transform> children = item.Value;
+                for (int i = children.Count-1; i >= 0; i--)
+                {
+                    children[i].SetAsFirstSibling();
+                }
+            }
+            foreach (var item in textGroup)
+            {
+                List<Transform> children = item.Value;
+                for (int i = 0; i < children.Count; i++)
+                {
+                    children[i].SetAsLastSibling();
+                }
+            }
+        }
+
         //[MenuItem("UIEditor/显示 " + Configure.ShortCut.SortAllCanvas)]
-        public static void ShowAllSelectedWidgets(object o)
+        public static void ShowAllSelectedWidgets()
         {
             foreach (var item in Selection.gameObjects)
             {
@@ -40,7 +118,7 @@ namespace U3DExtends
             }
         }
         //[MenuItem("UIEditor/隐藏 " + Configure.ShortCut.SortAllCanvas)]
-        public static void HideAllSelectedWidgets(object o)
+        public static void HideAllSelectedWidgets()
         {
             foreach (var item in Selection.gameObjects)
             {
@@ -49,7 +127,7 @@ namespace U3DExtends
         }
 
         //[MenuItem("UIEditor/Operate/解除")]
-        public static void UnGroup(object o)
+        public static void UnGroup()
         {
             if (Selection.gameObjects == null || Selection.gameObjects.Length <= 0)
             {
@@ -84,7 +162,7 @@ namespace U3DExtends
         }
 
         //[MenuItem("UIEditor/Operate/组合")]
-        public static void MakeGroup(object o)
+        public static void MakeGroup()
         {
             if (Selection.gameObjects == null || Selection.gameObjects.Length <= 0)
             {
@@ -150,7 +228,7 @@ namespace U3DExtends
     public class PriorityTool
     {
         [MenuItem("UIEditor/层次/最里层 " + Configure.ShortCut.MoveNodeTop)]
-        public static void MoveToTopWidget(object o)
+        public static void MoveToTopWidget()
         {
             Transform curSelect = Selection.activeTransform;
             if (curSelect != null)
@@ -159,7 +237,7 @@ namespace U3DExtends
             }
         }
         [MenuItem("UIEditor/层次/最外层 " + Configure.ShortCut.MoveNodeBottom)]
-        public static void MoveToBottomWidget(object o)
+        public static void MoveToBottomWidget()
         {
             Transform curSelect = Selection.activeTransform;
             if (curSelect != null)
@@ -169,7 +247,7 @@ namespace U3DExtends
         }
 
         [MenuItem("UIEditor/层次/往里挤 " + Configure.ShortCut.MoveNodeUp)]
-        public static void MoveUpWidget(object o)
+        public static void MoveUpWidget()
         {
             Transform curSelect = Selection.activeTransform;
             if (curSelect != null)
@@ -181,7 +259,7 @@ namespace U3DExtends
         }
 
         [MenuItem("UIEditor/层次/往外挤 " + Configure.ShortCut.MoveNodeDown)]
-        public static void MoveDownWidget(object o)
+        public static void MoveDownWidget()
         {
             Transform curSelect = Selection.activeTransform;
             if (curSelect != null)
@@ -197,7 +275,7 @@ namespace U3DExtends
     public class AlignTool
     {
         [MenuItem("UIEditor/对齐/左对齐 ←")]
-        internal static void AlignInHorziontalLeft(object o)
+        internal static void AlignInHorziontalLeft()
         {
             float x = Mathf.Min(Selection.gameObjects.Select(obj => obj.transform.localPosition.x).ToArray());
 
@@ -209,7 +287,7 @@ namespace U3DExtends
         }
 
         [MenuItem("UIEditor/对齐/右对齐 →")]
-        public static void AlignInHorziontalRight(object o)
+        public static void AlignInHorziontalRight()
         {
             float x = Mathf.Max(Selection.gameObjects.Select(obj => obj.transform.localPosition.x +
             ((RectTransform)obj.transform).sizeDelta.x).ToArray());
@@ -221,7 +299,7 @@ namespace U3DExtends
         }
 
         [MenuItem("UIEditor/对齐/上对齐 ↑")]
-        public static void AlignInVerticalUp(object o)
+        public static void AlignInVerticalUp()
         {
             float y = Mathf.Max(Selection.gameObjects.Select(obj => obj.transform.localPosition.y).ToArray());
             foreach (GameObject gameObject in Selection.gameObjects)
@@ -231,7 +309,7 @@ namespace U3DExtends
         }
 
         [MenuItem("UIEditor/对齐/下对齐 ↓")]
-        public static void AlignInVerticalDown(object o)
+        public static void AlignInVerticalDown()
         {
             float y = Mathf.Min(Selection.gameObjects.Select(obj => obj.transform.localPosition.y -
             ((RectTransform)obj.transform).sizeDelta.y).ToArray());
@@ -244,7 +322,7 @@ namespace U3DExtends
 
 
         [MenuItem("UIEditor/对齐/水平均匀 |||")]
-        public static void UniformDistributionInHorziontal(object o)
+        public static void UniformDistributionInHorziontal()
         {
             int count = Selection.gameObjects.Length;
             float firstX = Mathf.Min(Selection.gameObjects.Select(obj => obj.transform.localPosition.x).ToArray());
@@ -259,7 +337,7 @@ namespace U3DExtends
         }
 
         [MenuItem("UIEditor/对齐/垂直均匀 ☰")]
-        public static void UniformDistributionInVertical(object o)
+        public static void UniformDistributionInVertical()
         {
             int count = Selection.gameObjects.Length;
             float firstY = Mathf.Min(Selection.gameObjects.Select(obj => obj.transform.localPosition.y).ToArray());
@@ -274,7 +352,7 @@ namespace U3DExtends
         }
 
         [MenuItem("UIEditor/对齐/一样大 ■")]
-        public static void ResizeMax(object o)
+        public static void ResizeMax()
         {
             var height = Mathf.Max(Selection.gameObjects.Select(obj => ((RectTransform)obj.transform).sizeDelta.y).ToArray());
             var width = Mathf.Max(Selection.gameObjects.Select(obj => ((RectTransform)obj.transform).sizeDelta.x).ToArray());
@@ -285,7 +363,7 @@ namespace U3DExtends
         }
 
         [MenuItem("UIEditor/对齐/一样小 ●")]
-        public static void ResizeMin(object o)
+        public static void ResizeMin()
         {
             var height = Mathf.Min(Selection.gameObjects.Select(obj => ((RectTransform)obj.transform).sizeDelta.y).ToArray());
             var width = Mathf.Min(Selection.gameObjects.Select(obj => ((RectTransform)obj.transform).sizeDelta.x).ToArray());
