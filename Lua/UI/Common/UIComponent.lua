@@ -45,6 +45,7 @@ end
 
 function UIComponent.HideOtherView.OnClose(view)
 	print('Cat:UIComponent.lua[HideOtherView OnClose]', view)
+	if UIMgr:IsClosingAllView() then return end
 	local opened_views = UIMgr:GetViewStack()
 	for i=#opened_views,1,-1 do
 		if view ~= opened_views[i] then
@@ -63,7 +64,7 @@ function UIComponent.PlayOpenCloseSound.OnLoad(view)
 end
 
 function UIComponent.PlayOpenCloseSound.OnClose(view)
-	print('Cat:UIComponent.lua[play close sound]', view)
+	print('Cat:UIComponent.lua[play close sound]', view, UIMgr:IsClosingAllView())
 end
 
 --延迟销毁界面

@@ -99,6 +99,7 @@ function UIMgr:Show( view )
 	PanelMgr:CreatePanel(view.UIConfig.prefab_path, on_load_succeed, view.UIConfig.is_sync_load)
 end
 
+--Cat_Todo : 如果传入的view不是最前的界面要怎么处理?应该在组件里处理就行了:UIComponent.HideOtherView
 function UIMgr:Close( view )
 	assert(view, "cannot close a nil view")
 
@@ -118,6 +119,18 @@ function UIMgr:Close( view )
 		GameObject.Destroy(view.gameObject)
 	end
 	self.opened_views[#self.opened_views] = nil
+end
+
+function UIMgr:CloseAllView(  )
+	self.is_closing_all_view = true
+	for i=#self.opened_views,1,-1 do
+		self:Close(self.opened_views[i])
+	end
+	self.is_closing_all_view = false
+end
+
+function UIMgr:IsClosingAllView(  )
+	return self.is_closing_all_view
 end
 
 return UIMgr

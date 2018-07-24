@@ -12,7 +12,7 @@
 前端:  
 )基于组件的UI框架(70%)  
 )飘字提示  
-)选择和创建角色界面(50%)  
+)选择和创建角色界面(70%)  
 )主界面：移动摇杆，操作按钮
 )战斗系统    
 )人物操作  
@@ -26,3 +26,7 @@
 )人物的移动同步  
 )NPC与怪物AI  
 
+# 预览
+https://github.com/liuhaopen/UnityMMO/blob/master/Preview/LoginView.png  
+
+https://github.com/liuhaopen/UnityMMO/blob/master/Preview/CreateRole.png

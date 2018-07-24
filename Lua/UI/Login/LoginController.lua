@@ -10,17 +10,14 @@ function LoginController.Init(  )
 
 	this.InitEvents()
 
-    this.loginView = require("UI/Login/LoginView")
-    UIMgr:Show(this.loginView)
-    -- this.loginView:Open()
+    local loginView = require("UI/Login/LoginView")
+    UIMgr:Show(loginView)
 end
 
 function LoginController.InitEvents(  )
 
 	local StartLogin = function ( login_info )
         this.StartLogin(login_info)
-		-- this.login_co = coroutine.create(LoginController.StartLogin)
-		-- coroutine.resume(this.login_co, login_info)
 	end
     Event.AddListener(LoginConst.Event.StartLogin, StartLogin); 
     Event.AddListener(Protocal.Connect, LoginController.Connect); 
@@ -35,24 +32,19 @@ function LoginController.InitEvents(  )
             print("Cat:LoginController [start:27] ack_data:", ack_data)
             PrintTable(ack_data)
             print("Cat:LoginController [end]")
-            -- this.loginView:Close()
-            UIMgr:Close(this.loginView)
-            this.loginView = nil
             local role_list = ack_data.role_list
             LoginModel:GetInstance():SetRoleList(role_list)
             if role_list and #role_list > 0 then
                 --已有角色就先进入选择角色界面
-                this.loginView = require("UI/Login/LoginSelectRoleView")
-                this.loginView:Open()
+                local view = require("UI/Login/LoginSelectRoleView").New()
+                UIMgr:Show(view)
             else
                 --还没有角色就先进入创建角色界面
-                this.loginView = require("UI/Login/LoginCreateRoleView")
-                this.loginView:Open()
+                local view = require("UI/Login/LoginCreateRoleView").New()
+                UIMgr:Show(view)
             end
         end
         Network.SendMessage("account_get_role_list", nil, on_ack)
-
-
     end
     Event.AddListener(LoginConst.Event.LoginSucceed, LoginSucceed); 
 
