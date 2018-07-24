@@ -27,6 +27,6 @@
 )NPC与怪物AI  
 
 # 预览
-https://github.com/liuhaopen/UnityMMO/blob/master/Preview/LoginView.png  
+![image](https://github.com/liuhaopen/UnityMMO/blob/master/Preview/LoginView.jpg)  
 
-https://github.com/liuhaopen/UnityMMO/blob/master/Preview/CreateRole.png
+![image](https://github.com/liuhaopen/UnityMMO/blob/master/Preview/CreateRole.jpg)
