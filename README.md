@@ -25,8 +25,3 @@
 )创建玩家帐号数据库和相关操作服务(5%)  
 )人物的移动同步  
 )NPC与怪物AI  
-
-# 预览
-![image](https://github.com/liuhaopen/UnityMMO/blob/master/Preview/LoginView.jpg)  
-
-![image](https://github.com/liuhaopen/UnityMMO/blob/master/Preview/CreateRole.jpg)
