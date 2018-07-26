@@ -98,6 +98,17 @@ function Network.SendMessage( req_name, req_arg, response_call_back )
     NetMgr:SendMessage(buffer);
 end
 
+function Network.Listen( req_name, req_arg, response_call_back )
+    assert(response_call_back, "Network.Listen call back empty : "..req_name)
+    local on_ack
+    on_ack = function ( ack_data )
+        response_call_back(ack_data)
+        --因为用了skynet的loginserver那一套,是不支持后端主推协议的,所以只好每次收到回复后再请求
+        Network.SendMessage(req_name, req_arg, on_ack)
+    end
+    Network.SendMessage(req_name, req_arg, on_ack)
+end
+
 function Network.SwitchToWaitForGameServerHandshake() 
     --因为连接上游戏服务器后收到的第一条数据是握手校验,其数据结构不一样,所以要临时换下接收网络数据的函数
     Event.RemoveListener(Protocal.Message)
