@@ -130,6 +130,7 @@ static public class ContextMenu
             {
                 AddItem("新建", false, UIEditorHelper.CreatNewLayoutForMenu);
                 AddItem("打开界面", false, UIEditorHelper.LoadLayout);
+                AddItem("打开文件夹", false, UIEditorHelper.LoadLayoutWithFolder);
             }
             if (targets != null && targets.Length > 0)
             {

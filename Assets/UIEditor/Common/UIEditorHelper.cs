@@ -192,7 +192,18 @@ namespace U3DExtends
         [MenuItem("UIEditor/加载文件夹", false, 1)]
         public static void LoadLayoutWithFolder()
         {
-
+            string default_path = PathSaver.GetInstance().GetLastPath(PathType.SaveLayout);
+            string select_path = EditorUtility.OpenFolderPanel("Open Layout", default_path, "");
+            PathSaver.GetInstance().SetLastPath(PathType.SaveLayout, select_path);
+            if (select_path.Length > 0)
+            {
+                string[] file_paths = Directory.GetFiles(select_path, "*.prefab");
+                foreach (var path in file_paths)
+                {
+                    LoadLayoutByPath(path);
+                }
+            }
+            UILayoutTool.ResortAllLayout();
         }
 
         private static GameObject GetLoadedLayout(string layoutPath)
