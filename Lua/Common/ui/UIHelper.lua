@@ -75,15 +75,31 @@ end
 
 local find = string.find
 local gsub = string.gsub
+local Split = Split
+G_ComponentMapForGetChildren = {
+	img = "Image", txt = "Text", tog = "Toggle",
+}
 function GetChildren( self, parent, names )
 	for i=1,#names do
-		local key = names[i]
-		if key and find(key,"/") then
-			key = gsub(key,".+/","")
+		local name_parts = Split(names[i], ":")
+		local full_name = name_parts[1]
+		local short_name = full_name
+		if short_name and find(short_name,"/") then
+			short_name = gsub(short_name,".+/","")
 		end
-		assert(self[key] == nil, key .. " already exists")
-		if key then
-			self[key] = parent:Find(names[i])
+		assert(self[short_name] == nil, short_name .. " already exists")
+		if short_name then
+			self[short_name] = parent:Find(full_name)
+		end
+		assert(self[short_name], "cannot find child : "..short_name)
+		for j=2,#name_parts do
+			if name_parts[j] == "obj" then
+				self[short_name.."_"..name_parts[j]] = self[short_name].gameObject
+			elseif G_ComponentMapForGetChildren[name_parts[j]] then
+				self[short_name.."_"..name_parts[j]] = self[short_name]:GetComponent(G_ComponentMapForGetChildren[name_parts[j]])
+			else
+				assert(false, "cannot find this component short name : "..name_parts[j])
+			end
 		end
 	end
 end

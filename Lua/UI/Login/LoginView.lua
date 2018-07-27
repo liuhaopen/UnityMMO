@@ -26,5 +26,5 @@ function LoginView:AddEvents(  )
 	end
 	UIHelper.BindClickEvent(self.login_btn, on_click)
 end
-
+        
 return LoginView

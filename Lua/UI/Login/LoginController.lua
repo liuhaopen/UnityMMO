@@ -48,6 +48,22 @@ function LoginController.InitEvents(  )
     end
     Event.AddListener(LoginConst.Event.LoginSucceed, LoginSucceed); 
 
+
+    local SelectRoleEnterGame = function ( role_id )
+        local on_ack = function ( ack_data )
+            print("Cat:LoginController [start:54] ack_data:", ack_data)
+            PrintTable(ack_data)
+            print("Cat:LoginController [end]")
+            if ack_data.result == 1 then
+                --进入游戏成功,开始请求场景信息
+                UIMgr:CloseAllView()
+            else
+                --进入游戏失败
+            end
+        end
+        Network.SendMessage("account_select_role_enter_game", {role_id = role_id}, on_ack)
+    end
+    Event.AddListener(LoginConst.Event.SelectRoleEnterGame, SelectRoleEnterGame); 
 end
 
 function LoginController.StartLogin(login_info)

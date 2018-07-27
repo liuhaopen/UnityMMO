@@ -2,6 +2,7 @@ local proto_c2s = [[
 .role_figure {
 	role_id 0 : integer
 	career 1 : integer
+	name 2 : string
 }
 
 account_get_server_time 1 {

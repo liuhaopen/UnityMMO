@@ -48,7 +48,7 @@ function LoginCreateRoleView:AddEvents(  )
 	            if ack_data.result == 1 then
 	                UIMgr:CloseAllView()
 	                --正式进入游戏场景
-
+	                Event.Brocast(LoginConst.Event.SelectRoleEnterGame, ack_data.role_id)
 	            else
 	           		print('Cat:LoginCreateRoleView.lua[37] ack_data.result', ack_data.result)
 	           		--Cat_Todo : 有空要飘字提示了

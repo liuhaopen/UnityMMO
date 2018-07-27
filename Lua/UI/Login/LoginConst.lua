@@ -7,7 +7,7 @@ LoginConst = LoginConst or {
 		WaitForGameServerConnect = 4,--等待连接上游戏服务器
 		WaitForGameServerHandshake = 5,--等待游戏服务器的握手验证
 	},
-	-- LoginConst.Event.StartLogin
+	-- LoginConst.Event.SelectRoleEnterGame
 	Event = {
 		StartLogin = "LoginConst.Event.StartLogin",
 		LoginSucceed = "LoginConst.Event.LoginSucceed",
