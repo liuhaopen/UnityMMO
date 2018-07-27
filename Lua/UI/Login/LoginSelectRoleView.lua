@@ -50,6 +50,7 @@ function LoginSelectRoleView:UpdateView()
 		local on_click = function (  )
 			print('Cat:LoginSelectRoleView.lua[51] v.role_id', v.role_id)
 			self.cur_select_role_id = v.role_id
+			--Cat_Todo : 加个人物模型才行啊,现在太难看了
 		end
 		UIHelper.BindClickEvent(item.click_bg_obj, on_click)
 	end

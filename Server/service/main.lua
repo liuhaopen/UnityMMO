@@ -14,18 +14,19 @@ skynet.start(function()
 	skynet.call(gate, "lua", "open" , {
 		port = 8888,
 		maxclient = 64,
-		servername = "sample",
+		servername = "DevelopServer",
 	})
 
-	-- local dbserver = skynet.newservice("dbserver")
-	-- print('Cat:main.lua[17] dbserver', dbserver)
-	-- skynet.call(dbserver, "lua", "open", {
-	-- 	host = "127.0.0.1",
-	-- 	port = 3306,
-	-- 	database = "UnityMMOAccount",
-	-- 	user = "root",
-	-- 	password = "123456",
-	-- })
+	local dbserver = skynet.newservice("dbserver")
+	print('Cat:main.lua[17] dbserver', dbserver)
+	skynet.call(dbserver, "lua", "open", {
+		host = "127.0.0.1",
+		port = 3306,
+		database = "UnityMMOAccount",
+		user = "root",
+		password = "123456",
+		name = ".AccountDBServer",
+	})
 	
 	skynet.exit()
 end)

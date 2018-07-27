@@ -1,6 +1,7 @@
 local login = require "snax.loginserver"
 local crypt = require "skynet.crypt"
 local skynet = require "skynet"
+require "util.util"
 
 local server = {
 	host = "0.0.0.0",
@@ -19,7 +20,25 @@ function server.auth_handler(token)
 	user = crypt.base64decode(user)
 	server = crypt.base64decode(server)
 	password = crypt.base64decode(password)
-	assert(password == "password", "Invalid password")
+	print('Cat:logind.lua[22] user, password', user, password)
+	local accountServer = skynet.localname(".AccountDBServer")
+	local is_succeed, result = skynet.call(accountServer, "lua", "select_by_key", "Account", "account_id", user)
+	print('Cat:main.lua[33] is_succeed', is_succeed)
+	if is_succeed then
+		print("Cat:main [start:30] result:", result)
+		PrintTable(result)
+		print("Cat:main [end]")
+		local user_info = result and result[1]
+		if user_info and user_info.account_id and user_info.password then
+			assert(password == user_info.password, "Invalid password")
+		elseif server == "DevelopServer" then
+			--开发服的话直接创建帐号
+			print('Cat:logind.lua[35] create account : ', user)
+			skynet.call(accountServer, "lua", "insert", "Account", {account_id=user, password=password})
+		end
+	else
+		--数据库查询失败
+	end
 	return server, user
 end
 

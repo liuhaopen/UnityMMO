@@ -1,9 +1,11 @@
 local skynet = require "skynet"
 local mysql = require "skynet.db.mysql"
+require "skynet.manager"
 require "util.util"
 
 --[[
 用法:
+local dbserver = skynet.localname(".your db name")
 local is_succeed = skynet.call(dbserver, "lua", "insert", "Account", {account_id=7, password="123"})
 print('Cat:main.lua[insert] is_succeed', is_succeed)
 local is_succeed, result = skynet.call(dbserver, "lua", "select_all", "Account")
@@ -27,11 +29,13 @@ end
 local CMD = {}
 
 function CMD.open( conf )
-	print("Cat:dbserver [start:18] conf:", conf)
-	PrintTable(conf)
-	print("Cat:dbserver [end]")
+	-- print("Cat:dbserver [start:18] conf:", conf)
+	-- PrintTable(conf)
+	-- print("Cat:dbserver [end]")
 	db = mysql.connect(conf)
 	skynet.fork(ping)
+
+	skynet.register(conf.name or "."..conf.database)
 end
 
 function CMD.close( conf )

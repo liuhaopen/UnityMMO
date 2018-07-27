@@ -108,9 +108,9 @@ function LoginController.MessageLine(buffer)
         NetMgr:SendMessage(buffer)
 
         local token = {
-            server = "sample",
-            user = "cat",
-            pass = "password",
+            server = "DevelopServer",
+            user = this.login_info.account,
+            pass = this.login_info.password or "password",
         }
         this.token = token
         local function encode_token(token)
@@ -133,11 +133,19 @@ function LoginController.MessageLine(buffer)
             print('Cat:LoginController.lua login succeed!')
             this.subid = crypt.base64decode(string.sub(code, 5))
             print('Cat:LoginController.lua[login ok] subid', this.subid)
-        end
 
-        --正式向游戏服务器请求连接
-        NetMgr:SendConnect("192.168.5.142", 8888, NetPackageType.BaseHead)
-        this.login_state = LoginConst.Status.WaitForGameServerConnect
+            --正式向游戏服务器请求连接
+            NetMgr:SendConnect("192.168.5.142", 8888, NetPackageType.BaseHead)
+            this.login_state = LoginConst.Status.WaitForGameServerConnect
+        else
+            this.error_map = this.error_map or {
+                [400] = "握手失败",
+                [401] = "自定义的 auth_handler 不认可 token",
+                [403] = "自定义的 login_handler 执行失败",
+                [406] = "该用户已经在登陆中",
+            }
+            print('Cat:LoginController.lua[147] this.error_map[result]', this.error_map[result] or "未知错误")
+        end
     end
 end
 
