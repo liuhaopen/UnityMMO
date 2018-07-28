@@ -17,6 +17,7 @@ skynet.start(function()
 		servername = "DevelopServer",
 	})
 
+	--Cat_Todo : 登录服务器需要配置到其它物理机器上
 	local dbserver = skynet.newservice("dbserver")
 	print('Cat:main.lua[17] dbserver', dbserver)
 	skynet.call(dbserver, "lua", "open", {
@@ -26,6 +27,16 @@ skynet.start(function()
 		user = "root",
 		password = "123456",
 		name = ".AccountDBServer",
+	})
+
+	local gamedbserver = skynet.newservice("dbserver")
+	skynet.call(gamedbserver, "lua", "open", {
+		host = "127.0.0.1",
+		port = 3306,
+		database = "UnityMMOGame",
+		user = "root",
+		password = "123456",
+		name = ".GameDBServer",
 	})
 	
 	skynet.exit()

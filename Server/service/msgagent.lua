@@ -12,6 +12,7 @@ skynet.register_protocol {
 
 local gate
 local userid, subid
+local user_info
 local c2s_sproto
 local CMD = {}
 
@@ -21,6 +22,7 @@ function CMD.login(source, uid, sid, secret)
 	gate = source
 	userid = uid
 	subid = sid
+	user_info = {user_id=uid}
 	-- you may load user data from database
 
 	c2s_sproto = sprotoloader.load(1)
@@ -61,7 +63,7 @@ skynet.start(function()
 				-- print_r(content)
 				local f = netdispatcher:dispatch(tag)
 				if f and f[proto_info.name] then
-					local response = f[proto_info.name](content)
+					local response = f[proto_info.name](user_info, content)
 					local ok, response_str = pcall(c2s_sproto.response_encode, c2s_sproto, tag, response)
 					if ok then
 						skynet.ret(response_str)
