@@ -44,6 +44,8 @@ namespace U3DExtends
                 return;
             Dictionary<string, List<Transform>> imageGroup = new Dictionary<string, List<Transform>>();
             Dictionary<string, List<Transform>> textGroup = new Dictionary<string, List<Transform>>();
+            List<List<Transform>> sortedImgageGroup = new List<List<Transform>>();
+            List<List<Transform>> sortedTextGroup = new List<List<Transform>>();
             for (int i = 0; i < trans.childCount; i++)
             {
                 Transform child = trans.GetChild(i);
@@ -71,7 +73,11 @@ namespace U3DExtends
                         if (atlas != "")
                         {
                             if (!imageGroup.ContainsKey(atlas))
-                                imageGroup.Add(atlas, new List<Transform>());
+                            {
+                                List<Transform> list = new List<Transform>();
+                                sortedImgageGroup.Add(list);
+                                imageGroup.Add(atlas, list);
+                            }
                             imageGroup[atlas].Add(child);
                         }
                     }
@@ -84,24 +90,29 @@ namespace U3DExtends
                         string fontName = text.font.name;
                         //Debug.Log("fontName : " + fontName);
                         if (!textGroup.ContainsKey(fontName))
-                            textGroup.Add(fontName, new List<Transform>());
+                        {
+                            List<Transform> list = new List<Transform>();
+                            sortedTextGroup.Add(list);
+                            textGroup.Add(fontName, list);
+                        }
                         textGroup[fontName].Add(child);
                     }
                 }
                 OptimizeBatch(child);
             }
             //同一图集的Image间层级顺序继续保留,不同图集的顺序就按每组第一张的来
-            foreach (var item in imageGroup)
+            for (int i = sortedImgageGroup.Count - 1; i >= 0; i--)
             {
-                List<Transform> children = item.Value;
-                for (int i = children.Count-1; i >= 0; i--)
+                List<Transform> children = sortedImgageGroup[i];
+                for (int j = children.Count - 1; j >= 0; j--)
                 {
-                    children[i].SetAsFirstSibling();
+                    children[j].SetAsFirstSibling();
                 }
+
             }
-            foreach (var item in textGroup)
+            foreach (var item in sortedTextGroup)
             {
-                List<Transform> children = item.Value;
+                List<Transform> children = item;
                 for (int i = 0; i < children.Count; i++)
                 {
                     children[i].SetAsLastSibling();

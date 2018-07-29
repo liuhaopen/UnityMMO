@@ -18,7 +18,7 @@ UI编辑器扩展相关的代码和资源都放在Assets/UIEditor目录里,默�
 ![image](https://github.com/BalckCat/UIEditor/blob/master/Picture/prefab%20win.gif)
 
 PrefabWin窗口可以从菜单Window-&gt;PrefabWin打开  
-PrefabWin窗口一开始时肯定是没东西的啦,你可以往里面拉prefab,然后它会自动生成预览图的.2D3D的prefab都可以.底下还有个搜索框可以让你快速过滤.
+PrefabWin窗口一开始时肯定是没东西的啦,你可以往里面拉prefab,然后它会自动生成预览图的.2D3D的prefab都可以.底下还有个搜索框可以让你快速过滤.  
 
 ## 参考图
 
@@ -34,6 +34,9 @@ PrefabWin窗口一开始时肯定是没东西的啦,你可以往里面拉prefab,
 在Project视图拉图到场景的Canvas(无则自动生成Canvas)将生成一Image节点并把图赋在其上.还有就是选中Image节点时再点击Project视图里的图片也可以赋上该图.
 ![image](https://github.com/BalckCat/UIEditor/blob/master/Picture/drag%20pic.gif)
 
+## 优化层次
+下图有8个节点,其中4个图片中,有两个图片来自图集1,两个来自图集2,如果它们是按图集连续排的话就可以合为同一批次,但被其它图集打断就合不了了,另外4个text也是一样,同一字体的也是可以合为一批次的,这个功能就是自动排列好顺序优化合批:  
+![image](https://github.com/BalckCat/UIEditor/blob/master/Picture/optimize_depth_for_batch_draw.gif)  
 
 ## 合并组和解体
 
