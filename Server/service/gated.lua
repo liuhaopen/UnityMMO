@@ -8,6 +8,7 @@ local server = {}
 local users = {}
 local username_map = {}
 local internal_id = 0
+local pool = {}
 
 -- login server disallow multi login, so login_handler never be reentry
 -- call by login server
@@ -20,8 +21,13 @@ function server.login_handler(uid, secret)
 	local id = internal_id	-- don't use internal_id directly
 	local username = msgserver.username(uid, id, servername)
 
-	-- you can use a pool to alloc new agent
-	local agent = skynet.newservice "msgagent"
+	local agent
+	if #pool == 0 then
+		agent = skynet.newservice "msgagent"
+	else
+		agent = table.remove(pool, 1)
+	end
+
 	local u = {
 		username = username,
 		agent = agent,
@@ -49,6 +55,9 @@ function server.logout_handler(uid, subid)
 		assert(u.username == username)
 		msgserver.logout(u.username)
 		users[uid] = nil
+		if username_map[u.username] and username_map[u.username].agent then
+			table.insert (pool, username_map[u.username].agent)
+		end
 		username_map[u.username] = nil
 		skynet.call(loginservice, "lua", "logout",uid, subid)
 	end
@@ -83,6 +92,11 @@ end
 function server.register_handler(name)
 	servername = name
 	skynet.call(loginservice, "lua", "register_gate", servername, skynet.self())
+
+	local n = 10
+	for i = 1, n do
+		table.insert (pool, skynet.newservice "msgagent")
+	end
 end
 
 msgserver.start(server)
