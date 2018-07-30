@@ -2,7 +2,11 @@ local msgserver = require "snax.msgserver"
 local crypt = require "skynet.crypt"
 local skynet = require "skynet"
 
-local loginservice = tonumber(...)
+local start_arge = {...}
+local loginservice = tonumber(start_arge[1])
+local platform = tonumber(start_arge[2])
+local server_id = tonumber(start_arge[3])
+print('Cat:gated.lua[8] loginservice, platform', loginservice, platform)
 
 local server = {}
 local users = {}
@@ -36,7 +40,7 @@ function server.login_handler(uid, secret)
 	}
 
 	-- trash subid (no used)
-	skynet.call(agent, "lua", "login", uid, id, secret)
+	skynet.call(agent, "lua", "login", uid, id, secret, platform, server_id)
 
 	users[uid] = u
 	username_map[username] = u

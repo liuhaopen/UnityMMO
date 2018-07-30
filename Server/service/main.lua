@@ -10,7 +10,9 @@ skynet.start(function()
 	skynet.newservice("debug_console",8000)
 	
 	local loginserver = skynet.newservice("logind")
-	local gate = skynet.newservice("gated", loginserver)
+	local platform_id = 1
+	local server_id = 1
+	local gate = skynet.newservice("gated", loginserver, platform_id, server_id)
 	skynet.call(gate, "lua", "open" , {
 		port = 8888,
 		maxclient = 512,
@@ -38,6 +40,6 @@ skynet.start(function()
 		password = "123456",
 		name = ".GameDBServer",
 	})
-	
+
 	skynet.exit()
 end)

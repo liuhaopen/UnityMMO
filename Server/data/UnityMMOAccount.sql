@@ -1,6 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.40, for Linux (x86_64)
+CREATE DATABASE  IF NOT EXISTS `UnityMMOAccount` /*!40100 DEFAULT CHARACTER SET utf8 */;
+USE `UnityMMOAccount`;
+-- MySQL dump 10.13  Distrib 5.6.17, for Win32 (x86)
 --
--- Host: localhost    Database: UnityMMOAccount
+-- Host: 192.168.5.142    Database: UnityMMOAccount
 -- ------------------------------------------------------
 -- Server version	5.6.40
 
@@ -38,4 +40,4 @@ CREATE TABLE `Account` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-07-27 15:20:18
+-- Dump completed on 2018-07-30 21:15:12

@@ -76,13 +76,22 @@ function CMD.delete( tablename, key, value )
 	return true
 end
 
+function CMD.query(command)
+	local result = db:query(command)
+	if result.errno then
+		skynet.error(result.err)
+		return false
+	end
+	return true, result
+end
+
 function CMD.update( tablename, key, value, row )
 	local t = {}
 	for k,v in pairs(row) do
 		if type(v) == "string" then
 			v = mysql.quote_sql_str(v)
 		end
-		table.insert(t, k.."-"..v)
+		table.insert(t, k.."="..v)
 	end
 	local setvalues = table.concat(t, ",")
 	local sql = string.format("update %s set %s where %s = '%s';", tablename, setvalues, key, value)

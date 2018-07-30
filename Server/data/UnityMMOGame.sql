@@ -1,6 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.40, for Linux (x86_64)
+CREATE DATABASE  IF NOT EXISTS `UnityMMOGame` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `UnityMMOGame`;
+-- MySQL dump 10.13  Distrib 5.6.17, for Win32 (x86)
 --
--- Host: localhost    Database: UnityMMOGame
+-- Host: 192.168.5.142    Database: UnityMMOGame
 -- ------------------------------------------------------
 -- Server version	5.6.40
 
@@ -32,15 +34,6 @@ CREATE TABLE `Account` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `Account`
---
-
-LOCK TABLES `Account` WRITE;
-/*!40000 ALTER TABLE `Account` DISABLE KEYS */;
-/*!40000 ALTER TABLE `Account` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `RoleBaseInfo`
 --
 
@@ -51,18 +44,10 @@ CREATE TABLE `RoleBaseInfo` (
   `role_id` bigint(20) NOT NULL,
   `name` varchar(18) NOT NULL,
   `career` tinyint(4) NOT NULL,
+  `level` smallint(5) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `RoleBaseInfo`
---
-
-LOCK TABLES `RoleBaseInfo` WRITE;
-/*!40000 ALTER TABLE `RoleBaseInfo` DISABLE KEYS */;
-/*!40000 ALTER TABLE `RoleBaseInfo` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -73,4 +58,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-07-28 21:09:29
+-- Dump completed on 2018-07-30 21:14:03

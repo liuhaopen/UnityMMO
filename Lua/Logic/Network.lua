@@ -126,7 +126,7 @@ function Network.OnMessageForGameServerHandshake(buffer)
         Event.Brocast(LoginConst.Event.LoginSucceed)
 
         local on_server_time_ack = function ( server_time_info )
-            print_net('Cat:Network.lua[118]', server_time_info.server_time)
+            print_net('Cat:Network.lua[118] server_time_info:', server_time_info.server_time)
             this.server_time = server_time_info.server_time
         end
         this.SendMessage("account_get_server_time", nil, on_server_time_ack)

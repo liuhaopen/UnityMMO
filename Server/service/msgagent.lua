@@ -16,13 +16,13 @@ local user_info
 local c2s_sproto
 local CMD = {}
 
-function CMD.login(source, uid, sid, secret)
+function CMD.login(source, uid, sid, secret, platform, server_id)
 	-- you may use secret to make a encrypted data stream
 	skynet.error(string.format("%s is login", uid))
 	gate = source
 	userid = uid
 	subid = sid
-	user_info = {user_id=uid}
+	user_info = {user_id=uid, platform=platform, server_id=server_id}
 	-- you may load user data from database
 
 	c2s_sproto = sprotoloader.load(1)
@@ -72,6 +72,7 @@ skynet.start(function()
 						skynet.ignoreret()
 					end
 				else
+					--Cat_Todo : 分发给地图等另外的service
 					skynet.error("msgagent handle proto failed! cannot find handler:", proto_info.name)
 					skynet.ignoreret()
 				end
