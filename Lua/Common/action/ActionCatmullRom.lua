@@ -23,7 +23,7 @@ local DeepCopy = function ( object )
 end
 
 cc.PointArray = cc.PointArray or BaseClass()
-function cc.PointArray:__init( points )
+function cc.PointArray:Constructor( points )
     self._controlPoints = points
 end
 function cc.PointArray:clone()
@@ -136,7 +136,7 @@ end
 
 --points是控制点列表，tension是松紧程度。tension==1时，样条线是分段直线。tension<1向外松弛弯曲，tension>1向内缩紧弯曲。By动作是以当前坐标为新坐标原点
 cc.CardinalSplineTo = cc.CardinalSplineTo or BaseClass(cc.ActionInterval)
-function cc.CardinalSplineTo:__init(duration, points, tension)
+function cc.CardinalSplineTo:Constructor(duration, points, tension)
     self:initWithDuration(duration, points, tension)
 end
 

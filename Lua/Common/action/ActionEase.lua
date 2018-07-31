@@ -6,7 +6,7 @@ M_PI = math.pi
 
 cc.ActionEase = cc.ActionEase or BaseClass(cc.ActionInterval)
 
-function cc.ActionEase:__init(action)
+function cc.ActionEase:Constructor(action)
     -- self:initWithAction(action)
 end
 
@@ -52,7 +52,7 @@ end
 ------------------------EaseRateAction start---------------------------
 cc.EaseRateAction = cc.EaseRateAction or BaseClass(cc.ActionEase)
 
-function cc.EaseRateAction:__init(action, rate)
+function cc.EaseRateAction:Constructor(action, rate)
     self:initWithAction(action, rate)
 end
 
@@ -72,7 +72,7 @@ end
 --in
 cc.EaseIn = cc.EaseIn or BaseClass(cc.EaseRateAction)
 
-function cc.EaseIn:__init(action, rate)
+function cc.EaseIn:Constructor(action, rate)
     self:initWithAction(action, rate)
 end
 
@@ -91,7 +91,7 @@ end
 --out
 cc.EaseOut = cc.EaseOut or BaseClass(cc.EaseRateAction)
 
-function cc.EaseOut:__init(action, rate)
+function cc.EaseOut:Constructor(action, rate)
     self:initWithAction(action, rate)
 end
 
@@ -110,7 +110,7 @@ end
 --in out
 cc.EaseInOut = cc.EaseInOut or BaseClass(cc.EaseRateAction)
 
-function cc.EaseInOut:__init(action, rate)
+function cc.EaseInOut:Constructor(action, rate)
     self:initWithAction(action, rate)
 end
 
@@ -131,7 +131,7 @@ end
 --in
 cc.EaseExponentialIn = cc.EaseExponentialIn or BaseClass(cc.ActionEase)
 
-function cc.EaseExponentialIn:__init(action)
+function cc.EaseExponentialIn:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -150,7 +150,7 @@ end
 --out
 cc.EaseExponentialOut = cc.EaseExponentialOut or BaseClass(cc.ActionEase)
 
-function cc.EaseExponentialOut:__init(action)
+function cc.EaseExponentialOut:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -169,7 +169,7 @@ end
 --in out
 cc.EaseExponentialInOut = cc.EaseExponentialInOut or BaseClass(cc.ActionEase)
 
-function cc.EaseExponentialInOut:__init(action)
+function cc.EaseExponentialInOut:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -190,7 +190,7 @@ end
 --in
 cc.EaseSineIn = cc.EaseSineIn or BaseClass(cc.ActionEase)
 
-function cc.EaseSineIn:__init(action)
+function cc.EaseSineIn:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -209,7 +209,7 @@ end
 --out
 cc.EaseSineOut = cc.EaseSineOut or BaseClass(cc.ActionEase)
 
-function cc.EaseSineOut:__init(action)
+function cc.EaseSineOut:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -228,7 +228,7 @@ end
 --in out
 cc.EaseSineInOut = cc.EaseSineInOut or BaseClass(cc.ActionEase)
 
-function cc.EaseSineInOut:__init(action)
+function cc.EaseSineInOut:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -248,7 +248,7 @@ end
 ------------------------EaseElastic start---------------------------
 cc.EaseElastic = cc.EaseElastic or BaseClass(cc.ActionEase)
 
-function cc.EaseElastic:__init(action, period)
+function cc.EaseElastic:Constructor(action, period)
     --抽象类所以不能直接New本类
     -- self:initWithAction(action, period)
 end
@@ -270,7 +270,7 @@ end
 
 cc.EaseElasticOut = cc.EaseElasticOut or BaseClass(cc.EaseElastic)
 
-function cc.EaseElasticOut:__init(action, period)
+function cc.EaseElasticOut:Constructor(action, period)
     self:initWithAction(action, period)
 end
 
@@ -288,7 +288,7 @@ end
 
 cc.EaseElasticIn = cc.EaseElasticIn or BaseClass(cc.EaseElastic)
 
-function cc.EaseElasticIn:__init(action, period)
+function cc.EaseElasticIn:Constructor(action, period)
     self:initWithAction(action, period)
 end
 
@@ -306,7 +306,7 @@ end
 
 cc.EaseElasticInOut = cc.EaseElasticInOut or BaseClass(cc.EaseElastic)
 
-function cc.EaseElasticInOut:__init(action, period)
+function cc.EaseElasticInOut:Constructor(action, period)
     self:initWithAction(action, period)
 end
 
@@ -328,7 +328,7 @@ end
 --in
 cc.EaseBounceIn = cc.EaseBounceIn or BaseClass(cc.ActionEase)
 
-function cc.EaseBounceIn:__init(action)
+function cc.EaseBounceIn:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -347,7 +347,7 @@ end
 --out
 cc.EaseBounceOut = cc.EaseBounceOut or BaseClass(cc.ActionEase)
 
-function cc.EaseBounceOut:__init(action)
+function cc.EaseBounceOut:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -366,7 +366,7 @@ end
 --in out
 cc.EaseBounceInOut = cc.EaseBounceInOut or BaseClass(cc.ActionEase)
 
-function cc.EaseBounceInOut:__init(action)
+function cc.EaseBounceInOut:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -387,7 +387,7 @@ end
 --in
 cc.EaseBackIn = cc.EaseBackIn or BaseClass(cc.ActionEase)
 
-function cc.EaseBackIn:__init(action)
+function cc.EaseBackIn:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -406,7 +406,7 @@ end
 --out
 cc.EaseBackOut = cc.EaseBackOut or BaseClass(cc.ActionEase)
 
-function cc.EaseBackOut:__init(action)
+function cc.EaseBackOut:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -425,7 +425,7 @@ end
 --in out
 cc.EaseBackInOut = cc.EaseBackInOut or BaseClass(cc.ActionEase)
 
-function cc.EaseBackInOut:__init(action)
+function cc.EaseBackInOut:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -446,7 +446,7 @@ end
 --in
 cc.EaseQuadraticActionIn = cc.EaseQuadraticActionIn or BaseClass(cc.ActionEase)
 
-function cc.EaseQuadraticActionIn:__init(action)
+function cc.EaseQuadraticActionIn:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -465,7 +465,7 @@ end
 --out
 cc.EaseQuadraticActionOut = cc.EaseQuadraticActionOut or BaseClass(cc.ActionEase)
 
-function cc.EaseQuadraticActionOut:__init(action)
+function cc.EaseQuadraticActionOut:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -484,7 +484,7 @@ end
 --in out
 cc.EaseQuadraticActionInOut = cc.EaseQuadraticActionInOut or BaseClass(cc.ActionEase)
 
-function cc.EaseQuadraticActionInOut:__init(action)
+function cc.EaseQuadraticActionInOut:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -505,7 +505,7 @@ end
 --in
 cc.EaseQuarticActionIn = cc.EaseQuarticActionIn or BaseClass(cc.ActionEase)
 
-function cc.EaseQuarticActionIn:__init(action)
+function cc.EaseQuarticActionIn:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -524,7 +524,7 @@ end
 --out
 cc.EaseQuarticActionOut = cc.EaseQuarticActionOut or BaseClass(cc.ActionEase)
 
-function cc.EaseQuarticActionOut:__init(action)
+function cc.EaseQuarticActionOut:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -543,7 +543,7 @@ end
 --in out
 cc.EaseQuarticActionInOut = cc.EaseQuarticActionInOut or BaseClass(cc.ActionEase)
 
-function cc.EaseQuarticActionInOut:__init(action)
+function cc.EaseQuarticActionInOut:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -564,7 +564,7 @@ end
 --in
 cc.EaseQuinticActionIn = cc.EaseQuinticActionIn or BaseClass(cc.ActionEase)
 
-function cc.EaseQuinticActionIn:__init(action)
+function cc.EaseQuinticActionIn:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -583,7 +583,7 @@ end
 --out
 cc.EaseQuinticActionOut = cc.EaseQuinticActionOut or BaseClass(cc.ActionEase)
 
-function cc.EaseQuinticActionOut:__init(action)
+function cc.EaseQuinticActionOut:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -602,7 +602,7 @@ end
 --in out
 cc.EaseQuinticActionInOut = cc.EaseQuinticActionInOut or BaseClass(cc.ActionEase)
 
-function cc.EaseQuinticActionInOut:__init(action)
+function cc.EaseQuinticActionInOut:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -623,7 +623,7 @@ end
 --in
 cc.EaseCircleActionIn = cc.EaseCircleActionIn or BaseClass(cc.ActionEase)
 
-function cc.EaseCircleActionIn:__init(action)
+function cc.EaseCircleActionIn:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -642,7 +642,7 @@ end
 --out
 cc.EaseCircleActionOut = cc.EaseCircleActionOut or BaseClass(cc.ActionEase)
 
-function cc.EaseCircleActionOut:__init(action)
+function cc.EaseCircleActionOut:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -661,7 +661,7 @@ end
 --in out
 cc.EaseCircleActionInOut = cc.EaseCircleActionInOut or BaseClass(cc.ActionEase)
 
-function cc.EaseCircleActionInOut:__init(action)
+function cc.EaseCircleActionInOut:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -682,7 +682,7 @@ end
 --in
 cc.EaseCubicActionIn = cc.EaseCubicActionIn or BaseClass(cc.ActionEase)
 
-function cc.EaseCubicActionIn:__init(action)
+function cc.EaseCubicActionIn:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -701,7 +701,7 @@ end
 --out
 cc.EaseCubicActionOut = cc.EaseCubicActionOut or BaseClass(cc.ActionEase)
 
-function cc.EaseCubicActionOut:__init(action)
+function cc.EaseCubicActionOut:Constructor(action)
     self:initWithAction(action)
 end
 
@@ -720,7 +720,7 @@ end
 --in out
 cc.EaseCubicActionInOut = cc.EaseCubicActionInOut or BaseClass(cc.ActionEase)
 
-function cc.EaseCubicActionInOut:__init(action)
+function cc.EaseCubicActionInOut:Constructor(action)
     self:initWithAction(action)
 end
 

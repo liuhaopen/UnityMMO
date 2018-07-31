@@ -12,6 +12,8 @@ function cc.ActionManager:init()
 	self._currentTargetSalvaged = false
 
 	self:registerCocosActions()
+
+	UpdateBeat:Add(cc.ActionManager.Update, self)	
 end
 
 function cc.ActionManager:getInstance()
@@ -71,7 +73,8 @@ function cc.ActionManager:getNumberOfRunningActionsInTarget(target)
     return 0
 end
 
-function cc.ActionManager:Update(dt)
+function cc.ActionManager:Update()
+	local deltaTime = Time.deltaTime
 	for k,v in pairs(self._targets) do
 		--unity组件释放了的话会变成null
 		if tostring(k) == "null" then
@@ -92,7 +95,7 @@ function cc.ActionManager:Update(dt)
 				        end
 
 		                self._currentTarget.currentActionSalvaged = false
-		                self._currentTarget.currentAction:step(dt)
+		                self._currentTarget.currentAction:step(deltaTime)
 
 		                if self._currentTarget.currentActionSalvaged then
 		                    self._currentTarget.currentAction = nil

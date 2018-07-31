@@ -12,11 +12,13 @@ NetMgr = LuaHelper.GetNetManager()
 WWW = UnityEngine.WWW
 GameObject = UnityEngine.GameObject
 
--- local old_assert = assert
--- assert = function ( statement, comment )
--- 	print('Cat:define.lua[38]', statement)
--- 	if not statement then
--- 		Util.LogError(comment.." in "..debug.traceback())
--- 	end
--- 	old_assert(statement, comment)
--- end
+require "Common/BaseClass"
+require("action/ActionTweenFunction")
+require("action/Action")
+require("action/ActionInterval")
+require("action/ActionEase")
+require("action/ActionInstant")
+require("action/ActionManager")
+require("action/ActionExtend")
+require("action/ActionCatmullRom")
+require("action/ActionNodeWrapper")

@@ -2,7 +2,7 @@ cc = cc or {}
 
 cc.Action = cc.Action or BaseClass()
 
-function cc.Action:__init()
+function cc.Action:Constructor()
 	self._originalTarget = nil
 	self._target = nil
 	self._tag = cc.Action.INVALID_TAG
@@ -79,7 +79,7 @@ end
 
 cc.FiniteTimeAction = cc.FiniteTimeAction or BaseClass(cc.Action)
 
-function cc.FiniteTimeAction:__init()
+function cc.FiniteTimeAction:Constructor()
     self._duration = 0
     self._classType = "FiniteTimeAction"
 end

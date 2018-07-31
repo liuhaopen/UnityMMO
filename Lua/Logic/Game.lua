@@ -1,9 +1,9 @@
 require "Common/ui/UIHelper"
-require "Common/BaseClass"
 require "Common/functions"
 require "UI/Common/UIManager"
 require "UI/Common/UIWidgetPool"
 require "UI/Common/UIComponent"
+require("UI/Common/Message")
 
 --管理器--
 Game = {}
@@ -25,14 +25,16 @@ function Game.OnInitOK()
 end
 
 function Game.InitUI()
-    UIMgr:Init({"UICanvas/Normal","UICanvas/MainUI"}, "Normal")
+    local msg_panel = GameObject.Find("UICanvas/Dynamic/MessagePanel")
+    assert(msg_panel, "cannot fine message panel!")
+    Message:Init(msg_panel.transform)
+
+    UIMgr:Init({"UICanvas/Normal","UICanvas/MainUI", "UICanvas/Dynamic"}, "Normal")
     --增加默认的UI组件
     UIMgr:AddBeforeShowFunc(function ( view )
         if view.UIConfig.canvas_name == "Normal" then
-            
         end
     end)
-
     local pre_load_prefab = {
         "Assets/AssetBundleRes/ui/prefab/common/Background.prefab",
     }

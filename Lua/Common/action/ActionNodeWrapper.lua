@@ -4,11 +4,13 @@ cc.Wrapper = cc.Wrapper or {}
 --大部分action都会调用节点的某些接口，比如MoveTo就是每帧调用节点改变坐标的接口，而不同引擎其接口都不一样的，所以为了action们能够通用就增加了此中间层，为你的引擎实现本文件的所有接口就可以了。
 
 function cc.Wrapper.SetLocalPosition( node, x, y, z )
-	SetLocalPosition(node, x, y, z)
+	if node ~= nil then
+		node:SetLocalPosXYZ(x, y, z)
+	end
 end
 
 function cc.Wrapper.GetLocalPosition( node )
-	return GetLocalPosition(node)
+	return node:GetLocalPosXYZ()
 end
 
 function cc.Wrapper.SetVisible( node, is_show )

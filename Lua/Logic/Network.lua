@@ -1,4 +1,3 @@
-require "Common/define"
 require "Common/protocal"
 require "Common/functions"
 Event = require 'events'
