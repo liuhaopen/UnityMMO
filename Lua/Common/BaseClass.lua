@@ -6,42 +6,36 @@ function BaseClass(super)
 	class_type.DefaultVar=false
 	class_type.super=super
 	class_type.New=function(...) 
-			local obj=nil
-			do
-				local create
-				create = function(c,...)
-					if c.super then
-						create(c.super,...)
-					end
-					if c.DefaultVar then
-						obj = c.DefaultVar(obj)
-					else
-						obj = {}
-					end
-					if c.Constructor then
-						c.Constructor(obj,...)
-					end
-				end
- 
-				create(class_type,...)
+		local obj=nil
+		local create
+		create = function(c, obj, ...)
+			if c.super then
+				create(c.super, obj, ...)
 			end
-			setmetatable(obj,{ __index=_class[class_type] })
-			return obj
+			if c.Constructor then
+				c.Constructor(obj,...)
+			end
 		end
-	local vtbl={}
-	_class[class_type]=vtbl
- 
-	setmetatable(class_type,{__newindex=
-		function(t,k,v)
-			vtbl[k]=v
+		if class_type.DefaultVar then
+			obj = class_type.DefaultVar(obj)
+		else
+			obj = {}
 		end
-	})
- 
+		local function meta_func(t, k)
+			local ret = class_type[k]
+			obj[k] = ret
+			return ret
+		end
+		setmetatable(obj, { __index=meta_func })
+		create(class_type, obj, ...)
+		return obj
+	end
+
 	if super then
-		setmetatable(vtbl,{__index=
+		setmetatable(class_type,{__index=
 			function(t,k)
-				local ret=_class[super][k]
-				vtbl[k]=ret
+				local ret=super[k]
+				class_type[k]=ret
 				return ret
 			end
 		})

@@ -22,8 +22,11 @@ function TestController.Update(  )
 	-- print('Cat:TestController.lua[Update]')
 	if UnityEngine.Input.GetKeyUp(UnityEngine.KeyCode.F) then 
 		print('Cat:TestController.lua[25] f up')
-		local testView = require("UI/Test/TestView")
-		UIMgr:Show(testView.New())
+		-- local testView = require("UI/Test/TestView")
+		-- UIMgr:Show(testView.New())
+		this.test_flag = this.test_flag or 0
+		this.test_flag = this.test_flag + 1
+		Message:Show("hahahaha : "..this.test_flag)
 	else
 	end
 end
