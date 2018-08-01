@@ -29,6 +29,7 @@ function server.auth_handler(token)
 			assert(password == user_info.password, "Invalid password")
 		elseif server == "DevelopServer" then
 			--开发服的话直接创建帐号
+			--Cat_Todo : 不要明文保存密码,随便加个固定前后缀再md5都好过明文啦
 			skynet.call(accountServer, "lua", "insert", "Account", {account_id=user, password=password})
 		end
 	else

@@ -26,7 +26,6 @@ function LoginController.InitEvents(  )
 
     local LoginSucceed = function (  )
         print('Cat:LoginController.lua[LoginSucceed]')
-
         --登录成功后就请求角色列表
         local on_ack = function ( ack_data )
             print("Cat:LoginController [start:27] ack_data:", ack_data)
@@ -48,15 +47,18 @@ function LoginController.InitEvents(  )
     end
     Event.AddListener(LoginConst.Event.LoginSucceed, LoginSucceed); 
 
-
     local SelectRoleEnterGame = function ( role_id )
         local on_ack = function ( ack_data )
             print("Cat:LoginController [start:54] ack_data:", ack_data)
             PrintTable(ack_data)
             print("Cat:LoginController [end]")
             if ack_data.result == 1 then
-                --进入游戏成功,开始请求场景信息
+                --进入游戏成功,先关掉所有界面
                 UIMgr:CloseAllView()
+                --显示加载界面
+
+                --请求角色信息和场景信息
+                this.ReqMainRole()
             else
                 --进入游戏失败
             end
@@ -64,6 +66,22 @@ function LoginController.InitEvents(  )
         Network.SendMessage("account_select_role_enter_game", {role_id = role_id}, on_ack)
     end
     Event.AddListener(LoginConst.Event.SelectRoleEnterGame, SelectRoleEnterGame); 
+end
+
+function LoginController.ReqMainRole(  )
+    local on_ack_main_role = function ( ack_role_data )
+        --请求场景信息
+        local on_ack_scene_info = function ( ack_scene_data )
+            --加载场景
+
+            --关闭加载界面
+            
+        end
+        Network.SendMessage("scene_get_cur_scene_info", nil, on_ack_scene_info)
+        --加载其它系统的controller
+        
+    end
+    Network.SendMessage("scene_get_main_role_info", nil, on_ack)
 end
 
 function LoginController.StartLogin(login_info)
