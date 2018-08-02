@@ -9,10 +9,9 @@ StreamingAssets/
 StreamingAssetsAndroid/
 .svn/
 Server/lsocket/
-Assets/UIEditor/
 Server/skynet/
 App/
-
+Assets/UIEditor/Res/Preview/
 # Visual Studio cache directory
 .vs/
 
@@ -45,3 +44,4 @@ sysinfo.txt
 *.sublime-project
 *.sublime-workspace
 UnityMMO.VC.db
+Assets/UIEditor/Res/Preview.meta
