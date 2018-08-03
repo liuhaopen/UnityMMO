@@ -3,9 +3,11 @@
 
 # 使用方法
 前端:下载下来后整个目录就是Unity的项目目录,用Unity打开,运行main.unity场景即可进入游戏的登录界面
-后端:安装虚拟机,我使用的是CentOS7,然后设置整个项目目录为虚拟机的共享目录,cd到Server目录,先编译skynet:  
-[skynet主页](https://github.com/liuhaopen/LuaMetaExtracter/blob/master/LuaMetaExtracter/main.cpp "skynet主页")  
-然后运行:./run.sh跑起服务端  
+后端:
+)安装虚拟机,我使用的是CentOS7,然后设置整个项目目录为虚拟机的共享目录,cd到Server目录,先编译skynet:  
+[skynet主页](https://github.com/cloudwu/skynet "skynet主页")  
+)在虚拟机安装mysql并导入Server/data/里的两个数据库文件
+)运行:./run.sh跑起服务端  
 
 # 已完成
 )前端用Luaframework的网络接口,后端用skynet的loginserver通过登录验证  
