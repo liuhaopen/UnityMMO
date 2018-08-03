@@ -2,11 +2,10 @@
 做游戏几年了,很多东西不好在工作项目上尝试(比如ECS),所以就有了本项目,我打算利用业余时间从头制作一个3D-MMO游戏,很多功能虽然都接触过,但我想换个做法(不然就不好玩了),反正没人逼着上线.框架上前端使用unity的Luaframework.后端用Skynet  
 
 # 使用方法
-前端:下载下来后整个目录就是Unity的项目目录,用Unity打开,运行main.unity场景即可进入游戏的登录界面
-后端:
-)安装虚拟机,我使用的是CentOS7,然后设置整个项目目录为虚拟机的共享目录,cd到Server目录,先编译skynet:  
-[skynet主页](https://github.com/cloudwu/skynet "skynet主页")  
-)在虚拟机安装mysql并导入Server/data/里的两个数据库文件
+前端:下载下来后整个目录就是Unity的项目目录,用Unity打开,运行main.unity场景即可进入游戏的登录界面  
+后端:  
+)安装虚拟机,我使用的是CentOS7,然后设置整个项目目录为虚拟机的共享目录,cd到Server目录,先编译skynet:[skynet主页](https://github.com/cloudwu/skynet "skynet主页")  
+)在虚拟机安装mysql并导入Server/data/里的两个数据库文件  
 )运行:./run.sh跑起服务端  
 
 # 已完成
@@ -21,7 +20,7 @@
 
 # Todo
 前端:  
-)想办法使用Lua接入Unity2018的新版ECS系统
+)想办法使用Lua接入Unity2018的新版ECS系统  
 )人物场景漫游(50%)  
 )基于组件的UI框架(70%)  
 )主界面：移动摇杆，操作按钮  
