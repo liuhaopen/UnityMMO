@@ -216,7 +216,7 @@ namespace LuaFramework {
         private static string relative_Path = null;
 
         public static string GetRelativePath() {
-            if (!AppConst.UpdateMode)
+            if (!AppConst.UpdateMode && !AppConst.DebugMode)
             {
                 if (relative_Path == null)
                 {

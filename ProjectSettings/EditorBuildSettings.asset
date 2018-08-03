@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/LuaFramework/Scenes/main.unity
+    guid: 75eee5e7009aba84192cfcdff8590f2a
   m_configObjects: {}

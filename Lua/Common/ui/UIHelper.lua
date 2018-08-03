@@ -5,6 +5,8 @@ local LuaClickListener = LuaClickListener
 local LuaDragListener = LuaDragListener
 local WordManager = WordManager
 
+--最终还是决定用个叫UI的变量包着
+local UI = {}
 --下列接口会尝试多种设置的，如果你已经知道你的节点是什么类型的就别用下列接口了
 function SetVisible( obj, is_show )
 	if not obj then return end
@@ -80,6 +82,7 @@ G_ComponentMapForGetChildren = {
 	img = "Image", txt = "Text", tog = "Toggle",
 }
 function GetChildren( self, parent, names )
+	--Cat_Todo : cache find method
 	for i=1,#names do
 		local name_parts = Split(names[i], ":")
 		local full_name = name_parts[1]
