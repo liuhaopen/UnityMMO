@@ -12,7 +12,7 @@ end
 
 function LoginSelectRoleView:OnLoad(  )
 	local names = {"item_con","start_game:obj",}
-	GetChildren(self, self.transform, names)
+	UI.GetChildren(self, self.transform, names)
 
 	self:AddEvents()
 	self:UpdateView()
@@ -44,7 +44,7 @@ function LoginSelectRoleView:UpdateView()
 		}
 		UIMgr:Show(item)
 		local names = {"head:img","name:txt","click_bg:obj",}
-		GetChildren(item, item.transform, names)
+		UI.GetChildren(item, item.transform, names)
 		UIHelper.SetParent(item.transform, self.item_con)
 		item.name_txt.text = v.name
 		local on_click = function (  )

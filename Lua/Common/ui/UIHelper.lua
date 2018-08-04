@@ -6,9 +6,9 @@ local LuaDragListener = LuaDragListener
 local WordManager = WordManager
 
 --最终还是决定用个叫UI的变量包着
-local UI = {}
+UI = {}
 --下列接口会尝试多种设置的，如果你已经知道你的节点是什么类型的就别用下列接口了
-function SetVisible( obj, is_show )
+function UI.SetVisible( obj, is_show )
 	if not obj then return end
 	if obj.SetActive then
 		obj:SetActive(is_show)
@@ -18,16 +18,16 @@ function SetVisible( obj, is_show )
 end
 --上列接口会尝试多种设置的，如果你已经知道你的节点是什么类型的就别用上列接口了
 
-UpdateVisibleJuryTable = {}
-UpdateVisibleJuryTableForValue = {}
-function InitForUIHelper(  )
+UI.UpdateVisibleJuryTable = {}
+UI.UpdateVisibleJuryTableForValue = {}
+function UI.InitForUIHelper(  )
 	print('Cat:UIHelper.lua[InitForUIHelper]')
 	setmetatable(UpdateVisibleJuryTable, {__mode = "k"})   
 	setmetatable(UpdateVisibleJuryTableForValue, {__mode = "v"})   
 end
 
 --你显示隐藏前都要给我一个理由,我会综合考虑,只会在没有任何理由隐藏时我才会真正地显示出来
-function UpdateVisibleByJury( obj, is_show, reason )
+function UI.UpdateVisibleByJury( obj, is_show, reason )
 	if not obj then return end
 	local tab_str = tostring(obj)
 	UpdateVisibleJuryTableForValue[tab_str] = obj
@@ -39,7 +39,7 @@ function UpdateVisibleByJury( obj, is_show, reason )
 			if UpdateVisibleJuryTableForValue[tab_str] then
 				--没人投票的话就说明可以显示啦
 				-- print('Cat:UIHelper.lua[obj] jury:IsNoneVote()', jury:IsNoneVote())
-				SetVisible(UpdateVisibleJuryTableForValue[tab_str], jury:IsNoneVote())
+				UI.SetVisible(UpdateVisibleJuryTableForValue[tab_str], jury:IsNoneVote())
 			end
 		end
 		jury:CallBackOnResultChange(on_jury_change)
@@ -54,7 +54,7 @@ function UpdateVisibleByJury( obj, is_show, reason )
 end
 
 --滚动到目标点，让其尽量显示在滚动容器的中间
-function ScrollToCenter( Content, item, item_width, size )--最后一个是容器 size 的大小
+function UI.ScrollToCenter( Content, item, item_width, size )--最后一个是容器 size 的大小
 	-- print("huangcong: [318] Content, item, item_width: ",Content, item, item_width,size)
 	--画布 item item_width scrollSize
 	item_width = item_width or 80--默认把节点的高度当作100
@@ -78,10 +78,10 @@ end
 local find = string.find
 local gsub = string.gsub
 local Split = Split
-G_ComponentMapForGetChildren = {
+UI.G_ComponentMapForGetChildren = {
 	img = "Image", txt = "Text", tog = "Toggle",
 }
-function GetChildren( self, parent, names )
+function UI.GetChildren( self, parent, names )
 	--Cat_Todo : cache find method
 	for i=1,#names do
 		local name_parts = Split(names[i], ":")
@@ -98,8 +98,8 @@ function GetChildren( self, parent, names )
 		for j=2,#name_parts do
 			if name_parts[j] == "obj" then
 				self[short_name.."_"..name_parts[j]] = self[short_name].gameObject
-			elseif G_ComponentMapForGetChildren[name_parts[j]] then
-				self[short_name.."_"..name_parts[j]] = self[short_name]:GetComponent(G_ComponentMapForGetChildren[name_parts[j]])
+			elseif UI.G_ComponentMapForGetChildren[name_parts[j]] then
+				self[short_name.."_"..name_parts[j]] = self[short_name]:GetComponent(UI.G_ComponentMapForGetChildren[name_parts[j]])
 			else
 				assert(false, "cannot find this component short name : "..name_parts[j])
 			end

@@ -12,7 +12,7 @@ end
 
 function LoginCreateRoleView:OnLoad(  )
 	local names = {"career_2","career_1","return_btn","role_name","random","create_role","cur_career",}
-	GetChildren(self, self.transform, names)
+	UI.GetChildren(self, self.transform, names)
 
 	self.return_btn = self.return_btn.gameObject
 	self.career_1_btn = self.career_1.gameObject

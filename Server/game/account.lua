@@ -86,8 +86,16 @@ function account.account_get_server_time( user_info, req_data )
 end
 
 function account.account_select_role_enter_game( user_info, req_data )
-	--角色进入游戏场景
-	return {result = 1}
+	if req_data and req_data.role_id then
+		user_info.cur_role_id = req_data.role_id
+		--角色进入游戏场景
+		local world = skynet.uniqueservice ("world")
+		local result_code = skynet.call(world, "lua", "role_enter_game", user_info, req_data.role_id)
+		return {result = result_code}
+	else
+		skynet.error("wrong req_data for proto account_select_role_enter_game")
+		return {result = 2}
+	end
 end
 
 return account

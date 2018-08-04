@@ -101,6 +101,8 @@ function server.register_handler(name)
 	for i = 1, n do
 		table.insert (pool, skynet.newservice "msgagent")
 	end
+	--加载游戏场景配置信息和场景管理器
+	skynet.uniqueservice("world")
 end
 
 msgserver.start(server)

@@ -21,7 +21,6 @@ skynet.start(function()
 
 	--Cat_Todo : 登录服务器需要配置到其它物理机器上
 	local dbserver = skynet.newservice("dbserver")
-	print('Cat:main.lua[17] dbserver', dbserver)
 	skynet.call(dbserver, "lua", "open", {
 		host = "127.0.0.1",
 		port = 3306,

@@ -22,7 +22,7 @@ function TestHideOtherView:OnLoad(  )
 	print('Cat:TestHideOtherView.lua[OnLoad]')
 	print('Cat:TestHideOtherView.lua[15] self.close', self.close)
 	local names = {"close",}
-	GetChildren(self, self.gameObject, names)
+	UI.GetChildren(self, self.gameObject, names)
 
 	self.close_btn = self.close:GetComponent("Button")
 

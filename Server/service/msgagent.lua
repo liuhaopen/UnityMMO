@@ -61,19 +61,27 @@ skynet.start(function()
 			if proto_info and proto_info.name then
 				local content = c2s_sproto:request_decode(tag, msg)
 				-- print_r(content)
-				local f = netdispatcher:dispatch(tag)
-				if f and f[proto_info.name] then
-					local response = f[proto_info.name](user_info, content)
-					local ok, response_str = pcall(c2s_sproto.response_encode, c2s_sproto, tag, response)
-					if ok then
-						skynet.ret(response_str)
-					else
-						skynet.error("msgagent handle proto failed!", proto_info.name)
-						skynet.ignoreret()
-					end
+				local response
+				if tag >= 100 and tag <= 199 then
+					local world = skynet.uniqueservice("world")
+					--先取到角色所在场景的服务id
+					local scene_service = skynet.call(world, "lua", "get_role_scene_service", user_info.cur_role_id)
+					assert(scene_service, "cannot find scene service!"..tag)
+					print('Cat:msgagent.lua[70] user_info, content', user_info, content)
+					response = skynet.call(scene_service, "lua", proto_info.name, user_info, content)
 				else
-					--Cat_Todo : 分发给地图等另外的service
-					skynet.error("msgagent handle proto failed! cannot find handler:", proto_info.name)
+					local f = netdispatcher:dispatch(tag)
+					if f and f[proto_info.name] then
+						response = f[proto_info.name](user_info, content)
+					else
+						skynet.error("msgagent handle proto failed! cannot find handler:", proto_info.name)
+					end
+				end
+				local ok, response_str = pcall(c2s_sproto.response_encode, c2s_sproto, tag, response)
+				if ok then
+					skynet.ret(response_str)
+				else
+					skynet.error("msgagent handle proto failed!", proto_info.name)
 					skynet.ignoreret()
 				end
 			else

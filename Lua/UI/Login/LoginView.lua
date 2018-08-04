@@ -7,7 +7,7 @@ local LoginView = {
 
 function LoginView:OnLoad(  )
 	local names = {"login", "account",}
-	GetChildren(self, self.transform, names)
+	UI.GetChildren(self, self.transform, names)
 	self.login_btn = self.login.gameObject
     self.account_txt = self.account:GetComponent("InputField")
 	self:AddEvents()

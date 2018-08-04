@@ -16,7 +16,7 @@ end
 function TestView:OnLoad(  )
 	print('Cat:TestView.lua[OnLoad]')
 	local names = {"close","open_hide_other_view","open_normal_view","title","ScrollView/Viewport/item_con",}
-	GetChildren(self, self.transform, names)
+	UI.GetChildren(self, self.transform, names)
 
 	self.close_btn = self.close.gameObject
 	self.open_hide_other_view_btn = self.open_hide_other_view.gameObject
@@ -64,7 +64,7 @@ function TestView:UpdateView( )
 		}
 		UIMgr:Show(item)
 		local names = {"title","icon",}
-		GetChildren(item, item.transform, names)
+		UI.GetChildren(item, item.transform, names)
 		print('Cat:TestView.lua[68] self.item_con', self.item_con)
 		UIHelper.SetParent(item.transform, self.item_con)
 		item.title_txt = item.title:GetComponent("Text")

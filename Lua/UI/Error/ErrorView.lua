@@ -6,7 +6,7 @@ function ErrorView:Open(  )
 		self.view = view
 
 		local names = {"login", "account",}
-		GetChildren(self, view, names)
+		UI.GetChildren(self, view, names)
 		self.login_btn = self.login:GetComponent("Button")
         self.account_txt = self.account:GetComponent("InputField")
         print('Cat:ErrorView.lua[16] self.account_txt', self.account_txt)
