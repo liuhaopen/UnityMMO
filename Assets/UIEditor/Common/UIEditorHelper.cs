@@ -146,6 +146,7 @@ namespace U3DExtends
             RectTransform rectTrans = decorate.transform as RectTransform;
             rectTrans.SetAsFirstSibling();
             rectTrans.localPosition = Vector3.zero;
+            rectTrans.localScale = Vector3.one;
             Decorate decor = rectTrans.GetComponent<Decorate>();
             return decor;
         }
@@ -290,10 +291,12 @@ namespace U3DExtends
                         GameObject new_view = PrefabUtility.InstantiateAttachedAsset(prefab) as GameObject;
                         new_view.transform.SetParent(layoutInfo.transform);
                         new_view.transform.localPosition = real_layout.localPosition;
+                        new_view.transform.localScale = Vector3.one;
                         new_view.name = just_name;
                         PrefabUtility.DisconnectPrefabInstance(new_view);//链接中的话删里面的子节点时会报警告，所以还是一直失联的好，保存时直接覆盖pref
                         Undo.DestroyObjectImmediate(real_layout.gameObject);
                         Debug.Log("Reload Layout Succeed!");
+                        layoutInfo.ApplyConfig(select_path);
                     }
                 }
             }
@@ -304,7 +307,7 @@ namespace U3DExtends
         public static void LoadLayoutByPath(string select_path)
         {
             GameObject new_layout = CreatNewLayout(false);
-            new_layout.transform.localPosition = new Vector3(new_layout.transform.localPosition.x, new_layout.transform.localPosition.y, 0);
+            //new_layout.transform.localPosition = new Vector3(new_layout.transform.localPosition.x, new_layout.transform.localPosition.y, 0);
             LayoutInfo layoutInfo = new_layout.GetComponent<LayoutInfo>();
             layoutInfo.LayoutPath = select_path;
 
@@ -314,6 +317,7 @@ namespace U3DExtends
             GameObject new_view = PrefabUtility.InstantiateAttachedAsset(prefab) as GameObject;
             new_view.transform.SetParent(new_layout.transform);
             new_view.transform.localPosition = Vector3.zero;
+            new_view.transform.localScale = Vector3.one;
             string just_name = System.IO.Path.GetFileNameWithoutExtension(select_path);
             new_view.name = just_name;
             new_layout.gameObject.name = just_name + "_Canvas";
@@ -430,6 +434,11 @@ namespace U3DExtends
         //加载外部资源为Sprite
         public static Sprite LoadSpriteInLocal(string file_path)
         {
+            if (!File.Exists(file_path))
+            {
+                Debug.Log("LoadSpriteInLocal() cannot find sprite file : " + file_path);
+                return null;
+            }
             Texture2D texture = LoadTextureInLocal(file_path);
             //创建Sprite
             Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), UIEditorHelper.HalfVec);

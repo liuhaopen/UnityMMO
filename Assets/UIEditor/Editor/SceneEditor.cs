@@ -140,6 +140,7 @@ public class SceneEditor {
         if (handleObj.GetType() == typeof(Sprite) || handleObj.GetType() == typeof(Texture2D))
         {
             GameObject box = new GameObject("Image_1", typeof(Image));
+            Undo.RegisterCreatedObjectUndo(box, "create image on drag pic");
             box.transform.position = mouse_abs_pos;
             Transform container_trans = UIEditorHelper.GetContainerUnderMouse(mouse_abs_pos, box);
             if (container_trans == null)
@@ -150,6 +151,7 @@ public class SceneEditor {
             box.transform.SetParent(container_trans);
             mouse_abs_pos.z = container_trans.position.z;
             box.transform.position = mouse_abs_pos;
+            box.transform.localScale = Vector3.one;
             Selection.activeGameObject = box;
                 
             //生成唯一的节点名字
@@ -169,6 +171,7 @@ public class SceneEditor {
             GameObject new_obj = GameObject.Instantiate(handleObj) as GameObject;
             if (new_obj != null)
             {
+                Undo.RegisterCreatedObjectUndo(new_obj, "create obj on drag prefab");
                 new_obj.transform.position = mouse_abs_pos;
                 GameObject ignore_obj = new_obj;
                
@@ -180,6 +183,7 @@ public class SceneEditor {
                 new_obj.transform.SetParent(container_trans);
                 mouse_abs_pos.z = container_trans.position.z;
                 new_obj.transform.position = mouse_abs_pos;
+                new_obj.transform.localScale = Vector3.one;
                 Selection.activeGameObject = new_obj;
                 //生成唯一的节点名字
                 new_obj.name = CommonHelper.GenerateUniqueName(container_trans.gameObject, handleObj.name);

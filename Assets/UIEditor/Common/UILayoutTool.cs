@@ -9,7 +9,7 @@ namespace U3DExtends
 {
     public class UILayoutTool : MonoBehaviour
     {
-        [MenuItem("UIEditor/排序所有界面 " + Configure.ShortCut.SortAllCanvas)]
+        //[MenuItem("UIEditor/排序所有界面 " + Configure.ShortCut.SortAllCanvas)]
         public static void ResortAllLayout()
         {
             GameObject testUI = GameObject.Find(Configure.UITestNodeName);
@@ -19,13 +19,15 @@ namespace U3DExtends
                 if (layouts.Length > 0)
                 {
                     SceneView.lastActiveSceneView.MoveToView(layouts[0].transform);
+                    
                     Vector2 startPos = new Vector2(layouts[0].transform.position.x - 1280 * 1, layouts[0].transform.position.y + 720 * 1);
                     int index = 0;
                     foreach (var item in layouts)
                     {
                         int row = index / 5;
                         int col = index % 5;
-                        Vector2 pos = new Vector2(1280 * col + startPos.x, -720 * row + startPos.y);
+                        RectTransform rectTrans = item.transform as RectTransform;
+                        Vector2 pos = new Vector2((rectTrans.sizeDelta.x*rectTrans.localScale.x) * col + startPos.x, (-rectTrans.sizeDelta.y * rectTrans.localScale.y) * row + startPos.y);
                         item.transform.position = pos;
                         index++;
                     }

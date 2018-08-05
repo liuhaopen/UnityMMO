@@ -104,6 +104,20 @@ namespace U3DExtends
             return false;
         }
 
+        public Decorate GetDecorateChild(string picPath)
+        {
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                Transform child = transform.GetChild(i);
+                Decorate decor = child.GetComponent<Decorate>();
+                if (decor != null && decor.SprPath == picPath)
+                {
+                    return decor;
+                }
+            }
+            return null;
+        }
+
         //打开界面时,从项目临时文件夹找到对应界面的参照图配置,然后生成参照图
         public void ApplyConfig(string view_path)
         {
@@ -144,8 +158,16 @@ namespace U3DExtends
                 string[] cfgs = decorate_cfgs[i].Split('#');
                 if (cfgs.Length == 3)
                 {
-                    Decorate decor = UIEditorHelper.CreateEmptyDecorate(transform);
-                    decor.SprPath = cfgs[0];
+                    string decorate_img_path = cfgs[0];
+                    if (!File.Exists(decorate_img_path))
+                    {
+                        Debug.Log("LayoutInfo:ApplyConfig() cannot find decorate img file : " + decorate_img_path);
+                        continue;
+                    }
+                    Decorate decor = GetDecorateChild(decorate_img_path);
+                    if (decor == null)
+                        decor = UIEditorHelper.CreateEmptyDecorate(transform);
+                    decor.SprPath = decorate_img_path;
                     RectTransform rectTrans = decor.GetComponent<RectTransform>();
                     if (rectTrans != null)
                     {
