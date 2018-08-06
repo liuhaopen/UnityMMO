@@ -68,7 +68,9 @@ namespace U3DExtends
             if (!testUI)
             {
                 testUI = new GameObject(Configure.UITestNodeName, typeof(RectTransform));
-                testUI.GetComponent<Transform>().localPosition = new Vector3(10000, 10000, 10000);
+                RectTransform trans = testUI.GetComponent<RectTransform>();
+                trans.position = Configure.UITestNodePos;
+                trans.sizeDelta = Configure.UITestNodeSize;
             }
             return testUI;
         }
@@ -108,6 +110,8 @@ namespace U3DExtends
             GameObject layout_prefab = UnityEditor.AssetDatabase.LoadAssetAtPath(file_path, typeof(UnityEngine.Object)) as GameObject;
             GameObject layout = GameObject.Instantiate(layout_prefab) as GameObject;
             layout.transform.SetParent(testUI.transform);
+            Vector3 last_pos = layout.transform.localPosition;
+            layout.transform.localPosition = new Vector3(last_pos.x, last_pos.y, 0);
             if (!isNeedLayout)
             {
                 Transform child = layout.transform.GetChild(0);
@@ -186,6 +190,7 @@ namespace U3DExtends
                         //Undo.DestroyObjectImmediate(item.gameObject);
                         GameObject.DestroyImmediate(item.gameObject);
                     }
+                    GameObject.DestroyImmediate(test);
                 }
             }
         }
@@ -307,7 +312,7 @@ namespace U3DExtends
         public static void LoadLayoutByPath(string select_path)
         {
             GameObject new_layout = CreatNewLayout(false);
-            //new_layout.transform.localPosition = new Vector3(new_layout.transform.localPosition.x, new_layout.transform.localPosition.y, 0);
+            new_layout.transform.localPosition = new Vector3(new_layout.transform.localPosition.x, new_layout.transform.localPosition.y, 0);
             LayoutInfo layoutInfo = new_layout.GetComponent<LayoutInfo>();
             layoutInfo.LayoutPath = select_path;
 

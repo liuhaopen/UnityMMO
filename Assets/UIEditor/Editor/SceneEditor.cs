@@ -198,6 +198,9 @@ public class SceneEditor {
         GameObject layout = UIEditorHelper.CreatNewLayout();
         pos.z = 0;
         layout.transform.position = pos;
+        Vector3 last_pos = layout.transform.localPosition;
+        last_pos.z = 0;
+        layout.transform.localPosition = last_pos;
         return UIEditorHelper.GetRootLayout(layout.transform);
     }
 

@@ -53,6 +53,8 @@ namespace U3DExtends
 
         //所有编辑界面的Canvas都放到此节点上，可定制节点名
         public static string UITestNodeName = "UITestNode";
+        public static Vector3 UITestNodePos = new Vector3(0, 0, 500);
+        public static Vector2 UITestNodeSize = new Vector2(4, 4);
         public const string ResPath = "UIEditor/Res/";
         public const string ResAssetsPath = "Assets/" + ResPath;
 

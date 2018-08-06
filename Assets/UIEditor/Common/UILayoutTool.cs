@@ -20,15 +20,16 @@ namespace U3DExtends
                 {
                     SceneView.lastActiveSceneView.MoveToView(layouts[0].transform);
                     
-                    Vector2 startPos = new Vector2(layouts[0].transform.position.x - 1280 * 1, layouts[0].transform.position.y + 720 * 1);
+                    RectTransform first_trans = layouts[0].transform as RectTransform;
+                    Vector2 startPos = new Vector2(first_trans.sizeDelta.x*first_trans.localScale.x/2, -first_trans.sizeDelta.y * first_trans.localScale.y/2);
                     int index = 0;
                     foreach (var item in layouts)
                     {
                         int row = index / 5;
                         int col = index % 5;
                         RectTransform rectTrans = item.transform as RectTransform;
-                        Vector2 pos = new Vector2((rectTrans.sizeDelta.x*rectTrans.localScale.x) * col + startPos.x, (-rectTrans.sizeDelta.y * rectTrans.localScale.y) * row + startPos.y);
-                        item.transform.position = pos;
+                        Vector3 pos = new Vector3((rectTrans.sizeDelta.x*rectTrans.localScale.x) * col + startPos.x, (-rectTrans.sizeDelta.y * rectTrans.localScale.y) * row + startPos.y, 0);
+                        item.transform.localPosition = pos;
                         index++;
                     }
                 }
