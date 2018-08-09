@@ -13,7 +13,9 @@ function cc.ActionManager:init()
 
 	self:registerCocosActions()
 
-	UpdateBeat:Add(cc.ActionManager.Update, self)	
+	-- UpdateBeat:Add(cc.ActionManager.Update, self)	
+	self.__update_handle = BindCallback(self, cc.ActionManager.Update)
+	UpdateManager:GetInstance():AddUpdate(self.__update_handle)	
 end
 
 function cc.ActionManager:getInstance()

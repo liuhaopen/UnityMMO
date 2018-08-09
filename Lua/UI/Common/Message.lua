@@ -9,7 +9,9 @@ function Message:Init( container, max_at_the_same_time )
 	self.max_at_the_same_time = max_at_the_same_time
 	self.last_pop_msg_time = 0
 
-	UpdateBeat:Add(Message.Update, self)	
+	-- UpdateBeat:Add(Message.Update, self)	
+	self.__update_handle = BindCallback(self, Message.Update)
+	UpdateManager:GetInstance():AddUpdate(self.__update_handle)	
 end
 
 function Message:Show( ... )

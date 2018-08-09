@@ -7,7 +7,7 @@ function UIMgr:Init( canvas_names, default_canvas_name )
 		local canvas = GameObject.Find(v)
 		local key = v
 		--把/符号前的字符串去掉
-		if key and find(key,"/") then
+		if key and string.find(key,"/") then
 			key = string.gsub(key,".+/","")
 		end
 		self.canvas[key] = canvas.transform
@@ -77,7 +77,7 @@ function UIMgr:Show( view )
 	local on_load_succeed = function ( gameObject )
 		view.gameObject = gameObject
 		view.transform = gameObject.transform
-		view.gameObject.layer = LayerMask.NameToLayer("UI")
+		view.gameObject.layer = CS.UnityEngine.LayerMask.NameToLayer("UI")
 		local canvas_name = view.UIConfig.canvas_name
 		if canvas_name and self.canvas[canvas_name] then
 			view.transform:SetParent(self.canvas[canvas_name])
@@ -96,7 +96,7 @@ function UIMgr:Show( view )
 			view:OnLoad()
 		end
 	end
-	PanelMgr:CreatePanel(view.UIConfig.prefab_path, on_load_succeed, view.UIConfig.is_sync_load)
+	ResMgr:LoadPrefabGameObject(view.UIConfig.prefab_path, on_load_succeed)
 end
 
 --Cat_Todo : 如果传入的view不是最前的界面要怎么处理?应该在组件里处理就行了:UIComponent.HideOtherView

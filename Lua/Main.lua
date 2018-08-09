@@ -1,14 +1,12 @@
-require "Common/define"
-require("util.util")
+require("Logic.Game")
 
 --主入口函数。从这里开始lua逻辑
 function Main()					
 	print("logic start")	 
-	-- UpdateBeat:Add(Update, self)	
-end
+	UpdateManager:GetInstance():Startup()
+	-- TimerManager:GetInstance():Startup()
 
-function Update( )
-	-- print("sssssss", Time.deltaTime, Time.unscaledDeltaTime)
+	Game.OnInitOK()
 end
 
 --场景切换通知
@@ -18,4 +16,7 @@ function OnLevelWasLoaded(level)
 end
 
 function OnApplicationQuit()
+	UpdateManager:GetInstance():Dispose()
+	-- TimerManager:GetInstance():Startup()
+
 end

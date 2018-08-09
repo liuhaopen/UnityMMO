@@ -45,3 +45,4 @@ sysinfo.txt
 *.sublime-workspace
 UnityMMO.VC.db
 Assets/UIEditor/Res/Preview.meta
+.vscode/settings.json

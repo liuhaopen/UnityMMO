@@ -9,8 +9,8 @@ function UIWidgetPool:Init( hide_container )
 end
 
 function UIWidgetPool:RegisterWidgets( names, call_back )
-	print('Cat:UIWidgetPool.lua[16] AppConst.IsUseLocalResource', AppConst.IsUseLocalResource)
-	if AppConst.IsUseLocalResource then
+	print('Cat:UIWidgetPool.lua[16] AppConfig.DebugMode', AppConfig.DebugMode)
+	if AppConfig.DebugMode then
 		for i,v in ipairs(names) do
 			local prefab = ResMgr:LoadPrefabInLocalByFile(v)
 			--只保留文件名作key值

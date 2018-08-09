@@ -25,8 +25,8 @@ function Network.Start()
 end
 
 function Network.InitSpb()
-    print_net('Cat:Network.lua[27] AppConst.SprotoBinMode', AppConst.SprotoBinMode)
-    if AppConst.SprotoBinMode then
+    print_net('Cat:Network.lua[27] AppConfig.SprotoBinMode', AppConfig.SprotoBinMode)
+    if AppConfig.SprotoBinMode then
         local c2s_path = Util.DataPath.."sproto_c2s.spb";
         local c2s_file = io.open(c2s_path,'r')
         print_net('Cat:Network.lua[29] c2s_file', c2s_file, c2s_path)
@@ -38,7 +38,7 @@ function Network.InitSpb()
         end
         this.sproto_c2s = sproto.new(c2s_data)
     else
-        local fileNames = Util.GetFileNamesInFolder(AppConst.LuaAssetsDir.."/Common/Proto")
+        local fileNames = Util.GetFileNamesInFolder(AppConfig.LuaAssetsDir.."/Common/Proto")
         fileNames = Split(fileNames, ",")
         local proto_c2s_tb = {}
         for k,v in pairs(fileNames or {}) do

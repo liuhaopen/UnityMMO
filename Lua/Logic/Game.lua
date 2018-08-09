@@ -1,5 +1,4 @@
-require "Common/ui/UIHelper"
-require "Common/functions"
+require "UI/Common/UIHelper"
 require "UI/Common/UIManager"
 require "UI/Common/UIWidgetPool"
 require "UI/Common/UIComponent"
@@ -21,11 +20,10 @@ function Game.OnInitOK()
     Game.InitUI()
     Game.InitControllers()
 
-    logWarn('LuaFramework InitOK--->>>');
 end
 
 function Game.InitUI()
-    local msg_panel = GameObject.Find("UICanvas/Dynamic/MessagePanel")
+    local msg_panel = CS.UnityEngine.GameObject.Find("UICanvas/Dynamic/MessagePanel")
     assert(msg_panel, "cannot fine message panel!")
     Message:Init(msg_panel.transform)
 
@@ -46,8 +44,7 @@ function Game.InitControllers()
     local ctrl_paths = {
         -- "UI/Error/ErrorController", 
         "UI/Test/TestController",
-        "UI/Login/LoginController", 
-
+        -- "UI/Login/LoginController", 
     }
     for i,v in ipairs(ctrl_paths) do
         local ctrl = require(v)
@@ -62,31 +59,6 @@ function Game.InitControllers()
     end
 end
 
---测试lpeg--
-function Game.test_lpeg_func()
-	logWarn("test_lpeg_func-------->>");
-	-- matches a word followed by end-of-string
-	local p = lpeg.R"az"^1 * -1
-
-	print(p:match("hello"))        --> 6
-	print(lpeg.match(p, "hello"))  --> 6
-	print(p:match("1 hello"))      --> nil
-end
-
---测试cjson--
-function Game.test_cjson_func()
-    local path = Util.DataPath.."lua/3rd/cjson/example2.json";
-    local text = util.file_load(path);
-    LuaHelper.OnJsonCallFunc(text, this.OnJsonCall);
-end
-
---cjson callback--
-function Game.OnJsonCall(data)
-    local obj = json.decode(data);
-    print(obj['menu']['id']);
-end
-
 --销毁--
 function Game.OnDestroy()
-	--logWarn('OnDestroy--->>>');
 end
