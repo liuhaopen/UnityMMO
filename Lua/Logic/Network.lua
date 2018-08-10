@@ -1,9 +1,9 @@
-require "Common/protocal"
-require "Common/functions"
-Event = require 'events'
-local sproto = require "sproto"
-local sprotoparser = require "sprotoparser"
-local crypt = require "crypt"
+-- require "Common/protocal"
+-- require "Common/functions"
+-- Event = require 'events'
+-- local sproto = require "Common.util.sproto"
+-- local sprotoparser = require "Common.util.sprotoparser"
+-- local crypt = require "crypt"
 -- local print_r = require "print_r"
 
 Network = {};
@@ -11,17 +11,17 @@ local this = Network;
 
 local print_net = function() end
 -- print_net = print --注释掉就不打印网络信息了
-
+print("load network lua file")
 function Network.Start() 
-    logWarn("Network.Start!!");
+    print("Network.Start!!");
     this.session = 0
     this.response_call_back = {}
 
-    this.InitSpb()
+    -- this.InitSpb()
 
-    Event.AddListener(Protocal.Connect, this.OnConnect)
-    Event.AddListener(Protocal.Message, this.OnMessage)
-    Event.AddListener(Protocal.Exception, this.OnException)
+    -- Event.AddListener(Protocal.Connect, this.OnConnect)
+    -- Event.AddListener(Protocal.Message, this.OnMessage)
+    -- Event.AddListener(Protocal.Exception, this.OnException)
 end
 
 function Network.InitSpb()
@@ -55,14 +55,14 @@ function Network.InitSpb()
 end
 
 --Socket消息--
-function Network.OnSocket(key, data)
-    Event.Brocast(tostring(key), data);
-end
+-- function Network.OnSocket(key, data)
+--     Event.Broadcast(tostring(key), data);
+-- end
 
 --当连接建立时--
-function Network.OnConnect() 
+function OnConnectServer() 
 
-    logWarn("Game Server connected!!");
+    print("Game Server connected!!");
 end
 
 --异常断线--
@@ -122,7 +122,7 @@ function Network.OnMessageForGameServerHandshake(buffer)
     local result = string.sub(code, 1, 3)
     print_net('Cat:Network.lua[handshake] result code', result, tonumber(result))
     if tonumber(result) == 200 then
-        Event.Brocast(LoginConst.Event.LoginSucceed)
+        Event.Broadcast(LoginConst.Event.LoginSucceed)
 
         local on_server_time_ack = function ( server_time_info )
             print_net('Cat:Network.lua[118] server_time_info:', server_time_info.server_time)
@@ -158,5 +158,5 @@ end
 function Network.Unload()
     Event.RemoveListener(Protocal.Message)
     Event.RemoveListener(Protocal.Exception)
-    logWarn('Unload Network...')
+    print('Unload Network...')
 end

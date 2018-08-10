@@ -19,7 +19,9 @@ function LoginController.InitEvents(  )
 	local StartLogin = function ( login_info )
         this.StartLogin(login_info)
 	end
-    Event.AddListener(LoginConst.Event.StartLogin, StartLogin); 
+    GlobalEventSystem:AddListener(LoginConst.Event.StartLogin, StartLogin); 
+
+    do return end
     Event.AddListener(Protocal.Connect, LoginController.Connect); 
     Event.AddListener(Protocal.Disconnect, LoginController.Disconnect); 
     Event.AddListener(Protocal.MessageLine, LoginController.MessageLine)
@@ -102,7 +104,7 @@ function LoginController.StartLogin(login_info)
 
     --向登录服务器请求连接,一连接上就等待收到其发过来的随机值了(challenge)
     this.login_state = LoginConst.Status.WaitForLoginServerChanllenge
-	NetMgr:SendConnect("192.168.5.142", 8001, NetPackageType.BaseLine)
+	NetMgr:SendConnect("192.168.5.142", 8001, CS.XLuaFramework.NetPackageType.BaseLine)
 end
 
 function LoginController.MessageLine(buffer) 
@@ -153,7 +155,7 @@ function LoginController.MessageLine(buffer)
             print('Cat:LoginController.lua[login ok] subid', this.subid)
 
             --正式向游戏服务器请求连接
-            NetMgr:SendConnect("192.168.5.142", 8888, NetPackageType.BaseHead)
+            NetMgr:SendConnect("192.168.5.142", 8888, CS.XLuaFramework.NetPackageType.BaseHead)
             this.login_state = LoginConst.Status.WaitForGameServerConnect
         else
             this.error_map = this.error_map or {
@@ -188,7 +190,7 @@ function LoginController.Disconnect()
 	print('Cat:LoginController.lua[Disconnect]')
     --Cat_Todo : 重新向游戏服务器请求连接
 	-- if this.login_state == 4 then
- --    	NetMgr:SendConnect("192.168.5.142", 8888, NetPackageType.BaseHead)
+ --    	NetMgr:SendConnect("192.168.5.142", 8888, CS.XLuaFramework.NetPackageType.BaseHead)
  --    end
 end
 

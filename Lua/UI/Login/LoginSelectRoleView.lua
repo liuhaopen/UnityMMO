@@ -23,7 +23,7 @@ function LoginSelectRoleView:AddEvents(  )
 	local on_click = function ( click_btn )
 		print('Cat:LoginSelectRoleView.lua[29] click_btn', click_btn)
         if click_btn == self.start_game_obj then
-            Event.Brocast(LoginConst.Event.SelectRoleEnterGame, self.cur_select_role_id)
+            Event.Broadcast(LoginConst.Event.SelectRoleEnterGame, self.cur_select_role_id)
 		end
 	end
 	UIHelper.BindClickEvent(self.start_game_obj, on_click)

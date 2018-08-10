@@ -49,6 +49,15 @@ public class XLuaManager : MonoBehaviour
 
             LoadScript("Main");
             SafeDoString("Main()");
+
+            if (NetworkManager.GetInstance())
+            {
+                SafeDoString("require 'Logic.Network'; Network.Start() ");
+                NetworkManager.GetInstance().OnConnectCallBack = luaEnv.Global.Get<Action>("OnConnectServer");
+                Debug.Log("luamanager onConnectCallBack : "+(NetworkManager.GetInstance().OnConnectCallBack!=null).ToString());
+            }
+            else
+                Debug.LogError("must init network manager before init xlua manager!");
         }
         else
         {

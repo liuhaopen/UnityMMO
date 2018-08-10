@@ -2,6 +2,7 @@
 Util = CS.XLuaFramework.Util
 AppConfig = CS.XLuaFramework.AppConfig
 ResMgr = CS.XLuaFramework.ResourceManager.GetInstance()
+NetMgr = CS.XLuaFramework.NetworkManager.GetInstance()
 UIHelper = CS.XLuaFramework.UIHelper
 GameObject = CS.UnityEngine.GameObject
 
@@ -27,6 +28,8 @@ list = require("Common.util.list")
 require("Common.util.event")
 require("Common.util.Timer")
 UpdateManager = require "Common.UpdateManager"
+local Messenger = require "Common.Messenger"
+GlobalEventSystem = Messenger.New()
 
 require("Common.action.ActionTweenFunction")
 require("Common.action.Action")

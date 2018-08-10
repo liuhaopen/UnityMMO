@@ -22,6 +22,7 @@ namespace XLuaFramework {
             }
 
             this.gameObject.AddComponent<ResourceManager>();
+            this.gameObject.AddComponent<NetworkManager>();
             this.gameObject.AddComponent<XLuaManager>();
         }
     }

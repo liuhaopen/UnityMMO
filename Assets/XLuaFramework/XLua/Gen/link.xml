@@ -4,10 +4,11 @@
 
 	<assembly fullname="Assembly-CSharp">
 	    <type fullname="XLuaFramework.AppConfig" preserve="all"/>
+		<type fullname="XLuaFramework.NetworkManager" preserve="all"/>
 		<type fullname="XLuaFramework.ResourceManager" preserve="all"/>
+		<type fullname="XLuaManager" preserve="all"/>
 		<type fullname="XLuaFramework.UIHelper" preserve="all"/>
 		<type fullname="XLuaFramework.Util" preserve="all"/>
-		<type fullname="XLuaManager" preserve="all"/>
 		
 	</assembly>
 
