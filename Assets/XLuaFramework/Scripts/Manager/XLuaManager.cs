@@ -35,12 +35,21 @@ public class XLuaManager : MonoBehaviour
         return luaEnv;
     }
 
+    private void InitExternal()
+    {
+        luaEnv.AddBuildin("sproto.core", XLua.LuaDLL.Lua.LoadSproto);
+        luaEnv.AddBuildin("lpeg", XLua.LuaDLL.Lua.LoadLpeg);
+        
+    }
+
     void InitLuaEnv()
     {
         luaEnv = new LuaEnv();
         if (luaEnv != null)
         {
             luaEnv.AddLoader(CustomLoader);
+
+            InitExternal();
             SafeDoString("require('BaseRequire')");
 
             luaUpdate = luaEnv.Global.Get<Action<float, float>>("Update");
