@@ -82,15 +82,21 @@ else ()
 endif ()
 
 #begin lpeg
- set (LPEG_SRC lpeg/lpvm.c lpeg/lpcap.c lpeg/lptree.c lpeg/lpcode.c lpeg/lpprint.c)
- set_property(
-     SOURCE ${LPEG_SRC}
-     APPEND
-     PROPERTY COMPILE_DEFINITIONS
-     LUA_LIB
- )
- list(APPEND THIRDPART_INC lpeg)
- set (THIRDPART_SRC ${THIRDPART_SRC} ${LPEG_SRC})
+set ( LPEG_SRC
+    lpeg/lpcap.c
+    lpeg/lpcode.c
+    lpeg/lpprint.c
+    lpeg/lptree.c
+    lpeg/lpvm.c
+)
+set_property(
+    SOURCE ${LPEG_SRC}
+    APPEND
+    PROPERTY COMPILE_DEFINITIONS
+    LUA_LIB
+)
+list(APPEND THIRDPART_INC  lpeg)
+set (THIRDPART_SRC ${THIRDPART_SRC} ${LPEG_SRC})
 #end lpeg
 
 #begin lua-sproto
@@ -106,15 +112,15 @@ endif ()
 #end lua-sproto
 
 #begin lua-crypt
-# set (CRYPT_SRC lua-crypt.c lsha1.c)
-# set_property(
-#     SOURCE ${CRYPT_SRC}
-#     APPEND
-#     PROPERTY COMPILE_DEFINITIONS
-#     LUA_LIB
-# )
-# list(APPEND THIRDPART_INC ./)
-# set (THIRDPART_SRC ${THIRDPART_SRC} ${CRYPT_SRC})
+ set (CRYPT_SRC lua-crypt.c)
+ set_property(
+     SOURCE ${CRYPT_SRC}
+     APPEND
+     PROPERTY COMPILE_DEFINITIONS
+     LUA_LIB
+ )
+ list(APPEND THIRDPART_INC ./)
+ set (THIRDPART_SRC ${THIRDPART_SRC} ${CRYPT_SRC})
 #end lua-crypt
 
 set ( LUA_SOCKET

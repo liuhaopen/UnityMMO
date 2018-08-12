@@ -1,10 +1,4 @@
-HISTORY for LPeg 1.0
-
-* Changes from version 0.12 to 1.0
-  ---------------------------------
-  + group "names" can be any Lua value
-  + some bugs fixed
-  + other small improvements
+HISTORY for LPeg 0.12
 
 * Changes from version 0.11 to 0.12
   ---------------------------------

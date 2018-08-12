@@ -1,5 +1,5 @@
 /*
-** $Id: lpcap.h,v 1.3 2016/09/13 17:45:58 roberto Exp $
+** $Id: lpcap.h,v 1.1 2013/03/21 20:25:12 roberto Exp $
 */
 
 #if !defined(lpcap_h)
@@ -11,27 +11,14 @@
 
 /* kinds of captures */
 typedef enum CapKind {
-  Cclose,  /* not used in trees */
-  Cposition,
-  Cconst,  /* ktable[key] is Lua constant */
-  Cbackref,  /* ktable[key] is "name" of group to get capture */
-  Carg,  /* 'key' is arg's number */
-  Csimple,  /* next node is pattern */
-  Ctable,  /* next node is pattern */
-  Cfunction,  /* ktable[key] is function; next node is pattern */
-  Cquery,  /* ktable[key] is table; next node is pattern */
-  Cstring,  /* ktable[key] is string; next node is pattern */
-  Cnum,  /* numbered capture; 'key' is number of value to return */
-  Csubst,  /* substitution capture; next node is pattern */
-  Cfold,  /* ktable[key] is function; next node is pattern */
-  Cruntime,  /* not used in trees (is uses another type for tree) */
-  Cgroup  /* ktable[key] is group's "name" */
+  Cclose, Cposition, Cconst, Cbackref, Carg, Csimple, Ctable, Cfunction,
+  Cquery, Cstring, Cnum, Csubst, Cfold, Cruntime, Cgroup
 } CapKind;
 
 
 typedef struct Capture {
   const char *s;  /* subject position */
-  unsigned short idx;  /* extra info (group name, arg index, etc.) */
+  short idx;  /* extra info about capture (group name, arg index, etc.) */
   byte kind;  /* kind of capture */
   byte siz;  /* size of full capture + 1 (0 = not a full capture) */
 } Capture;

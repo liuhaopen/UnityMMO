@@ -1,0 +1,14 @@
+--- This file is part of LuaDist project
+
+name = "lpeg"
+version = "0.12"
+
+desc = "Parsing Expression Grammars For Lua"
+author = "Roberto Ierusalimschy"
+license = "MIT/X11"
+url = "http://www.inf.puc-rio.br/~roberto/lpeg/lpeg.html"
+maintainer = "Peter Kapec"
+
+depends = {
+	"lua >= 5.1"
+}

@@ -38,8 +38,8 @@ public class XLuaManager : MonoBehaviour
     private void InitExternal()
     {
         luaEnv.AddBuildin("sproto.core", XLua.LuaDLL.Lua.LoadSproto);
+        luaEnv.AddBuildin("crypt", XLua.LuaDLL.Lua.LoadCrypt);
         luaEnv.AddBuildin("lpeg", XLua.LuaDLL.Lua.LoadLpeg);
-        
     }
 
     void InitLuaEnv()

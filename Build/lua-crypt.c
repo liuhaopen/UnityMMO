@@ -1,13 +1,17 @@
 #define LUA_LIB
 
-#include <lua.h>
-#include <lauxlib.h>
-
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+#include "stdint.h"
 #include <time.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
+#ifdef __cplusplus
+}
+#endif
+
 
 #define SMALL_CHUNK 256
 
@@ -343,7 +347,7 @@ lrandomkey(lua_State *L) {
 	int i;
 	char x = 0;
 	for (i=0;i<8;i++) {
-		tmp[i] = random() & 0xff;
+		tmp[i] = rand() & 0xff;
 		x ^= tmp[i];
 	}
 	if (x==0) {
@@ -931,28 +935,28 @@ lb64decode(lua_State *L) {
 	return 1;
 }
 
-static int
-lxor_str(lua_State *L) {
-	size_t len1,len2;
-	const char *s1 = luaL_checklstring(L,1,&len1);
-	const char *s2 = luaL_checklstring(L,2,&len2);
-	if (len2 == 0) {
-		return luaL_error(L, "Can't xor empty string");
-	}
-	luaL_Buffer b;
-	char * buffer = luaL_buffinitsize(L, &b, len1);
-	int i;
-	for (i=0;i<len1;i++) {
-		buffer[i] = s1[i] ^ s2[i % len2];
-	}
-	luaL_addsize(&b, len1);
-	luaL_pushresult(&b);
-	return 1;
-}
+//static int
+//lxor_str(lua_State *L) {
+//	size_t len1,len2;
+//	const char *s1 = luaL_checklstring(L,1,&len1);
+//	const char *s2 = luaL_checklstring(L,2,&len2);
+//	if (len2 == 0) {
+//		return luaL_error(L, "Can't xor empty string");
+//	}
+//	luaL_Buffer b;
+//	char * buffer = luaL_buffinitsize(L, &b, len1);
+//	int i;
+//	for (i=0;i<len1;i++) {
+//		buffer[i] = s1[i] ^ s2[i % len2];
+//	}
+//	luaL_addsize(&b, len1);
+//	luaL_pushresult(&b);
+//	return 1;
+//}
 
 // defined in lsha1.c
-int lsha1(lua_State *L);
-int lhmac_sha1(lua_State *L);
+//int lsha1(lua_State *L);
+//int lhmac_sha1(lua_State *L);
 
 LUAMOD_API int
 luaopen_skynet_crypt(lua_State *L) {
@@ -961,7 +965,7 @@ luaopen_skynet_crypt(lua_State *L) {
 	if (!init) {
 		// Don't need call srandom more than once.
 		init = 1 ;
-		srandom((random() << 8) ^ (time(NULL) << 16) ^ getpid());
+		srand(time(NULL));
 	}
 	luaL_Reg l[] = {
 		{ "hashkey", lhashkey },
@@ -976,10 +980,10 @@ luaopen_skynet_crypt(lua_State *L) {
 		{ "dhsecret", ldhsecret },
 		{ "base64encode", lb64encode },
 		{ "base64decode", lb64decode },
-		{ "sha1", lsha1 },
-		{ "hmac_sha1", lhmac_sha1 },
-		{ "hmac_hash", lhmac_hash },
-		{ "xor_str", lxor_str },
+		//{ "sha1", lsha1 },
+		//{ "hmac_sha1", lhmac_sha1 },
+		//{ "hmac_hash", lhmac_hash },
+		//{ "xor_str", lxor_str },
 		{ NULL, NULL },
 	};
 	luaL_newlib(L,l);

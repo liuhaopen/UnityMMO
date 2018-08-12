@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<!-- $Id: re.html,v 1.24 2016/09/20 17:41:27 roberto Exp $ -->
+<!-- $Id: re.html,v 1.21 2013/03/28 20:43:30 roberto Exp $ -->
 
 <div id="container">
 	
@@ -296,7 +296,7 @@ it would be useful if each table had
 a <code>tag</code> field telling what non terminal
 that table represents.
 We can add such a tag using
-<a href="lpeg.html#cap-g">named group captures</a>:
+<a href="lpeg.html/#cap-g">named group captures</a>:
 </p>
 <pre class="example">
 x = re.compile[[
@@ -406,7 +406,7 @@ of patterns accepted by <code>re</code>.
 p = [=[
 
 pattern         &lt;- exp !.
-exp             &lt;- S (grammar / alternative)
+exp             &lt;- S (alternative / grammar)
 
 alternative     &lt;- seq ('/' S seq)*
 seq             &lt;- prefix*
@@ -450,7 +450,7 @@ print(re.match(p, p))   -- a self description must match itself
 <h2><a name="license">License</a></h2>
 
 <p>
-Copyright &copy; 2008-2015 Lua.org, PUC-Rio.
+Copyright &copy; 2008-2010 Lua.org, PUC-Rio.
 </p>
 <p>
 Permission is hereby granted, free of charge,
@@ -488,7 +488,7 @@ THE SOFTWARE.
 
 <div id="about">
 <p><small>
-$Id: re.html,v 1.24 2016/09/20 17:41:27 roberto Exp $
+$Id: re.html,v 1.21 2013/03/28 20:43:30 roberto Exp $
 </small></p>
 </div> <!-- id="about" -->
 

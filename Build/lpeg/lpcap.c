@@ -1,5 +1,5 @@
 /*
-** $Id: lpcap.c,v 1.6 2015/06/15 16:09:57 roberto Exp $
+** $Id: lpcap.c,v 1.4 2013/03/21 20:25:12 roberto Exp $
 ** Copyright 2007, Lua.org & PUC-Rio  (see 'lpeg.html' for license)
 */
 
@@ -126,7 +126,7 @@ static Capture *findback (CapState *cs, Capture *cap) {
       continue; /* opening an enclosing capture: skip and get previous */
     if (captype(cap) == Cgroup) {
       getfromktable(cs, cap->idx);  /* get group name */
-      if (lp_equal(L, -2, -1)) {  /* right group? */
+      if (lua_equal(L, -2, -1)) {  /* right group? */
         lua_pop(L, 2);  /* remove reference name and group name */
         return cap;
       }
@@ -462,7 +462,7 @@ static int pushcapture (CapState *cs) {
     case Carg: {
       int arg = (cs->cap++)->idx;
       if (arg + FIXEDARGS > cs->ptop)
-        return luaL_error(L, "reference to absent extra argument #%d", arg);
+        return luaL_error(L, "reference to absent argument #%d", arg);
       lua_pushvalue(L, arg + FIXEDARGS);
       return 1;
     }

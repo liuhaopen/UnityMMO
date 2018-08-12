@@ -11,6 +11,9 @@ namespace XLua.LuaDLL
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int luaopen_lpeg(System.IntPtr L);
 
+        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int luaopen_client_crypt(System.IntPtr L);
+
         [MonoPInvokeCallback(typeof(XLua.LuaDLL.lua_CSFunction))]
         public static int LoadSproto(System.IntPtr L)
         {
@@ -21,6 +24,12 @@ namespace XLua.LuaDLL
         public static int LoadLpeg(System.IntPtr L)
         {
             return luaopen_lpeg(L);
+        }
+
+        [MonoPInvokeCallback(typeof(XLua.LuaDLL.lua_CSFunction))]
+        public static int LoadCrypt(System.IntPtr L)
+        {
+            return luaopen_client_crypt(L);
         }
     }
 }

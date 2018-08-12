@@ -1,9 +1,9 @@
 -- require "Common/protocal"
 -- require "Common/functions"
 -- Event = require 'events'
+local crypt = require "crypt"
 local sproto = require "Common.util.sproto"
 local sprotoparser = require "Common.util.sprotoparser"
--- local crypt = require "crypt"
 -- local print_r = require "print_r"
 
 Network = {};
@@ -51,6 +51,7 @@ function Network.InitSpb()
         local sprotoparser = require "sprotoparser"
         local c2s_spb = sprotoparser.parse(table.concat(proto_c2s_tb))
         this.sproto_c2s = sproto.new(c2s_spb)
+        print("this.sproto_c2s : ", this.sproto_c2s)
     end
 end
 
