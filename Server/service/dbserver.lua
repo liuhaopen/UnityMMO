@@ -1,7 +1,7 @@
 local skynet = require "skynet"
 local mysql = require "skynet.db.mysql"
 require "skynet.manager"
-require "util.util"
+require "Common.Util.util"
 
 --[[
 用法:

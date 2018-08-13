@@ -5,7 +5,6 @@ function TestView:DefaultVar( )
 	UIConfig = {
 		prefab_path = "Assets/AssetBundleRes/ui/prefab/test/TestView.prefab",
 		canvas_name = "Normal",
-		is_sync_load = false,--是否同步加载prefab
 		bg_alpha = 0.5,--背景的透明度,create_bg为true时才有效
 		click_bg_to_close = true,--是否点击背景就关闭界面,create_bg为true时才有效
 		components = {UIComponent.PlayOpenCloseSound, UIComponent.DelayDestroy, UIComponent.Background},
@@ -56,20 +55,23 @@ end
 function TestView:UpdateView( )
 	self.title_txt.text = self.data or 1
 	for i=1,5 do
-		local item = {
-		UIConfig={
-			prefab_path = "Assets/AssetBundleRes/ui/prefab/test/TestItem.prefab",
-			is_sync_load=true,--同步加载
-			}
+		local item = 
+		{
+			UIConfig =
+			{
+				prefab_path = "Assets/AssetBundleRes/ui/prefab/test/TestItem.prefab",
+			},
+			OnLoad = function(item)
+				local names = {"title","icon",}
+				UI.GetChildren(item, item.transform, names)
+				print('Cat:TestView.lua[68] self.item_con', self.item_con)
+				UIHelper.SetParent(item.transform, self.item_con)
+				item.title_txt = item.title:GetComponent("Text")
+				item.icon_img = item.title:GetComponent("Image")
+				item.title_txt.text = "I am item No."..i
+			end
 		}
 		UIMgr:Show(item)
-		local names = {"title","icon",}
-		UI.GetChildren(item, item.transform, names)
-		print('Cat:TestView.lua[68] self.item_con', self.item_con)
-		UIHelper.SetParent(item.transform, self.item_con)
-		item.title_txt = item.title:GetComponent("Text")
-		item.icon_img = item.title:GetComponent("Image")
-		item.title_txt.text = "I am item No."..i
 	end
 end
 

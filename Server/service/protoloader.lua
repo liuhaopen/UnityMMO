@@ -4,11 +4,11 @@
 local skynet = require "skynet"
 local sprotoparser = require "sprotoparser"
 local sprotoloader = require "sprotoloader"
-require "util.util"
+require "Common.Util.util"
 
 skynet.start(function()
 	--从协议目录里读取所有的lua文件,拼接其字符串生成sproto协议对象
- 	local s = io.popen("ls ../Lua/Common/Proto")
+ 	local s = io.popen("ls ../Lua/Proto")
 	local fileNames = s:read("*all")
 	fileNames = Split(fileNames, "\n")
 	local proto_c2s_tb = {}

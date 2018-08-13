@@ -36,17 +36,17 @@ end
 
 -- Update回调
 local function UpdateHandle(self)
-	self.ui_message_center:Broadcast(UpdateMsgName)
+	self.ui_message_center:Fire(UpdateMsgName)
 end
 
 -- LateUpdate回调
 local function LateUpdateHandle(self)
-	self.ui_message_center:Broadcast(LateUpdateMsgName)
+	self.ui_message_center:Fire(LateUpdateMsgName)
 end
 
 -- FixedUpdate回调
 local function FixedUpdateHandle(self)
-	self.ui_message_center:Broadcast(FixedUpdateMsgName)
+	self.ui_message_center:Fire(FixedUpdateMsgName)
 end
 
 -- 启动

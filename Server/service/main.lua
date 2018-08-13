@@ -1,5 +1,5 @@
 local skynet = require "skynet"
-require "util.util"
+require "Common.Util.util"
 
 skynet.start(function()
 	skynet.error("Server start")

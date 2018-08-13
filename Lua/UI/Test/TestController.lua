@@ -1,31 +1,30 @@
 local TestController = {}
-local this = TestController
 
-function TestController.Init(  )
+function TestController:Init(  )
 	if RuntimePlatform then
 		if Application.platform == RuntimePlatform.Android then
-			this.enable = false
+			self.enable = false
 		elseif Application.platform == RuntimePlatform.IPhonePlayer then
-			this.enable = false
+			self.enable = false
 		else
-			this.enable = true
+			self.enable = true
 		end
 	end
-	this.enable = true
-	print('Cat:TestController.lua[14] this.enable', this.enable)
-	if this.enable then
-		UpdateManager:GetInstance():AddUpdate(TestController.Update, this)	
+	self.enable = true
+	print('Cat:TestController.lua[14] self.enable', self.enable)
+	if self.enable then
+		UpdateManager:GetInstance():AddUpdate(TestController.Update, self)	
 	end
 end
 
-function TestController.Update(  )
+function TestController:Update(  )
 	if CS.UnityEngine.Input.GetKeyUp(CS.UnityEngine.KeyCode.F) then 
 		print('Cat:TestController.lua[25] f up')
 		local testView = require("UI/Test/TestView")
 		UIMgr:Show(testView.New())
-		-- this.test_flag = this.test_flag or 0
-		-- this.test_flag = this.test_flag + 1
-		-- Message:Show("hahahaha : "..this.test_flag)
+		-- self.test_flag = self.test_flag or 0
+		-- self.test_flag = self.test_flag + 1
+		-- Message:Show("hahahaha : "..self.test_flag)
 	else
 	end
 end

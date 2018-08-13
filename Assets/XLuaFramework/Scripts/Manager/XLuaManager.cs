@@ -53,20 +53,22 @@ public class XLuaManager : MonoBehaviour
             SafeDoString("require('BaseRequire')");
 
             luaUpdate = luaEnv.Global.Get<Action<float, float>>("Update");
-            luaLateUpdate = luaEnv.Global.Get<Action>("LuaUpdate.LateUpdate");
-            luaFixedUpdate = luaEnv.Global.Get<Action<float>>("LuaUpdate.FixedUpdate");
-
-            LoadScript("Main");
-            SafeDoString("Main()");
+            luaLateUpdate = luaEnv.Global.Get<Action>("LateUpdate");
+            luaFixedUpdate = luaEnv.Global.Get<Action<float>>("FixedUpdate");
 
             if (NetworkManager.GetInstance())
             {
-                SafeDoString("require 'Logic.Network'; Network.Start() ");
-                NetworkManager.GetInstance().OnConnectCallBack = luaEnv.Global.Get<Action>("OnConnectServer");
-                Debug.Log("luamanager onConnectCallBack : "+(NetworkManager.GetInstance().OnConnectCallBack!=null).ToString());
+                SafeDoString("require 'Logic.NetDispatcher'");
+                NetworkManager.GetInstance().OnConnectCallBack = luaEnv.Global.Get<Action<byte[]>>("OnConnectServer");
+                NetworkManager.GetInstance().OnDisConnectCallBack = luaEnv.Global.Get<Action<byte[]>>("OnDisConnectFromServer");
+                NetworkManager.GetInstance().OnReceiveLineCallBack = luaEnv.Global.Get<Action<byte[]>>("OnReceiveLineFromServer");
+                NetworkManager.GetInstance().OnReceiveMsgCallBack = luaEnv.Global.Get<Action<byte[]>>("OnReceiveMsgFromServer");
             }
             else
                 Debug.LogError("must init network manager before init xlua manager!");
+
+            LoadScript("Main");
+            SafeDoString("Main()");
         }
         else
         {
@@ -189,6 +191,10 @@ public class XLuaManager : MonoBehaviour
         luaUpdate = null;
         luaLateUpdate = null;
         luaFixedUpdate = null;
+        NetworkManager.GetInstance().OnConnectCallBack = null;
+        NetworkManager.GetInstance().OnDisConnectCallBack = null;
+        NetworkManager.GetInstance().OnReceiveLineCallBack = null;
+        NetworkManager.GetInstance().OnReceiveMsgCallBack = null;
         if (luaEnv != null)
         {
             try
@@ -211,6 +217,7 @@ public static class LuaUpdaterExporter
     public static List<Type> CSharpCallLua = new List<Type>()
     {
         typeof(Action),
+        typeof(Action<byte[]>),
         typeof(Action<float>),
         typeof(Action<float, float>),
     };

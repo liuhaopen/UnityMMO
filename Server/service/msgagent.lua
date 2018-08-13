@@ -1,7 +1,7 @@
 local skynet = require "skynet"
-local sproto = require "sproto"
-local sprotoloader = require "sprotoloader"
-local print_r = require "print_r"
+local sproto = require "Common.Util.sproto"
+local sprotoloader = require "Common.Util.sprotoloader"
+local print_r = require "Common.Util.print_r"
 local netdispatcher = require "netdispatcher"
 
 skynet.register_protocol {

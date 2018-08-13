@@ -6,7 +6,8 @@
 -- local TestEventCenter = Messenger.New() --创建消息中心
 -- TestEventCenter:AddListener(Type, callback) --添加监听
 -- TestEventCenter:AddListener(Type, callback, ...) --添加监听
--- TestEventCenter:Broadcast(Type, ...) --发送消息
+-- TestEventCenter:Bind(Type, callback) --添加监听
+-- TestEventCenter:Fire(Type, ...) --发送消息
 -- TestEventCenter:RemoveListener(Type, callback, ...) --移除监听
 -- TestEventCenter:Cleanup() --清理消息中心
 -- 注意：
@@ -17,16 +18,16 @@
 
 local Messenger = BaseClass()
 
-local function Constructor(self)
+function Messenger:Constructor()
 	self.events = {}
 end
 
-local function __delete(self)
+function Messenger:__delete()
 	self.events = nil	
 	self.error_handle = nil
 end
 
-local function AddListener(self, e_type, e_listener, ...)
+function Messenger:AddListener(e_type, e_listener, ...)
 	local event = self.events[e_type]
 	if event == nil then
 		event = setmetatable({}, {__mode = "k"})
@@ -43,20 +44,41 @@ local function AddListener(self, e_type, e_listener, ...)
 	self.events[e_type] = event;
 end
 
-local function Broadcast(self, e_type, ...)
+function Messenger:Bind(e_type, call_back, obj)	
+	local handler = nil
+	if obj then
+		handler = BindCallback(obj, call_back)
+	else
+		handler = Bind(nil, call_back)
+	end
+    self:AddListener(e_type, handler)
+    return handler
+end
+
+function Messenger:Fire(e_type, ...)
 	local event = self.events[e_type]
+	if self == GlobalEventSystem then
+		print('Cat:Messenger.lua[60] event, e_type', event, e_type)
+	end
 	if event == nil then
 		return
 	end
-	
+	if self == GlobalEventSystem then
+		print("Cat:Messenger [start:66] event:", event)
+		PrintTable(event)
+		print("Cat:Messenger [end]")
+	end
 	for k, v in pairs(event) do
 		assert(k ~= nil)
 		local args = ConcatSafePack(v, SafePack(...))
+		if self == GlobalEventSystem then
+			print('Cat:Messenger.lua[68] k, args', k, args)
+		end
 		k(SafeUnpack(args))
 	end
 end
 
-local function RemoveListener(self, e_type, e_listener)
+function Messenger:RemoveListener(e_type, e_listener)
 	local event = self.events[e_type]
 	if event == nil then
 		return
@@ -64,21 +86,14 @@ local function RemoveListener(self, e_type, e_listener)
 
 	event[e_listener] = nil
 end
+Messenger.UnBind = Messenger.RemoveListener
 
-local function RemoveListenerByType(self, e_type)
+function Messenger:RemoveListenerByType(e_type)
 	self.events[e_type] = nil
 end
 
-local function Cleanup(self)
+function Messenger:Cleanup()
 	self.events = {};
 end
-
-Messenger.Constructor = Constructor
-Messenger.__delete = __delete
-Messenger.AddListener = AddListener
-Messenger.Broadcast = Broadcast
-Messenger.RemoveListener = RemoveListener
-Messenger.RemoveListenerByType = RemoveListenerByType
-Messenger.Cleanup = Cleanup
 
 return Messenger;

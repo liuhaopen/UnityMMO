@@ -1,30 +1,23 @@
 require("UI/Login/LoginConst")
 require("UI/Login/LoginModel")
+local crypt = require "crypt"
 
-local LoginController = {}
+LoginController = {}
 
-local this = LoginController
-
-function LoginController.Init(  )
+function LoginController:Init(  )
 	print('Cat:LoginController.lua[Init]')
 
-	this.InitEvents()
+	self:InitEvents()
 
     local loginView = require("UI/Login/LoginView")
     UIMgr:Show(loginView)
 end
 
-function LoginController.InitEvents(  )
-
-	local StartLogin = function ( login_info )
-        this.StartLogin(login_info)
-	end
-    GlobalEventSystem:AddListener(LoginConst.Event.StartLogin, StartLogin); 
-
-    do return end
-    Event.AddListener(Protocal.Connect, LoginController.Connect); 
-    Event.AddListener(Protocal.Disconnect, LoginController.Disconnect); 
-    Event.AddListener(Protocal.MessageLine, LoginController.MessageLine)
+function LoginController:InitEvents(  )
+    GlobalEventSystem:Bind(LoginConst.Event.StartLogin, LoginController.StartLogin, self)
+    GlobalEventSystem:Bind(NetDispatcher.Event.OnConnect, LoginController.Connect, self)
+    GlobalEventSystem:Bind(NetDispatcher.Event.OnDisConnect, LoginController.Disconnect, self)
+    GlobalEventSystem:Bind(NetDispatcher.Event.OnReceiveLine, LoginController.OnReceiveLine, self)
 
     local LoginSucceed = function (  )
         print('Cat:LoginController.lua[LoginSucceed]')
@@ -45,11 +38,12 @@ function LoginController.InitEvents(  )
                 UIMgr:Show(view)
             end
         end
-        Network.SendMessage("account_get_role_list", nil, on_ack)
+        NetDispatcher:SendMessage("account_get_role_list", nil, on_ack)
     end
-    Event.AddListener(LoginConst.Event.LoginSucceed, LoginSucceed); 
+    self.login_succeed_handler = GlobalEventSystem:Bind(LoginConst.Event.LoginSucceed, LoginSucceed)
 
     local SelectRoleEnterGame = function ( role_id )
+        print('Cat:LoginController.lua[60] role_id', role_id)
         local on_ack = function ( ack_data )
             print("Cat:LoginController [start:54] ack_data:", ack_data)
             PrintTable(ack_data)
@@ -60,17 +54,17 @@ function LoginController.InitEvents(  )
                 --显示加载界面
 
                 --请求角色信息和场景信息
-                this.ReqMainRole()
+                self:ReqMainRole()
             else
                 --进入游戏失败
             end
         end
-        Network.SendMessage("account_select_role_enter_game", {role_id = role_id}, on_ack)
+        NetDispatcher:SendMessage("account_select_role_enter_game", {role_id = role_id}, on_ack)
     end
-    Event.AddListener(LoginConst.Event.SelectRoleEnterGame, SelectRoleEnterGame); 
+    self.select_role_enter_game_handler = GlobalEventSystem:Bind(LoginConst.Event.SelectRoleEnterGame, SelectRoleEnterGame)
 end
 
-function LoginController.ReqMainRole(  )
+function LoginController:ReqMainRole(  )
     local on_ack_main_role = function ( ack_role_data )
         --请求场景信息
         local on_ack_scene_info = function ( ack_scene_data )
@@ -79,15 +73,16 @@ function LoginController.ReqMainRole(  )
             --关闭加载界面
             
         end
-        Network.SendMessage("scene_get_cur_scene_info", nil, on_ack_scene_info)
+        NetDispatcher:SendMessage("scene_get_cur_scene_info", nil, on_ack_scene_info)
         --加载其它系统的controller
         
     end
-    Network.SendMessage("scene_get_main_role_info", nil, on_ack)
+    NetDispatcher:SendMessage("scene_get_main_role_info", nil, on_ack)
 end
 
-function LoginController.StartLogin(login_info)
-	print('Cat:LoginController.lua[StartLogin]')
+function LoginController:StartLogin(login_info)
+    print('Cat:LoginController.lua[StartLogin]')
+    PrintTable(login_info)
 	--[[登录流程:
 	1:由第三方平台(如九游,腾讯游戏平台等)提供的SDK里的界面进行注册或登录,其登录将给我们一个token
 	2:请求最新的服务器列表,可通过http取下来.(优化:服务器列表可以分成若干文件提高用户体验)
@@ -100,99 +95,114 @@ function LoginController.StartLogin(login_info)
     9:收到游戏服务器M的校验结果(成功为200)
     10:可以正常向游戏服务器收发协议了
 	--]]
-    this.login_info = login_info
+    self.login_info = login_info
 
     --向登录服务器请求连接,一连接上就等待收到其发过来的随机值了(challenge)
-    this.login_state = LoginConst.Status.WaitForLoginServerChanllenge
+    self.login_state = LoginConst.Status.WaitForLoginServerChanllenge
+
 	NetMgr:SendConnect("192.168.5.142", 8001, CS.XLuaFramework.NetPackageType.BaseLine)
 end
 
-function LoginController.MessageLine(buffer) 
-    local code = buffer:ToLuaString()
-    print('Cat:LoginController.lua[145] code|'..code.."|", this.login_state)
-    if this.login_state == LoginConst.Status.WaitForLoginServerChanllenge then
-        this.challenge = crypt.base64decode(code)
-        this.clientkey = crypt.randomkey()
-        local handshake_client_key = crypt.base64encode(crypt.dhexchange(this.clientkey))
-        local buffer = ByteBuffer.New()
-        buffer:WriteBuffer(handshake_client_key.."\n")
-        NetMgr:SendMessage(buffer)
-        this.login_state = LoginConst.Status.WaitForLoginServerHandshakeKey
-    elseif this.login_state == LoginConst.Status.WaitForLoginServerHandshakeKey then
-        this.secret = crypt.dhsecret(crypt.base64decode(code), this.clientkey)
-        local hmac = crypt.hmac64(this.challenge, this.secret)
+function LoginController:OnReceiveLine(bytes) 
+    print('Cat:LoginController.lua[114] bytes', bytes)
+    local code = tostring(bytes)
+    print('Cat:LoginController.lua[145] code|'..code.."|login state:"..self.login_state)
+    if self.login_state == LoginConst.Status.WaitForLoginServerChanllenge then
+        self.challenge = crypt.base64decode(code)
+        self.clientkey = crypt.randomkey()
+        local handshake_client_key = crypt.base64encode(crypt.dhexchange(self.clientkey))
+        local buffer = handshake_client_key.."\n"
+        NetMgr:SendBytes(buffer)
+        self.login_state = LoginConst.Status.WaitForLoginServerHandshakeKey
+    elseif self.login_state == LoginConst.Status.WaitForLoginServerHandshakeKey then
+        self.secret = crypt.dhsecret(crypt.base64decode(code), self.clientkey)
+        local hmac = crypt.hmac64(self.challenge, self.secret)
         local hmac_base = crypt.base64encode(hmac)
-        
-        local buffer = ByteBuffer.New()
-        buffer:WriteBuffer(hmac_base.."\n")
-        NetMgr:SendMessage(buffer)
+        NetMgr:SendBytes(hmac_base.."\n")
 
         local token = {
             server = "DevelopServer",
-            user = this.login_info.account,
-            pass = this.login_info.password or "password",
+            user = self.login_info.account,
+            pass = self.login_info.password or "password",
         }
-        this.token = token
+        self.token = token
         local function encode_token(token)
             return string.format("%s@%s:%s",
                 crypt.base64encode(token.user),
                 crypt.base64encode(token.server),
                 crypt.base64encode(token.pass))
         end
-        local etoken = crypt.desencode(this.secret, encode_token(token))
+        local etoken = crypt.desencode(self.secret, encode_token(token))
         local etoken_base = crypt.base64encode(etoken)
-        local buffer = ByteBuffer.New()
-        buffer:WriteBuffer(etoken_base.."\n")
-        NetMgr:SendMessage(buffer)
+        NetMgr:SendBytes(etoken_base.."\n")
 
-        this.login_state = LoginConst.Status.WaitForLoginServerAuthorResult
-    elseif this.login_state == LoginConst.Status.WaitForLoginServerAuthorResult then
+        self.login_state = LoginConst.Status.WaitForLoginServerAuthorResult
+    elseif self.login_state == LoginConst.Status.WaitForLoginServerAuthorResult then
         local result = tonumber(string.sub(code, 1, 3))
         print('Cat:LoginController.lua[194] result', result)
         if result == 200 then
             print('Cat:LoginController.lua login succeed!')
-            this.subid = crypt.base64decode(string.sub(code, 5))
-            print('Cat:LoginController.lua[login ok] subid', this.subid)
+            self.subid = crypt.base64decode(string.sub(code, 5))
+            print('Cat:LoginController.lua[login ok] subid', self.subid)
 
-            --正式向游戏服务器请求连接
+            --正式向游戏服务器请求连接,注意此时的协议已经不是基于行解析的了,换成了根据协议头两字节作为内容大小去解析的,所以接收数据的事件换成了NetDispatcher.Event.OnReceiveMsg(具体处理函数是本类)
             NetMgr:SendConnect("192.168.5.142", 8888, CS.XLuaFramework.NetPackageType.BaseHead)
-            this.login_state = LoginConst.Status.WaitForGameServerConnect
+            self.login_state = LoginConst.Status.WaitForGameServerConnect
         else
-            this.error_map = this.error_map or {
+            self.error_map = self.error_map or {
                 [400] = "握手失败",
                 [401] = "自定义的 auth_handler 不认可 token",
                 [403] = "自定义的 login_handler 执行失败",
                 [406] = "该用户已经在登陆中",
             }
-            print('Cat:LoginController.lua[147] this.error_map[result]', this.error_map[result] or "未知错误")
+            local error_str = self.error_map[result] or "未知错误"
+            print('Cat:LoginController.lua[147] self.error_map[result]', error_str)
+            Message:Show(error_str)
         end
     end
 end
 
-function LoginController.Connect()
-	print('Cat:LoginController.lua[Connect] this.login_state : ', this.login_state)
-	if this.login_state == LoginConst.Status.WaitForGameServerConnect then
+function LoginController:Connect()
+	print('Cat:LoginController.lua[Connect] self.login_state : ', self.login_state)
+	if self.login_state == LoginConst.Status.WaitForGameServerConnect then
 		--刚连接上游戏服务器时需要进行一次握手校验
-		local handshake = string.format("%s@%s#%s:%d", crypt.base64encode(this.token.user), crypt.base64encode(this.token.server),crypt.base64encode(this.subid) , 1)
-		local hmac = crypt.hmac64(crypt.hashkey(handshake), this.secret)
+		local handshake = string.format("%s@%s#%s:%d", crypt.base64encode(self.token.user), crypt.base64encode(self.token.server),crypt.base64encode(self.subid) , 1)
+		local hmac = crypt.hmac64(crypt.hashkey(handshake), self.secret)
 		local handshake_str = handshake .. ":" .. crypt.base64encode(hmac)
 		print('Cat:LoginController.lua[132] handshake_str', handshake_str)
-		Network.SwitchToWaitForGameServerHandshake()
-		local buffer = ByteBuffer.New()
-        buffer:WriteBuffer(handshake_str)
-        NetMgr:SendMessage(buffer)
-        --接下来的处理放在Network了,详情看Network.SwitchToWaitForGameServerHandshake函数
-        this.login_state = LoginConst.Status.WaitForGameServerHandshake
+        NetMgr:SendBytes(handshake_str)
+        --接下来的处理就在OnReceiveMsg函数里
+        self.login_state = LoginConst.Status.WaitForGameServerHandshake
 	end
 end
 
-function LoginController.Disconnect()
+function LoginController:OnReceiveMsg( bytes )
+    local code = tostring(bytes)
+    -- print('Cat:LoginController.lua[handshake] code', code)
+    local result = string.sub(code, 1, 3)
+    -- print('Cat:LoginController.lua[handshake] result code', result, tonumber(result))
+    if tonumber(result) == 200 then
+        --接收完一次就把网络控制权交给NetDispatcher了,开始使用sproto协议 
+        NetDispatcher:Start()
+
+        GlobalEventSystem:Fire(LoginConst.Event.LoginSucceed)
+
+        local on_server_time_ack = function ( server_time_info )
+            print('Cat:LoginController.lua[118] server_time_info:', server_time_info.server_time)
+            self.server_time = server_time_info.server_time
+        end
+        NetDispatcher:SendMessage("account_get_server_time", nil, on_server_time_ack)
+    else
+        --Cat_Todo : 处理握手失败
+    end
+end
+
+function LoginController:Disconnect()
 	print('Cat:LoginController.lua[Disconnect]')
     --Cat_Todo : 重新向游戏服务器请求连接
-	-- if this.login_state == 4 then
+	-- if self.login_state == 4 then
  --    	NetMgr:SendConnect("192.168.5.142", 8888, CS.XLuaFramework.NetPackageType.BaseHead)
  --    end
 end
-
 
 return LoginController

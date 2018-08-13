@@ -9,7 +9,6 @@ function Message:Init( container, max_at_the_same_time )
 	self.max_at_the_same_time = max_at_the_same_time
 	self.last_pop_msg_time = 0
 
-	-- UpdateBeat:Add(Message.Update, self)	
 	self.__update_handle = BindCallback(self, Message.Update)
 	UpdateManager:GetInstance():AddUpdate(self.__update_handle)	
 end
@@ -37,22 +36,26 @@ function Message:PopAMsg( )
 		return false
 	end
 	local msg_info = table.remove(self.msg_list, 1)
-	local msg_item = {
-	UIConfig={
-		prefab_path = "Assets/AssetBundleRes/ui/prefab/common/Message.prefab",
-		is_sync_load=true,--同步加载
-		}
+	local msg_item = 
+	{
+		UIConfig =
+		{
+			prefab_path = "Assets/AssetBundleRes/ui/prefab/common/Message.prefab",
+		},
+		OnLoad = function(msg_item)
+			UIHelper.SetParent(msg_item.transform, self.container)
+			msg_item.label = msg_item.transform:GetComponent("Text")
+			msg_item.label.text = msg_info.msg
+			local action = cc.MoveBy.create(0.5, 0, 60)
+			local on_end = function (  )
+				GameObject.Destroy(msg_item.gameObject)
+			end
+			action = cc.Sequence.create(action, cc.DelayTime.create(0.5), cc.CallFunc.create(on_end))
+			cc.ActionManager:getInstance():addAction(action, msg_item.transform)
+		end
 	}
 	UIMgr:Show(msg_item)
-	UIHelper.SetParent(msg_item.transform, self.container)
-	msg_item.label = msg_item.transform:GetComponent("Text")
-	msg_item.label.text = msg_info.msg
-	local action = cc.MoveBy.create(0.5, 0, 60)
-	local on_end = function (  )
-		GameObject.Destroy(msg_item.gameObject)
-	end
-	action = cc.Sequence.create(action, cc.DelayTime.create(0.5), cc.CallFunc.create(on_end))
-	cc.ActionManager:getInstance():addAction(action, msg_item.transform)
+	
 	return true
 end
 

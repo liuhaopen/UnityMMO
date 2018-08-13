@@ -22,7 +22,7 @@ function LoginView:AddEvents(  )
         local login_info = {
             account = account
         }
-        GlobalEventSystem:Broadcast(LoginConst.Event.StartLogin, login_info)
+        GlobalEventSystem:Fire(LoginConst.Event.StartLogin, login_info)
 	end
 	UIHelper.BindClickEvent(self.login_btn, on_click)
 end

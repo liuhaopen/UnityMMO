@@ -8,7 +8,7 @@ standalone = "0.0.0.0:2013"
 start = "main"
 luaservice = root.."service/?.lua;"..root.."skynet/service/?.lua;"..root.."game/?.lua;"
 lualoader = root .. "skynet/lualib/loader.lua"
-lua_path = root .. "../Lua/Common/?.lua;"..root .. "lualib/?.lua;" .. root .. "skynet/lualib/?.lua;" .. root .. "skynet/lualib/?/init.lua;" .. root.."?.lua;"..root.."game/?.lua;"
+lua_path = root .. "../Lua/?.lua;"..root .. "lualib/?.lua;" .. root .. "skynet/lualib/?.lua;" .. root .. "skynet/lualib/?/init.lua;" .. root.."?.lua;"..root.."game/?.lua;"
 lua_cpath = root .. "skynet/luaclib/?.so"
 cpath = root .. "/cservice/?.so;"..root.."/skynet/cservice/?.so"
 

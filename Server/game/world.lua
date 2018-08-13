@@ -8,7 +8,7 @@ local scene_ids = {1001, 1002, 1003, 1004, 1005}
 function CMD.role_enter_game( user_info, role_id )
 	if online_role[role_id] ~= nil then
 		skynet.error(string.format("multiple login detected, role_id %d", role_id))
-		CMD.kick(role_id)
+		-- CMD.kick(role_id)
 	end
 	online_role[role_id] = user_info
 	skynet.error(string.format("role_id(%d) enter world", role_id))

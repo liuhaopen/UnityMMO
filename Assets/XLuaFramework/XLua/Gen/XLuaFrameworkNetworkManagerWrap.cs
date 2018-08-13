@@ -21,26 +21,30 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(XLuaFramework.NetworkManager);
-			Utils.BeginObjectRegister(type, L, translator, 0, 6, 1, 1);
+			Utils.BeginObjectRegister(type, L, translator, 0, 3, 4, 4);
 			
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "OnInit", _m_OnInit);
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Unload", _m_Unload);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "SendConnect", _m_SendConnect);
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "WriteMessage", _m_WriteMessage);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "SendBytes", _m_SendBytes);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Close", _m_Close);
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "SendMessage", _m_SendMessage);
 			
 			
 			Utils.RegisterFunc(L, Utils.GETTER_IDX, "OnConnectCallBack", _g_get_OnConnectCallBack);
+            Utils.RegisterFunc(L, Utils.GETTER_IDX, "OnDisConnectCallBack", _g_get_OnDisConnectCallBack);
+            Utils.RegisterFunc(L, Utils.GETTER_IDX, "OnReceiveLineCallBack", _g_get_OnReceiveLineCallBack);
+            Utils.RegisterFunc(L, Utils.GETTER_IDX, "OnReceiveMsgCallBack", _g_get_OnReceiveMsgCallBack);
             
 			Utils.RegisterFunc(L, Utils.SETTER_IDX, "OnConnectCallBack", _s_set_OnConnectCallBack);
+            Utils.RegisterFunc(L, Utils.SETTER_IDX, "OnDisConnectCallBack", _s_set_OnDisConnectCallBack);
+            Utils.RegisterFunc(L, Utils.SETTER_IDX, "OnReceiveLineCallBack", _s_set_OnReceiveLineCallBack);
+            Utils.RegisterFunc(L, Utils.SETTER_IDX, "OnReceiveMsgCallBack", _s_set_OnReceiveMsgCallBack);
             
 			
 			Utils.EndObjectRegister(type, L, translator, null, null,
 			    null, null, null);
 
-		    Utils.BeginClassRegister(type, L, __CreateInstance, 3, 1, 1);
+		    Utils.BeginClassRegister(type, L, __CreateInstance, 4, 1, 1);
 			Utils.RegisterFunc(L, Utils.CLS_IDX, "GetInstance", _m_GetInstance_xlua_st_);
+            Utils.RegisterFunc(L, Utils.CLS_IDX, "AddEvent", _m_AddEvent_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "SwapUInt16", _m_SwapUInt16_xlua_st_);
             
 			
@@ -110,47 +114,20 @@ namespace XLua.CSObjectWrap
         }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_OnInit(RealStatePtr L)
+        static int _m_AddEvent_xlua_st_(RealStatePtr L)
         {
 		    try {
             
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
             
             
-                XLuaFramework.NetworkManager gen_to_be_invoked = (XLuaFramework.NetworkManager)translator.FastGetCSObj(L, 1);
-            
             
                 
                 {
+                    System.Action<byte[]> __event = translator.GetDelegate<System.Action<byte[]>>(L, 1);
+                    byte[] _data = LuaAPI.lua_tobytes(L, 2);
                     
-                    gen_to_be_invoked.OnInit(  );
-                    
-                    
-                    
-                    return 0;
-                }
-                
-            } catch(System.Exception gen_e) {
-                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
-            }
-            
-        }
-        
-        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_Unload(RealStatePtr L)
-        {
-		    try {
-            
-                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-            
-            
-                XLuaFramework.NetworkManager gen_to_be_invoked = (XLuaFramework.NetworkManager)translator.FastGetCSObj(L, 1);
-            
-            
-                
-                {
-                    
-                    gen_to_be_invoked.Unload(  );
+                    XLuaFramework.NetworkManager.AddEvent( __event, _data );
                     
                     
                     
@@ -219,7 +196,7 @@ namespace XLua.CSObjectWrap
         }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_WriteMessage(RealStatePtr L)
+        static int _m_SendBytes(RealStatePtr L)
         {
 		    try {
             
@@ -233,7 +210,7 @@ namespace XLua.CSObjectWrap
                 {
                     byte[] _message = LuaAPI.lua_tobytes(L, 2);
                     
-                    gen_to_be_invoked.WriteMessage( _message );
+                    gen_to_be_invoked.SendBytes( _message );
                     
                     
                     
@@ -273,34 +250,6 @@ namespace XLua.CSObjectWrap
             
         }
         
-        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_SendMessage(RealStatePtr L)
-        {
-		    try {
-            
-                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-            
-            
-                XLuaFramework.NetworkManager gen_to_be_invoked = (XLuaFramework.NetworkManager)translator.FastGetCSObj(L, 1);
-            
-            
-                
-                {
-                    byte[] _bytes = LuaAPI.lua_tobytes(L, 2);
-                    
-                    gen_to_be_invoked.SendMessage( _bytes );
-                    
-                    
-                    
-                    return 0;
-                }
-                
-            } catch(System.Exception gen_e) {
-                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
-            }
-            
-        }
-        
         
         
         
@@ -312,6 +261,48 @@ namespace XLua.CSObjectWrap
 			
                 XLuaFramework.NetworkManager gen_to_be_invoked = (XLuaFramework.NetworkManager)translator.FastGetCSObj(L, 1);
                 translator.Push(L, gen_to_be_invoked.OnConnectCallBack);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_OnDisConnectCallBack(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                XLuaFramework.NetworkManager gen_to_be_invoked = (XLuaFramework.NetworkManager)translator.FastGetCSObj(L, 1);
+                translator.Push(L, gen_to_be_invoked.OnDisConnectCallBack);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_OnReceiveLineCallBack(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                XLuaFramework.NetworkManager gen_to_be_invoked = (XLuaFramework.NetworkManager)translator.FastGetCSObj(L, 1);
+                translator.Push(L, gen_to_be_invoked.OnReceiveLineCallBack);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_OnReceiveMsgCallBack(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                XLuaFramework.NetworkManager gen_to_be_invoked = (XLuaFramework.NetworkManager)translator.FastGetCSObj(L, 1);
+                translator.Push(L, gen_to_be_invoked.OnReceiveMsgCallBack);
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }
@@ -339,7 +330,52 @@ namespace XLua.CSObjectWrap
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			
                 XLuaFramework.NetworkManager gen_to_be_invoked = (XLuaFramework.NetworkManager)translator.FastGetCSObj(L, 1);
-                gen_to_be_invoked.OnConnectCallBack = translator.GetDelegate<System.Action>(L, 2);
+                gen_to_be_invoked.OnConnectCallBack = translator.GetDelegate<System.Action<byte[]>>(L, 2);
+            
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 0;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _s_set_OnDisConnectCallBack(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                XLuaFramework.NetworkManager gen_to_be_invoked = (XLuaFramework.NetworkManager)translator.FastGetCSObj(L, 1);
+                gen_to_be_invoked.OnDisConnectCallBack = translator.GetDelegate<System.Action<byte[]>>(L, 2);
+            
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 0;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _s_set_OnReceiveLineCallBack(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                XLuaFramework.NetworkManager gen_to_be_invoked = (XLuaFramework.NetworkManager)translator.FastGetCSObj(L, 1);
+                gen_to_be_invoked.OnReceiveLineCallBack = translator.GetDelegate<System.Action<byte[]>>(L, 2);
+            
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 0;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _s_set_OnReceiveMsgCallBack(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                XLuaFramework.NetworkManager gen_to_be_invoked = (XLuaFramework.NetworkManager)translator.FastGetCSObj(L, 1);
+                gen_to_be_invoked.OnReceiveMsgCallBack = translator.GetDelegate<System.Action<byte[]>>(L, 2);
             
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);

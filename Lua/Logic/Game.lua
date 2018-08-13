@@ -50,7 +50,7 @@ function Game.InitControllers()
         local ctrl = require(v)
         if type(ctrl) ~= "boolean" then
             --调用每个Controller的Init函数
-            ctrl.Init()
+            ctrl:Init()
             table.insert(Ctrls, ctrl)
         else
             --Controller类忘记了在最后return

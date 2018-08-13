@@ -1,6 +1,6 @@
-local parser = require "sprotoparser"
+local parser = require "Common.Util.sprotoparser"
 local core = require "sproto.core"
-local sproto = require "sproto"
+local sproto = require "Common.Util.sproto"
 
 local loader = {}
 

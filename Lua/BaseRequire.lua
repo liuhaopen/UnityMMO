@@ -22,22 +22,21 @@ Time		= require "Common.UnityEngine.Time"
 Object		= require "Common.UnityEngine.Object"
 
 require("Common/BaseClass")
-require("Common.util.util")
-require("Common.util.LuaUtil")
-list = require("Common.util.list")
-require("Common.util.event")
-require("Common.util.Timer")
+require("Common.Util.util")
+require("Common.Util.LuaUtil")
+list = require("Common.Util.list")
+require("Common.Util.event")
+require("Common.Util.Timer")
 UpdateManager = require "Common.UpdateManager"
-local Messenger = require "Common.Messenger"
-GlobalEventSystem = Messenger.New()
+require "Common.GlobalEventSystem"
 
-require("Common.action.ActionTweenFunction")
-require("Common.action.Action")
-require("Common.action.ActionInterval")
-require("Common.action.ActionEase")
-require("Common.action.ActionInstant")
-require("Common.action.ActionManager")
-require("Common.action.ActionExtend")
-require("Common.action.ActionCatmullRom")
-require("Common.action.ActionNodeWrapper")
+require("Common.Action.ActionTweenFunction")
+require("Common.Action.Action")
+require("Common.Action.ActionInterval")
+require("Common.Action.ActionEase")
+require("Common.Action.ActionInstant")
+require("Common.Action.ActionManager")
+require("Common.Action.ActionExtend")
+require("Common.Action.ActionCatmullRom")
+require("Common.Action.ActionNodeWrapper")
 

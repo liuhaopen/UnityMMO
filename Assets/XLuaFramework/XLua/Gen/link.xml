@@ -4,6 +4,7 @@
 
 	<assembly fullname="Assembly-CSharp">
 	    <type fullname="XLuaFramework.AppConfig" preserve="all"/>
+		<type fullname="XLuaFramework.NetPackageType" preserve="all"/>
 		<type fullname="XLuaFramework.NetworkManager" preserve="all"/>
 		<type fullname="XLuaFramework.ResourceManager" preserve="all"/>
 		<type fullname="XLuaManager" preserve="all"/>

@@ -7,6 +7,7 @@ extern "C" {
 #include "lualib.h"
 #include "lauxlib.h"
 #include "stdint.h"
+#include "stdlib.h"
 #include <time.h>
 #ifdef __cplusplus
 }
@@ -962,10 +963,10 @@ LUAMOD_API int
 luaopen_skynet_crypt(lua_State *L) {
 	luaL_checkversion(L);
 	static int init = 0;
-	if (!init) {
+	if (init==0) {
 		// Don't need call srandom more than once.
-		init = 1 ;
-		srand(time(NULL));
+		init = 1;
+		srand((unsigned)time(NULL));
 	}
 	luaL_Reg l[] = {
 		{ "hashkey", lhashkey },

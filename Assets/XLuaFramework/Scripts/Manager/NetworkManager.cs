@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using XLua;
 
 namespace XLuaFramework {
+    using NetEventType = KeyValuePair<Action<byte[]>, byte[]>;
     
     public enum DisType {
         Exception,
@@ -26,10 +27,8 @@ namespace XLuaFramework {
     [LuaCallCSharp]
     public class NetworkManager : MonoBehaviour {
         static NetworkManager _instance;
-        // private SocketClient socket;
         static readonly object m_lockObject = new object();
-        // static Queue<KeyValuePair<int, ByteBuffer>> mEvents = new Queue<KeyValuePair<int, ByteBuffer>>();
-
+        static Queue<NetEventType> mEvents = new Queue<NetEventType>();
         private TcpClient client = null;
         private NetworkStream outStream = null;
         private MemoryStream memStream;
@@ -38,30 +37,54 @@ namespace XLuaFramework {
         private const int MAX_READ = 8192;
         private byte[] byteBuffer = new byte[MAX_READ];
         public static bool loggedIn = false;
-
-        Action onConnectCallBack = null;
-
-        public Action OnConnectCallBack
+        Action<byte[]> onConnectCallBack = null;
+        Action<byte[]> onDisConnectCallBack = null;
+        Action<byte[]> onReceiveLineCallBack = null;
+        Action<byte[]> onReceiveMsgCallBack = null;
+        public Action<byte[]> OnConnectCallBack
         {
             get
             {
                 return onConnectCallBack;
             }
-
             set
             {
                 onConnectCallBack = value;
             }
         }
-
-
-        // SocketClient SocketClient {
-        //     get { 
-        //         if (socket == null)
-        //             socket = new SocketClient();
-        //         return socket;                    
-        //     }
-        // }
+        public Action<byte[]> OnDisConnectCallBack
+        {
+            get
+            {
+                return onDisConnectCallBack;
+            }
+            set
+            {
+                onDisConnectCallBack = value;
+            }
+        }
+        public Action<byte[]> OnReceiveLineCallBack
+        {
+            get
+            {
+                return onReceiveLineCallBack;
+            }
+            set
+            {
+                onReceiveLineCallBack = value;
+            }
+        }
+        public Action<byte[]> OnReceiveMsgCallBack
+        {
+            get
+            {
+                return onReceiveMsgCallBack;
+            }
+            set
+            {
+                onReceiveMsgCallBack = value;
+            }
+        }
 
         public static NetworkManager GetInstance()
         {
@@ -74,54 +97,26 @@ namespace XLuaFramework {
         }
 
         void Init() {
-            // SocketClient.OnRegister();
             memStream = new MemoryStream();
             reader = new BinaryReader(memStream);
         }
 
-        public void OnInit() {
-            // CallMethod("Start");
+        public static void AddEvent(Action<byte[]> _event, byte[] data) {
+            lock (m_lockObject) {
+                mEvents.Enqueue(new NetEventType(_event, data));
+            }
         }
 
-        public void Unload() {
-            // CallMethod("Unload");
+        void Update() {
+            if (mEvents.Count > 0) {
+                while (mEvents.Count > 0) {
+                    NetEventType _event = mEvents.Dequeue();
+                    _event.Key(_event.Value);
+                }
+            }
         }
 
-        /// <summary>
-        /// ִ��Lua����
-        /// </summary>
-        // public object[] CallMethod(string func, params object[] args) {
-        //     return Util.CallMethod("Network", func, args);
-        // }
-
-        ///------------------------------------------------------------------------------------
-        // public static void AddEvent(int _event, ByteBuffer data) {
-        //     lock (m_lockObject) {
-        //         if (_event == Protocal.Connect)
-        //             Debug.Log("NetworkManager() AddEvent:" + " stack : " + new System.Diagnostics.StackTrace().ToString());
-        //         mEvents.Enqueue(new KeyValuePair<int, ByteBuffer>(_event, data));
-        //     }
-        // }
-
-        /// <summary>
-        /// ����Command�����ﲻ����ķ���˭��
-        /// </summary>
-        // void Update() {
-        //     if (mEvents.Count > 0) {
-        //         while (mEvents.Count > 0) {
-        //             KeyValuePair<int, ByteBuffer> _event = mEvents.Dequeue();
-        //             if (_event.Key == Protocal.Connect)
-        //                 Debug.Log("on connect on connect!");
-        //             facade.SendMessageCommand(NotiConst.DISPATCH_MESSAGE, _event);
-        //         }
-        //     }
-        // }
-
-        /// <summary>
-        /// ������������
-        /// </summary>
         public void SendConnect(string host, int port, NetPackageType type) {
-            // SocketClient.ConnectServer(ip, port, type);
             Debug.Log("host : " + host + " port:" + port.ToString() + " type:"+ type.ToString());
             client = null;
             curPackageType = type;
@@ -149,9 +144,6 @@ namespace XLuaFramework {
             }
         }
 
-        /// <summary>
-        /// 连接上服务器
-        /// </summary>
         void OnConnect(IAsyncResult asr) {
             Debug.Log("on connect : "+ client.Connected.ToString());
             outStream = client.GetStream();
@@ -164,9 +156,7 @@ namespace XLuaFramework {
                 client.GetStream().BeginRead(byteBuffer, 0, MAX_READ, new AsyncCallback(OnRead), null);
             }
             Debug.Log("onConnectCallBack : "+(onConnectCallBack!=null).ToString());
-            if (onConnectCallBack != null)
-                onConnectCallBack();
-            // NetworkManager.AddEvent(Protocal.Connect, new ByteBuffer());
+            AddEvent(onConnectCallBack, null);
         }
 
         public static ushort SwapUInt16(ushort n)
@@ -177,10 +167,8 @@ namespace XLuaFramework {
             else
                 return n;
         }
-        /// <summary>
-        /// 写数据
-        /// </summary>
-        public void WriteMessage(byte[] message) {
+       
+        public void SendBytes(byte[] message) {
             MemoryStream ms = null;
             using (ms = new MemoryStream())
             {
@@ -202,9 +190,6 @@ namespace XLuaFramework {
             }
         }
 
-        /// <summary>
-        /// 读取消息
-        /// </summary>
         void OnRead(IAsyncResult asr) {
             int bytesRead = 0;
             try {
@@ -221,7 +206,6 @@ namespace XLuaFramework {
                     client.GetStream().BeginRead(byteBuffer, 0, MAX_READ, new AsyncCallback(OnRead), null);
                 }
             } catch (Exception ex) {
-                //PrintBytes();
                 OnDisconnected(DisType.Exception, ex.Message);
             }
         }
@@ -232,11 +216,14 @@ namespace XLuaFramework {
             try
             {
                 lock (client.GetStream())
-                {         //读取字节流到缓冲区
+                {         
+                    //读取字节流到缓冲区
                     bytesRead = client.GetStream().EndRead(asr);
                 }
                 if (bytesRead < 1)
-                {                //包尺寸有问题，断线处理
+                {      
+                    //包尺寸有问题，断线处理
+                    Debug.Log("net manager read empty!");
                     OnDisconnected(DisType.Disconnect, "bytesRead < 1");
                     return;
                 }
@@ -250,28 +237,17 @@ namespace XLuaFramework {
             catch (Exception ex)
             {
                 //PrintBytes();
+                Debug.Log("net manager GetStream exeption!");
                 OnDisconnected(DisType.Exception, ex.Message);
             }
         }
 
-        /// <summary>
-        /// 丢失链接
-        /// </summary>
         void OnDisconnected(DisType dis, string msg) {
             Close();   //关掉客户端链接
-            // int protocal = dis == DisType.Exception ?
-            // Protocal.Exception : Protocal.Disconnect;
-
-            // ByteBuffer buffer = new ByteBuffer();
-            // buffer.WriteShort((ushort)protocal);
-            // NetworkManager.AddEvent(protocal, buffer);
-            // Debug.Log("Connection was closed by the server:>" + msg + " Distype:>" + dis);
+            Debug.Log("networkmanager on disconnect!" + msg + " trace:" + new System.Diagnostics.StackTrace().ToString());
+            AddEvent(onDisConnectCallBack, null);
         }
 
-        /// <summary>
-        /// 打印字节
-        /// </summary>
-        /// <param name="bytes"></param>
         void PrintBytes() {
             string returnStr = string.Empty;
             for (int i = 0; i < byteBuffer.Length; i++) {
@@ -280,9 +256,6 @@ namespace XLuaFramework {
             Debug.LogError(returnStr);
         }
 
-        /// <summary>
-        /// 向链接写入数据流
-        /// </summary>
         void OnWrite(IAsyncResult r) {
             try {
                 outStream.EndWrite(r);
@@ -293,7 +266,6 @@ namespace XLuaFramework {
 
         void OnReceiveLine(byte[] bytes, int length)
         {
-            //long left_len = bytes.Length;
             int line_start_index = 0;
             for (int i = 0; i < length; i++)
             {
@@ -311,7 +283,6 @@ namespace XLuaFramework {
                     }
                     line_start_index = i + 1;
                 }
-                //left_len -= 1;
             }
             int left_len = length - line_start_index;
             if (left_len > 0)
@@ -325,26 +296,18 @@ namespace XLuaFramework {
         {
             memStream.Seek(0, SeekOrigin.End);
             memStream.Write(bytes, 0, length);
-            //Reset to beginning
             memStream.Seek(0, SeekOrigin.Begin);
             //Debug.Log("on receive RemainingBytes len : " + RemainingBytes().ToString()+ "  length len:" + length.ToString());
             while (RemainingBytes() > 2)
             {
-                //messageLen = reader.ReadUInt32();
-                //int len = Util.SwapUInt32(messageLen);
-                ////Util.Log("len = " + len);
-                //len -= 2;//减去4位的数据长度本身所占字节
                 ushort messageLen = reader.ReadUInt16();
                 messageLen = SwapUInt16((UInt16)(messageLen));
-                //Debug.Log("onreceive msg len:" + messageLen.ToString());
-                //messageLen -= 2;
                 if (RemainingBytes() >= messageLen)
                 {
                     OnReceivedMessage(reader.ReadBytes((int)messageLen));
                 }
                 else
                 {
-                    //Back up the position two bytes
                     memStream.Position = memStream.Position - 2;
                     break;
                 }
@@ -355,26 +318,18 @@ namespace XLuaFramework {
             memStream.Write(leftover, 0, leftover.Length);
         }
 
-        /// <summary>
-        /// 剩余的字节
-        /// </summary>
         private long RemainingBytes() {
             return memStream.Length - memStream.Position;
         }
 
         void OnReceivedMessageLine(byte[] cmd_byte)
         {
-            // ByteBuffer buffer = new ByteBuffer(cmd_byte);
-            // NetworkManager.AddEvent(Protocal.MessageLine, buffer);
+            AddEvent(onReceiveLineCallBack, cmd_byte);
         }
-        /// <summary>
-        /// 接收到消息
-        /// </summary>
-        /// <param name="ms"></param>
+        
         void OnReceivedMessage(byte[] cmd_byte)
         {
-            // ByteBuffer buffer = new ByteBuffer(cmd_byte);
-            // NetworkManager.AddEvent(Protocal.Message, buffer);
+            AddEvent(onReceiveMsgCallBack, cmd_byte);
         }
         public void Close() 
         {
@@ -385,20 +340,11 @@ namespace XLuaFramework {
             loggedIn = false;
         }
 
-        /// <summary>
-        /// ����SOCKET��Ϣ
-        /// </summary>
-        public void SendMessage(byte[] bytes) {
-            //SocketClient.SendMessage(buffer);
-            this.WriteMessage(bytes);
-        }
-
-        /// <summary>
-        /// ��������
-        /// </summary>
         new void OnDestroy() {
-            // SocketClient.OnRemove();
-            // this.Close();
+            onConnectCallBack = null;
+            onDisConnectCallBack = null;
+            onReceiveLineCallBack = null;
+            onReceiveMsgCallBack = null;
             if (client != null)
             {
                 if (client.Connected) client.Close();

@@ -25,6 +25,9 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(XLuaFramework.AppConfig), XLuaFrameworkAppConfigWrap.__Register);
         
         
+            translator.DelayWrapLoader(typeof(XLuaFramework.NetPackageType), XLuaFrameworkNetPackageTypeWrap.__Register);
+        
+        
             translator.DelayWrapLoader(typeof(XLuaFramework.NetworkManager), XLuaFrameworkNetworkManagerWrap.__Register);
         
         

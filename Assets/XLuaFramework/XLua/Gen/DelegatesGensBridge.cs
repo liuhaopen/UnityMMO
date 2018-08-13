@@ -37,7 +37,29 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp1(float p0)
+		public void __Gen_Delegate_Imp1(byte[] p0)
+		{
+#if THREAD_SAFE || HOTFIX_ENABLE
+            lock (luaEnv.luaEnvLock)
+            {
+#endif
+                RealStatePtr L = luaEnv.rawL;
+                int errFunc = LuaAPI.pcall_prepare(L, errorFuncRef, luaReference);
+                
+                LuaAPI.lua_pushstring(L, p0);
+                
+                PCall(L, 1, 0, errFunc);
+                
+                
+                
+                LuaAPI.lua_settop(L, errFunc - 1);
+                
+#if THREAD_SAFE || HOTFIX_ENABLE
+            }
+#endif
+		}
+        
+		public void __Gen_Delegate_Imp2(float p0)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -59,7 +81,7 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp2(float p0, float p1)
+		public void __Gen_Delegate_Imp3(float p0, float p1)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -82,7 +104,7 @@ namespace XLua
 #endif
 		}
         
-		public System.Action __Gen_Delegate_Imp3(object p0)
+		public System.Action<byte[]> __Gen_Delegate_Imp4(object p0)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -96,7 +118,7 @@ namespace XLua
                 PCall(L, 1, 1, errFunc);
                 
                 
-                System.Action __gen_ret = translator.GetDelegate<System.Action>(L, errFunc + 1);
+                System.Action<byte[]> __gen_ret = translator.GetDelegate<System.Action<byte[]>>(L, errFunc + 1);
                 LuaAPI.lua_settop(L, errFunc - 1);
                 return  __gen_ret;
 #if THREAD_SAFE || HOTFIX_ENABLE
@@ -104,7 +126,7 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp4(object p0, object p1)
+		public void __Gen_Delegate_Imp5(object p0, object p1)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -127,7 +149,7 @@ namespace XLua
 #endif
 		}
         
-		public XLuaFramework.NetworkManager __Gen_Delegate_Imp5()
+		public XLuaFramework.NetworkManager __Gen_Delegate_Imp6()
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -148,7 +170,7 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp6(object p0)
+		public void __Gen_Delegate_Imp7(object p0)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -170,7 +192,7 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp7(object p0, object p1, int p2, XLuaFramework.NetPackageType p3)
+		public void __Gen_Delegate_Imp8(object p0, object p1, int p2, XLuaFramework.NetPackageType p3)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -182,7 +204,7 @@ namespace XLua
                 translator.PushAny(L, p0);
                 translator.PushAny(L, p1);
                 LuaAPI.xlua_pushinteger(L, p2);
-                translator.Push(L, p3);
+                translator.PushXLuaFrameworkNetPackageType(L, p3);
                 
                 PCall(L, 4, 0, errFunc);
                 
@@ -195,7 +217,7 @@ namespace XLua
 #endif
 		}
         
-		public ushort __Gen_Delegate_Imp8(ushort p0)
+		public ushort __Gen_Delegate_Imp9(ushort p0)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -217,7 +239,7 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp9(object p0, XLuaFramework.DisType p1, object p2)
+		public void __Gen_Delegate_Imp10(object p0, XLuaFramework.DisType p1, object p2)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -241,7 +263,7 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp10(object p0, object p1, int p2)
+		public void __Gen_Delegate_Imp11(object p0, object p1, int p2)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -265,7 +287,7 @@ namespace XLua
 #endif
 		}
         
-		public long __Gen_Delegate_Imp11(object p0)
+		public long __Gen_Delegate_Imp12(object p0)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -287,7 +309,7 @@ namespace XLua
 #endif
 		}
         
-		public XLua.LuaEnv __Gen_Delegate_Imp12(object p0)
+		public XLua.LuaEnv __Gen_Delegate_Imp13(object p0)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -309,7 +331,7 @@ namespace XLua
 #endif
 		}
         
-		public byte[] __Gen_Delegate_Imp13(ref string p0)
+		public byte[] __Gen_Delegate_Imp14(ref string p0)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -332,7 +354,7 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp14(object p0, float p1, float p2, float p3)
+		public void __Gen_Delegate_Imp15(object p0, float p1, float p2, float p3)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -357,7 +379,7 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp15(object p0, float p1)
+		public void __Gen_Delegate_Imp16(object p0, float p1)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -380,7 +402,7 @@ namespace XLua
 #endif
 		}
         
-		public float __Gen_Delegate_Imp16(object p0)
+		public float __Gen_Delegate_Imp17(object p0)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -402,7 +424,7 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp17(object p0, float p1, float p2, float p3, float p4)
+		public void __Gen_Delegate_Imp18(object p0, float p1, float p2, float p3, float p4)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -428,7 +450,7 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp18(object p0, float p1, float p2)
+		public void __Gen_Delegate_Imp19(object p0, float p1, float p2)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -466,14 +488,19 @@ namespace XLua
 			    return new System.Action(__Gen_Delegate_Imp0);
 			}
 		
+		    if (type == typeof(System.Action<byte[]>))
+			{
+			    return new System.Action<byte[]>(__Gen_Delegate_Imp1);
+			}
+		
 		    if (type == typeof(System.Action<float>))
 			{
-			    return new System.Action<float>(__Gen_Delegate_Imp1);
+			    return new System.Action<float>(__Gen_Delegate_Imp2);
 			}
 		
 		    if (type == typeof(System.Action<float, float>))
 			{
-			    return new System.Action<float, float>(__Gen_Delegate_Imp2);
+			    return new System.Action<float, float>(__Gen_Delegate_Imp3);
 			}
 		
 		    return null;

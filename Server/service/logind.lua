@@ -1,7 +1,7 @@
 local login = require "snax.loginserver"
 local crypt = require "skynet.crypt"
 local skynet = require "skynet"
-require "util.util"
+require "Common.Util.util"
 
 local server = {
 	host = "0.0.0.0",

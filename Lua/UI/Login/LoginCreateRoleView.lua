@@ -48,14 +48,14 @@ function LoginCreateRoleView:AddEvents(  )
 	            if ack_data.result == 1 then
 	                UIMgr:CloseAllView()
 	                --正式进入游戏场景
-	                Event.Broadcast(LoginConst.Event.SelectRoleEnterGame, ack_data.role_id)
+	                GlobalEventSystem:Fire(LoginConst.Event.SelectRoleEnterGame, ack_data.role_id)
 	            else
 	           		print('Cat:LoginCreateRoleView.lua[37] ack_data.result', ack_data.result)
 	           		--Cat_Todo : 有空要飘字提示了
 	           		--创建角色失败
 	            end
 	        end
-	        Network.SendMessage("account_create_role", {name=self.role_name_txt.text, career=self.cur_select_career}, on_ack)
+	        Network:SendMessage("account_create_role", {name=self.role_name_txt.text, career=self.cur_select_career}, on_ack)
 		end
 	end
 	UIHelper.BindClickEvent(self.return_btn, on_click)
