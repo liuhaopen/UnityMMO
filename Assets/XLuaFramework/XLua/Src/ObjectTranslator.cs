@@ -438,7 +438,7 @@ namespace XLua
                 LuaAPI.xlua_rawseti(L, LuaIndexes.LUA_REGISTRYINDEX, reference);
                 throw e;
             }
-            UnityEngine.Debug.Log("reference : "+reference.ToString()+" trace :"+ new System.Diagnostics.StackTrace().ToString());
+            // UnityEngine.Debug.Log("reference : "+reference.ToString()+" trace :"+ new System.Diagnostics.StackTrace().ToString());
             if (delegateType == null)
             {
                 delegate_bridges[reference] = new WeakReference(bridge);
