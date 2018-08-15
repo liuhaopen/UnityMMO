@@ -106,7 +106,9 @@ namespace U3DExtends
         public static GameObject CreatNewLayout(bool isNeedLayout = true)
         {
             GameObject testUI = UIEditorHelper.GetUITestRootNode();
-            const string file_path = Configure.ResAssetsPath + "Canvas.prefab";
+            
+            string file_path = Path.Combine(Configure.ResAssetsPath, "Canvas.prefab");
+            file_path = FileUtil.GetProjectRelativePath(file_path);
             GameObject layout_prefab = UnityEditor.AssetDatabase.LoadAssetAtPath(file_path, typeof(UnityEngine.Object)) as GameObject;
             GameObject layout = GameObject.Instantiate(layout_prefab) as GameObject;
             layout.transform.SetParent(testUI.transform);
@@ -143,7 +145,8 @@ namespace U3DExtends
 
         public static Decorate CreateEmptyDecorate(Transform parent)
         {
-            const string file_path = Configure.ResAssetsPath + "Decorate.prefab";
+            string file_path = Path.Combine(Configure.ResAssetsPath, "Decorate.prefab");
+            file_path = FileUtil.GetProjectRelativePath(file_path);
             GameObject decorate_prefab = UnityEditor.AssetDatabase.LoadAssetAtPath(file_path, typeof(UnityEngine.Object)) as GameObject;
             GameObject decorate = GameObject.Instantiate(decorate_prefab) as GameObject;
             decorate.transform.SetParent(parent);

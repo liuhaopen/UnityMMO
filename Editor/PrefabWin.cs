@@ -308,7 +308,7 @@ public class PrefabWin : EditorWindow
 	{
 		if (item == null || item.prefab == null) return;
 		{
-            string preview_path = Application.dataPath + "/" + Configure.ResPath + "Preview/" + item.prefab.name + ".png";
+            string preview_path = Configure.ResAssetsPath + "/Preview/" + item.prefab.name + ".png";
             if (!isReCreate && File.Exists(preview_path))
             {
                 Texture texture = UIEditorHelper.LoadTextureInLocal(preview_path);
