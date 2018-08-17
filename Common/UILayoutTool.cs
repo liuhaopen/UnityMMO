@@ -223,6 +223,7 @@ namespace U3DExtends
                 left_top_pos.x += rectTrans.sizeDelta.x/2;
                 left_top_pos.y -= rectTrans.sizeDelta.y/2;
                 rectTrans.localPosition = left_top_pos;
+                rectTrans.localScale = Vector3.one;
 
                 //需要先生成好Box和设置好它的坐标和大小才可以把选中的节点挂进来，注意要先排好序，不然层次就乱了
                 GameObject[] sorted_objs = Selection.gameObjects.OrderBy(x => x.transform.GetSiblingIndex()).ToArray();
