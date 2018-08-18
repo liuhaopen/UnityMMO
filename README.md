@@ -1,5 +1,6 @@
 # UGUI开发流程
-用法:下载并解压文件夹放到你项目Assets文件夹里就可以了.也可以用git subtree add作为子库管理  
+用法:下载并解压文件夹放到你项目Assets文件夹里就可以了(文件夹命名为UGUI-Editor,如果想用其它名字还需修改下Configure.cs文件里FolderName字段,否则会报错找不到资源的).也可以用git subtree作为子库管理,如:  
+git subtree add --prefix=Assets/UGUI-Editor https://github.com/liuhaopen/UGUI-Editor.git master --squash  
 默认大部分功能都是开启的,如果你觉得哪些用得不顺手,可以在Configure.cs文件里关闭相应功能,设为false保存一下就会立即生效的:  
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UGUI-Editor/configure.png)
 
@@ -29,10 +30,13 @@ PrefabWin窗口一开始时肯定是没东西的啦,你可以往里面拉prefab,
 下图有8个节点,其中4个图片中,有两个图片来自图集1,两个来自图集2,如果它们是按图集连续排的话就可以合为同一批次,但被其它图集打断就合不了了,另外4个text也是一样,同一字体的也是可以合为一批次的,这个功能就是自动排列好顺序优化合批:  
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UGUI-Editor/optimize_depth_for_batch_draw.gif)  
 
+## 查找资源引用
+有时一些旧资源想删而不敢删,怕其它地方用到了,这时可以在Project视图右键菜单查找整个项目里有哪些prefab用到了该资源:
+![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UGUI-Editor/find_references.gif)  
+
 ## 合并组和解体
 有时需要把几个节点合成一个组,这时可以这样:  
-![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UGUI-Editor/make_group.gif)
-
+![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UGUI-Editor/make_group.gif)  
 
 ## 排列和清理所有界面
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UGUI-Editor/sort_and_clean.gif)
