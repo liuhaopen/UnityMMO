@@ -14,7 +14,7 @@ namespace UnityMMO
             public ComponentDataArray<Position> Position;
             // public ComponentDataArray<Heading2D> Heading;
             public ComponentDataArray<PlayerInput> Input;
-            public ComponentDataArray<MovementSpeed> Speed;
+            public ComponentDataArray<MoveSpeed> Speed;
         }
 
         [Inject] private Data m_Data;
@@ -31,8 +31,8 @@ namespace UnityMMO
                 var playerInput = m_Data.Input[index];
 
                 // position += dt * playerInput.Move * m_Data.Speed[index].Speed;
-                position.x += dt * playerInput.Move.x * m_Data.Speed[index].Value;
-                position.z += dt * playerInput.Move.y * m_Data.Speed[index].Value;
+                position.x += dt * playerInput.Move.x * m_Data.Speed[index].speed;
+                position.z += dt * playerInput.Move.y * m_Data.Speed[index].speed;
                 // Debug.Log("player move system update position :"+position.ToString());
 
                 // if (playerInput.Fire)

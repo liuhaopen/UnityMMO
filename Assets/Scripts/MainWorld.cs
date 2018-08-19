@@ -24,13 +24,13 @@ public class MainWorld
         entityManager = World.Active.GetOrCreateManager<EntityManager>();
         MainRoleArchetype = entityManager.CreateArchetype(
                 typeof(Position), typeof(PlayerInput),
-                typeof(TransformMatrix), typeof(MovementSpeed));
+                typeof(TransformMatrix), typeof(MoveSpeed));
     }
 
     public void StartGame() {
         Entity player = entityManager.CreateEntity(MainRoleArchetype);
         entityManager.SetComponentData(player, new Position {Value = new float3(0.0f, 0.0f, 0.0f)});
-        entityManager.SetComponentData(player, new MovementSpeed {Value = 12});
+        entityManager.SetComponentData(player, new MoveSpeed {speed = 12});
         
         entityManager.AddSharedComponentData(player, GetLookFromPrototype("Prototype/MainRoleRenderPrototype"));
     }

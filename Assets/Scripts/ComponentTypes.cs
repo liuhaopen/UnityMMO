@@ -14,10 +14,10 @@ namespace UnityMMO
         // public bool Fire => FireCooldown <= 0.0 && math.length(Shoot) > 0.5f;
     }
 
-    public struct MovementSpeed : IComponentData
-    {
-        public float Value;
-    }
+    // public struct MovementSpeed : IComponentData
+    // {
+    //     public float Value;
+    // }
 
     public struct Shot : IComponentData
     {
