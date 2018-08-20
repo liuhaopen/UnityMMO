@@ -6,3 +6,7 @@
 	path = Server/lsocket
 	url = https://github.com/cloudwu/lsocket.git
 	ignore = all
+[submodule "Assets/AssetBundles-Browser"]
+	path = Assets/AssetBundles-Browser
+	url = https://github.com/Unity-Technologies/AssetBundles-Browser.git
+	ignore = all
