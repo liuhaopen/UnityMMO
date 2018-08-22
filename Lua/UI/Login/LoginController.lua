@@ -9,7 +9,7 @@ function LoginController:Init(  )
 
 	self:InitEvents()
 
-    local loginView = require("UI/Login/LoginView")
+    local loginView = require("UI/Login/LoginView").New()
     UIMgr:Show(loginView)
 end
 

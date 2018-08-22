@@ -62,63 +62,24 @@ public class AssetBundleInfo {
             });
         }
 
-        public void LoadPrefab(string abName, string assetName, Action<UObject[]> func) {
-            LoadAsset<GameObject>(abName, new string[] { assetName }, func);
+        public void LoadSprite(string file_path, LuaFunction func = null)
+        {
+            LoadAsset<Sprite>(file_path, null, func);
         }
 
-        public void LoadPrefab(string abName, string[] assetNames, Action<UObject[]> func) {
-            LoadAsset<GameObject>(abName, assetNames, func);
-        }
-
-        public void LoadPrefab(string abName, string[] assetNames, LuaFunction func) {
-            LoadAsset<GameObject>(abName, assetNames, null, func);
-        }
-
-        public void LoadPrefabGameObject(string name, LuaFunction func = null) {
-            string assetName = System.IO.Path.GetFileNameWithoutExtension(name);
-            string abName = PackRule.PathToAssetBundleName(name);
-
-#if UNITY_EDITOR
-            if (AppConfig.DebugMode)
-            {
-                //这个接口只在编辑器模式下生效
-                UnityEngine.Object obj = UnityEditor.AssetDatabase.LoadAssetAtPath(name, typeof(UnityEngine.Object));
-                GameObject prefab = obj as GameObject;
+        public void LoadPrefabGameObject(string file_path, LuaFunction func = null) {
+            this.LoadAsset<GameObject>(file_path, delegate(UnityEngine.Object[] objs) {
+                if (objs.Length == 0) return;
+                GameObject prefab = objs[0] as GameObject;
                 if (prefab == null) return;
 
                 GameObject go = Instantiate(prefab) as GameObject;
+                string assetName = System.IO.Path.GetFileNameWithoutExtension(file_path);
                 go.name = assetName;
+
                 if (func != null) func.Call(go);
-                return;
-            }
-#endif
-
-            // if (!is_sync_load)
-            // {
-                this.LoadPrefab(abName, assetName, delegate(UnityEngine.Object[] objs) {
-                    if (objs.Length == 0) return;
-                    GameObject prefab = objs[0] as GameObject;
-                    if (prefab == null) return;
-
-                    GameObject go = Instantiate(prefab) as GameObject;
-                    go.name = assetName;
-
-                    if (func != null) func.Call(go);
-                    Debug.LogWarning("CreatePanel::>> " + name + " " + prefab);
-                });
-            // }
-            // else
-            // {
-                //Cat_Todo : luaframework资源想同步加载的话好像只能通过宏?有空处理下
-                //GameObject prefab = ResManager.LoadAsset<GameObject>(name, assetName);
-                //if (prefab == null) return;
-
-                //GameObject go = Instantiate(prefab) as GameObject;
-                //go.name = assetName;
-
-                //if (func != null) func.Call(go);
-                //Debug.LogWarning("CreatePanel::>> " + name + " " + prefab);
-            // }
+                // Debug.LogWarning("CreatePanel::>> " + file_path + " " + prefab);
+            });
         }
 
         string GetRealAssetPath(string abName) {
@@ -142,6 +103,42 @@ public class AssetBundleInfo {
             }
             Debug.LogError("GetRealAssetPath Error:>>" + abName);
             return null;
+        }
+
+        public void LoadAsset<T>(string file_path, Action<UObject[]> action = null, LuaFunction func = null) where T : UObject {
+#if UNITY_EDITOR
+            if (AppConfig.DebugMode)
+            {
+                T sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(file_path);
+                if (sprite != null)
+                {
+                    if (func != null)
+                    {
+                        List<T> list = new List<T>();
+                        list.Add(sprite);
+                        object[] args = new object[] { list.ToArray() };
+                        func.Call(args);
+                        func.Dispose();
+                        func = null;
+                    }
+                    else if (action != null)
+                    {
+                        List<UObject> list = new List<UObject>();
+                        list.Add(sprite);
+                        UObject[] args = list.ToArray();
+                        action(args);
+                    }
+                    return;
+                }
+                else
+                {
+                    Debug.Log("ResourceManager:LoadAsset Error:cannot find file:" + file_path);
+                }
+            }
+#endif
+            string assetName = System.IO.Path.GetFileNameWithoutExtension(name);
+            string abName = PackRule.PathToAssetBundleName(name);
+            this.LoadAsset<T>(abName, new string[] {assetName}, action, func);
         }
 
         /// <summary>
@@ -300,7 +297,7 @@ public class AssetBundleInfo {
             }
         }
 
-        //////////新增
+        //等删
         public UnityEngine.Object LoadPrefabInLocalByFile(string file_path)
         {
             UnityEngine.Object new_obj = null;

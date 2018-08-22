@@ -55,7 +55,7 @@ function LoginCreateRoleView:AddEvents(  )
 	           		--创建角色失败
 	            end
 	        end
-	        Network:SendMessage("account_create_role", {name=self.role_name_txt.text, career=self.cur_select_career}, on_ack)
+	        NetDispatcher:SendMessage("account_create_role", {name=self.role_name_txt.text, career=self.cur_select_career}, on_ack)
 		end
 	end
 	UIHelper.BindClickEvent(self.return_btn, on_click)

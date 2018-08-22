@@ -37,7 +37,8 @@ function LoginSelectRoleView:UpdateView()
     if not role_list or #role_list <= 0 then 
     	return
     end
-	for i,v in ipairs(role_list) do
+    for i=1,3 do
+		local role_info = role_list[i]
 		local item = 
 		{
 			UIConfig =
@@ -45,14 +46,35 @@ function LoginSelectRoleView:UpdateView()
 				prefab_path = "Assets/AssetBundleRes/ui/prefab/login/LoginSelectRoleItem.prefab",
 			},
 			OnLoad = function(item)
-				local names = {"head:img","name:txt","click_bg:obj",}
+				local names = {"head:img:obj","name:txt","click_bg:obj","plus:obj",}
 				UI.GetChildren(item, item.transform, names)
 				UIHelper.SetParent(item.transform, self.item_con)
-				item.name_txt.text = v.name
+
+				print('Cat:LoginSelectRoleView.lua[53] role_info, i', role_info, i)
+				if role_info then
+					item.name_txt.text = role_info.name
+					UI.SetVisible(item.head_obj, true)
+					UI.SetVisible(item.plus_obj, false)
+					if role_info.career == 1 then
+    					UIHelper.SetImage(item.head_img, "Assets/AssetBundleRes/ui/texutre/login/login_circle_head1_1.png")
+    				else
+    					UIHelper.SetImage(item.head_img, "Assets/AssetBundleRes/ui/texutre/login/login_circle_head1_2.png")
+    				end
+				else
+					item.name_txt.text = ""
+					UI.SetVisible(item.head_obj, false)
+					UI.SetVisible(item.plus_obj, true)
+				end
 				local on_click = function (  )
-					print('Cat:LoginSelectRoleView.lua[51] v.role_id', v.role_id)
-					self.cur_select_role_id = v.role_id
-					--Cat_Todo : 加个人物模型才行啊,现在太难看了
+					if role_info then
+						print('Cat:LoginSelectRoleView.lua[51] role_info.role_id', role_info.role_id)
+						self.cur_select_role_id = role_info.role_id
+						--Cat_Todo : 加个人物模型才行啊,现在太难看了
+					else
+						--显示创建角色界面
+						local view = require("UI/Login/LoginCreateRoleView").New()
+                		UIMgr:Show(view)
+					end
 				end
 				UIHelper.BindClickEvent(item.click_bg_obj, on_click)
 			end

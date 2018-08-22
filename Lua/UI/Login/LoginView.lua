@@ -1,15 +1,20 @@
-local LoginView = {
+local LoginView = BaseClass()
+
+function LoginView:DefaultVar( )
+	return {
 	UIConfig = {
-		prefab_path = "Assets/AssetBundleRes/ui/prefab/login/LoginView.prefab",
-		canvas_name = "Normal",
-	},
-}
+			prefab_path = "Assets/AssetBundleRes/ui/prefab/login/LoginView.prefab",
+			canvas_name = "Normal",
+		},
+	}
+end
 
 function LoginView:OnLoad(  )
-	local names = {"login", "account",}
+	local names = {"login", "account"}
 	UI.GetChildren(self, self.transform, names)
 	self.login_btn = self.login.gameObject
     self.account_txt = self.account:GetComponent("InputField")
+
 	self:AddEvents()
 end
 

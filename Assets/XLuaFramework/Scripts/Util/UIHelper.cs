@@ -152,7 +152,6 @@ namespace XLuaFramework
             }
         }
 
-
         public static float GetRenderBoundsSize(SkinnedMeshRenderer render)
         {
             if (render != null)
@@ -222,6 +221,23 @@ namespace XLuaFramework
             ClickTriggerListener listener = ClickTriggerListener.Get(obj);
             if (listener != null)
                 listener.onClick = luafunc;
+        }
+
+        public static void SetImage(Image img, string file_path, bool is_auto_size=false, LuaFunction func = null)
+        {
+            ResourceManager.GetInstance().LoadAsset<Sprite>(file_path, delegate(UnityEngine.Object[] objs){
+                if (img != null && objs != null && objs.Length>=1)
+                {
+                    img.sprite = objs[0] as Sprite;
+                    if (is_auto_size)
+                        img.SetNativeSize();
+                    if (func!=null)
+                    {
+                        func.Call();
+                    }
+                }
+            });
+            
         }
     }
 }

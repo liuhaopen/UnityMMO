@@ -24,7 +24,7 @@ namespace XLua.CSObjectWrap
 			Utils.BeginObjectRegister(type, L, translator, 0, 5, 0, 0);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Initialize", _m_Initialize);
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "LoadPrefab", _m_LoadPrefab);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "LoadSprite", _m_LoadSprite);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "LoadPrefabGameObject", _m_LoadPrefabGameObject);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "UnloadAssetBundle", _m_UnloadAssetBundle);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "LoadPrefabInLocalByFile", _m_LoadPrefabInLocalByFile);
@@ -133,7 +133,7 @@ namespace XLua.CSObjectWrap
         }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_LoadPrefab(RealStatePtr L)
+        static int _m_LoadSprite(RealStatePtr L)
         {
 		    try {
             
@@ -145,37 +145,22 @@ namespace XLua.CSObjectWrap
             
 			    int gen_param_count = LuaAPI.lua_gettop(L);
             
-                if(gen_param_count == 4&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)&& (LuaAPI.lua_isnil(L, 3) || LuaAPI.lua_type(L, 3) == LuaTypes.LUA_TSTRING)&& translator.Assignable<System.Action<UnityEngine.Object[]>>(L, 4)) 
+                if(gen_param_count == 3&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)&& (LuaAPI.lua_isnil(L, 3) || LuaAPI.lua_type(L, 3) == LuaTypes.LUA_TFUNCTION)) 
                 {
-                    string _abName = LuaAPI.lua_tostring(L, 2);
-                    string _assetName = LuaAPI.lua_tostring(L, 3);
-                    System.Action<UnityEngine.Object[]> _func = translator.GetDelegate<System.Action<UnityEngine.Object[]>>(L, 4);
+                    string _file_path = LuaAPI.lua_tostring(L, 2);
+                    XLua.LuaFunction _func = (XLua.LuaFunction)translator.GetObject(L, 3, typeof(XLua.LuaFunction));
                     
-                    gen_to_be_invoked.LoadPrefab( _abName, _assetName, _func );
+                    gen_to_be_invoked.LoadSprite( _file_path, _func );
                     
                     
                     
                     return 0;
                 }
-                if(gen_param_count == 4&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)&& translator.Assignable<string[]>(L, 3)&& translator.Assignable<System.Action<UnityEngine.Object[]>>(L, 4)) 
+                if(gen_param_count == 2&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)) 
                 {
-                    string _abName = LuaAPI.lua_tostring(L, 2);
-                    string[] _assetNames = (string[])translator.GetObject(L, 3, typeof(string[]));
-                    System.Action<UnityEngine.Object[]> _func = translator.GetDelegate<System.Action<UnityEngine.Object[]>>(L, 4);
+                    string _file_path = LuaAPI.lua_tostring(L, 2);
                     
-                    gen_to_be_invoked.LoadPrefab( _abName, _assetNames, _func );
-                    
-                    
-                    
-                    return 0;
-                }
-                if(gen_param_count == 4&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)&& translator.Assignable<string[]>(L, 3)&& (LuaAPI.lua_isnil(L, 4) || LuaAPI.lua_type(L, 4) == LuaTypes.LUA_TFUNCTION)) 
-                {
-                    string _abName = LuaAPI.lua_tostring(L, 2);
-                    string[] _assetNames = (string[])translator.GetObject(L, 3, typeof(string[]));
-                    XLua.LuaFunction _func = (XLua.LuaFunction)translator.GetObject(L, 4, typeof(XLua.LuaFunction));
-                    
-                    gen_to_be_invoked.LoadPrefab( _abName, _assetNames, _func );
+                    gen_to_be_invoked.LoadSprite( _file_path );
                     
                     
                     
@@ -186,7 +171,7 @@ namespace XLua.CSObjectWrap
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }
             
-            return LuaAPI.luaL_error(L, "invalid arguments to XLuaFramework.ResourceManager.LoadPrefab!");
+            return LuaAPI.luaL_error(L, "invalid arguments to XLuaFramework.ResourceManager.LoadSprite!");
             
         }
         
