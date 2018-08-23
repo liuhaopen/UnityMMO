@@ -6,7 +6,7 @@ local util = require "util"
 local README = [[
 sprotodump is a simple tool to convert sproto file to spb binary.
 
-usage: lua sprotodump.lua <option> <sproto_file1 sproto_file2 ...> [[<out_option> <outfile>] ...] [namespace_option]
+usage: lua sprotodump.lua <option> <sproto_file1 sproto_file2 ...> \[\[<out_option> <outfile>] ...] [namespace_option]
 
     option: 
         -cs              dump to cSharp code file
@@ -47,7 +47,11 @@ local function _gen_trunk_list(sproto_file, namespace)
   local trunk_list = {}
   for i,v in ipairs(sproto_file) do
     namespace = namespace and util.file_basename(v) or nil
-    table.insert(trunk_list, {util.read_file(v), v, namespace})
+    local file_content = util.read_file(v)
+    file_content = string.gsub(file_content, "return %[%[", "")
+    file_content = string.gsub(file_content, "]]", "")
+    print(file_content)
+    table.insert(trunk_list, {file_content, v, namespace})
   end
   return trunk_list
 end
