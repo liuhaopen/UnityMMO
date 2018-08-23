@@ -1,4 +1,4 @@
-local proto_c2s = [[
+return [[
 .role_figure {
 	role_id 0 : integer
 	career 1 : integer
@@ -48,4 +48,3 @@ account_select_role_enter_game 5 {
 
 ]]
 
-return proto_c2s

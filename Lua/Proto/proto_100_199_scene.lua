@@ -1,4 +1,4 @@
-local proto_c2s = [[
+return [[
 
 .scene_main_role_info {
 	role_id 0 : integer
@@ -40,6 +40,10 @@ scene_walk 102 {
 		pos_x 0 : integer
 		pos_y 1 : integer
 		pos_z 2 : integer
+		dir_x 3 : integer
+		dir_y 4 : integer
+		dir_z 5 : integer
+		time  6 : integer
 	}
 	response {
 		
@@ -48,4 +52,3 @@ scene_walk 102 {
 
 ]]
 
-return proto_c2s
