@@ -23,6 +23,9 @@ namespace XLuaFramework {
 
             this.gameObject.AddComponent<ResourceManager>();
             this.gameObject.AddComponent<NetworkManager>();
+            
+            UnityMMO.NetMsgHandler.GetInstance().Init();
+
             this.gameObject.AddComponent<XLuaManager>();
 
             UnityMMO.MainWorld.GetInstance().Initialize();

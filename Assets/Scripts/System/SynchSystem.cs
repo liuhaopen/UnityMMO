@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.Transforms2D;
 using Unity.Transforms;
 using XLuaFramework;
+using SprotoType;
 
 namespace UnityMMO
 {
@@ -24,11 +25,25 @@ namespace UnityMMO
         protected override void OnUpdate()
         {
             //upload per second
-            if (Time.time - lastSynchTime < 1)
+            // Debug.Log("synch system"+Time.time.ToString()+" lasttime:"+lastSynchTime.ToString());
+            if (Time.time - lastSynchTime < 4)
                 return;
+            lastSynchTime = Time.time+500;
             for (int index = 0; index < m_Data.Length; ++index)
             {
-                // NetworkManager.SendBytes();
+                Debug.Log("synch system");
+                scene_walk.request walk = new scene_walk.request();
+                float3 cur_pos = m_Data.Position[index].Value;
+                walk.pos_x = (int)(cur_pos.x*GameConst.RealToLogic);
+                walk.pos_y = (int)(cur_pos.y*GameConst.RealToLogic);
+                walk.pos_z = (int)(cur_pos.z*GameConst.RealToLogic);
+                walk.dir_x = 3;
+                walk.dir_y = 4;
+                walk.dir_z = 5;
+                walk.time = 6;
+                byte[] bytes = walk.encode();
+                // int tag = Protocol.Instance.Protocol[typeof(scene_walk)];
+                NetworkManager.GetInstance().SendBytesWithTag(102, bytes);
             }         
         }
     }

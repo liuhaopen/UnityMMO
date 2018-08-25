@@ -35,6 +35,8 @@ namespace XLuaFramework {
         private BinaryReader reader;
         private NetPackageType curPackageType = NetPackageType.BaseLine;
         private const int MAX_READ = 8192;
+        private int session = 0;
+        private int maxSession = int.MaxValue/2;
         private byte[] byteBuffer = new byte[MAX_READ];
         public static bool loggedIn = false;
         Action<byte[]> onConnectCallBack = null;
@@ -83,6 +85,19 @@ namespace XLuaFramework {
             set
             {
                 onReceiveMsgCallBack = value;
+            }
+        }
+
+        public int MaxSession
+        {
+            get
+            {
+                return maxSession;
+            }
+
+            set
+            {
+                maxSession = value;
             }
         }
 
@@ -167,6 +182,15 @@ namespace XLuaFramework {
             else
                 return n;
         }
+        public static short SwapInt16(short n)  
+        {  
+            return (short)(((n & 0xff) << 8) | ((n >> 8) & 0xff));  
+        }  
+        public static int SwapInt32(int n)  
+        {  
+            return (int)(((SwapInt16((short)n) & 0xffff) << 0x10) |  
+                (SwapInt16((short)(n >> 0x10)) & 0xffff));  
+        }  
        
         public void SendBytes(byte[] message) {
             MemoryStream ms = null;
@@ -180,6 +204,32 @@ namespace XLuaFramework {
                     writer.Write(msglen);
                 }
                 writer.Write(message);
+                writer.Flush();
+                if (client != null && client.Connected) {
+                    byte[] payload = ms.ToArray();
+                    outStream.BeginWrite(payload, 0, payload.Length, new AsyncCallback(OnWrite), null);
+                } else {
+                    Debug.LogError("client.connected----->>false");
+                }
+            }
+        }
+
+        public void SendBytesWithTag(int tag, byte[] message) {
+            session += 1;
+            if (session > maxSession)
+                session = 0;
+            MemoryStream ms = null;
+            using (ms = new MemoryStream())
+            {
+                ms.Position = 0;
+                BinaryWriter writer = new BinaryWriter(ms);
+                UInt16 msglen = SwapUInt16((UInt16)(message.Length+8));
+                writer.Write(msglen);
+                tag = SwapInt32(tag);
+                writer.Write(tag);
+                writer.Write(message);
+                session = SwapInt32(session);
+                writer.Write(session);
                 writer.Flush();
                 if (client != null && client.Connected) {
                     byte[] payload = ms.ToArray();

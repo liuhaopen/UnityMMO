@@ -24,7 +24,7 @@ public class MainWorld
         entityManager = World.Active.GetOrCreateManager<EntityManager>();
         MainRoleArchetype = entityManager.CreateArchetype(
                 typeof(Position), typeof(PlayerInput),
-                typeof(TransformMatrix), typeof(MoveSpeed), typeof(SynchPosFlag));
+                typeof(TransformMatrix), typeof(MoveSpeed), typeof(SynchPosFlag), typeof(Heading));
     }
 
     public void StartGame() {

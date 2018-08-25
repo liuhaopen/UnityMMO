@@ -59,10 +59,10 @@ public class XLuaManager : MonoBehaviour
             if (NetworkManager.GetInstance())
             {
                 SafeDoString("require 'Logic.NetDispatcher'");
-                NetworkManager.GetInstance().OnConnectCallBack = luaEnv.Global.Get<Action<byte[]>>("OnConnectServer");
-                NetworkManager.GetInstance().OnDisConnectCallBack = luaEnv.Global.Get<Action<byte[]>>("OnDisConnectFromServer");
-                NetworkManager.GetInstance().OnReceiveLineCallBack = luaEnv.Global.Get<Action<byte[]>>("OnReceiveLineFromServer");
-                NetworkManager.GetInstance().OnReceiveMsgCallBack = luaEnv.Global.Get<Action<byte[]>>("OnReceiveMsgFromServer");
+                NetworkManager.GetInstance().OnConnectCallBack += luaEnv.Global.Get<Action<byte[]>>("OnConnectServer");
+                NetworkManager.GetInstance().OnDisConnectCallBack += luaEnv.Global.Get<Action<byte[]>>("OnDisConnectFromServer");
+                NetworkManager.GetInstance().OnReceiveLineCallBack += luaEnv.Global.Get<Action<byte[]>>("OnReceiveLineFromServer");
+                NetworkManager.GetInstance().OnReceiveMsgCallBack += luaEnv.Global.Get<Action<byte[]>>("OnReceiveMsgFromServer");
             }
             else
                 Debug.LogError("must init network manager before init xlua manager!");
