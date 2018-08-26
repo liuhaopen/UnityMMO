@@ -190,10 +190,10 @@ namespace XLua.CSObjectWrap
             
                 if(gen_param_count == 3&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)&& (LuaAPI.lua_isnil(L, 3) || LuaAPI.lua_type(L, 3) == LuaTypes.LUA_TFUNCTION)) 
                 {
-                    string _name = LuaAPI.lua_tostring(L, 2);
+                    string _file_path = LuaAPI.lua_tostring(L, 2);
                     XLua.LuaFunction _func = (XLua.LuaFunction)translator.GetObject(L, 3, typeof(XLua.LuaFunction));
                     
-                    gen_to_be_invoked.LoadPrefabGameObject( _name, _func );
+                    gen_to_be_invoked.LoadPrefabGameObject( _file_path, _func );
                     
                     
                     
@@ -201,9 +201,9 @@ namespace XLua.CSObjectWrap
                 }
                 if(gen_param_count == 2&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)) 
                 {
-                    string _name = LuaAPI.lua_tostring(L, 2);
+                    string _file_path = LuaAPI.lua_tostring(L, 2);
                     
-                    gen_to_be_invoked.LoadPrefabGameObject( _name );
+                    gen_to_be_invoked.LoadPrefabGameObject( _file_path );
                     
                     
                     

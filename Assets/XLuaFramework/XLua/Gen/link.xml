@@ -10,6 +10,7 @@
 		<type fullname="XLuaFramework.NetPackageType" preserve="all"/>
 		<type fullname="XLuaFramework.NetworkManager" preserve="all"/>
 		<type fullname="XLuaFramework.Util" preserve="all"/>
+		<type fullname="UnityMMO.GameConst" preserve="all"/>
 		
 	</assembly>
 
