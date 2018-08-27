@@ -358,5 +358,23 @@ namespace XLuaFramework {
                 return null;
             }
         }
+        
+        public static ushort SwapUInt16(ushort n)
+        {
+            //Debug.Log("SwapUInt16() BitConverter.IsLittleEndian : " + BitConverter.IsLittleEndian.ToCString());
+            if (BitConverter.IsLittleEndian)
+                return (ushort)(((n & 0xff) << 8) | ((n >> 8) & 0xff));
+            else
+                return n;
+        }
+        public static short SwapInt16(short n)  
+        {  
+            return (short)(((n & 0xff) << 8) | ((n >> 8) & 0xff));  
+        }  
+        public static int SwapInt32(int n)  
+        {  
+            return (int)(((SwapInt16((short)n) & 0xffff) << 0x10) |  
+                (SwapInt16((short)(n >> 0x10)) & 0xffff));  
+        }  
     }
 }
