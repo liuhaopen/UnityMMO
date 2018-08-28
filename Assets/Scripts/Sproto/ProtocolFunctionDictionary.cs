@@ -11,7 +11,7 @@ namespace Sproto
 			public KeyValuePair<Type, typeFunc> Response;
 		};
 
-		public delegate SprotoTypeBase typeFunc (byte[] buffer, int offset);
+		public delegate SprotoTypeBase typeFunc (byte[] buffer, int offset, int size);
 		private Dictionary<int, MetaInfo> MetaDictionary;
 		private Dictionary<Type, int> ProtocolDictionary;
 
@@ -49,9 +49,9 @@ namespace Sproto
 
 
 		private void _set<T>(int tag, out KeyValuePair<Type, typeFunc> field) where T : SprotoTypeBase, new() {
-			typeFunc _func = delegate (byte[] buffer, int offset) {
+			typeFunc _func = delegate (byte[] buffer, int offset, int size) {
 				T obj = new T();
-				obj.init(buffer, offset);
+				obj.init(buffer, offset, size);
 				return obj;
 			};
 
@@ -59,9 +59,9 @@ namespace Sproto
 		}
 
 
-		private SprotoTypeBase _gen(KeyValuePair<Type, typeFunc> field, int tag, byte[] buffer, int offset=0) {
+		private SprotoTypeBase _gen(KeyValuePair<Type, typeFunc> field, int tag, byte[] buffer, int offset=0, int size=0) {
 			if (field.Value != null) {
-				SprotoTypeBase obj = field.Value (buffer, offset);
+				SprotoTypeBase obj = field.Value (buffer, offset, size);
 #if (!INCLUDE_IL2CPP)
 				if (obj.GetType () != field.Key) {
 					throw new Exception("sproto type: "+obj.GetType().ToString() + "not is expected. [" + field.Key.ToString() + "]");
@@ -86,13 +86,13 @@ namespace Sproto
 
 		public MetaInfo this[int tag] {
 			get {
-				return this.MetaDictionary [tag];
+				return this.MetaDictionary[tag];
 			}
 		}
 
 		public int this[Type protocolType] {
 			get {
-				return this.ProtocolDictionary [protocolType];
+				return this.ProtocolDictionary[protocolType];
 			}
 		}
 	}

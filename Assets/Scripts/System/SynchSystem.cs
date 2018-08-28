@@ -41,10 +41,7 @@ namespace UnityMMO
                 walk.dir_y = 4;
                 walk.dir_z = 5;
                 walk.time = 6;
-                // byte[] bytes = walk.encode();
-                
-                // int tag = Protocol.Instance.Protocol[typeof(scene_walk)];
-                NetMsgDispatcher.GetInstance().SendMessage<scene_walk>(walk);
+                NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_walk>(walk);
             }         
         }
     }

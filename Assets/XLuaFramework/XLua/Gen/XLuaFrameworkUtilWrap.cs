@@ -31,7 +31,7 @@ namespace XLua.CSObjectWrap
 			Utils.EndObjectRegister(type, L, translator, null, null,
 			    null, null, null);
 
-		    Utils.BeginClassRegister(type, L, __CreateInstance, 23, 2, 0);
+		    Utils.BeginClassRegister(type, L, __CreateInstance, 26, 2, 0);
 			Utils.RegisterFunc(L, Utils.CLS_IDX, "Int", _m_Int_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "Float", _m_Float_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "Long", _m_Long_xlua_st_);
@@ -54,6 +54,9 @@ namespace XLua.CSObjectWrap
             Utils.RegisterFunc(L, Utils.CLS_IDX, "CheckEnvironment", _m_CheckEnvironment_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "ThrowLuaException", _m_ThrowLuaException_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "InstantiateObject", _m_InstantiateObject_xlua_st_);
+            Utils.RegisterFunc(L, Utils.CLS_IDX, "SwapUInt16", _m_SwapUInt16_xlua_st_);
+            Utils.RegisterFunc(L, Utils.CLS_IDX, "SwapInt16", _m_SwapInt16_xlua_st_);
+            Utils.RegisterFunc(L, Utils.CLS_IDX, "SwapInt32", _m_SwapInt32_xlua_st_);
             
 			
             
@@ -734,6 +737,81 @@ namespace XLua.CSObjectWrap
                     
                         UnityEngine.GameObject gen_ret = XLuaFramework.Util.InstantiateObject( _prefab );
                         translator.Push(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_SwapUInt16_xlua_st_(RealStatePtr L)
+        {
+		    try {
+            
+            
+            
+                
+                {
+                    ushort _n = (ushort)LuaAPI.xlua_tointeger(L, 1);
+                    
+                        ushort gen_ret = XLuaFramework.Util.SwapUInt16( _n );
+                        LuaAPI.xlua_pushinteger(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_SwapInt16_xlua_st_(RealStatePtr L)
+        {
+		    try {
+            
+            
+            
+                
+                {
+                    short _n = (short)LuaAPI.xlua_tointeger(L, 1);
+                    
+                        short gen_ret = XLuaFramework.Util.SwapInt16( _n );
+                        LuaAPI.xlua_pushinteger(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_SwapInt32_xlua_st_(RealStatePtr L)
+        {
+		    try {
+            
+            
+            
+                
+                {
+                    int _n = LuaAPI.xlua_tointeger(L, 1);
+                    
+                        int gen_ret = XLuaFramework.Util.SwapInt32( _n );
+                        LuaAPI.xlua_pushinteger(L, gen_ret);
                     
                     
                     

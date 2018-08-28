@@ -135,7 +135,7 @@ namespace Sproto
 				info.requestObj = null;
 				info.Response = null;
 				info.type = RpcType.RESPONSE;
-				info.responseObj =  (response == null)?(null):(response (buffer, offset));
+				info.responseObj =  (response == null)?(null):(response (buffer, offset, buffer.Length));
 			}
 
 			return info;

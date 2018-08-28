@@ -10,10 +10,12 @@ using XLua;
 namespace XLuaFramework {
     using NetEventType = KeyValuePair<Action<byte[]>, byte[]>;
     
-    public enum DisType {
+    public enum DisType 
+    {
         Exception,
         Disconnect,
     }
+
     //网络包的类型
     [Hotfix]
     [LuaCallCSharp]
@@ -25,7 +27,8 @@ namespace XLuaFramework {
 
     [Hotfix]
     [LuaCallCSharp]
-    public class NetworkManager : MonoBehaviour {
+    public class NetworkManager : MonoBehaviour 
+    {
         static NetworkManager _instance;
         static readonly object m_lockObject = new object();
         static Queue<NetEventType> mEvents = new Queue<NetEventType>();
@@ -35,10 +38,10 @@ namespace XLuaFramework {
         private BinaryReader reader;
         private NetPackageType curPackageType = NetPackageType.BaseLine;
         private const int MAX_READ = 8192;
-        private int session = 0;
-        private int maxSession = int.MaxValue/2;
+        // private int session = 0;
+        // private int maxSession = int.MaxValue/2;
         private byte[] byteBuffer = new byte[MAX_READ];
-        public static bool loggedIn = false;
+        // public static bool loggedIn = false;
         Action<byte[]> onConnectCallBack = null;
         Action<byte[]> onDisConnectCallBack = null;
         Action<byte[]> onReceiveLineCallBack = null;
@@ -88,64 +91,62 @@ namespace XLuaFramework {
             }
         }
 
-        public int MaxSession
-        {
-            get
-            {
-                return maxSession;
-            }
-
-            set
-            {
-                maxSession = value;
-            }
-        }
-
         public static NetworkManager GetInstance()
         {
             return _instance;
         }
 
-        void Awake() {
+        void Awake() 
+        {
             _instance = this;
             Init();
         }
 
-        void Init() {
+        void Init() 
+        {
             memStream = new MemoryStream();
             reader = new BinaryReader(memStream);
         }
 
-        public static void AddEvent(Action<byte[]> _event, byte[] data) {
-            lock (m_lockObject) {
+        public static void AddEvent(Action<byte[]> _event, byte[] data) 
+        {
+            lock (m_lockObject) 
+            {
                 mEvents.Enqueue(new NetEventType(_event, data));
             }
         }
 
         void Update() {
-            if (mEvents.Count > 0) {
-                while (mEvents.Count > 0) {
+            if (mEvents.Count > 0) 
+            {
+                while (mEvents.Count > 0) 
+                {
                     NetEventType _event = mEvents.Dequeue();
                     _event.Key(_event.Value);
                 }
             }
         }
 
-        public void SendConnect(string host, int port, NetPackageType type) {
+        public void SendConnect(string host, int port, NetPackageType type)
+        {
             Debug.Log("host : " + host + " port:" + port.ToString() + " type:"+ type.ToString());
             client = null;
             curPackageType = type;
-            try {
+            try 
+            {
                 IPAddress[] address = Dns.GetHostAddresses(host);
                 Debug.Log("address.Length : " + address.Length.ToString());
-                if (address.Length == 0) {
+                if (address.Length == 0)
+                {
                     Debug.LogError("host invalid");
                     return;
                 }
-                if (address[0].AddressFamily == AddressFamily.InterNetworkV6) {
+                if (address[0].AddressFamily == AddressFamily.InterNetworkV6)
+                {
                     client = new TcpClient(AddressFamily.InterNetworkV6);
                 }
-                else {
+                else 
+                {
                     client = new TcpClient(AddressFamily.InterNetwork);
                 }
                 client.SendTimeout = 1000;
@@ -153,9 +154,12 @@ namespace XLuaFramework {
                 client.NoDelay = true;
                 Debug.Log("begin connect socket");
                 client.BeginConnect(host, port, new AsyncCallback(OnConnect), null);
-            } catch (Exception e) {
+            } 
+            catch (Exception e) 
+            {
                 Debug.Log("begin connect socket error");
-                Close(); Debug.LogError(e.Message);
+                this.Close(); 
+                Debug.LogError(e.Message);
             }
         }
 
@@ -187,38 +191,51 @@ namespace XLuaFramework {
                 }
                 writer.Write(message);
                 writer.Flush();
-                if (client != null && client.Connected) {
+                if (client != null && client.Connected) 
+                {
                     byte[] payload = ms.ToArray();
                     outStream.BeginWrite(payload, 0, payload.Length, new AsyncCallback(OnWrite), null);
-                } else {
+                } 
+                else 
+                {
                     Debug.LogError("client.connected----->>false");
                 }
             }
         }
-        public void SendBytesWithoutSize(byte[] message) {
+
+        public void SendBytesWithoutSize(byte[] message) 
         {
-            if (client != null && client.Connected) {
+            if (client != null && client.Connected) 
+            {
                 outStream.BeginWrite(message, 0, message.Length, new AsyncCallback(OnWrite), null);
+            }
             else
                 Debug.LogError("SendBytesWithoutSize failed:connected----->>false");
         }
 
-        void OnRead(IAsyncResult asr) {
+        void OnRead(IAsyncResult asr) 
+        {
             int bytesRead = 0;
-            try {
-                lock (client.GetStream()) {         //读取字节流到缓冲区
+            try 
+            {
+                lock (client.GetStream()) 
+                {         //读取字节流到缓冲区
                     bytesRead = client.GetStream().EndRead(asr);
                 }
-                if (bytesRead < 1) {                //包尺寸有问题，断线处理
+                if (bytesRead < 1) 
+                {                //包尺寸有问题，断线处理
                     OnDisconnected(DisType.Disconnect, "bytesRead < 1");
                     return;
                 }
                 OnReceive(byteBuffer, bytesRead);   //分析数据包内容，抛给逻辑层
-                lock (client.GetStream()) {         //分析完，再次监听服务器发过来的新消息
+                lock (client.GetStream()) 
+                {         //分析完，再次监听服务器发过来的新消息
                     Array.Clear(byteBuffer, 0, byteBuffer.Length);   //清空数组
                     client.GetStream().BeginRead(byteBuffer, 0, MAX_READ, new AsyncCallback(OnRead), null);
                 }
-            } catch (Exception ex) {
+            } 
+            catch (Exception ex) 
+            {
                 OnDisconnected(DisType.Exception, ex.Message);
             }
         }
@@ -255,24 +272,31 @@ namespace XLuaFramework {
             }
         }
 
-        void OnDisconnected(DisType dis, string msg) {
+        void OnDisconnected(DisType dis, string msg) 
+        {
             Close();   //关掉客户端链接
             Debug.Log("networkmanager on disconnect!" + msg + " trace:" + new System.Diagnostics.StackTrace().ToString());
             AddEvent(onDisConnectCallBack, null);
         }
 
-        void PrintBytes() {
+        void PrintBytes() 
+        {
             string returnStr = string.Empty;
-            for (int i = 0; i < byteBuffer.Length; i++) {
+            for (int i = 0; i < byteBuffer.Length; i++) 
+            {
                 returnStr += byteBuffer[i].ToString("X2");
             }
             Debug.LogError(returnStr);
         }
 
-        void OnWrite(IAsyncResult r) {
-            try {
+        void OnWrite(IAsyncResult r) 
+        {
+            try 
+            {
                 outStream.EndWrite(r);
-            } catch (Exception ex) {
+            } 
+            catch (Exception ex) 
+            {
                 Debug.LogError("OnWrite--->>>" + ex.Message);
             }
         }
@@ -314,7 +338,7 @@ namespace XLuaFramework {
             while (RemainingBytes() > 2)
             {
                 ushort messageLen = reader.ReadUInt16();
-                messageLen = SwapUInt16((UInt16)(messageLen));
+                messageLen = Util.SwapUInt16((UInt16)(messageLen));
                 if (RemainingBytes() >= messageLen)
                 {
                     OnReceivedMessage(reader.ReadBytes((int)messageLen));
@@ -331,7 +355,8 @@ namespace XLuaFramework {
             memStream.Write(leftover, 0, leftover.Length);
         }
 
-        private long RemainingBytes() {
+        long RemainingBytes() 
+        {
             return memStream.Length - memStream.Position;
         }
 
@@ -344,16 +369,20 @@ namespace XLuaFramework {
         {
             AddEvent(onReceiveMsgCallBack, cmd_byte);
         }
-        public void Close() 
+
+        void Close() 
         {
-            if (client != null) {
-                if (client.Connected) client.Close();
+            if (client != null) 
+            {
+                if (client.Connected) 
+                    client.Close();
                 client = null;
             }
-            loggedIn = false;
+            // loggedIn = false;
         }
 
-        new void OnDestroy() {
+        void OnDestroy() 
+        {
             onConnectCallBack = null;
             onDisConnectCallBack = null;
             onReceiveLineCallBack = null;
@@ -363,7 +392,7 @@ namespace XLuaFramework {
                 if (client.Connected) client.Close();
                 client = null;
             }
-            loggedIn = false;
+            // loggedIn = false;
             reader.Close();
             memStream.Close();
             Debug.Log("~NetworkManager was destroy");

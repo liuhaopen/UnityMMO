@@ -25,13 +25,13 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(XLuaManager), XLuaManagerWrap.__Register);
         
         
-            translator.DelayWrapLoader(typeof(XLuaFramework.AppConfig), XLuaFrameworkAppConfigWrap.__Register);
-        
-        
             translator.DelayWrapLoader(typeof(XLuaFramework.UIHelper), XLuaFrameworkUIHelperWrap.__Register);
         
         
-            translator.DelayWrapLoader(typeof(XLuaFramework.ResourceManager), XLuaFrameworkResourceManagerWrap.__Register);
+            translator.DelayWrapLoader(typeof(XLuaFramework.Util), XLuaFrameworkUtilWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(XLuaFramework.AppConfig), XLuaFrameworkAppConfigWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(XLuaFramework.NetPackageType), XLuaFrameworkNetPackageTypeWrap.__Register);
@@ -40,7 +40,7 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(XLuaFramework.NetworkManager), XLuaFrameworkNetworkManagerWrap.__Register);
         
         
-            translator.DelayWrapLoader(typeof(XLuaFramework.Util), XLuaFrameworkUtilWrap.__Register);
+            translator.DelayWrapLoader(typeof(XLuaFramework.ResourceManager), XLuaFrameworkResourceManagerWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(UnityMMO.GameConst), UnityMMOGameConstWrap.__Register);
