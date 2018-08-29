@@ -2,7 +2,6 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Rendering;
 using Unity.Transforms;
-using Unity.Transforms2D;
 using UnityEngine;
 
 namespace UnityMMO{
@@ -24,7 +23,8 @@ public class MainWorld
         entityManager = World.Active.GetOrCreateManager<EntityManager>();
         MainRoleArchetype = entityManager.CreateArchetype(
                 typeof(Position), typeof(PlayerInput),
-                typeof(TransformMatrix), typeof(MoveSpeed), typeof(SynchPosFlag), typeof(Heading));
+                typeof(MoveSpeed), typeof(SynchPosFlag));
+                //typeof(TransformMatrix), 
     }
 
     public void StartGame() {

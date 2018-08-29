@@ -8,6 +8,8 @@ Assets/ParadoxNotion/
 StreamingAssets/
 StreamingAssetsAndroid/
 .svn/
+Logs/
+.vscode/
 Server/lsocket/
 Server/skynet/
 App/

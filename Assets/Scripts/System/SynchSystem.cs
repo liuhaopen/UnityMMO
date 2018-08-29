@@ -1,7 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
-using Unity.Transforms2D;
 using Unity.Transforms;
 using XLuaFramework;
 using SprotoType;

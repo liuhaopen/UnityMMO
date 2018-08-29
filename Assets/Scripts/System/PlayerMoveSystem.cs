@@ -1,7 +1,6 @@
 ﻿using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
-using Unity.Transforms2D;
 using Unity.Transforms;
 
 namespace UnityMMO
@@ -35,7 +34,7 @@ namespace UnityMMO
                 position.z += dt * playerInput.Move.y * m_Data.Speed[index].speed;
                 // Debug.Log("player move system update position :"+position.ToString());
 
-                // if (playerInput.Fire)
+                // if (playerInput.Fire)    
                 // {
                 //     heading = math.normalize(playerInput.Shoot);
 

@@ -1,7 +1,6 @@
 ﻿using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
-using Unity.Transforms2D;
 
 namespace UnityMMO
 {
@@ -9,6 +8,12 @@ namespace UnityMMO
     {
         public float2 Move;
     }
+
+    public struct MoveSpeed : IComponentData
+    {
+        public float speed;
+    }
+    
 
     public struct SynchPosFlag : IComponentData
     {
@@ -24,14 +29,6 @@ namespace UnityMMO
     {
         public const int kPlayer = 0;
         public const int kEnemy = 1;
-    }
-
-    public struct ShotSpawnData : IComponentData
-    {
-        public Shot Shot;
-        public Position2D Position;
-        public Heading2D Heading;
-        public int Faction;
     }
 
     public struct Health : IComponentData
@@ -58,6 +55,6 @@ namespace UnityMMO
     public struct EnemySpawnSystemState : IComponentData
     {
         public int SpawnedEnemyCount;
-        public Random.State RandomState;
+        public UnityEngine.Random.State RandomState;
     }
 }
