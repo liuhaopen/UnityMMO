@@ -31,7 +31,7 @@ namespace XLua.CSObjectWrap
 			Utils.EndObjectRegister(type, L, translator, null, null,
 			    null, null, null);
 
-		    Utils.BeginClassRegister(type, L, __CreateInstance, 10, 10, 4);
+		    Utils.BeginClassRegister(type, L, __CreateInstance, 9, 10, 4);
 			Utils.RegisterFunc(L, Utils.CLS_IDX, "Init", _m_Init_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetRelativePath", _m_GetRelativePath_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetStreamingAssetsTargetPathByPlatform", _m_GetStreamingAssetsTargetPathByPlatform_xlua_st_);
@@ -41,7 +41,6 @@ namespace XLua.CSObjectWrap
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "AppName", XLuaFramework.AppConfig.AppName);
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "LuaTempDir", XLuaFramework.AppConfig.LuaTempDir);
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "AppPrefix", XLuaFramework.AppConfig.AppPrefix);
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "ExtName", XLuaFramework.AppConfig.ExtName);
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "AssetDir", XLuaFramework.AppConfig.AssetDir);
             
 			Utils.RegisterFunc(L, Utils.CLS_GETTER_IDX, "DataPath", _g_get_DataPath);

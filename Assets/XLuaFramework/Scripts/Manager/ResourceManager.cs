@@ -67,6 +67,11 @@ public class AssetBundleInfo {
             LoadAsset<Sprite>(file_path, null, func);
         }
 
+        public void LoadPrefab(string file_path, LuaFunction func = null)
+        {
+            LoadAsset<UnityEngine.GameObject>(file_path, null, func);
+        }
+
         public void LoadPrefabGameObject(string file_path, LuaFunction func = null) {
             this.LoadAsset<GameObject>(file_path, delegate(UnityEngine.Object[] objs) {
                 if (objs.Length == 0) return;
@@ -87,13 +92,9 @@ public class AssetBundleInfo {
                 return abName;
             }
             abName = abName.ToLower();
-            if (!abName.EndsWith(AppConfig.ExtName)) {
-                abName += AppConfig.ExtName;
-            }
             if (abName.Contains("/")) {
                 return abName;
             }
-            //string[] paths = m_AssetBundleManifest.GetAllAssetBundles();  产生GC，需要缓存结果
             for (int i = 0; i < m_AllManifest.Length; i++) {
                 int index = m_AllManifest[i].LastIndexOf('/');  
                 string path = m_AllManifest[i].Remove(0, index + 1);    //字符串操作函数都会产生GC
@@ -136,8 +137,8 @@ public class AssetBundleInfo {
                 }
             }
 #endif
-            string assetName = System.IO.Path.GetFileNameWithoutExtension(name);
-            string abName = PackRule.PathToAssetBundleName(name);
+            string assetName = System.IO.Path.GetFileNameWithoutExtension(file_path);
+            string abName = PackRule.PathToAssetBundleName(file_path);
             this.LoadAsset<T>(abName, new string[] {assetName}, action, func);
         }
 
@@ -145,6 +146,7 @@ public class AssetBundleInfo {
         /// 载入素材
         /// </summary>
         void LoadAsset<T>(string abName, string[] assetNames, Action<UObject[]> action = null, LuaFunction func = null) where T : UObject {
+            Debug.Log("LoadAsset() abName : "+abName);
             abName = GetRealAssetPath(abName);
 
             LoadAssetRequest request = new LoadAssetRequest();
@@ -295,17 +297,6 @@ public class AssetBundleInfo {
                 m_LoadedAssetBundles.Remove(abName);
                 Debug.Log(abName + " has been unloaded successfully");
             }
-        }
-
-        //等删
-        public UnityEngine.Object LoadPrefabInLocalByFile(string file_path)
-        {
-            UnityEngine.Object new_obj = null;
-#if UNITY_EDITOR
-            //这个接口只在编辑器模式下生效
-            new_obj = UnityEditor.AssetDatabase.LoadAssetAtPath(file_path, typeof(UnityEngine.Object));
-#endif
-            return new_obj;
         }
 }
 }

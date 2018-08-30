@@ -23,20 +23,19 @@ namespace XLuaFramework {
         //把sproto协议文件编译成二进制码
         public static bool SprotoBinMode = false;                    
         //应用程序名称
-        public const string AppName = "XLuaFramework";        
+        public const string AppName = "UnityMMO";        
         //临时目录       
         public const string LuaTempDir = "LuaTemp/";    
         //应用程序前缀
         public const string AppPrefix = AppName + "_";          
-        //打出来的包的后缀            
-        public const string ExtName = ".unity3d";                   
         //Asset Bundle的目录 
         public const string AssetDir = "StreamingAssets";          
 
         public static void Init()
         {
             //从配置文件里读取
-
+            if (Application.isMobilePlatform)
+                DebugMode = false;
         }
         
         /// <summary>
@@ -171,7 +170,7 @@ namespace XLuaFramework {
                 if (AppConfig.DebugMode)
                     dataPath = dataPath.Replace("/Assets", "");
 
-                return DebugMode ? dataPath.Replace("UnityMMO/App/PC/PC_Data", "UnityMMO") : dataPath;
+                return DebugMode ? dataPath.Replace(AppName+"/App/PC/"+AppName+"_Data", AppName) : dataPath;
             }
         }
     }

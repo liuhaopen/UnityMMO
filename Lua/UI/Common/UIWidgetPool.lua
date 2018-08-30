@@ -10,32 +10,36 @@ end
 
 function UIWidgetPool:RegisterWidgets( names, call_back )
 	print('Cat:UIWidgetPool.lua[16] AppConfig.DebugMode', AppConfig.DebugMode)
-	if AppConfig.DebugMode then
+	-- if AppConfig.DebugMode then
 		for i,v in ipairs(names) do
-			local prefab = ResMgr:LoadPrefabInLocalByFile(v)
-			--只保留文件名作key值
-			local key = string.gsub(v,".+/","")
-			local start_index = string.find(key, "%.")
-			assert(start_index, "UIWidgetPool:RegisterWidgets failed! load a wrong file : "..v)
-			key = string.sub(key, 1, start_index-1)
-			print('Cat:UIWidgetPool.lua[23] key', key)
-			self.prefab_map[key] = prefab
-		end
-	else
-		local on_load_succeed = function ( prefabs )
-			assert(#prefabs ~= #names, "UIWidgetPool:RegisterWidgets load prefab failed!")
-			for i,v in ipairs(names) do
-				assert(self.prefab_map[v]==nil, "UIWidgetPool:RegisterWidgets already register widget name :"..v)
-				self.prefab_map[v] = prefabs[i-1]
+			local on_load = function ( objs )
+				assert(objs and objs[0], "UIWidgetPool:RegisterWidgets load prefab failed in debug mode!")
+				local prefab = objs[0]
+				--只保留文件名作key值
+				local key = string.gsub(v,".+/","")
+				local start_index = string.find(key, "%.")
+				assert(start_index, "UIWidgetPool:RegisterWidgets failed! load a wrong file : "..v)
+				key = string.sub(key, 1, start_index-1)
+				print('Cat:UIWidgetPool.lua[23] key', key)
+				self.prefab_map[key] = prefab
 			end
-			if call_back then
-				call_back()
-			end
+			ResMgr:LoadPrefab(v, on_load)
 		end
-		assert(false, "not support assets bundle yet")
-		--Cat_Todo : 有空再把Luaframework原来的资源管理改成用全路径的
-		-- ResMgr:LoadPrefab(names, on_load_succeed)
-	end
+	-- else
+	-- 	local on_load_succeed = function ( prefabs )
+	-- 		assert(#prefabs ~= #names, "UIWidgetPool:RegisterWidgets load prefab failed!")
+	-- 		for i,v in ipairs(names) do
+	-- 			assert(self.prefab_map[v]==nil, "UIWidgetPool:RegisterWidgets already register widget name :"..v)
+	-- 			self.prefab_map[v] = prefabs[i-1]
+	-- 		end
+	-- 		if call_back then
+	-- 			call_back()
+	-- 		end
+	-- 	end
+	-- 	assert(false, "not support assets bundle yet")
+	-- 	--Cat_Todo : 有空再把Luaframework原来的资源管理改成用全路径的
+	-- 	ResMgr:LoadPrefab(names, on_load_succeed)
+	-- end
 end
 
 --创建一个ui通用控件

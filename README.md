@@ -9,6 +9,15 @@
 )在虚拟机安装mysql并导入Server/data/里的两个数据库文件  
 )运行:./run.sh跑起服务端  
 
+# 各模块的技术选型
+)玩法逻辑:使用Unity2018自带的ECS系统配合图形化编程工具flowcanvas(c#代码)  
+)界面逻辑:使用自制的基于组件的UI系统,全lua开发,动画也由lua实现了一份cocos的action  
+)网络协议:使用sproto,玩法用c#版本,界面用lua版本  
+)场景管理:使用T4M管理场景模型,自由视角和无缝加载  
+)资源管理:使用Unity新版的AssetBundleBrowser打包资源  
+)数据管理:使用redis,后面再看看要不要加入mysql  
+)同步模式:状态+差异同步  
+
 # 已完成
 )前端用Luaframework的网络接口,后端用skynet的loginserver通过登录验证  
 )使用sproto协议,按模块分文件和id组,开发时拼接所有协议文件,发布版则预导出为二进制(支持lua和c#)  
@@ -26,12 +35,11 @@
 )人物动作方面等Unity的新版Animation系统(IAnimationJob)完善后再介入吧  
 )战斗系统  
 )报错界面(10%)  
-)资源管理:增加本地加载模式(直接读取本地lua和资源,Luaframework每次改界面都要打包资源这太难受了,目前只有一界面暂时不做)(30%)  
-)使用Unity的AssetBundleBrowser打包资源
+)资源管理:增加本地加载模式(直接读取本地lua和资源,Luaframework每次改界面都要打包资源这太难受了,目前只有一界面暂时不做)(40%)  
 )管理SDK接入  
 
 后端:  
-)人物的移动同步(10%)  
+)人物的移动同步(20%)  
 )使用Redis  
 )AOI  
 )NPC与怪物AI  

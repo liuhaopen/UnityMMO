@@ -78,7 +78,6 @@ public class XLuaManager : MonoBehaviour
 
     public void StartGame()
     {
-
     }
 
     public void SafeDoString(string scriptContent)
@@ -102,36 +101,27 @@ public class XLuaManager : MonoBehaviour
         SafeDoString(string.Format("require('{0}')", scriptName));
     }
 
+    static bool IsUseLuaFileWithoutBundle = false;//just for debug 
     public static byte[] CustomLoader(ref string filepath)
     {
         string scriptPath = string.Empty;
         filepath = filepath.Replace(".", "/") + ".lua";
-#if UNITY_EDITOR
+
         if (AppConfig.DebugMode)
         {
-            // scriptPath = Path.Combine(Application.dataPath, luaScriptsFolder);
             scriptPath = Path.Combine(AppConfig.LuaAssetsDir, filepath);
             // Debug.Log("Load lua script : " + scriptPath);
             return Util.GetFileBytes(scriptPath);
         }
-#endif
-
-        // scriptPath = string.Format("{0}/{1}.bytes", luaAssetbundleAssetName, filepath);
-        // string assetbundleName = null;
-        // string assetName = null;
-        // bool status = AssetBundleManager.Instance.MapAssetPath(scriptPath, out assetbundleName, out assetName);
-        // if (!status)
-        // {
-        //     Debug.LogError("MapAssetPath failed : " + scriptPath);
-        //     return null;
-        // }
-        // var asset = AssetBundleManager.Instance.GetAssetCache(assetName) as TextAsset;
-        // if (asset != null)
-        // {
-        //     //Logger.Log("Load lua script : " + scriptPath);
-        //     return asset.bytes;
-        // }
-        // Debug.LogError("Load lua script failed : " + scriptPath + ", You should preload lua assetbundle first!!!");
+        else if (IsUseLuaFileWithoutBundle)
+        {
+            string dataPath = Application.dataPath;
+            dataPath = dataPath.Replace("/Assets", "");
+            dataPath = dataPath.Replace(AppConfig.AppName+"/App/PC/"+AppConfig.AppName+"_Data", AppConfig.AppName);
+            scriptPath = Path.Combine(dataPath + "/Lua/", filepath);
+            // Debug.Log("Load lua script : " + scriptPath);
+            return Util.GetFileBytes(scriptPath);
+        }
         return null;
     }
 
