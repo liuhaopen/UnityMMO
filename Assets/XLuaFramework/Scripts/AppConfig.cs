@@ -15,7 +15,7 @@ namespace XLuaFramework {
         /// 复制到自己的Webserver上面，并修改下面的WebUrl。
         /// 更新模式-默认关闭,如果是手机平台的话将自动设为true
         /// </summary>
-        public static bool UpdateMode = false;                       
+        public static bool UpdateMode = true;                       
          //Lua字节码模式-默认关闭 
         public const bool LuaByteMode = false;                      
         //Lua代码AssetBundle模式

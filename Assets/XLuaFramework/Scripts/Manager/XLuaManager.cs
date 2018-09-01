@@ -78,6 +78,7 @@ public class XLuaManager : MonoBehaviour
 
     public void StartGame()
     {
+        
     }
 
     public void SafeDoString(string scriptContent)

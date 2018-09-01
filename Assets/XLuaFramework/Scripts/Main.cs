@@ -8,6 +8,7 @@ namespace XLuaFramework {
     public class Main : MonoBehaviour {
         public enum State{
             None,
+            CheckExtractResource,
             UpdateResourceFromNet,
             InitAssetBundle,
             StartGame,
@@ -31,39 +32,63 @@ namespace XLuaFramework {
                     this.gameObject.AddComponent<LogHandler>();
             }
 
+            this.gameObject.AddComponent<ThreadManager>();//for download or extract assets
             this.gameObject.AddComponent<ResourceManager>();
             this.gameObject.AddComponent<NetworkManager>();
             UnityMMO.NetMsgDispatcher.GetInstance().Init();
 
-            JumpToState(State.InitAssetBundle);
+            JumpToState(State.CheckExtractResource);
         }
 
         void JumpToState(State new_state)
         {
             cur_state = new_state;
             cur_sub_state = SubState.Enter;
+            Debug.Log("new_state : "+new_state.ToString());
         }
 
-        private void Update() {
+        private void Update() 
+        {
             switch(cur_state)
             {
+                case State.CheckExtractResource:
+                    if (cur_sub_state == SubState.Enter)
+                    {
+                        cur_sub_state = SubState.Update;
+                        this.gameObject.AddComponent<AssetsHotFixManager>();
+                        AssetsHotFixManager.Instance.CheckExtractResource(delegate() {
+                            Debug.Log("Main.cs CheckExtractResource OK!!!");
+                            JumpToState(State.UpdateResourceFromNet);
+                        });
+                    }
+                    break;  
+                case State.UpdateResourceFromNet:
+                    if (cur_sub_state == SubState.Enter)
+                    {
+                        cur_sub_state = SubState.Update;
+                        AssetsHotFixManager.Instance.UpdateResource(delegate() {
+                            Debug.Log("Main.cs UpdateResourceFromNet OK!!!");
+                            JumpToState(State.InitAssetBundle);
+                        });
+                    }
+                    break;
                 case State.InitAssetBundle:
                     if (cur_sub_state == SubState.Enter)
                     {
+                        cur_sub_state = SubState.Update;
                         ResourceManager.GetInstance().Initialize(AppConfig.AssetDir, delegate() {
-                            Debug.Log("ResourceManager Initialize OK!!!");
+                            Debug.Log("Main.cs ResourceManager Initialize OK!!!");
                             JumpToState(State.StartGame);
                         });
-                        cur_sub_state = SubState.Update;
                     }
                     break;
                 case State.StartGame:
                     if (cur_sub_state == SubState.Enter)
                     {
+                        cur_sub_state = SubState.Update;
                         this.gameObject.AddComponent<XLuaManager>();
                         UnityMMO.MainWorld.GetInstance().Initialize();
                         UnityMMO.MainWorld.GetInstance().StartGame();
-                        cur_sub_state = SubState.Update;
                     }
                     break;
             }
