@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿//this file is copied from LuaFramework : https://github.com/jarjin/LuaFramework_UGUI
+using System.Collections;
 using System.Threading;
 using System.Collections.Generic;
 using System.IO;
@@ -69,7 +70,6 @@ namespace XLuaFramework {
         /// </summary>
         /// <param name="state"></param>
         private void OnSyncEvent(NotiData data) {
-            UnityEngine.Debug.Log("this.func : "+(this.func!=null).ToString());
             if (this.func != null) 
                 func(data);  //回调逻辑层
             // facade.SendMessageCommand(data.evName, data.evParam); //通知View层
@@ -79,8 +79,6 @@ namespace XLuaFramework {
         void OnUpdate() {
             while (true) {
                 lock (m_lockObject) {
-                    if (events.Count>0)
-                        UnityEngine.Debug.Log("events.Count : "+events.Count.ToString());
                     if (events.Count > 0) {
                         ThreadEvent e = events.Dequeue();
                         try {
@@ -108,7 +106,7 @@ namespace XLuaFramework {
         /// </summary>
         void OnDownloadFile(List<object> evParams) {
             string url = evParams[0].ToString();
-            UnityEngine.Debug.Log("OnDownloadFile url : "+url);
+            // UnityEngine.Debug.Log("OnDownloadFile url : "+url);
             currDownFile = evParams[1].ToString();
 
             using (WebClient client = new WebClient()) {
@@ -119,7 +117,7 @@ namespace XLuaFramework {
         }
 
         private void ProgressChanged(object sender, DownloadProgressChangedEventArgs e) {
-            UnityEngine.Debug.Log("ProgressPercentage :"+e.ProgressPercentage.ToString());
+            // UnityEngine.Debug.Log("ProgressPercentage :"+e.ProgressPercentage.ToString());
             /*
             UnityEngine.Debug.Log(string.Format("{0} MB's / {1} MB's",
                 (e.BytesReceived / 1024d / 1024d).ToString("0.00"),
@@ -144,7 +142,6 @@ namespace XLuaFramework {
         /// 调用方法
         /// </summary>
         void OnExtractFile(List<object> evParams) {
-            UnityEngine.Debug.LogWarning("Thread evParams: >>" + evParams.Count);
 
             ///------------------通知更新面板解压完成--------------------
             NotiData data = new NotiData(NotiData.UPDATE_DOWNLOAD, null);

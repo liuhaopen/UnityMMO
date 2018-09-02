@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿//this file is copied from LuaFramework : https://github.com/jarjin/LuaFramework_UGUI
+using UnityEditor;
 using UnityEngine;
 using System.IO;
 using System.Text;
@@ -13,7 +14,6 @@ public class Packager {
     static List<string> files = new List<string>();
     static List<AssetBundleBuild> maps = new List<AssetBundleBuild>();
 
-    ///-----------------------------------------------------------
     static string[] exts = { ".txt", ".xml", ".lua", ".assetbundle", ".json" };
     static bool CanCopy(string ext) {   //能不能复制
         foreach (string e in exts) {
@@ -21,14 +21,6 @@ public class Packager {
         }
         return false;
     }
-
-    /// <summary>
-    /// 载入素材
-    /// </summary>
-    //static UnityEngine.Object LoadAsset(string file) {
-    //    if (file.EndsWith(".lua")) file += ".txt";
-    //    return AssetDatabase.LoadMainAssetAtPath("Assets/LuaFramework/Examples/Builds/" + file);
-    //}
 
     [MenuItem("LuaFramework/Build iPhone Resource", false, 100)]
     public static void BuildiPhoneResource() {
@@ -336,32 +328,7 @@ public class Packager {
                 //assets_list.Add(build.assetBundleName);
             }
         }
-
-        //string single_path = "Assets/" + AppConfig.AppName + "/AssetBundleRes/ui/alphaSingle";
-        //paths.Clear(); files.Clear(); Recursive(single_path);
-        //foreach (string f in files)
-        //{
-        //    string file_name = Path.GetFileNameWithoutExtension(f);
-        //    string abName = "alphaSingle_" + file_name + AppConfig.ExtName;
-        //    DeleteUICache(dataPath, abName);
-
-        //    AddBuildMap(abName, "*.png", f);
-        //    assets_list.Add(abName);
-        //}
     }
-    /// <summary>
-    /// 处理框架实例包
-    /// </summary>
-    //static void HandleExampleBundle() {
-    //    string resPath = AppDataPath + "/" + AppConfig.AssetDir + "/";
-    //    if (!Directory.Exists(resPath)) Directory.CreateDirectory(resPath);
-
-    //    AddBuildMap("prompt" + AppConfig.ExtName, "*.prefab", "Assets/LuaFramework/Examples/Builds/Prompt");
-    //    AddBuildMap("message" + AppConfig.ExtName, "*.prefab", "Assets/LuaFramework/Examples/Builds/Message");
-
-    //    AddBuildMap("prompt_asset" + AppConfig.ExtName, "*.png", "Assets/LuaFramework/Examples/Textures/Prompt");
-    //    AddBuildMap("shared_asset" + AppConfig.ExtName, "*.png", "Assets/LuaFramework/Examples/Textures/Shared");
-    //}
 
     //[MenuItem("Test/Build Sproto BinFile")]
     public static void TestHandleSprotoBundle()
@@ -536,35 +503,4 @@ public class Packager {
         Directory.SetCurrentDirectory(currDir);
     }
 
-    //[MenuItem("LuaFramework/Build Protobuf-lua-gen File")]
-    //public static void BuildProtobufFile() {
-    //    if (!AppConfig.ExampleMode) {
-    //        UnityEngine.Debug.LogError("若使用编码Protobuf-lua-gen功能，需要自己配置外部环境！！");
-    //        return;
-    //    }
-    //    string dir = AppDataPath + "/Lua/3rd/pblua";
-    //    paths.Clear(); files.Clear(); Recursive(dir);
-
-    //    string protoc = "d:/protobuf-2.4.1/src/protoc.exe";
-    //    string protoc_gen_dir = "\"d:/protoc-gen-lua/plugin/protoc-gen-lua.bat\"";
-
-    //    foreach (string f in files) {
-    //        string name = Path.GetFileName(f);
-    //        string ext = Path.GetExtension(f);
-    //        if (!ext.Equals(".proto")) continue;
-
-    //        ProcessStartInfo info = new ProcessStartInfo();
-    //        info.FileName = protoc;
-    //        info.Arguments = " --lua_out=./ --plugin=protoc-gen-lua=" + protoc_gen_dir + " " + name;
-    //        info.WindowStyle = ProcessWindowStyle.Hidden;
-    //        info.UseShellExecute = true;
-    //        info.WorkingDirectory = dir;
-    //        info.ErrorDialog = true;
-    //        Util.Log(info.FileName + " " + info.Arguments);
-
-    //        Process pro = Process.Start(info);
-    //        pro.WaitForExit();
-    //    }
-    //    AssetDatabase.Refresh();
-    //}
 }

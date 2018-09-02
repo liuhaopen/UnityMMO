@@ -11,6 +11,8 @@ namespace XLuaFramework {
             CheckExtractResource,
             UpdateResourceFromNet,
             InitAssetBundle,
+            InitSDK,
+            InitBaseCode,
             StartGame,
         }
         public enum SubState{

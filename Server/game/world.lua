@@ -28,7 +28,7 @@ function CMD.role_enter_game( user_info, role_id )
 		scene = scene_services[scene_ids[1]]
 	end
 	user_info.scene_service = scene
-	skynet.call(scene, "lua", "role_enter_scene", role_id, pos)
+	skynet.call(scene, "lua", "role_enter_scene", role_id)
 	return 1
 end
 

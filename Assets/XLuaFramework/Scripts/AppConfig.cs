@@ -36,7 +36,9 @@ namespace XLuaFramework {
             //从配置文件里读取
             if (Application.isMobilePlatform)
                 DebugMode = false;
-        }
+                UpdateMode = true;
+        }                
+
         
         /// <summary>
         /// 取得数据存放目录
