@@ -67,15 +67,12 @@ end
 function LoginController:ReqMainRole(  )
     local on_ack_main_role = function ( ack_role_data )
         --请求场景信息
-        local on_ack_scene_info = function ( ack_scene_data )
-            --加载场景
-
-            --关闭加载界面
-            
-        end
-        NetDispatcher:SendMessage("scene_get_cur_scene_info", nil, on_ack_scene_info)
+        -- local on_ack_scene_info = function ( ack_scene_data )
+        --     --加载场景
+        --     --关闭加载界面
+        -- end
+        -- NetDispatcher:SendMessage("scene_get_cur_scene_info", nil, on_ack_scene_info)
         --加载其它系统的controller
-        
     end
     NetDispatcher:SendMessage("scene_get_main_role_info", nil, on_ack)
 end

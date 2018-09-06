@@ -5,6 +5,18 @@ return [[
 	career 1 : integer
 	name 2 : string
 }
+.scene_int_key_value {
+	key 0 : integer
+	value 1 : integer
+}
+.scene_str_key_value {
+	key 0 : integer
+	value 1 : string
+}
+.scene_obj_info {
+	int_key_value 0 : *scene_int_key_value
+	str_key_value 1 : *scene_str_key_value
+}
 .scene_role_info {
 	role_id 0 : integer
 	career 1 : integer
@@ -46,7 +58,14 @@ scene_walk 102 {
 		time  6 : integer
 	}
 	response {
-		
+	}
+}
+
+scene_get_objs_info_change 103 {
+	request {
+	}
+	response {
+		obj_infos 0 : *scene_obj_info
 	}
 }
 

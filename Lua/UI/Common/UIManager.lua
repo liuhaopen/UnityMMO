@@ -105,15 +105,15 @@ function UIMgr:Close( view )
 
 	self:SetViewVisible(view, false)
 
+	if view.OnClose then
+		view:OnClose()
+	end
 	if view.UIConfig.components then
 		for i,v in ipairs(view.UIConfig.components) do
 			if v.OnClose then
 				v.OnClose(view)
 			end
 		end
-	end
-	if view.OnClose then
-		view:OnClose()
 	end
 	if not view.UIConfig.is_destroyed then
 		GameObject.Destroy(view.gameObject)

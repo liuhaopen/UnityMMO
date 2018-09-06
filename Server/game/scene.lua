@@ -3,9 +3,19 @@ require "Common.Util.util"
 
 local CMD = {}
 local empty_table = {}
+local role_lists = {}
+--the scene object includes the role monster npc
+local scene_object_id = 0
 
 function CMD.init(scene_id)
 	print('Cat:scene.lua[init] scene_id', scene_id)
+	skynet.fork(function()
+		while true do
+			skynet.sleep(50)
+			--synch roles position
+			
+		end
+	end)
 end
 
 function CMD.role_enter_scene(role_id)
@@ -24,6 +34,11 @@ function CMD.scene_walk( user_info, req_data )
 	PrintTable(req_data)
 	print("Cat:scene [end]")
 	return empty_table
+end
+
+function CMD.scene_get_objs_info_change( user_info, req_data )
+	print('Cat:scene.lua[scene_get_objs_info_change] user_info, req_data', user_info, user_info.cur_role_id)
+
 end
 
 skynet.start(function()
