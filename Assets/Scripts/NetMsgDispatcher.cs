@@ -33,7 +33,7 @@ namespace UnityMMO
         {
             rpcRspHandlerDict = new Dictionary<long, RpcRspHandler>();
             sessionDict = new Dictionary<long, ProtocolFunctionDictionary.typeFunc>();
-            NetworkManager.GetInstance().OnReceiveMsgCallBack += OnReceiveMsgFromNet;
+            // NetworkManager.GetInstance().OnReceiveMsgCallBack += OnReceiveMsgFromNet;
 
         }
 
@@ -90,7 +90,7 @@ namespace UnityMMO
         
         public void SendMessage<T>(SprotoTypeBase rpcReq, RpcRspHandler rpcRspHandler = null) {
             session += 1;
-                if (session > maxSession)
+                if (session >= maxSession)
                     session = 0;
             if (rpcRspHandler != null)
             {

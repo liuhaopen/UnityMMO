@@ -30,12 +30,13 @@ function OnReceiveMsgFromServer(bytes)
 end
 
 local print_net = function() end
--- print_net = print --注释掉就不打印网络信息了
+print_net = print --注释掉就不打印网络信息了
 
 function NetDispatcher:Start() 
-    print("NetDispatcher.Start!!", GameConst.MinLuaNetSessionID);
-    self.min_session_id = GameConst.MinLuaNetSessionID
-    self.session = self.min_session_id
+    print("NetDispatcher.Start!!", GameConst.MaxLuaNetSessionID);
+    self.min_lua_net_session_id = GameConst.MinLuaNetSessionID
+    self.max_lua_net_session_id = GameConst.MaxLuaNetSessionID
+    self.session = self.max_lua_net_session_id
     
     self.response_call_back = {}
     --一开始是不分发sproto协议的,要等游戏验证正式的服务器后才开始
@@ -85,9 +86,10 @@ end
 function NetDispatcher:SendMessage( req_name, req_arg, response_call_back )
     print_net('Cat:NetDispatcher.lua[57] req_name, req_arg, response_call_back', req_name, req_arg, response_call_back)
     self.session = self.session + 1
-    if self.session < self.min_session_id then
-        self.session = self.min_session_id
-    end
+    -- if self.session >= self.max_lua_net_session_id then
+    --     self.session = self.min_lua_net_session_id
+    -- end
+    print('Cat:NetDispatcher.lua[93] self.session', self.session)
     local code, tag = self.sproto_c2s:request_encode(req_name, req_arg)
     print_net('Cat:NetDispatcher.lua[129] tag', tag)
     print_net('Cat:NetDispatcher.lua[117] code', code)

@@ -73,8 +73,12 @@ function LoginController:ReqMainRole(  )
         -- end
         -- NetDispatcher:SendMessage("scene_get_cur_scene_info", nil, on_ack_scene_info)
         --加载其它系统的controller
+        print("Cat:LoginController [start:76] ack_role_data:", ack_role_data)
+        PrintTable(ack_role_data)
+        print("Cat:LoginController [end]")
+        
     end
-    NetDispatcher:SendMessage("scene_get_main_role_info", nil, on_ack)
+    NetDispatcher:SendMessage("scene_get_main_role_info", nil, on_ack_main_role)
 end
 
 function LoginController:StartLogin(login_info)
