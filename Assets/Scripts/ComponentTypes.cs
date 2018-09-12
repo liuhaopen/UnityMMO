@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿using Unity.Collections;
+using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -30,12 +31,22 @@ namespace UnityMMO
         public const int kPlayer = 0;
         public const int kEnemy = 1;
     }
-
+    public struct ModifyHealthQueue : IComponentData
+    {
+        public NativeArray<float> queue;
+    }
     public struct Health : IComponentData
     {
         public float Value;
     }
-
+    public struct SceneObjectData : IComponentData
+    {
+        public enum Type 
+        {
+            Role,Monster,NPC
+        }
+        Type type;
+    }
     // Pure marker types
     public struct Enemy : IComponentData { }
     public struct EnemyShot : IComponentData { }

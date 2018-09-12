@@ -21,6 +21,13 @@ namespace UnityMMO
 
         [Inject] private Data m_Data;
 
+        protected override void OnCreateManager(int capacity)
+	    {
+            Debug.Log("synch system OnCreateManager");
+		    base.OnCreateManager(capacity);
+
+        }
+        
         protected override void OnUpdate()
         {
             //upload per second
