@@ -43,7 +43,7 @@ function UIMgr:AddUIComponent( view, component )
 		end
 	end
 	if not had_component then
-		table.insert(view.UIConfig.components, component)
+		table.insert(view.UIConfig.components, component.New())
 	end
 end
 

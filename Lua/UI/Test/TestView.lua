@@ -1,16 +1,34 @@
 local TestView = BaseClass()
 
-function TestView:DefaultVar( )
-	return { 
-	UIConfig = {
+function TestView:Constructor( )
+	self.UIConfig = {
 		prefab_path = "Assets/AssetBundleRes/ui/prefab/test/TestView.prefab",
 		canvas_name = "Normal",
-		bg_alpha = 0.5,--背景的透明度,create_bg为true时才有效
-		click_bg_to_close = true,--是否点击背景就关闭界面,create_bg为true时才有效
-		components = {UIComponent.PlayOpenCloseSound, UIComponent.DelayDestroy, UIComponent.Background},
-		},
+		Components = {
+			{UIComponent.PlayOpenCloseSound},
+			{UIComponent.DelayDestroy, {delay_time=5}},
+			{UIComponent.Background, {is_click_to_close=true, bg_alpha=0.5}}
+		}
 	}
+	--the same as set in self.UIConfig.Components
+	UIMgr:AddUIComponent(self, UIComponent.PlayOpenCloseSound)
+	local delay_comp = UIMgr:AddUIComponent(self, UIComponent.DelayDestroy)
+	delay_comp:SetDelayTime(5)
+	local bg_comp = UIMgr:AddUIComponent(self, UIComponent.Background)
+	bg_com:SetIsClickToClose(true)
+	bg_com:SetBgAlpha(0.5)--背景的透明度
 end
+-- function TestView:DefaultVar( )
+-- 	return { 
+-- 	UIConfig = {
+-- 		prefab_path = "Assets/AssetBundleRes/ui/prefab/test/TestView.prefab",
+-- 		canvas_name = "Normal",
+-- 		bg_alpha = 0.5,--背景的透明度,create_bg为true时才有效
+-- 		click_bg_to_close = true,--是否点击背景就关闭界面,create_bg为true时才有效
+-- 		components = {UIComponent.PlayOpenCloseSound, UIComponent.DelayDestroy, UIComponent.Background},
+-- 		},
+-- 	}
+-- end
 
 function TestView:OnLoad(  )
 	print('Cat:TestView.lua[OnLoad]')

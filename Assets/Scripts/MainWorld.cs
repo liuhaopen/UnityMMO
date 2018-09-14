@@ -9,8 +9,6 @@ public class MainWorld
 {
     private MainWorld(){}
     static MainWorld instance = null;
-    public EntityManager entityManager;
-    public EntityArchetype MainRoleArchetype;
 
     public static MainWorld GetInstance()
     {
@@ -20,27 +18,13 @@ public class MainWorld
     }
 
     public void Initialize() {
-        entityManager = World.Active.GetOrCreateManager<EntityManager>();
-        MainRoleArchetype = entityManager.CreateArchetype(
-                typeof(Position), typeof(PlayerInput),
-                typeof(MoveSpeed), typeof(SynchPosFlag));
-                //typeof(TransformMatrix), 
+        SceneObjectCreator.Instance.InitArcheType();
     }
 
     public void StartGame() {
-        Entity player = entityManager.CreateEntity(MainRoleArchetype);
-        entityManager.SetComponentData(player, new Position {Value = new float3(0.0f, 0.0f, 0.0f)});
-        entityManager.SetComponentData(player, new MoveSpeed {speed = 12});
-        
-        entityManager.AddSharedComponentData(player, GetLookFromPrototype("Prototype/MainRoleRenderPrototype"));
+        SceneObjectCreator.Instance.AddMainRole();
     }
 
-    private MeshInstanceRenderer GetLookFromPrototype(string protoName)
-    {
-        var proto = GameObject.Find(protoName);
-        var result = proto.GetComponent<MeshInstanceRendererComponent>().Value;
-        Object.Destroy(proto);
-        return result;
-    }
+    
 }
 }

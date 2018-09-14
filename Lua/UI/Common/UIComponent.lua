@@ -1,9 +1,21 @@
-UIComponent = UIComponent or {}
+UI = UI or {}
+--UI组件的基类
+UI.UIComponent = UI.UIComponent or {}
+function UI.UIComponent:OnAwake( view_owner )
+	--组件被加载时触发
+	self.view_owner = view_owner
+end
+function UI.UIComponent:OnLoad( )
+	--界面加载成功后触发
+end
+function UI.UIComponent:OnClose( )
+	--界面销毁后触发
+end
 
 --半透明黑色背景组件
-UIComponent.Background = {}
-function UIComponent.Background.OnLoad(view)
-	print('Cat:UIComponent.lua[Background OnLoad]', view)
+UI.Background = BaseClass(UI.UIComponent)
+function UI.Background.OnLoad(view)
+	print('Cat:UI.lua[Background OnLoad]', view)
 	local bg = UIWidgetPool:CreateWidget("Background")
 	if view.UIConfig.background_alpha then
 		bg.gameObject:GetComponent("RawImage").alpha = view.UIConfig.background_alpha
@@ -16,8 +28,16 @@ function UIComponent.Background.OnLoad(view)
 	view.UIConfig.bg_widget = bg
 end
 
-function UIComponent.Background.OnClose(view)
-	print('Cat:UIComponent.lua[Background OnClose]', view)
+function UI.Background:SetIsClickToClose(click_bg_to_close)
+	self.click_bg_to_close = click_bg_to_close
+end
+
+function UI.Background:SetBgAlpha(bg_alpha)
+	self.bg_alpha = bg_alpha
+end
+
+function UI.Background.OnClose(view)
+	print('Cat:UI.lua[Background OnClose]', view)
 	if view.UIConfig.bg_widget then
 		UIWidgetPool:RecycleWidget(view.UIConfig.bg_widget)
 		view.UIConfig.bg_widget = nil
@@ -25,9 +45,9 @@ function UIComponent.Background.OnClose(view)
 end
 
 --打开本界面时隐藏底下的界面
-UIComponent.HideOtherView = {}
-function UIComponent.HideOtherView.OnLoad(view)
-	print('Cat:UIComponent.lua[HideOtherView OnLoad]', view)
+UI.HideOtherView = BaseClass(UI)
+function UI.HideOtherView.OnLoad(view)
+	print('Cat:UI.lua[HideOtherView OnLoad]', view)
 	view.UIConfig.has_hide_other_view_component = true
 	--当前已打开界面，从外向内逐个隐藏
 	local opened_views = UIMgr:GetViewStack()
@@ -43,8 +63,8 @@ function UIComponent.HideOtherView.OnLoad(view)
 	end
 end
 
-function UIComponent.HideOtherView.OnClose(view)
-	print('Cat:UIComponent.lua[HideOtherView OnClose]', view)
+function UI.HideOtherView.OnClose(view)
+	print('Cat:UI.lua[HideOtherView OnClose]', view)
 	if UIMgr:IsClosingAllView() then return end
 	local opened_views = UIMgr:GetViewStack()
 	for i=#opened_views,1,-1 do
@@ -58,19 +78,19 @@ function UIComponent.HideOtherView.OnClose(view)
 end
 
 --播放进入和关闭界面的音效
-UIComponent.PlayOpenCloseSound = {}
-function UIComponent.PlayOpenCloseSound.OnLoad(view)
-	print('Cat:UIComponent.lua[play open sound]', view)
+UI.PlayOpenCloseSound = BaseClass(UI)
+function UI.PlayOpenCloseSound.OnLoad(view)
+	print('Cat:UI.lua[play open sound]', view)
 end
 
-function UIComponent.PlayOpenCloseSound.OnClose(view)
-	print('Cat:UIComponent.lua[play close sound]', view, UIMgr:IsClosingAllView())
+function UI.PlayOpenCloseSound.OnClose(view)
+	print('Cat:UI.lua[play close sound]', view, UIMgr:IsClosingAllView())
 end
 
 --延迟销毁界面
-UIComponent.DelayDestroy = {}
-function UIComponent.DelayDestroy.OnClose(view)
-	print('Cat:UIComponent.lua[DelayDestroy]', view)
+UI.DelayDestroy = BaseClass(UI)
+function UI.DelayDestroy.OnClose(view)
+	print('Cat:UI.lua[DelayDestroy]', view)
 	view.UIConfig.is_destroyed = true
 	local timer = Timer.New(function()
 		GameObject.Destroy(view.gameObject)
@@ -78,15 +98,19 @@ function UIComponent.DelayDestroy.OnClose(view)
 	timer:Start()
 end
 
+function UI.DelayDestroy:SetDelayTime(time)
+	self.delay_time = time
+end
+
 --新手引导组件
-UIComponent.NewGuide = {}
-function UIComponent.NewGuide.OnLoad(view)
+UI.NewGuide = BaseClass(UI)
+function UI.NewGuide.OnLoad(view)
 	--显示黑色遮罩，拦截点击事件
 end	
 
 --清除前面打开过的界面记录，这样关闭本界面后就不会回到上个界面了
-UIComponent.ClearOpenedViewStack = {}
-function UIComponent.ClearOpenedViewStack.OnLoad(view)
+UI.ClearOpenedViewStack = BaseClass(UI)
+function UI.ClearOpenedViewStack.OnLoad(view)
 	UIMgr:ClearViewStack()
 	UIMgr:PushOpenedView(view)
 end	
