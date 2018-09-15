@@ -58,4 +58,4 @@ public class SceneObjectCreator : MonoBehaviour
         return result;
     }
 }
-}}
+}

@@ -31,20 +31,31 @@ function UIMgr:GetViewStack(  )
 	return self.opened_views
 end
 
-function UIMgr:AddUIComponent( view, component )
-	assert(view, "cannot add component for a nil view")
-	assert(view.UIConfig, "cannot find UIConfig in view", view)
-	view.UIConfig.components = view.UIConfig.components or {}
-	local had_component = false
-	for i,v in ipairs(view.UIConfig.components) do
-		if v == component then
-			had_component = true
-			break
-		end
+function UIMgr:AddUIComponent( view, component, arge )
+	print('Cat:UIManager.lua[35] view, component, arge', view, component, tostring(arge))
+	assert(view~=nil, "cannot add component for a nil view")
+	assert(component~=nil, "cannot add nil component for view")
+	local new_comp = component.New()
+	new_comp:OnAwake(view, arge)
+	if view.is_loaded then
+		new_comp:OnLoad()
 	end
-	if not had_component then
-		table.insert(view.UIConfig.components, component.New())
-	end
+	view._components_for_uimgr_ = view._components_for_uimgr_ or {}
+	table.insert(view._components_for_uimgr_, new_comp)
+	print("Cat:UIManager [start:45] new_comp:", new_comp, new_comp.OnLoad)
+	return new_comp
+	-- assert(view.UIConfig, "cannot find UIConfig in view", view)
+	-- view.UIConfig.components = view.UIConfig.components or {}
+	-- local had_component = false
+	-- for i,v in ipairs(view.UIConfig.components) do
+	-- 	if v == component then
+	-- 		had_component = true
+	-- 		break
+	-- 	end
+	-- end
+	-- if not had_component then
+		-- table.insert(view.UIConfig.components, new_comp)
+	-- end
 end
 
 --清掉界面堆栈
@@ -87,11 +98,15 @@ function UIMgr:Show( view )
         view.transform.localPosition = Vector3.zero
 		if view.UIConfig.components then
 			for i,v in ipairs(view.UIConfig.components) do
-				if v.OnLoad then
-					v.OnLoad(view)	
-				end
+				self:AddUIComponent(view, v[1], v[2])
 			end
 		end
+		if view._components_for_uimgr_ then
+			for i,v in ipairs(view._components_for_uimgr_) do
+				v:OnLoad()
+			end
+		end
+		view.is_loaded = true
 		if view.OnLoad then
 			view:OnLoad()
 		end
@@ -99,7 +114,7 @@ function UIMgr:Show( view )
 	ResMgr:LoadPrefabGameObject(view.UIConfig.prefab_path, on_load_succeed)
 end
 
---Cat_Todo : 如果传入的view不是最前的界面要怎么处理?应该在组件里处理就行了:UIComponent.HideOtherView
+--Cat_Todo : 如果传入的view不是最前的界面要怎么处理?应该在组件里处理就行了:UI.HideOtherView
 function UIMgr:Close( view )
 	assert(view, "cannot close a nil view")
 
@@ -108,14 +123,20 @@ function UIMgr:Close( view )
 	if view.OnClose then
 		view:OnClose()
 	end
-	if view.UIConfig.components then
-		for i,v in ipairs(view.UIConfig.components) do
-			if v.OnClose then
-				v.OnClose(view)
-			end
+	if view._components_for_uimgr_ then
+		for i,v in ipairs(view._components_for_uimgr_) do
+			v:OnClose()
 		end
+		view._components_for_uimgr_ = nil
 	end
-	if not view.UIConfig.is_destroyed then
+	-- if view.UIConfig.components then
+	-- 	for i,v in ipairs(view.UIConfig.components) do
+	-- 		if v.OnClose then
+	-- 			v.OnClose(view)
+	-- 		end
+	-- 	end
+	-- end
+	if not view.is_destroyed then
 		GameObject.Destroy(view.gameObject)
 	end
 	self.opened_views[#self.opened_views] = nil

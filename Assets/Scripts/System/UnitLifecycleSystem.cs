@@ -17,7 +17,7 @@ public class UnitLifecycleSystem : JobComponentSystem
 	{
 		public ComponentDataArray<SceneObjectData> transform;
 		public EntityArray entities;
-		public int Length;
+		[ReadOnly] public int Length;
 	}
 
 	[Inject]
