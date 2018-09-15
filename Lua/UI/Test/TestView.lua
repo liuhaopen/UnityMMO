@@ -4,19 +4,19 @@ function TestView:Constructor( )
 	self.UIConfig = {
 		prefab_path = "Assets/AssetBundleRes/ui/prefab/test/TestView.prefab",
 		canvas_name = "Normal",
-		Components = {
-			{UIComponent.PlayOpenCloseSound},
-			{UIComponent.DelayDestroy, {delay_time=5}},
-			{UIComponent.Background, {is_click_to_close=true, bg_alpha=0.5}}
+		components = {
+			-- {UI.PlayOpenCloseSound},
+			{UI.DelayDestroy, {delay_time=5}},
+			{UI.Background, {is_click_to_close=true, alpha=0.5}}
 		}
 	}
 	--the same as set in self.UIConfig.Components
-	UIMgr:AddUIComponent(self, UIComponent.PlayOpenCloseSound)
-	local delay_comp = UIMgr:AddUIComponent(self, UIComponent.DelayDestroy)
-	delay_comp:SetDelayTime(5)
-	local bg_comp = UIMgr:AddUIComponent(self, UIComponent.Background)
-	bg_com:SetIsClickToClose(true)
-	bg_com:SetBgAlpha(0.5)--背景的透明度
+	-- UIMgr:AddUIComponent(self, UI.PlayOpenCloseSound)
+	-- local delay_comp = UIMgr:AddUIComponent(self, UI.DelayDestroy)
+	-- delay_comp:SetDelayTime(5)
+	-- local bg_comp = UIMgr:AddUIComponent(self, UI.Background)
+	-- bg_com:SetIsClickToClose(true)
+	-- bg_com:SetBgAlpha(0.5)--背景的透明度
 end
 -- function TestView:DefaultVar( )
 -- 	return { 
@@ -53,7 +53,7 @@ function TestView:AddEvent(  )
 		elseif self.open_hide_other_view_btn == click_btn then
 			local hide_other_view = TestView.New()
 			hide_other_view:SetData((self.data or 1) + 1)
-			UIMgr:AddUIComponent(hide_other_view, UIComponent.HideOtherView)
+			UIMgr:AddUIComponent(hide_other_view, UI.HideOtherView)
 			UIMgr:Show(hide_other_view)
 		elseif self.open_normal_view_btn == click_btn then
 			local view = TestView.New()
