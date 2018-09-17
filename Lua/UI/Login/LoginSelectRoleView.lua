@@ -5,7 +5,10 @@ function LoginSelectRoleView:DefaultVar( )
 	UIConfig = {
 		prefab_path = "Assets/AssetBundleRes/ui/prefab/login/LoginSelectRoleView.prefab",
 		canvas_name = "Normal",
-		components = {UI.HideOtherView},
+		components = {
+				{UI.HideOtherView},
+				{UI.DelayDestroy, {delay_time=5}},
+			},
 		},
 	}
 end

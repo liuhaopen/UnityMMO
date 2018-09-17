@@ -5,7 +5,7 @@ function TestHideOtherView:DefaultVar()
 		prefab_path = "Assets/AssetBundleRes/ui/prefab/test/TestHideOtherView.prefab",
 		canvas_name = "Normal",
 		components = {
-			{UI.HideOtherView, {1}},
+			{UI.HideOtherView},
 			{UI.DelayDestroy, {delay_time=5}},
 			{UI.Background, {is_click_to_close=true, alpha=0.5}},
 		},
