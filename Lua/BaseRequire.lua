@@ -6,6 +6,7 @@ NetMgr = CS.XLuaFramework.NetworkManager.GetInstance()
 UIHelper = CS.XLuaFramework.UIHelper
 GameObject = CS.UnityEngine.GameObject
 GameConst = CS.UnityMMO.GameConst
+GameVariable = CS.UnityMMO.GameVariable
 
 Mathf		= require "Common.UnityEngine.Mathf"
 Vector2		= require "Common.UnityEngine.Vector2"

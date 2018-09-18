@@ -13,7 +13,9 @@ namespace XLuaFramework {
             InitAssetBundle,
             InitSDK,
             InitBaseCode,
+            StartLogin,
             StartGame,
+            Playing,
         }
         public enum SubState{
             Enter,Update
@@ -30,13 +32,16 @@ namespace XLuaFramework {
 
             if (IsNeedPrintConcole)
             {
-                if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.Android)
+                if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer ||       Application.platform == RuntimePlatform.Android)
+                {
                     this.gameObject.AddComponent<LogHandler>();
+                }
             }
 
             this.gameObject.AddComponent<ThreadManager>();//for download or extract assets
             this.gameObject.AddComponent<ResourceManager>();
             this.gameObject.AddComponent<NetworkManager>();
+            this.gameObject.AddComponent<XLuaManager>();
             UnityMMO.NetMsgDispatcher.GetInstance().Init();
 
             JumpToState(State.CheckExtractResource);
@@ -51,6 +56,8 @@ namespace XLuaFramework {
 
         private void Update() 
         {
+            if (cur_state == State.Playing)
+                return;
             switch(cur_state)
             {
                 case State.CheckExtractResource:
@@ -80,6 +87,17 @@ namespace XLuaFramework {
                         cur_sub_state = SubState.Update;
                         ResourceManager.GetInstance().Initialize(AppConfig.AssetDir, delegate() {
                             Debug.Log("Main.cs ResourceManager Initialize OK!!!");
+                            JumpToState(State.StartLogin);
+                        });
+                    }
+                    break;
+                case State.StartLogin:
+                    if (cur_sub_state == SubState.Enter)
+                    {
+                        cur_sub_state = SubState.Update;
+                        XLuaManager.Instance.InitLuaEnv();
+                        XLuaManager.Instance.StartLogin(delegate() {
+                            Debug.Log("Main.cs XLuaManager StartLogin OK!!!");
                             JumpToState(State.StartGame);
                         });
                     }
@@ -88,9 +106,9 @@ namespace XLuaFramework {
                     if (cur_sub_state == SubState.Enter)
                     {
                         cur_sub_state = SubState.Update;
-                        this.gameObject.AddComponent<XLuaManager>();
-                        UnityMMO.MainWorld.GetInstance().Initialize();
-                        UnityMMO.MainWorld.GetInstance().StartGame();
+                        this.gameObject.AddComponent<UnityMMO.MainWorld>();
+                        UnityMMO.MainWorld.Instance.StartGame();
+                        JumpToState(State.Playing);
                     }
                     break;
             }

@@ -34,6 +34,7 @@ namespace XLua
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.Ray>(translator.PushUnityEngineRay, translator.Get, translator.UpdateUnityEngineRay);
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.Bounds>(translator.PushUnityEngineBounds, translator.Get, translator.UpdateUnityEngineBounds);
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.Ray2D>(translator.PushUnityEngineRay2D, translator.Get, translator.UpdateUnityEngineRay2D);
+				translator.RegisterPushAndGetAndUpdate<SceneInfoKey>(translator.PushSceneInfoKey, translator.Get, translator.UpdateSceneInfoKey);
 				translator.RegisterPushAndGetAndUpdate<XLuaFramework.NetPackageType>(translator.PushXLuaFrameworkNetPackageType, translator.Get, translator.UpdateXLuaFrameworkNetPackageType);
 			
 			}
@@ -571,6 +572,90 @@ namespace XLua
             }
         }
         
+        int SceneInfoKey_TypeID = -1;
+		int SceneInfoKey_EnumRef = -1;
+        
+        public void PushSceneInfoKey(RealStatePtr L, SceneInfoKey val)
+        {
+            if (SceneInfoKey_TypeID == -1)
+            {
+			    bool is_first;
+                SceneInfoKey_TypeID = getTypeId(L, typeof(SceneInfoKey), out is_first);
+				
+				if (SceneInfoKey_EnumRef == -1)
+				{
+				    Utils.LoadCSTable(L, typeof(SceneInfoKey));
+				    SceneInfoKey_EnumRef = LuaAPI.luaL_ref(L, LuaIndexes.LUA_REGISTRYINDEX);
+				}
+				
+            }
+			
+			if (LuaAPI.xlua_tryget_cachedud(L, (int)val, SceneInfoKey_EnumRef) == 1)
+            {
+			    return;
+			}
+			
+            IntPtr buff = LuaAPI.xlua_pushstruct(L, 4, SceneInfoKey_TypeID);
+            if (!CopyByValue.Pack(buff, 0, (int)val))
+            {
+                throw new Exception("pack fail fail for SceneInfoKey ,value="+val);
+            }
+			
+			LuaAPI.lua_getref(L, SceneInfoKey_EnumRef);
+			LuaAPI.lua_pushvalue(L, -2);
+			LuaAPI.xlua_rawseti(L, -2, (int)val);
+			LuaAPI.lua_pop(L, 1);
+			
+        }
+		
+        public void Get(RealStatePtr L, int index, out SceneInfoKey val)
+        {
+		    LuaTypes type = LuaAPI.lua_type(L, index);
+            if (type == LuaTypes.LUA_TUSERDATA )
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != SceneInfoKey_TypeID)
+				{
+				    throw new Exception("invalid userdata for SceneInfoKey");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+				int e;
+                if (!CopyByValue.UnPack(buff, 0, out e))
+                {
+                    throw new Exception("unpack fail for SceneInfoKey");
+                }
+				val = (SceneInfoKey)e;
+                
+            }
+            else
+            {
+                val = (SceneInfoKey)objectCasters.GetCaster(typeof(SceneInfoKey))(L, index, null);
+            }
+        }
+		
+        public void UpdateSceneInfoKey(RealStatePtr L, int index, SceneInfoKey val)
+        {
+		    
+            if (LuaAPI.lua_type(L, index) == LuaTypes.LUA_TUSERDATA)
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != SceneInfoKey_TypeID)
+				{
+				    throw new Exception("invalid userdata for SceneInfoKey");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+                if (!CopyByValue.Pack(buff, 0,  (int)val))
+                {
+                    throw new Exception("pack fail for SceneInfoKey ,value="+val);
+                }
+            }
+			
+            else
+            {
+                throw new Exception("try to update a data with lua type:" + LuaAPI.lua_type(L, index));
+            }
+        }
+        
         int XLuaFrameworkNetPackageType_TypeID = -1;
 		int XLuaFrameworkNetPackageType_EnumRef = -1;
         
@@ -714,6 +799,12 @@ namespace XLua
 				translator.PushUnityEngineRay2D(L, array[index]);
 				return true;
 			}
+			else if (type == typeof(SceneInfoKey[]))
+			{
+			    SceneInfoKey[] array = obj as SceneInfoKey[];
+				translator.PushSceneInfoKey(L, array[index]);
+				return true;
+			}
 			else if (type == typeof(XLuaFramework.NetPackageType[]))
 			{
 			    XLuaFramework.NetPackageType[] array = obj as XLuaFramework.NetPackageType[];
@@ -771,6 +862,12 @@ namespace XLua
 			else if (type == typeof(UnityEngine.Ray2D[]))
 			{
 			    UnityEngine.Ray2D[] array = obj as UnityEngine.Ray2D[];
+				translator.Get(L, obj_idx, out array[array_idx]);
+				return true;
+			}
+			else if (type == typeof(SceneInfoKey[]))
+			{
+			    SceneInfoKey[] array = obj as SceneInfoKey[];
 				translator.Get(L, obj_idx, out array[array_idx]);
 				return true;
 			}

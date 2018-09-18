@@ -24,15 +24,12 @@ public class XLuaManager : MonoBehaviour
     Action luaLateUpdate = null;
     Action<float> luaFixedUpdate = null;
     LuaEnv luaEnv = null;
+    public static XLuaManager Instance = null;
+    Action onLoginOk = null;
 
     protected void Awake()
     {
-        InitLuaEnv();
-    }
-
-    public LuaEnv GetLuaEnv()
-    {
-        return luaEnv;
+        Instance = this;
     }
 
     private void InitExternal()
@@ -42,7 +39,7 @@ public class XLuaManager : MonoBehaviour
         luaEnv.AddBuildin("lpeg", XLua.LuaDLL.Lua.LoadLpeg);
     }
 
-    void InitLuaEnv()
+    public void InitLuaEnv()
     {
         luaEnv = new LuaEnv();
         if (luaEnv != null)
@@ -66,9 +63,6 @@ public class XLuaManager : MonoBehaviour
             }
             else
                 Debug.LogError("must init network manager before init xlua manager!");
-
-            LoadScript("Main");
-            SafeDoString("Main()");
         }
         else
         {
@@ -76,9 +70,23 @@ public class XLuaManager : MonoBehaviour
         }
     }
 
-    public void StartGame()
+    public void StartLogin(Action login_ok)
     {
-        
+        onLoginOk = login_ok;
+        LoadScript("Main");
+        SafeDoString("Main()");
+    }
+
+    public void OnLoginOk()
+    {
+        Debug.Log("XLuaManager onLoginOk");
+        onLoginOk();
+        onLoginOk = null;
+    }
+
+    public LuaEnv GetLuaEnv()
+    {
+        return luaEnv;
     }
 
     public void SafeDoString(string scriptContent)

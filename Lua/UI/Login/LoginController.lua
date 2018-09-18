@@ -76,7 +76,7 @@ function LoginController:ReqMainRole(  )
         print("Cat:LoginController [start:76] ack_role_data:", ack_role_data)
         PrintTable(ack_role_data)
         print("Cat:LoginController [end]")
-        
+        GameVariable.IsNeedSynchSceneInfo = true
     end
     NetDispatcher:SendMessage("scene_get_main_role_info", nil, on_ack_main_role)
 end
@@ -187,6 +187,7 @@ function LoginController:OnReceiveMsg( bytes )
         NetDispatcher:Start()
 
         GlobalEventSystem:Fire(LoginConst.Event.LoginSucceed)
+        CS.XLuaManager.Instance:OnLoginOk()
 
         local on_server_time_ack = function ( server_time_info )
             print('Cat:LoginController.lua[118] server_time_info:', server_time_info.server_time)

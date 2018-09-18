@@ -5,17 +5,18 @@ return [[
 	career 1 : integer
 	name 2 : string
 }
-.scene_int_key_value {
+.int_key_value {
 	key 0 : integer
 	value 1 : integer
 }
-.scene_str_key_value {
+.info_item {
 	key 0 : integer
 	value 1 : string
+	time 2 : integer
 }
 .scene_obj_info {
-	int_key_value 0 : *scene_int_key_value
-	str_key_value 1 : *scene_str_key_value
+	scene_obj_uid 0 : integer
+	info_list 1 : *info_item
 }
 .scene_role_info {
 	role_id 0 : integer

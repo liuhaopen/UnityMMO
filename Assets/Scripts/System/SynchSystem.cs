@@ -21,18 +21,19 @@ namespace UnityMMO
 
         [Inject] private Data m_Data;
 
-        protected override void OnCreateManager(int capacity)
-	    {
-            Debug.Log("synch system OnCreateManager");
-		    base.OnCreateManager(capacity);
+        // protected override void OnCreateManager(int capacity)
+	    // {
+        //     Debug.Log("synch system OnCreateManager");
+		//     base.OnCreateManager(capacity);
 
-        }
+        // }
         
         protected override void OnUpdate()
         {
+            return;
             //upload per second
             // Debug.Log("synch system"+Time.time.ToString()+" lasttime:"+lastSynchTime.ToString());
-            if (Time.time - lastSynchTime < 4)
+            if (Time.time - lastSynchTime < 4 || !GameVariable.IsNeedSynchSceneInfo)
                 return;
             lastSynchTime = Time.time+500;
             for (int index = 0; index < m_Data.Length; ++index)

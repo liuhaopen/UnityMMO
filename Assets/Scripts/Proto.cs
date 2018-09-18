@@ -423,6 +423,144 @@ namespace SprotoType {
 	}
 
 
+	public class info_item : SprotoTypeBase {
+		private static int max_field_count = 3;
+		
+		
+		private Int64 _key; // tag 0
+		public Int64 key {
+			get { return _key; }
+			set { base.has_field.set_field (0, true); _key = value; }
+		}
+		public bool HasKey {
+			get { return base.has_field.has_field (0); }
+		}
+
+		private string _value; // tag 1
+		public string value {
+			get { return _value; }
+			set { base.has_field.set_field (1, true); _value = value; }
+		}
+		public bool HasValue {
+			get { return base.has_field.has_field (1); }
+		}
+
+		private Int64 _time; // tag 2
+		public Int64 time {
+			get { return _time; }
+			set { base.has_field.set_field (2, true); _time = value; }
+		}
+		public bool HasTime {
+			get { return base.has_field.has_field (2); }
+		}
+
+		public info_item () : base(max_field_count) {}
+
+		public info_item (byte[] buffer) : base(max_field_count, buffer) {
+			this.decode ();
+		}
+
+		protected override void decode () {
+			int tag = -1;
+			while (-1 != (tag = base.deserialize.read_tag ())) {
+				switch (tag) {
+				case 0:
+					this.key = base.deserialize.read_integer ();
+					break;
+				case 1:
+					this.value = base.deserialize.read_string ();
+					break;
+				case 2:
+					this.time = base.deserialize.read_integer ();
+					break;
+				default:
+					base.deserialize.read_unknow_data ();
+					break;
+				}
+			}
+		}
+
+		public override int encode (SprotoStream stream) {
+			base.serialize.open (stream);
+
+			if (base.has_field.has_field (0)) {
+				base.serialize.write_integer (this.key, 0);
+			}
+
+			if (base.has_field.has_field (1)) {
+				base.serialize.write_string (this.value, 1);
+			}
+
+			if (base.has_field.has_field (2)) {
+				base.serialize.write_integer (this.time, 2);
+			}
+
+			return base.serialize.close ();
+		}
+	}
+
+
+	public class int_key_value : SprotoTypeBase {
+		private static int max_field_count = 2;
+		
+		
+		private Int64 _key; // tag 0
+		public Int64 key {
+			get { return _key; }
+			set { base.has_field.set_field (0, true); _key = value; }
+		}
+		public bool HasKey {
+			get { return base.has_field.has_field (0); }
+		}
+
+		private Int64 _value; // tag 1
+		public Int64 value {
+			get { return _value; }
+			set { base.has_field.set_field (1, true); _value = value; }
+		}
+		public bool HasValue {
+			get { return base.has_field.has_field (1); }
+		}
+
+		public int_key_value () : base(max_field_count) {}
+
+		public int_key_value (byte[] buffer) : base(max_field_count, buffer) {
+			this.decode ();
+		}
+
+		protected override void decode () {
+			int tag = -1;
+			while (-1 != (tag = base.deserialize.read_tag ())) {
+				switch (tag) {
+				case 0:
+					this.key = base.deserialize.read_integer ();
+					break;
+				case 1:
+					this.value = base.deserialize.read_integer ();
+					break;
+				default:
+					base.deserialize.read_unknow_data ();
+					break;
+				}
+			}
+		}
+
+		public override int encode (SprotoStream stream) {
+			base.serialize.open (stream);
+
+			if (base.has_field.has_field (0)) {
+				base.serialize.write_integer (this.key, 0);
+			}
+
+			if (base.has_field.has_field (1)) {
+				base.serialize.write_integer (this.value, 1);
+			}
+
+			return base.serialize.close ();
+		}
+	}
+
+
 	public class role_figure : SprotoTypeBase {
 		private static int max_field_count = 3;
 		
@@ -711,67 +849,6 @@ namespace SprotoType {
 	}
 
 
-	public class scene_int_key_value : SprotoTypeBase {
-		private static int max_field_count = 2;
-		
-		
-		private Int64 _key; // tag 0
-		public Int64 key {
-			get { return _key; }
-			set { base.has_field.set_field (0, true); _key = value; }
-		}
-		public bool HasKey {
-			get { return base.has_field.has_field (0); }
-		}
-
-		private Int64 _value; // tag 1
-		public Int64 value {
-			get { return _value; }
-			set { base.has_field.set_field (1, true); _value = value; }
-		}
-		public bool HasValue {
-			get { return base.has_field.has_field (1); }
-		}
-
-		public scene_int_key_value () : base(max_field_count) {}
-
-		public scene_int_key_value (byte[] buffer) : base(max_field_count, buffer) {
-			this.decode ();
-		}
-
-		protected override void decode () {
-			int tag = -1;
-			while (-1 != (tag = base.deserialize.read_tag ())) {
-				switch (tag) {
-				case 0:
-					this.key = base.deserialize.read_integer ();
-					break;
-				case 1:
-					this.value = base.deserialize.read_integer ();
-					break;
-				default:
-					base.deserialize.read_unknow_data ();
-					break;
-				}
-			}
-		}
-
-		public override int encode (SprotoStream stream) {
-			base.serialize.open (stream);
-
-			if (base.has_field.has_field (0)) {
-				base.serialize.write_integer (this.key, 0);
-			}
-
-			if (base.has_field.has_field (1)) {
-				base.serialize.write_integer (this.value, 1);
-			}
-
-			return base.serialize.close ();
-		}
-	}
-
-
 	public class scene_main_role_info : SprotoTypeBase {
 		private static int max_field_count = 3;
 		
@@ -1007,21 +1084,21 @@ namespace SprotoType {
 		private static int max_field_count = 2;
 		
 		
-		private List<scene_int_key_value> _int_key_value; // tag 0
-		public List<scene_int_key_value> int_key_value {
-			get { return _int_key_value; }
-			set { base.has_field.set_field (0, true); _int_key_value = value; }
+		private Int64 _scene_obj_uid; // tag 0
+		public Int64 scene_obj_uid {
+			get { return _scene_obj_uid; }
+			set { base.has_field.set_field (0, true); _scene_obj_uid = value; }
 		}
-		public bool HasInt_key_value {
+		public bool HasScene_obj_uid {
 			get { return base.has_field.has_field (0); }
 		}
 
-		private List<scene_str_key_value> _str_key_value; // tag 1
-		public List<scene_str_key_value> str_key_value {
-			get { return _str_key_value; }
-			set { base.has_field.set_field (1, true); _str_key_value = value; }
+		private List<info_item> _info_list; // tag 1
+		public List<info_item> info_list {
+			get { return _info_list; }
+			set { base.has_field.set_field (1, true); _info_list = value; }
 		}
-		public bool HasStr_key_value {
+		public bool HasInfo_list {
 			get { return base.has_field.has_field (1); }
 		}
 
@@ -1036,10 +1113,10 @@ namespace SprotoType {
 			while (-1 != (tag = base.deserialize.read_tag ())) {
 				switch (tag) {
 				case 0:
-					this.int_key_value = base.deserialize.read_obj_list<scene_int_key_value> ();
+					this.scene_obj_uid = base.deserialize.read_integer ();
 					break;
 				case 1:
-					this.str_key_value = base.deserialize.read_obj_list<scene_str_key_value> ();
+					this.info_list = base.deserialize.read_obj_list<info_item> ();
 					break;
 				default:
 					base.deserialize.read_unknow_data ();
@@ -1052,11 +1129,11 @@ namespace SprotoType {
 			base.serialize.open (stream);
 
 			if (base.has_field.has_field (0)) {
-				base.serialize.write_obj (this.int_key_value, 0);
+				base.serialize.write_integer (this.scene_obj_uid, 0);
 			}
 
 			if (base.has_field.has_field (1)) {
-				base.serialize.write_obj (this.str_key_value, 1);
+				base.serialize.write_obj (this.info_list, 1);
 			}
 
 			return base.serialize.close ();
@@ -1134,67 +1211,6 @@ namespace SprotoType {
 
 			if (base.has_field.has_field (2)) {
 				base.serialize.write_string (this.name, 2);
-			}
-
-			return base.serialize.close ();
-		}
-	}
-
-
-	public class scene_str_key_value : SprotoTypeBase {
-		private static int max_field_count = 2;
-		
-		
-		private Int64 _key; // tag 0
-		public Int64 key {
-			get { return _key; }
-			set { base.has_field.set_field (0, true); _key = value; }
-		}
-		public bool HasKey {
-			get { return base.has_field.has_field (0); }
-		}
-
-		private string _value; // tag 1
-		public string value {
-			get { return _value; }
-			set { base.has_field.set_field (1, true); _value = value; }
-		}
-		public bool HasValue {
-			get { return base.has_field.has_field (1); }
-		}
-
-		public scene_str_key_value () : base(max_field_count) {}
-
-		public scene_str_key_value (byte[] buffer) : base(max_field_count, buffer) {
-			this.decode ();
-		}
-
-		protected override void decode () {
-			int tag = -1;
-			while (-1 != (tag = base.deserialize.read_tag ())) {
-				switch (tag) {
-				case 0:
-					this.key = base.deserialize.read_integer ();
-					break;
-				case 1:
-					this.value = base.deserialize.read_string ();
-					break;
-				default:
-					base.deserialize.read_unknow_data ();
-					break;
-				}
-			}
-		}
-
-		public override int encode (SprotoStream stream) {
-			base.serialize.open (stream);
-
-			if (base.has_field.has_field (0)) {
-				base.serialize.write_integer (this.key, 0);
-			}
-
-			if (base.has_field.has_field (1)) {
-				base.serialize.write_string (this.value, 1);
 			}
 
 			return base.serialize.close ();
