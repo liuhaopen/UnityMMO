@@ -23,25 +23,14 @@ public class MainWorld : MonoBehaviour
     // }
 
     public void Initialize() {
-        SceneObjectCreator.Instance.InitArcheType();
+        SceneMgr.Instance.InitArcheType();
         SynchFromNet.Instance.Init();
     }
 
     public void StartGame() {
-        SceneObjectCreator.Instance.AddMainRole();
-
-            SynchFromNet.Instance.ReqSceneObjInfoChange();
-        Debug.Log("GameVariable.IsNeedSynchSceneInfo : "+GameVariable.IsNeedSynchSceneInfo.ToString());
-        if (GameVariable.IsNeedSynchSceneInfo)
-        {
-        }
-        else
-        {
-            Timer.Register(0.5f, () => SynchFromNet.Instance.ReqSceneObjInfoChange());
-        }
+        // SceneMgr.Instance.AddMainRole();
+        SynchFromNet.Instance.ReqSceneObjInfoChange();
     }
-
-    
 
     // private void Update() {
     //     SynchFromNet.Instance.Update();

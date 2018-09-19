@@ -4,6 +4,8 @@ using XLua;
 [LuaCallCSharp]
 public enum SceneInfoKey
 {
-    EnterOrLeaveScene=1,//1:enter 2:leave
-    PosChange=2,
+    None=0,
+    EnterScene=1,//value is scene object type
+    LeaveScene=2,
+    PosChange=3,
 }

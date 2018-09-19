@@ -2,7 +2,7 @@ local skynet = require "skynet"
 local sproto = require "Common.Util.sproto"
 local sprotoloader = require "Common.Util.sprotoloader"
 local print_r = require "Common.Util.print_r"
-local print_r = require "Common.Util.util"
+require "Common.Util.util"
 local netdispatcher = require "netdispatcher"
 
 skynet.register_protocol {
@@ -68,7 +68,7 @@ skynet.start(function()
 					--先取到角色所在场景的服务id
 					local scene_service = skynet.call(world, "lua", "get_role_scene_service", user_info.cur_role_id)
 					assert(scene_service, "cannot find scene service! req proto name:"..proto_info.name.." tag:"..tag)
-					print('Cat:msgagent.lua[70] user_info, content', user_info, content)
+					-- print('Cat:msgagent.lua[70] user_info, content', user_info, content)
 					response = skynet.call(scene_service, "lua", proto_info.name, user_info, content)
 				else
 					local f = netdispatcher:dispatch(tag)
@@ -79,6 +79,9 @@ skynet.start(function()
 					end
 				end
 				local ok, response_str = pcall(c2s_sproto.response_encode, c2s_sproto, tag, response)
+				print("Cat:msgagent [start:73] response:", response, proto_info.name, ok, response_str)
+				PrintTable(response)
+				print("Cat:msgagent [end]")
 				if ok then
 					skynet.ret(response_str)
 				else

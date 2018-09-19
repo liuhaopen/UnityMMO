@@ -76,6 +76,8 @@ function LoginController:ReqMainRole(  )
         print("Cat:LoginController [start:76] ack_role_data:", ack_role_data)
         PrintTable(ack_role_data)
         print("Cat:LoginController [end]")
+        -- SceneMgr.Instance:GetSceneObj(ack_role_data.scene_uid)
+        SceneMgr.Instance:AddMainRole(ack_role_data.scene_uid)
         GameVariable.IsNeedSynchSceneInfo = true
     end
     NetDispatcher:SendMessage("scene_get_main_role_info", nil, on_ack_main_role)

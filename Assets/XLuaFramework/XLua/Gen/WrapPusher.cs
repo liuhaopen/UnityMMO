@@ -35,6 +35,7 @@ namespace XLua
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.Bounds>(translator.PushUnityEngineBounds, translator.Get, translator.UpdateUnityEngineBounds);
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.Ray2D>(translator.PushUnityEngineRay2D, translator.Get, translator.UpdateUnityEngineRay2D);
 				translator.RegisterPushAndGetAndUpdate<SceneInfoKey>(translator.PushSceneInfoKey, translator.Get, translator.UpdateSceneInfoKey);
+				translator.RegisterPushAndGetAndUpdate<UnityMMO.SceneObjectType>(translator.PushUnityMMOSceneObjectType, translator.Get, translator.UpdateUnityMMOSceneObjectType);
 				translator.RegisterPushAndGetAndUpdate<XLuaFramework.NetPackageType>(translator.PushXLuaFrameworkNetPackageType, translator.Get, translator.UpdateXLuaFrameworkNetPackageType);
 			
 			}
@@ -656,6 +657,90 @@ namespace XLua
             }
         }
         
+        int UnityMMOSceneObjectType_TypeID = -1;
+		int UnityMMOSceneObjectType_EnumRef = -1;
+        
+        public void PushUnityMMOSceneObjectType(RealStatePtr L, UnityMMO.SceneObjectType val)
+        {
+            if (UnityMMOSceneObjectType_TypeID == -1)
+            {
+			    bool is_first;
+                UnityMMOSceneObjectType_TypeID = getTypeId(L, typeof(UnityMMO.SceneObjectType), out is_first);
+				
+				if (UnityMMOSceneObjectType_EnumRef == -1)
+				{
+				    Utils.LoadCSTable(L, typeof(UnityMMO.SceneObjectType));
+				    UnityMMOSceneObjectType_EnumRef = LuaAPI.luaL_ref(L, LuaIndexes.LUA_REGISTRYINDEX);
+				}
+				
+            }
+			
+			if (LuaAPI.xlua_tryget_cachedud(L, (int)val, UnityMMOSceneObjectType_EnumRef) == 1)
+            {
+			    return;
+			}
+			
+            IntPtr buff = LuaAPI.xlua_pushstruct(L, 4, UnityMMOSceneObjectType_TypeID);
+            if (!CopyByValue.Pack(buff, 0, (int)val))
+            {
+                throw new Exception("pack fail fail for UnityMMO.SceneObjectType ,value="+val);
+            }
+			
+			LuaAPI.lua_getref(L, UnityMMOSceneObjectType_EnumRef);
+			LuaAPI.lua_pushvalue(L, -2);
+			LuaAPI.xlua_rawseti(L, -2, (int)val);
+			LuaAPI.lua_pop(L, 1);
+			
+        }
+		
+        public void Get(RealStatePtr L, int index, out UnityMMO.SceneObjectType val)
+        {
+		    LuaTypes type = LuaAPI.lua_type(L, index);
+            if (type == LuaTypes.LUA_TUSERDATA )
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != UnityMMOSceneObjectType_TypeID)
+				{
+				    throw new Exception("invalid userdata for UnityMMO.SceneObjectType");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+				int e;
+                if (!CopyByValue.UnPack(buff, 0, out e))
+                {
+                    throw new Exception("unpack fail for UnityMMO.SceneObjectType");
+                }
+				val = (UnityMMO.SceneObjectType)e;
+                
+            }
+            else
+            {
+                val = (UnityMMO.SceneObjectType)objectCasters.GetCaster(typeof(UnityMMO.SceneObjectType))(L, index, null);
+            }
+        }
+		
+        public void UpdateUnityMMOSceneObjectType(RealStatePtr L, int index, UnityMMO.SceneObjectType val)
+        {
+		    
+            if (LuaAPI.lua_type(L, index) == LuaTypes.LUA_TUSERDATA)
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != UnityMMOSceneObjectType_TypeID)
+				{
+				    throw new Exception("invalid userdata for UnityMMO.SceneObjectType");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+                if (!CopyByValue.Pack(buff, 0,  (int)val))
+                {
+                    throw new Exception("pack fail for UnityMMO.SceneObjectType ,value="+val);
+                }
+            }
+			
+            else
+            {
+                throw new Exception("try to update a data with lua type:" + LuaAPI.lua_type(L, index));
+            }
+        }
+        
         int XLuaFrameworkNetPackageType_TypeID = -1;
 		int XLuaFrameworkNetPackageType_EnumRef = -1;
         
@@ -805,6 +890,12 @@ namespace XLua
 				translator.PushSceneInfoKey(L, array[index]);
 				return true;
 			}
+			else if (type == typeof(UnityMMO.SceneObjectType[]))
+			{
+			    UnityMMO.SceneObjectType[] array = obj as UnityMMO.SceneObjectType[];
+				translator.PushUnityMMOSceneObjectType(L, array[index]);
+				return true;
+			}
 			else if (type == typeof(XLuaFramework.NetPackageType[]))
 			{
 			    XLuaFramework.NetPackageType[] array = obj as XLuaFramework.NetPackageType[];
@@ -868,6 +959,12 @@ namespace XLua
 			else if (type == typeof(SceneInfoKey[]))
 			{
 			    SceneInfoKey[] array = obj as SceneInfoKey[];
+				translator.Get(L, obj_idx, out array[array_idx]);
+				return true;
+			}
+			else if (type == typeof(UnityMMO.SceneObjectType[]))
+			{
+			    UnityMMO.SceneObjectType[] array = obj as UnityMMO.SceneObjectType[];
 				translator.Get(L, obj_idx, out array[array_idx]);
 				return true;
 			}

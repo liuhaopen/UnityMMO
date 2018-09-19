@@ -850,34 +850,43 @@ namespace SprotoType {
 
 
 	public class scene_main_role_info : SprotoTypeBase {
-		private static int max_field_count = 3;
+		private static int max_field_count = 4;
 		
 		
-		private Int64 _role_id; // tag 0
-		public Int64 role_id {
-			get { return _role_id; }
-			set { base.has_field.set_field (0, true); _role_id = value; }
+		private Int64 _scene_uid; // tag 0
+		public Int64 scene_uid {
+			get { return _scene_uid; }
+			set { base.has_field.set_field (0, true); _scene_uid = value; }
 		}
-		public bool HasRole_id {
+		public bool HasScene_uid {
 			get { return base.has_field.has_field (0); }
 		}
 
-		private Int64 _career; // tag 1
-		public Int64 career {
-			get { return _career; }
-			set { base.has_field.set_field (1, true); _career = value; }
+		private Int64 _role_id; // tag 1
+		public Int64 role_id {
+			get { return _role_id; }
+			set { base.has_field.set_field (1, true); _role_id = value; }
 		}
-		public bool HasCareer {
+		public bool HasRole_id {
 			get { return base.has_field.has_field (1); }
 		}
 
-		private string _name; // tag 2
+		private Int64 _career; // tag 2
+		public Int64 career {
+			get { return _career; }
+			set { base.has_field.set_field (2, true); _career = value; }
+		}
+		public bool HasCareer {
+			get { return base.has_field.has_field (2); }
+		}
+
+		private string _name; // tag 3
 		public string name {
 			get { return _name; }
-			set { base.has_field.set_field (2, true); _name = value; }
+			set { base.has_field.set_field (3, true); _name = value; }
 		}
 		public bool HasName {
-			get { return base.has_field.has_field (2); }
+			get { return base.has_field.has_field (3); }
 		}
 
 		public scene_main_role_info () : base(max_field_count) {}
@@ -891,12 +900,15 @@ namespace SprotoType {
 			while (-1 != (tag = base.deserialize.read_tag ())) {
 				switch (tag) {
 				case 0:
-					this.role_id = base.deserialize.read_integer ();
+					this.scene_uid = base.deserialize.read_integer ();
 					break;
 				case 1:
-					this.career = base.deserialize.read_integer ();
+					this.role_id = base.deserialize.read_integer ();
 					break;
 				case 2:
+					this.career = base.deserialize.read_integer ();
+					break;
+				case 3:
 					this.name = base.deserialize.read_string ();
 					break;
 				default:
@@ -910,15 +922,19 @@ namespace SprotoType {
 			base.serialize.open (stream);
 
 			if (base.has_field.has_field (0)) {
-				base.serialize.write_integer (this.role_id, 0);
+				base.serialize.write_integer (this.scene_uid, 0);
 			}
 
 			if (base.has_field.has_field (1)) {
-				base.serialize.write_integer (this.career, 1);
+				base.serialize.write_integer (this.role_id, 1);
 			}
 
 			if (base.has_field.has_field (2)) {
-				base.serialize.write_string (this.name, 2);
+				base.serialize.write_integer (this.career, 2);
+			}
+
+			if (base.has_field.has_field (3)) {
+				base.serialize.write_string (this.name, 3);
 			}
 
 			return base.serialize.close ();

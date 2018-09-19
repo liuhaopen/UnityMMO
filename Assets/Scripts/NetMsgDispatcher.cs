@@ -72,7 +72,6 @@ namespace UnityMMO
             RpcRspHandler rpcRspHandler = NetMsgDispatcher.GetHandler(cur_session);
             if (rpcRspHandler != null)
             {
-                Debug.Log("rpc rsp handler : ");
                 SprotoTypeBase receive_info = null;
                 ProtocolFunctionDictionary.typeFunc GenResponse;
                 sessionDict.TryGetValue(cur_session, out GenResponse);

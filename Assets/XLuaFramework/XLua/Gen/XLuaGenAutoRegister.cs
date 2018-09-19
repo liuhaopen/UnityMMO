@@ -28,6 +28,12 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(XLuaManager), XLuaManagerWrap.__Register);
         
         
+            translator.DelayWrapLoader(typeof(UnityMMO.SceneObjectType), UnityMMOSceneObjectTypeWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(UnityMMO.SceneMgr), UnityMMOSceneMgrWrap.__Register);
+        
+        
             translator.DelayWrapLoader(typeof(UnityMMO.GameVariable), UnityMMOGameVariableWrap.__Register);
         
         

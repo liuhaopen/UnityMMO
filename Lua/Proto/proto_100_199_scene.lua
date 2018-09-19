@@ -1,9 +1,10 @@
 return [[
 
 .scene_main_role_info {
-	role_id 0 : integer
-	career 1 : integer
-	name 2 : string
+	scene_uid 0 : integer
+	role_id 1 : integer
+	career 2 : integer
+	name 3 : string
 }
 .int_key_value {
 	key 0 : integer

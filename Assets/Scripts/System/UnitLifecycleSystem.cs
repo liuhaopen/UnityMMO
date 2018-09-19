@@ -8,6 +8,7 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
 
+#if false
 namespace UnityMMO
 {
 // [UpdateAfter(typeof())]
@@ -64,7 +65,7 @@ public class UnitLifecycleSystem : JobComponentSystem
 		while (createdUnit.Count > 0)
 		{
 			var data = createdUnit.Dequeue();
-			SceneObjectCreator.Instance.AddSceneObject(data);
+			// SceneMgr.Instance.AddSceneObject(data);
 		}
 
 		UpdateInjectedComponentGroups();
@@ -74,3 +75,4 @@ public class UnitLifecycleSystem : JobComponentSystem
 
 }
 }
+#endif
