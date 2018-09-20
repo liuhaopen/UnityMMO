@@ -29,10 +29,13 @@ public class SceneMgr : MonoBehaviour
     public EntityArchetype NPCArchetype;
 
     Dictionary<long, Entity> entityDic;
+
+    public EntityManager EntityManager { get => entityManager; set => entityManager = value; }
+
     public void Awake()
 	{
 		Instance = this; // worst singleton ever but it works
-		entityManager = World.Active.GetExistingManager<EntityManager>();
+		EntityManager = World.Active.GetExistingManager<EntityManager>();
         entityDic = new Dictionary<long, Entity>();
 	}
 
@@ -42,9 +45,9 @@ public class SceneMgr : MonoBehaviour
         //         typeof(Position), typeof(PlayerInput),
         //         typeof(MoveSpeed), typeof(SynchPosFlag));
                 //typeof(TransformMatrix), 
-		RoleArchetype = entityManager.CreateArchetype(
-                typeof(Position), typeof(PlayerInput),
-                typeof(MoveSpeed), typeof(SynchPosFlag));
+		RoleArchetype = EntityManager.CreateArchetype(
+                typeof(Position),
+                typeof(MoveSpeed));
 	}
 
 	public void OnDestroy()
@@ -54,20 +57,22 @@ public class SceneMgr : MonoBehaviour
 
     public Entity AddMainRole(long uid)
 	{
-		Entity role = entityManager.CreateEntity(RoleArchetype);
-        entityManager.SetComponentData(role, new Position {Value = new int3(0, 0, 0)});
-        entityManager.SetComponentData(role, new MoveSpeed {speed = 12});
-        entityManager.AddSharedComponentData(role, GetLookFromPrototype("Prototype/MainRoleRenderPrototype"));
+		Entity role = EntityManager.CreateEntity(RoleArchetype);
+        EntityManager.SetComponentData(role, new Position {Value = new int3(0, 0, 0)});
+        EntityManager.SetComponentData(role, new MoveSpeed {speed = 12});
+        EntityManager.AddComponent(role, ComponentType.Create<PlayerInput>());
+        EntityManager.AddComponent(role, ComponentType.Create<SynchPosFlag>());
+        EntityManager.AddSharedComponentData(role, GetLookFromPrototype("Prototype/MainRoleRenderPrototype"));
         entityDic.Add(uid, role);
         return role;
 	}
 
     public Entity AddRole(long uid)
 	{
-		Entity role = entityManager.CreateEntity(RoleArchetype);
-        entityManager.SetComponentData(role, new Position {Value = new int3(0, 0, 0)});
-        entityManager.SetComponentData(role, new MoveSpeed {speed = 12});
-        entityManager.AddSharedComponentData(role, GetLookFromPrototype("Prototype/MainRoleRenderPrototype"));
+		Entity role = EntityManager.CreateEntity(RoleArchetype);
+        EntityManager.SetComponentData(role, new Position {Value = new int3(0, 0, 0)});
+        EntityManager.SetComponentData(role, new MoveSpeed {speed = 12});
+        EntityManager.AddSharedComponentData(role, GetLookFromPrototype("Prototype/MainRoleRenderPrototype"));
         entityDic.Add(uid, role);
         return role;
 	}
@@ -79,8 +84,16 @@ public class SceneMgr : MonoBehaviour
         return Entity.Null;
     }
 
+    public void RemoveSceneObject(long uid)
+    {
+        Entity entity = GetSceneObject(uid);
+        if (entity!=Entity.Null)
+            entityManager.DestroyEntity(entity);
+    }
+
     public Entity GetSceneObject(long uid)
     {
+        Debug.Log("GetSceneObject uid"+uid.ToString()+" ContainsKey:"+entityDic.ContainsKey(uid).ToString());
         if (entityDic.ContainsKey(uid))
             return entityDic[uid];
         return Entity.Null;
@@ -90,7 +103,7 @@ public class SceneMgr : MonoBehaviour
     {
         var proto = GameObject.Find(protoName);
         var result = proto.GetComponent<MeshInstanceRendererComponent>().Value;
-        Object.Destroy(proto);
+        // Object.Destroy(proto);
         return result;
     }
 }

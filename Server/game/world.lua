@@ -32,13 +32,24 @@ function CMD.role_enter_game( user_info, role_id )
 	return 1
 end
 
-function CMD.get_role_scene_service(role_id)
-	return online_role[role_id] and online_role[role_id].scene_service
+function CMD.role_leave_game(user_info)
+	local role_id_in_account 
+	--wait for optimization
+	for role_id,v in pairs(online_role) do
+		if v.user_id == user_info.user_id then
+			role_id_in_account = role_id
+			break
+		end
+	end
+	print('Cat:world.lua[44] role_id_in_account', role_id_in_account, online_role[role_id_in_account])
+	if role_id_in_account and online_role[role_id_in_account] then
+		skynet.call(online_role[role_id_in_account].scene_service, "lua", "role_leave_scene", role_id_in_account)
+	 	online_role[role_id_in_account] = nil
+	 end
 end
 
-function CMD.role_leave_game(role_id)
-	skynet.error(string.format ("role_id(%d) leave world", role_id))
-	online_role[role_id] = nil
+function CMD.get_role_scene_service(role_id)
+	return online_role[role_id] and online_role[role_id].scene_service
 end
 
 skynet.start (function ()

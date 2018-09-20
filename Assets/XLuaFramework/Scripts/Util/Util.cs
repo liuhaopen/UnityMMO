@@ -369,12 +369,18 @@ namespace XLuaFramework {
         }
         public static short SwapInt16(short n)  
         {  
-            return (short)(((n & 0xff) << 8) | ((n >> 8) & 0xff));  
+            if (BitConverter.IsLittleEndian)
+                return (short)(((n & 0xff) << 8) | ((n >> 8) & 0xff));  
+            else
+                return n;
         }  
         public static int SwapInt32(int n)  
         {  
-            return (int)(((SwapInt16((short)n) & 0xffff) << 0x10) |  
-                (SwapInt16((short)(n >> 0x10)) & 0xffff));  
+            if (BitConverter.IsLittleEndian)
+                return (int)(((SwapInt16((short)n) & 0xffff) << 0x10) |  
+                    (SwapInt16((short)(n >> 0x10)) & 0xffff));  
+            else
+                return n;
         }  
     }
 }

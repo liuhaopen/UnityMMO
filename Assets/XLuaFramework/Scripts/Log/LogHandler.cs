@@ -43,7 +43,10 @@ namespace XLuaFramework
 
             if (!Directory.Exists(log_dir))
                 Directory.CreateDirectory(log_dir);
-            output_path = log_dir + "/out_put.txt";
+            if (Application.isEditor)
+                output_path = log_dir + "/out_put.txt";
+            else
+                output_path = log_dir + "/out_put_uneditor.txt";
             Debug.Log("log_dir : " + log_dir+ "  Directory.Exists(log_dir)"+ Directory.Exists(log_dir).ToString());
             //每次启动先删除旧的
             if (File.Exists(output_path))

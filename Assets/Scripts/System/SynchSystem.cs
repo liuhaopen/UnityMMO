@@ -30,15 +30,14 @@ namespace UnityMMO
         
         protected override void OnUpdate()
         {
-            return;
             //upload per second
             // Debug.Log("synch system"+Time.time.ToString()+" lasttime:"+lastSynchTime.ToString());
-            if (Time.time - lastSynchTime < 4 || !GameVariable.IsNeedSynchSceneInfo)
+            if (Time.time - lastSynchTime < 0.1 || !GameVariable.IsNeedSynchSceneInfo)
                 return;
-            lastSynchTime = Time.time+500;
+            lastSynchTime = Time.time;
             for (int index = 0; index < m_Data.Length; ++index)
             {
-                Debug.Log("synch system");
+                // Debug.Log("synch system");
                 scene_walk.request walk = new scene_walk.request();
                 float3 cur_pos = m_Data.Position[index].Value;
                 walk.pos_x = (int)(cur_pos.x*GameConst.RealToLogic);

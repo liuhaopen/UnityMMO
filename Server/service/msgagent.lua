@@ -44,7 +44,9 @@ end
 
 function CMD.afk(source)
 	-- the connection is broken, but the user may back
-	skynet.error(string.format("AFK"))
+	-- skynet.error(string.format("AFK"))
+	local world = skynet.uniqueservice ("world")
+	skynet.call(world, "lua", "role_leave_game", user_info)
 end
 
 skynet.start(function()
@@ -79,9 +81,11 @@ skynet.start(function()
 					end
 				end
 				local ok, response_str = pcall(c2s_sproto.response_encode, c2s_sproto, tag, response)
-				print("Cat:msgagent [start:73] response:", response, proto_info.name, ok, response_str)
-				PrintTable(response)
-				print("Cat:msgagent [end]")
+				-- local decode_response_str = c2s_sproto:response_decode(tag, response_str)
+				-- print_r(decode_response_str)
+				-- print("Cat:msgagent [start:73] response:", response, proto_info.name, ok, response_str)
+				-- PrintTable(response)
+				-- print("Cat:msgagent [end]")
 				if ok then
 					skynet.ret(response_str)
 				else

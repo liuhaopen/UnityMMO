@@ -60,14 +60,14 @@ namespace UnityMMO
 
         public void OnReceiveMsgFromNet(byte[] bytes)
         {
-            Debug.Log("NetMsgHandler:OnReceiveMsgFromNet : "+bytes.Length.ToString());
+            // Debug.Log("NetMsgHandler:OnReceiveMsgFromNet : "+bytes.Length.ToString());
             int content_size = bytes.Length-5;
             if (content_size <= 0)
                 return;
             char flag = BitConverter.ToChar(bytes, content_size);
             int cur_session = BitConverter.ToInt32(bytes, content_size+1);
             cur_session = Util.SwapInt32(cur_session);
-            Debug.Log("NetMsgHandler:OnReceiveMsgFromNet flag:"+flag.ToString()+" session:"+cur_session.ToString());
+            // Debug.Log("NetMsgHandler:OnReceiveMsgFromNet flag:"+flag.ToString()+" session:"+cur_session.ToString());
 
             RpcRspHandler rpcRspHandler = NetMsgDispatcher.GetHandler(cur_session);
             if (rpcRspHandler != null)
@@ -90,8 +90,8 @@ namespace UnityMMO
         public void SendMessage<T>(SprotoTypeBase rpcReq, RpcRspHandler rpcRspHandler = null) 
         {
             session += 1;
-                if (session >= maxSession)
-                    session = 0;
+            if (session >= maxSession)
+                session = 0;
             if (rpcRspHandler != null)
             {
                 AddHandler(session, rpcRspHandler);
@@ -109,8 +109,8 @@ namespace UnityMMO
                 tag = Util.SwapInt32(tag);
                 writer.Write(tag);
                 writer.Write(message);
-                session = Util.SwapInt32(session);
-                writer.Write(session);
+                int swap_session = Util.SwapInt32(session);
+                writer.Write(swap_session);
                 writer.Flush();
                 byte[] payload = ms.ToArray();
                 NetworkManager.GetInstance().SendBytesWithoutSize(payload);

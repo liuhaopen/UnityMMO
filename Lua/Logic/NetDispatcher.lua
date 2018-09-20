@@ -16,21 +16,21 @@ end
 
 function OnDisConnectFromServer() 
     print("Game Server disconnected!!")
-    GlobalEventSystem:Fire(NetDispatcher.Event.Disconnect)
+    GlobalEventSystem:Fire(NetDispatcher.Event.OnDisConnect)
 end
 
 function OnReceiveLineFromServer(bytes) 
-    print("OnReceiveLineFromServer!", bytes)
+    -- print("OnReceiveLineFromServer!", bytes)
     GlobalEventSystem:Fire(NetDispatcher.Event.OnReceiveLine, bytes)
 end
 
 function OnReceiveMsgFromServer(bytes) 
-    print("OnReceiveMsgFromServer!", bytes)
+    -- print("OnReceiveMsgFromServer!", bytes)
     NetDispatcher:OnMessage(bytes)
 end
 
 local print_net = function() end
-print_net = print --注释掉就不打印网络信息了
+-- print_net = print --注释掉就不打印网络信息了
 
 function NetDispatcher:Start() 
     print("NetDispatcher.Start!!", GameConst.MaxLuaNetSessionID);
@@ -125,8 +125,8 @@ function NetDispatcher:OriginOnMessage(bytes)
     assert(content_size >= 0)
     local content, result, session = string.unpack("c"..content_size.."B>I4", code)
     -- string.unpack(code, "s"..content_size.."B>I4")
-    print_net('Cat:NetDispatcher.lua[149] content|'..content.."|")
-    print_net('Cat:NetDispatcher.lua[179] result, session', result, session)
+    -- print_net('Cat:NetDispatcher.lua[149] content|'..content.."|")
+    -- print_net('Cat:NetDispatcher.lua[179] result, session', result, session)
     if session and self.response_call_back[session] and #self.response_call_back[session]==2 then
         print_net('Cat:NetDispatcher.lua[168] self.sproto_c2s', self.sproto_c2s, self.response_call_back[session][1])
         for i=1,#code do
