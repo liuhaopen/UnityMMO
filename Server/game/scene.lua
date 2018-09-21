@@ -103,8 +103,6 @@ end
 
 function CMD.scene_get_main_role_info( user_info, req_data )
 	print('Cat:scene.lua[scene_get_main_role_info] user_info, req_data', user_info, user_info.cur_role_id)
-	-- local gameDBServer = skynet.localname(".GameDBServer")
-	-- local is_succeed, result = skynet.call(gameDBServer, "lua", "select_by_key", "RoleBaseInfo", "role_id", user_info.cur_role_id)
 	return {
 		role_info={
 			scene_uid=this.role_lists[user_info.cur_role_id].scene_uid,

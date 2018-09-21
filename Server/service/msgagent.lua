@@ -83,9 +83,6 @@ skynet.start(function()
 				local ok, response_str = pcall(c2s_sproto.response_encode, c2s_sproto, tag, response)
 				-- local decode_response_str = c2s_sproto:response_decode(tag, response_str)
 				-- print_r(decode_response_str)
-				-- print("Cat:msgagent [start:73] response:", response, proto_info.name, ok, response_str)
-				-- PrintTable(response)
-				-- print("Cat:msgagent [end]")
 				if ok then
 					skynet.ret(response_str)
 				else

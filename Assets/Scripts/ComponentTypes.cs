@@ -15,6 +15,10 @@ namespace UnityMMO
         public float speed;
     }
     
+    public struct TargetPosition : IComponentData
+    {
+        public float3 Value;
+    }
 
     public struct SynchPosFlag : IComponentData
     {

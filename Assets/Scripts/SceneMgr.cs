@@ -46,7 +46,7 @@ public class SceneMgr : MonoBehaviour
         //         typeof(MoveSpeed), typeof(SynchPosFlag));
                 //typeof(TransformMatrix), 
 		RoleArchetype = EntityManager.CreateArchetype(
-                typeof(Position),
+                typeof(Position),typeof(TargetPosition),
                 typeof(MoveSpeed));
 	}
 
@@ -57,12 +57,9 @@ public class SceneMgr : MonoBehaviour
 
     public Entity AddMainRole(long uid)
 	{
-		Entity role = EntityManager.CreateEntity(RoleArchetype);
-        EntityManager.SetComponentData(role, new Position {Value = new int3(0, 0, 0)});
-        EntityManager.SetComponentData(role, new MoveSpeed {speed = 12});
+		Entity role = AddRole(uid);
         EntityManager.AddComponent(role, ComponentType.Create<PlayerInput>());
         EntityManager.AddComponent(role, ComponentType.Create<SynchPosFlag>());
-        EntityManager.AddSharedComponentData(role, GetLookFromPrototype("Prototype/MainRoleRenderPrototype"));
         entityDic.Add(uid, role);
         return role;
 	}
@@ -72,6 +69,7 @@ public class SceneMgr : MonoBehaviour
 		Entity role = EntityManager.CreateEntity(RoleArchetype);
         EntityManager.SetComponentData(role, new Position {Value = new int3(0, 0, 0)});
         EntityManager.SetComponentData(role, new MoveSpeed {speed = 12});
+        EntityManager.SetComponentData(role, new TargetPosition {Value = new int3(0, 0, 0)});
         EntityManager.AddSharedComponentData(role, GetLookFromPrototype("Prototype/MainRoleRenderPrototype"));
         entityDic.Add(uid, role);
         return role;
