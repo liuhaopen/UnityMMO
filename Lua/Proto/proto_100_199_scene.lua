@@ -23,6 +23,10 @@ return [[
 	role_id 0 : integer
 	career 1 : integer
 	name 2 : string
+	scene_id 3 : integer
+	pos_x 4 : integer
+	pos_y 5 : integer
+	pos_z 6 : integer
 }
 .scene_monster_info {
 	monster_id 0 : integer
@@ -68,6 +72,15 @@ scene_get_objs_info_change 103 {
 	}
 	response {
 		obj_infos 0 : *scene_obj_info
+	}
+}
+
+scene_enter_scene 104 {
+	request {
+		scene_id 0 : integer
+	}
+	response {
+		result 0 : integer
 	}
 }
 

@@ -23,7 +23,6 @@ public class SceneMgr : MonoBehaviour
 {
 	public static SceneMgr Instance;
 	EntityManager entityManager;
-    // public EntityArchetype MainRoleArchetype;
     public EntityArchetype RoleArchetype;
     public EntityArchetype MonsterArchetype;
     public EntityArchetype NPCArchetype;
@@ -41,10 +40,6 @@ public class SceneMgr : MonoBehaviour
 
 	public void InitArcheType()
 	{
-		// MainRoleArchetype = entityManager.CreateArchetype(
-        //         typeof(Position), typeof(PlayerInput),
-        //         typeof(MoveSpeed), typeof(SynchPosFlag));
-                //typeof(TransformMatrix), 
 		RoleArchetype = EntityManager.CreateArchetype(
                 typeof(Position),typeof(TargetPosition),
                 typeof(MoveSpeed));
@@ -54,6 +49,11 @@ public class SceneMgr : MonoBehaviour
 	{
 		Instance = null;
 	}
+
+    public void LoadScene(int scene_id, float pos_x, float pos_y, float pos_z)
+    {
+
+    }
 
     public Entity AddMainRole(long uid)
 	{

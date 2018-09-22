@@ -638,6 +638,101 @@ namespace SprotoType {
 	}
 
 
+	public class scene_enter_scene {
+	
+		public class request : SprotoTypeBase {
+			private static int max_field_count = 1;
+			
+			
+			private Int64 _scene_id; // tag 0
+			public Int64 scene_id {
+				get { return _scene_id; }
+				set { base.has_field.set_field (0, true); _scene_id = value; }
+			}
+			public bool HasScene_id {
+				get { return base.has_field.has_field (0); }
+			}
+
+			public request () : base(max_field_count) {}
+
+			public request (byte[] buffer) : base(max_field_count, buffer) {
+				this.decode ();
+			}
+
+			protected override void decode () {
+				int tag = -1;
+				while (-1 != (tag = base.deserialize.read_tag ())) {
+					switch (tag) {
+					case 0:
+						this.scene_id = base.deserialize.read_integer ();
+						break;
+					default:
+						base.deserialize.read_unknow_data ();
+						break;
+					}
+				}
+			}
+
+			public override int encode (SprotoStream stream) {
+				base.serialize.open (stream);
+
+				if (base.has_field.has_field (0)) {
+					base.serialize.write_integer (this.scene_id, 0);
+				}
+
+				return base.serialize.close ();
+			}
+		}
+
+
+		public class response : SprotoTypeBase {
+			private static int max_field_count = 1;
+			
+			
+			private Int64 _result; // tag 0
+			public Int64 result {
+				get { return _result; }
+				set { base.has_field.set_field (0, true); _result = value; }
+			}
+			public bool HasResult {
+				get { return base.has_field.has_field (0); }
+			}
+
+			public response () : base(max_field_count) {}
+
+			public response (byte[] buffer) : base(max_field_count, buffer) {
+				this.decode ();
+			}
+
+			protected override void decode () {
+				int tag = -1;
+				while (-1 != (tag = base.deserialize.read_tag ())) {
+					switch (tag) {
+					case 0:
+						this.result = base.deserialize.read_integer ();
+						break;
+					default:
+						base.deserialize.read_unknow_data ();
+						break;
+					}
+				}
+			}
+
+			public override int encode (SprotoStream stream) {
+				base.serialize.open (stream);
+
+				if (base.has_field.has_field (0)) {
+					base.serialize.write_integer (this.result, 0);
+				}
+
+				return base.serialize.close ();
+			}
+		}
+
+
+	}
+
+
 	public class scene_get_cur_scene_info {
 	
 		public class response : SprotoTypeBase {
@@ -1158,7 +1253,7 @@ namespace SprotoType {
 
 
 	public class scene_role_info : SprotoTypeBase {
-		private static int max_field_count = 3;
+		private static int max_field_count = 7;
 		
 		
 		private Int64 _role_id; // tag 0
@@ -1188,6 +1283,42 @@ namespace SprotoType {
 			get { return base.has_field.has_field (2); }
 		}
 
+		private Int64 _scene_id; // tag 3
+		public Int64 scene_id {
+			get { return _scene_id; }
+			set { base.has_field.set_field (3, true); _scene_id = value; }
+		}
+		public bool HasScene_id {
+			get { return base.has_field.has_field (3); }
+		}
+
+		private Int64 _pos_x; // tag 4
+		public Int64 pos_x {
+			get { return _pos_x; }
+			set { base.has_field.set_field (4, true); _pos_x = value; }
+		}
+		public bool HasPos_x {
+			get { return base.has_field.has_field (4); }
+		}
+
+		private Int64 _pos_y; // tag 5
+		public Int64 pos_y {
+			get { return _pos_y; }
+			set { base.has_field.set_field (5, true); _pos_y = value; }
+		}
+		public bool HasPos_y {
+			get { return base.has_field.has_field (5); }
+		}
+
+		private Int64 _pos_z; // tag 6
+		public Int64 pos_z {
+			get { return _pos_z; }
+			set { base.has_field.set_field (6, true); _pos_z = value; }
+		}
+		public bool HasPos_z {
+			get { return base.has_field.has_field (6); }
+		}
+
 		public scene_role_info () : base(max_field_count) {}
 
 		public scene_role_info (byte[] buffer) : base(max_field_count, buffer) {
@@ -1206,6 +1337,18 @@ namespace SprotoType {
 					break;
 				case 2:
 					this.name = base.deserialize.read_string ();
+					break;
+				case 3:
+					this.scene_id = base.deserialize.read_integer ();
+					break;
+				case 4:
+					this.pos_x = base.deserialize.read_integer ();
+					break;
+				case 5:
+					this.pos_y = base.deserialize.read_integer ();
+					break;
+				case 6:
+					this.pos_z = base.deserialize.read_integer ();
 					break;
 				default:
 					base.deserialize.read_unknow_data ();
@@ -1227,6 +1370,22 @@ namespace SprotoType {
 
 			if (base.has_field.has_field (2)) {
 				base.serialize.write_string (this.name, 2);
+			}
+
+			if (base.has_field.has_field (3)) {
+				base.serialize.write_integer (this.scene_id, 3);
+			}
+
+			if (base.has_field.has_field (4)) {
+				base.serialize.write_integer (this.pos_x, 4);
+			}
+
+			if (base.has_field.has_field (5)) {
+				base.serialize.write_integer (this.pos_y, 5);
+			}
+
+			if (base.has_field.has_field (6)) {
+				base.serialize.write_integer (this.pos_z, 6);
 			}
 
 			return base.serialize.close ();
@@ -1433,6 +1592,10 @@ public class Protocol : ProtocolBase {
 		Protocol.SetRequest<SprotoType.account_select_role_enter_game.request> (account_select_role_enter_game.Tag);
 		Protocol.SetResponse<SprotoType.account_select_role_enter_game.response> (account_select_role_enter_game.Tag);
 
+		Protocol.SetProtocol<scene_enter_scene> (scene_enter_scene.Tag);
+		Protocol.SetRequest<SprotoType.scene_enter_scene.request> (scene_enter_scene.Tag);
+		Protocol.SetResponse<SprotoType.scene_enter_scene.response> (scene_enter_scene.Tag);
+
 		Protocol.SetProtocol<scene_get_cur_scene_info> (scene_get_cur_scene_info.Tag);
 		Protocol.SetResponse<SprotoType.scene_get_cur_scene_info.response> (scene_get_cur_scene_info.Tag);
 
@@ -1467,6 +1630,10 @@ public class Protocol : ProtocolBase {
 
 	public class account_select_role_enter_game {
 		public const int Tag = 5;
+	}
+
+	public class scene_enter_scene {
+		public const int Tag = 104;
 	}
 
 	public class scene_get_cur_scene_info {
