@@ -35,6 +35,7 @@ namespace UnityMMO
             if (Time.time - lastSynchTime < 0.1 || !GameVariable.IsNeedSynchSceneInfo)
                 return;
             lastSynchTime = Time.time;
+            long synchTime = System.DateTime.Now.Millisecond;
             for (int index = 0; index < m_Data.Length; ++index)
             {
                 // Debug.Log("synch system");
@@ -43,10 +44,7 @@ namespace UnityMMO
                 walk.pos_x = (int)(cur_pos.x*GameConst.RealToLogic);
                 walk.pos_y = (int)(cur_pos.y*GameConst.RealToLogic);
                 walk.pos_z = (int)(cur_pos.z*GameConst.RealToLogic);
-                walk.dir_x = 3;
-                walk.dir_y = 4;
-                walk.dir_z = 5;
-                walk.time = 6;
+                walk.time = synchTime;
                 NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_walk>(walk);
             }         
         }

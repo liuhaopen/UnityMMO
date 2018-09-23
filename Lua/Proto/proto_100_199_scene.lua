@@ -5,10 +5,10 @@ return [[
 	role_id 1 : integer
 	career 2 : integer
 	name 3 : string
-}
-.int_key_value {
-	key 0 : integer
-	value 1 : integer
+	scene_id 4 : integer
+	pos_x 5 : integer
+	pos_y 6 : integer
+	pos_z 7 : integer
 }
 .info_item {
 	key 0 : integer
@@ -23,10 +23,6 @@ return [[
 	role_id 0 : integer
 	career 1 : integer
 	name 2 : string
-	scene_id 3 : integer
-	pos_x 4 : integer
-	pos_y 5 : integer
-	pos_z 6 : integer
 }
 .scene_monster_info {
 	monster_id 0 : integer
@@ -58,10 +54,7 @@ scene_walk 102 {
 		pos_x 0 : integer
 		pos_y 1 : integer
 		pos_z 2 : integer
-		dir_x 3 : integer
-		dir_y 4 : integer
-		dir_z 5 : integer
-		time  6 : integer
+		time  3 : integer
 	}
 	response {
 	}
@@ -81,6 +74,7 @@ scene_enter_scene 104 {
 	}
 	response {
 		result 0 : integer
+		role_info 1 : scene_main_role_info
 	}
 }
 

@@ -55,6 +55,9 @@ public class SceneMgr : MonoBehaviour
 
     }
 
+    private void LoadSceneObjectCollidersInfo(int scene_id)
+    {}
+
     public Entity AddMainRole(long uid)
 	{
 		Entity role = AddRole(uid);
