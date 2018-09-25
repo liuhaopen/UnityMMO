@@ -28,7 +28,7 @@ public class MainWorld : MonoBehaviour
     }
 
     public void StartGame() {
-        // SceneMgr.Instance.AddMainRole();
+        SceneMgr.Instance.LoadScene(1001);
         SynchFromNet.Instance.ReqSceneObjInfoChange();
     }
 

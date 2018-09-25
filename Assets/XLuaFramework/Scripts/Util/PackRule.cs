@@ -4,6 +4,7 @@ using UnityEngine;
 public class PackRule
 {
     static string UIPath = "Assets/AssetBundleRes/ui/";
+    static string ScenePath = "Assets/AssetBundleRes/scene/";
     public static string PathToAssetBundleName(string path)
     {
         path = path.Replace('\\', '/');
@@ -23,6 +24,14 @@ public class PackRule
             }
             return ab_name;
         }
+        else if (path.StartsWith(ScenePath))
+        {
+            string sub_path = path.Substring(ScenePath.Length);
+            string[] path_parts = sub_path.Split('/');
+            if (path_parts.Length>0)
+                return  path_parts[0];
+        }
+        Debug.Log("PackRule:PathToAssetBundleName : cannot find ab name : " + path);
         return "";
     } 
 }

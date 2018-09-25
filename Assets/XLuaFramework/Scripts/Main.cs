@@ -87,7 +87,8 @@ namespace XLuaFramework {
                         cur_sub_state = SubState.Update;
                         ResourceManager.GetInstance().Initialize(AppConfig.AssetDir, delegate() {
                             Debug.Log("Main.cs ResourceManager Initialize OK!!!");
-                            JumpToState(State.StartLogin);
+                            // JumpToState(State.StartLogin);
+                            JumpToState(State.StartGame);
                         });
                     }
                     break;

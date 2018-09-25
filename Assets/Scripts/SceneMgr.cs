@@ -22,6 +22,7 @@ namespace UnityMMO
 public class SceneMgr : MonoBehaviour
 {
 	public static SceneMgr Instance;
+    public Transform container;
 	EntityManager entityManager;
     public EntityArchetype RoleArchetype;
     public EntityArchetype MonsterArchetype;
@@ -36,6 +37,8 @@ public class SceneMgr : MonoBehaviour
 		Instance = this; // worst singleton ever but it works
 		EntityManager = World.Active.GetExistingManager<EntityManager>();
         entityDic = new Dictionary<long, Entity>();
+        GameObject obj = GameObject.Find("SceneContainer");
+        container = obj.transform;
 	}
 
 	public void InitArcheType()
@@ -50,9 +53,14 @@ public class SceneMgr : MonoBehaviour
 		Instance = null;
 	}
 
-    public void LoadScene(int scene_id, float pos_x, float pos_y, float pos_z)
+    public void LoadScene(int scene_id, float pos_x=0.0f, float pos_y=0.0f, float pos_z=0.0f)
     {
-
+        Debug.Log("LoadScene scene_id "+(scene_id).ToString());
+        XLuaFramework.ResourceManager.GetInstance().LoadPrefabGameObjectWithAction("Assets/AssetBundleRes/scene/scene_"+scene_id.ToString()+"/scene_part_1.prefab", delegate(UnityEngine.Object obj) {
+            GameObject gobj = obj as GameObject;
+            Debug.Log("LoadScene obj "+(obj!=null).ToString() +" gobj : "+(gobj!=null).ToString());
+            gobj.transform.SetParent(container);
+        });
     }
 
     private void LoadSceneObjectCollidersInfo(int scene_id)

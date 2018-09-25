@@ -87,6 +87,20 @@ public class AssetBundleInfo {
             });
         }
 
+        public void LoadPrefabGameObjectWithAction(string file_path, Action<UObject> action = null) {
+            this.LoadAsset<GameObject>(file_path, delegate(UnityEngine.Object[] objs) {
+                if (objs.Length == 0) return;
+                GameObject prefab = objs[0] as GameObject;
+                if (prefab == null) return;
+
+                GameObject go = Instantiate(prefab) as GameObject;
+                string assetName = System.IO.Path.GetFileNameWithoutExtension(file_path);
+                go.name = assetName;
+
+                if (action != null) action(go);
+            });
+        }
+
         string GetRealAssetPath(string abName) {
             if (abName.Equals(AppConfig.AssetDir)) {
                 return abName;
