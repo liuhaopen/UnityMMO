@@ -1,5 +1,7 @@
 using XLua;
 
+namespace UnityMMO
+{
 [Hotfix]
 [LuaCallCSharp]
 public enum SceneInfoKey
@@ -8,4 +10,15 @@ public enum SceneInfoKey
     EnterScene=1,//value is scene object type
     LeaveScene=2,
     PosChange=3,
+}
+
+[Hotfix]
+[LuaCallCSharp]
+public enum SceneObjectType
+{
+    None=0,
+    Role=1,
+    Monster=2,
+    NPC=3,
+}
 }

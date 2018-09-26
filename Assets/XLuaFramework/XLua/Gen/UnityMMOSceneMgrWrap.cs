@@ -21,7 +21,7 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(UnityMMO.SceneMgr);
-			Utils.BeginObjectRegister(type, L, translator, 0, 9, 4, 4);
+			Utils.BeginObjectRegister(type, L, translator, 0, 9, 6, 6);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Awake", _m_Awake);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "InitArcheType", _m_InitArcheType);
@@ -35,14 +35,18 @@ namespace XLua.CSObjectWrap
 			
 			
 			Utils.RegisterFunc(L, Utils.GETTER_IDX, "EntityManager", _g_get_EntityManager);
+            Utils.RegisterFunc(L, Utils.GETTER_IDX, "container", _g_get_container);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "RoleArchetype", _g_get_RoleArchetype);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "MonsterArchetype", _g_get_MonsterArchetype);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "NPCArchetype", _g_get_NPCArchetype);
+            Utils.RegisterFunc(L, Utils.GETTER_IDX, "detector", _g_get_detector);
             
 			Utils.RegisterFunc(L, Utils.SETTER_IDX, "EntityManager", _s_set_EntityManager);
+            Utils.RegisterFunc(L, Utils.SETTER_IDX, "container", _s_set_container);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "RoleArchetype", _s_set_RoleArchetype);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "MonsterArchetype", _s_set_MonsterArchetype);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "NPCArchetype", _s_set_NPCArchetype);
+            Utils.RegisterFunc(L, Utils.SETTER_IDX, "detector", _s_set_detector);
             
 			
 			Utils.EndObjectRegister(type, L, translator, null, null,
@@ -182,7 +186,9 @@ namespace XLua.CSObjectWrap
                 UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
             
             
-                
+			    int gen_param_count = LuaAPI.lua_gettop(L);
+            
+                if(gen_param_count == 5&& LuaTypes.LUA_TNUMBER == LuaAPI.lua_type(L, 2)&& LuaTypes.LUA_TNUMBER == LuaAPI.lua_type(L, 3)&& LuaTypes.LUA_TNUMBER == LuaAPI.lua_type(L, 4)&& LuaTypes.LUA_TNUMBER == LuaAPI.lua_type(L, 5)) 
                 {
                     int _scene_id = LuaAPI.xlua_tointeger(L, 2);
                     float _pos_x = (float)LuaAPI.lua_tonumber(L, 3);
@@ -195,10 +201,45 @@ namespace XLua.CSObjectWrap
                     
                     return 0;
                 }
+                if(gen_param_count == 4&& LuaTypes.LUA_TNUMBER == LuaAPI.lua_type(L, 2)&& LuaTypes.LUA_TNUMBER == LuaAPI.lua_type(L, 3)&& LuaTypes.LUA_TNUMBER == LuaAPI.lua_type(L, 4)) 
+                {
+                    int _scene_id = LuaAPI.xlua_tointeger(L, 2);
+                    float _pos_x = (float)LuaAPI.lua_tonumber(L, 3);
+                    float _pos_y = (float)LuaAPI.lua_tonumber(L, 4);
+                    
+                    gen_to_be_invoked.LoadScene( _scene_id, _pos_x, _pos_y );
+                    
+                    
+                    
+                    return 0;
+                }
+                if(gen_param_count == 3&& LuaTypes.LUA_TNUMBER == LuaAPI.lua_type(L, 2)&& LuaTypes.LUA_TNUMBER == LuaAPI.lua_type(L, 3)) 
+                {
+                    int _scene_id = LuaAPI.xlua_tointeger(L, 2);
+                    float _pos_x = (float)LuaAPI.lua_tonumber(L, 3);
+                    
+                    gen_to_be_invoked.LoadScene( _scene_id, _pos_x );
+                    
+                    
+                    
+                    return 0;
+                }
+                if(gen_param_count == 2&& LuaTypes.LUA_TNUMBER == LuaAPI.lua_type(L, 2)) 
+                {
+                    int _scene_id = LuaAPI.xlua_tointeger(L, 2);
+                    
+                    gen_to_be_invoked.LoadScene( _scene_id );
+                    
+                    
+                    
+                    return 0;
+                }
                 
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }
+            
+            return LuaAPI.luaL_error(L, "invalid arguments to UnityMMO.SceneMgr.LoadScene!");
             
         }
         
@@ -377,6 +418,20 @@ namespace XLua.CSObjectWrap
         }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_container(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
+                translator.Push(L, gen_to_be_invoked.container);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         static int _g_get_RoleArchetype(RealStatePtr L)
         {
 		    try {
@@ -418,6 +473,20 @@ namespace XLua.CSObjectWrap
             return 1;
         }
         
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_detector(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
+                translator.Push(L, gen_to_be_invoked.detector);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
+        
         
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -441,6 +510,21 @@ namespace XLua.CSObjectWrap
 		    try {
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			    UnityMMO.SceneMgr.Instance = (UnityMMO.SceneMgr)translator.GetObject(L, 1, typeof(UnityMMO.SceneMgr));
+            
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 0;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _s_set_container(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
+                gen_to_be_invoked.container = (UnityEngine.Transform)translator.GetObject(L, 2, typeof(UnityEngine.Transform));
             
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
@@ -489,6 +573,21 @@ namespace XLua.CSObjectWrap
                 UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
                 Unity.Entities.EntityArchetype gen_value;translator.Get(L, 2, out gen_value);
 				gen_to_be_invoked.NPCArchetype = gen_value;
+            
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 0;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _s_set_detector(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
+                gen_to_be_invoked.detector = (SceneDetectorBase)translator.GetObject(L, 2, typeof(SceneDetectorBase));
             
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);

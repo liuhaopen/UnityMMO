@@ -1,4 +1,7 @@
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Json;
+using System.Text;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Rendering;
@@ -8,15 +11,7 @@ using XLua;
 
 namespace UnityMMO
 {
-    [Hotfix]
-    [LuaCallCSharp]
-    public enum SceneObjectType
-    {
-        None=0,
-        Role=1,
-        Monster=2,
-        NPC=3,
-    }
+    
 [Hotfix]
 [LuaCallCSharp]
 public class SceneMgr : MonoBehaviour
@@ -29,6 +24,10 @@ public class SceneMgr : MonoBehaviour
     public EntityArchetype NPCArchetype;
 
     Dictionary<long, Entity> entityDic;
+    Entity mainRole;
+    public SceneDetectorBase detector;
+    private SceneObjectLoadController m_Controller;
+    const string SceneInfoPath = "Assets/AssetBundleRes/scene/";
 
     public EntityManager EntityManager { get => entityManager; set => entityManager = value; }
 
@@ -37,9 +36,17 @@ public class SceneMgr : MonoBehaviour
 		Instance = this; // worst singleton ever but it works
 		EntityManager = World.Active.GetExistingManager<EntityManager>();
         entityDic = new Dictionary<long, Entity>();
-        GameObject obj = GameObject.Find("SceneContainer");
-        container = obj.transform;
 	}
+
+    void Start()
+    {
+    }
+
+    void Update()
+    {
+        if (detector != null)
+            m_Controller.RefreshDetector(detector);
+    }
 
 	public void InitArcheType()
 	{
@@ -56,11 +63,31 @@ public class SceneMgr : MonoBehaviour
     public void LoadScene(int scene_id, float pos_x=0.0f, float pos_y=0.0f, float pos_z=0.0f)
     {
         Debug.Log("LoadScene scene_id "+(scene_id).ToString());
-        XLuaFramework.ResourceManager.GetInstance().LoadPrefabGameObjectWithAction("Assets/AssetBundleRes/scene/scene_"+scene_id.ToString()+"/scene_part_1.prefab", delegate(UnityEngine.Object obj) {
-            GameObject gobj = obj as GameObject;
-            Debug.Log("LoadScene obj "+(obj!=null).ToString() +" gobj : "+(gobj!=null).ToString());
-            gobj.transform.SetParent(container);
-        });
+        string scene_json = File.ReadAllText(SceneInfoPath+"scene_"+scene_id.ToString()+"/scene_info.json", Encoding.UTF8);
+        SceneExportInfo scene_info;
+        using (var ms = new MemoryStream(Encoding.Unicode.GetBytes(scene_json)))
+        {
+            DataContractJsonSerializer deseralizer = new DataContractJsonSerializer(typeof(SceneExportInfo));
+            scene_info = (SceneExportInfo)deseralizer.ReadObject(ms);// //反序列化ReadObject
+        }
+
+        // XLuaFramework.ResourceManager.GetInstance().LoadPrefabGameObjectWithAction("Assets/AssetBundleRes/scene/scene_"+scene_id.ToString()+"/scene_part_1.prefab", delegate(UnityEngine.Object obj) {
+        //     GameObject gobj = obj as GameObject;
+        //     Debug.Log("LoadScene obj "+(obj!=null).ToString() +" gobj : "+(gobj!=null).ToString());
+        //     gobj.transform.SetParent(container);
+        // });
+
+        m_Controller = gameObject.GetComponent<SceneObjectLoadController>();
+        if (m_Controller == null)
+            m_Controller = gameObject.AddComponent<SceneObjectLoadController>();
+
+        m_Controller.Init(scene_info.Bounds.center, scene_info.Bounds.size, true, SceneSeparateTreeType.QuadTree);
+
+        Debug.Log("scene_info.ObjectInfoList.Count : "+scene_info.ObjectInfoList.Count.ToString());
+        for (int i = 0; i < scene_info.ObjectInfoList.Count; i++)
+        {
+            m_Controller.AddSceneBlockObject(scene_info.ObjectInfoList[i]);
+        }
     }
 
     private void LoadSceneObjectCollidersInfo(int scene_id)
@@ -72,6 +99,7 @@ public class SceneMgr : MonoBehaviour
         EntityManager.AddComponent(role, ComponentType.Create<PlayerInput>());
         EntityManager.AddComponent(role, ComponentType.Create<SynchPosFlag>());
         entityDic.Add(uid, role);
+        mainRole = role;
         return role;
 	}
 
@@ -116,4 +144,5 @@ public class SceneMgr : MonoBehaviour
         return result;
     }
 }
+
 }

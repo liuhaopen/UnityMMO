@@ -16,27 +16,27 @@ namespace XLua.CSObjectWrap
 {
     using Utils = XLua.Utils;
     
-    public class SceneInfoKeyWrap
+    public class UnityMMOSceneInfoKeyWrap
     {
 		public static void __Register(RealStatePtr L)
         {
 		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-		    Utils.BeginObjectRegister(typeof(SceneInfoKey), L, translator, 0, 0, 0, 0);
-			Utils.EndObjectRegister(typeof(SceneInfoKey), L, translator, null, null, null, null, null);
+		    Utils.BeginObjectRegister(typeof(UnityMMO.SceneInfoKey), L, translator, 0, 0, 0, 0);
+			Utils.EndObjectRegister(typeof(UnityMMO.SceneInfoKey), L, translator, null, null, null, null, null);
 			
-			Utils.BeginClassRegister(typeof(SceneInfoKey), L, null, 5, 0, 0);
+			Utils.BeginClassRegister(typeof(UnityMMO.SceneInfoKey), L, null, 5, 0, 0);
             
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "None", SceneInfoKey.None);
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "None", UnityMMO.SceneInfoKey.None);
             
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "EnterScene", SceneInfoKey.EnterScene);
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "EnterScene", UnityMMO.SceneInfoKey.EnterScene);
             
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "LeaveScene", SceneInfoKey.LeaveScene);
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "LeaveScene", UnityMMO.SceneInfoKey.LeaveScene);
             
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "PosChange", SceneInfoKey.PosChange);
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "PosChange", UnityMMO.SceneInfoKey.PosChange);
             
 			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
             
-            Utils.EndClassRegister(typeof(SceneInfoKey), L, translator);
+            Utils.EndClassRegister(typeof(UnityMMO.SceneInfoKey), L, translator);
         }
 		
 		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -46,36 +46,36 @@ namespace XLua.CSObjectWrap
 			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
             if (lua_type == LuaTypes.LUA_TNUMBER)
             {
-                translator.PushSceneInfoKey(L, (SceneInfoKey)LuaAPI.xlua_tointeger(L, 1));
+                translator.PushUnityMMOSceneInfoKey(L, (UnityMMO.SceneInfoKey)LuaAPI.xlua_tointeger(L, 1));
             }
 			
             else if(lua_type == LuaTypes.LUA_TSTRING)
             {
 			    if (LuaAPI.xlua_is_eq_str(L, 1, "None"))
                 {
-                    translator.PushSceneInfoKey(L, SceneInfoKey.None);
+                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.None);
                 }
 				else if (LuaAPI.xlua_is_eq_str(L, 1, "EnterScene"))
                 {
-                    translator.PushSceneInfoKey(L, SceneInfoKey.EnterScene);
+                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.EnterScene);
                 }
 				else if (LuaAPI.xlua_is_eq_str(L, 1, "LeaveScene"))
                 {
-                    translator.PushSceneInfoKey(L, SceneInfoKey.LeaveScene);
+                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.LeaveScene);
                 }
 				else if (LuaAPI.xlua_is_eq_str(L, 1, "PosChange"))
                 {
-                    translator.PushSceneInfoKey(L, SceneInfoKey.PosChange);
+                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.PosChange);
                 }
 				else
                 {
-                    return LuaAPI.luaL_error(L, "invalid string for SceneInfoKey!");
+                    return LuaAPI.luaL_error(L, "invalid string for UnityMMO.SceneInfoKey!");
                 }
             }
 			
             else
             {
-                return LuaAPI.luaL_error(L, "invalid lua type for SceneInfoKey! Expect number or string, got + " + lua_type);
+                return LuaAPI.luaL_error(L, "invalid lua type for UnityMMO.SceneInfoKey! Expect number or string, got + " + lua_type);
             }
 
             return 1;
