@@ -44,7 +44,7 @@ public class SceneMgr : MonoBehaviour
 
     void Update()
     {
-        if (detector != null)
+        if (detector != null && m_Controller != null)
             m_Controller.RefreshDetector(detector);
     }
 
@@ -63,6 +63,7 @@ public class SceneMgr : MonoBehaviour
     public void LoadScene(int scene_id, float pos_x=0.0f, float pos_y=0.0f, float pos_z=0.0f)
     {
         Debug.Log("LoadScene scene_id "+(scene_id).ToString());
+        //load scene info from json file(which export from SceneInfoExporter.cs)
         string scene_json = File.ReadAllText(SceneInfoPath+"scene_"+scene_id.ToString()+"/scene_info.json", Encoding.UTF8);
         SceneExportInfo scene_info;
         using (var ms = new MemoryStream(Encoding.Unicode.GetBytes(scene_json)))
@@ -71,17 +72,13 @@ public class SceneMgr : MonoBehaviour
             scene_info = (SceneExportInfo)deseralizer.ReadObject(ms);// //反序列化ReadObject
         }
 
-        // XLuaFramework.ResourceManager.GetInstance().LoadPrefabGameObjectWithAction("Assets/AssetBundleRes/scene/scene_"+scene_id.ToString()+"/scene_part_1.prefab", delegate(UnityEngine.Object obj) {
-        //     GameObject gobj = obj as GameObject;
-        //     Debug.Log("LoadScene obj "+(obj!=null).ToString() +" gobj : "+(gobj!=null).ToString());
-        //     gobj.transform.SetParent(container);
-        // });
-
         m_Controller = gameObject.GetComponent<SceneObjectLoadController>();
         if (m_Controller == null)
             m_Controller = gameObject.AddComponent<SceneObjectLoadController>();
 
-        m_Controller.Init(scene_info.Bounds.center, scene_info.Bounds.size, true, SceneSeparateTreeType.QuadTree);
+        int max_create_num = 10;
+        int min_create_num = 0;
+        m_Controller.Init(scene_info.Bounds.center, scene_info.Bounds.size, true, max_create_num, min_create_num, SceneSeparateTreeType.QuadTree);
 
         Debug.Log("scene_info.ObjectInfoList.Count : "+scene_info.ObjectInfoList.Count.ToString());
         for (int i = 0; i < scene_info.ObjectInfoList.Count; i++)

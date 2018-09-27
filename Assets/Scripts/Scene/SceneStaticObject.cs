@@ -7,19 +7,19 @@ using UnityEngine;
 public class SceneStaticObject : ISceneObject
 {
     [SerializeField]
-        [DataMember]
+    [DataMember]
     private Bounds m_Bounds;
     [SerializeField]
-        [DataMember]
+    [DataMember]
     private string m_ResPath;
     [SerializeField]
-        [DataMember]
+    [DataMember]
     private Vector3 m_Position;
     [SerializeField]
-        [DataMember]
+    [DataMember]
     private Vector3 m_Rotation;
     [SerializeField]
-        [DataMember]
+    [DataMember]
     private Vector3 m_Size;
 
     private GameObject m_LoadStaticObj;
@@ -31,6 +31,7 @@ public class SceneStaticObject : ISceneObject
 
     public void OnHide()
     {
+        Debug.Log("m_LoadStaticObj : "+(m_LoadStaticObj!=null).ToString());
         if (m_LoadStaticObj)
         {
             Object.Destroy(m_LoadStaticObj);
