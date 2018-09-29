@@ -116,13 +116,13 @@ public class XLuaManager : MonoBehaviour
         string scriptPath = string.Empty;
         filepath = filepath.Replace(".", "/") + ".lua";
 
-        if (AppConfig.DebugMode)
+        if (!IsUseLuaFileWithoutBundle)
         {
             scriptPath = Path.Combine(AppConfig.LuaAssetsDir, filepath);
             // Debug.Log("Load lua script : " + scriptPath);
             return Util.GetFileBytes(scriptPath);
         }
-        else if (IsUseLuaFileWithoutBundle)
+        else
         {
             string dataPath = Application.dataPath;
             dataPath = dataPath.Replace("/Assets", "");

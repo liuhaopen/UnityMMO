@@ -64,6 +64,9 @@ namespace XLuaFramework {
                         data_path = Application.dataPath.Substring(0, i + 1) + game + "/";
                     }
                 }
+                else if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform ==   RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WebGLPlayer) {
+                    data_path = AppConfig.AppDataPath+"/"+AppConfig.AssetDir+"/";
+                }
                 else
                     if (data_path == null)
                         data_path = "c:/" + game + "/";
@@ -171,10 +174,10 @@ namespace XLuaFramework {
             get
             {
                 string dataPath = Application.dataPath;
-                if (AppConfig.DebugMode)
+                bool isWindows = Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor;
+                if (AppConfig.DebugMode || isWindows)
                     dataPath = dataPath.Replace("/Assets", "");
-
-                return DebugMode ? dataPath.Replace(AppName+"/App/PC/"+AppName+"_Data", AppName) : dataPath;
+                return isWindows ? dataPath.Replace(AppName+"/App/PC/"+AppName+"_Data", AppName) : dataPath;
             }
         }
     }

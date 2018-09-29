@@ -188,7 +188,7 @@ public class AssetBundleInfo {
                 bundleInfo = GetLoadedAssetBundle(abName);
                 if (bundleInfo == null) {
                     m_LoadRequests.Remove(abName);
-                    Debug.LogError("OnLoadAsset--->>>" + abName);
+                    Debug.LogError("OnLoadAsset failed!--->>>" + abName);
                     yield break;
                 }
             }

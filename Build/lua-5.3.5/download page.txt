@@ -1,1 +1,1 @@
-http://www.lua.org/ftp/lua-5.3.5.tar.gz
+https://github.com/chexiongsheng/build_xlua_with_libs/tree/master/build/lua-5.3.5

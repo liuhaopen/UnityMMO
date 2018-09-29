@@ -633,11 +633,11 @@ namespace XLua
         }
 #endif
 
-        [MonoPInvokeCallback(typeof(LuaCSFunction))]
-        internal static int LoadSocketCore(RealStatePtr L)
-        {
-            return LuaAPI.luaopen_socket_core(L);
-        }
+        // [MonoPInvokeCallback(typeof(LuaCSFunction))]
+        // internal static int LoadSocketCore(RealStatePtr L)
+        // {
+        //     return LuaAPI.luaopen_socket_core(L);
+        // }
 
         [MonoPInvokeCallback(typeof(LuaCSFunction))]
         internal static int LoadBuiltinLib(RealStatePtr L)

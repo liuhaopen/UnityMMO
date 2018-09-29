@@ -123,26 +123,26 @@ set (THIRDPART_SRC ${THIRDPART_SRC} ${LPEG_SRC})
  set (THIRDPART_SRC ${THIRDPART_SRC} ${CRYPT_SRC})
 #end lua-crypt
 
-set ( LUA_SOCKET
-    luasocket/auxiliar.c
-    luasocket/buffer.c
-    luasocket/except.c
-    luasocket/inet.c
-    luasocket/io.c
-    luasocket/luasocket.c
-    luasocket/mime.c
-    luasocket/options.c
-    luasocket/select.c
-    luasocket/tcp.c
-    luasocket/timeout.c
-    luasocket/udp.c 
-)
+#set ( LUA_SOCKET
+#    luasocket/auxiliar.c
+#    luasocket/buffer.c
+#    luasocket/except.c
+#    luasocket/inet.c
+#    luasocket/io.c
+#    luasocket/luasocket.c
+#    luasocket/mime.c
+#    luasocket/options.c
+#    luasocket/select.c
+#    luasocket/tcp.c
+#    luasocket/timeout.c
+#    luasocket/udp.c 
+#)
 
-if ( WIN32 AND NOT CYGWIN )
-    list (APPEND LUA_SOCKET luasocket/wsocket.c)
-else ( )
-    list (APPEND LUA_SOCKET luasocket/usocket.c)
-endif ( )
+#if ( WIN32 AND NOT CYGWIN )
+#    list (APPEND LUA_SOCKET luasocket/wsocket.c)
+#else ( )
+#    list (APPEND LUA_SOCKET luasocket/usocket.c)
+#endif ( )
 
 set ( XLUA_CORE
     i64lib.c

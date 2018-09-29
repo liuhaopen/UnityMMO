@@ -21,9 +21,9 @@
 # 已完成
 )前端用Luaframework的网络接口,后端用skynet的loginserver通过登录验证  
 )使用sproto协议,按模块分文件和id组,开发时拼接所有协议文件,发布版则预导出为二进制(支持lua和c#)  
-)搭建apache服务器提供资源和lua代码的热更新(从ulua改成xlua后暂不支持)  
-)增加后端通用的数据库服务(有mysql增删改接口就行)  
-)在PC和安卓平台测试通过了,可以连虚拟机上的服务端并登录(从ulua改成xlua后暂不支持安卓)  
+)搭建apache服务器提供资源和lua代码的热更新  
+)增加后端通用的mysql数据库服务  
+)在PC和安卓手机平台测试通过了,可以连虚拟机上的服务端并登录  
 )给xlua集成了lpeg,sproto,lua-crypt第三方库  
 )创建玩家帐号数据库和相关操作服务  
 )登录流程相关界面    
@@ -32,9 +32,11 @@
 # Todo
 前端:   
 )人物场景漫游-ECS做法(70%)  
+)场景切割及动态加载(50%)  
 )基于组件的UI框架(70%)  
 )人物动作方面等Unity的新版Animation系统(IAnimationJob)完善后再介入吧  
 )战斗系统(flowcanvas)  
+)场景模型LOD,试试UnityGithub上的AutoLOD  
 
 后端:  
 )人物的移动同步(80%)  
