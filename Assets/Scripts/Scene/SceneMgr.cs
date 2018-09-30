@@ -65,18 +65,18 @@ public class SceneMgr : MonoBehaviour
         Debug.Log("LoadScene scene_id "+(scene_id).ToString());
         //load scene info from json file(which export from SceneInfoExporter.cs)
         string scene_json = File.ReadAllText(SceneInfoPath+"scene_"+scene_id.ToString()+"/scene_info.json", Encoding.UTF8);
-        SceneExportInfo scene_info;
+        SceneInfo scene_info;
         using (var ms = new MemoryStream(Encoding.Unicode.GetBytes(scene_json)))
         {
-            DataContractJsonSerializer deseralizer = new DataContractJsonSerializer(typeof(SceneExportInfo));
-            scene_info = (SceneExportInfo)deseralizer.ReadObject(ms);// //反序列化ReadObject
+            DataContractJsonSerializer deseralizer = new DataContractJsonSerializer(typeof(SceneInfo));
+            scene_info = (SceneInfo)deseralizer.ReadObject(ms);// //反序列化ReadObject
         }
 
         m_Controller = gameObject.GetComponent<SceneObjectLoadController>();
         if (m_Controller == null)
             m_Controller = gameObject.AddComponent<SceneObjectLoadController>();
 
-        int max_create_num = 10;
+        int max_create_num = 9;
         int min_create_num = 0;
         m_Controller.Init(scene_info.Bounds.center, scene_info.Bounds.size, true, max_create_num, min_create_num, SceneSeparateTreeType.QuadTree);
 

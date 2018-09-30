@@ -8,14 +8,7 @@ using UnityEditor;
 using UnityEngine;
 
 namespace UnityMMO {
-[DataContract]
-public class SceneExportInfo{
-    [DataMember]
-    public Bounds Bounds;
 
-    [DataMember]
-    public List<SceneStaticObject> ObjectInfoList;
-}
 public class SceneInfoExporter : Editor
 {
     const string SavePath = "Assets/AssetBundleRes/scene/";
@@ -23,7 +16,7 @@ public class SceneInfoExporter : Editor
     [MenuItem("Terrain/Export Scene Info")]
     private static void Export()
     {
-        SceneExportInfo export_info = new SceneExportInfo();
+        SceneInfo export_info = new SceneInfo();
         //先把所有选中的场景节点信息导出来
         export_info.ObjectInfoList = new List<SceneStaticObject>();
         PickChild(Selection.activeTransform, export_info.ObjectInfoList);
@@ -51,7 +44,7 @@ public class SceneInfoExporter : Editor
         Vector3 center = new Vector3(minX + size.x/2, minY + size.y/2, minZ + size.z/2);
         export_info.Bounds = new Bounds(center, size);
 
-        DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(SceneExportInfo));
+        DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(SceneInfo));
         MemoryStream msObj = new MemoryStream();
         //将序列化之后的Json格式数据写入流中
         js.WriteObject(msObj, export_info);

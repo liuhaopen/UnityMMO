@@ -119,22 +119,18 @@ namespace XLuaFramework {
         }
 
         private void ProgressChanged(object sender, DownloadProgressChangedEventArgs e) {
-            UnityEngine.Debug.Log("ProgressPercentage :"+e.ProgressPercentage.ToString());
-            
+            //UnityEngine.Debug.Log(e.ProgressPercentage);
+            /*
             UnityEngine.Debug.Log(string.Format("{0} MB's / {1} MB's",
                 (e.BytesReceived / 1024d / 1024d).ToString("0.00"),
                 (e.TotalBytesToReceive / 1024d / 1024d).ToString("0.00")));
-            
+            */
             //float value = (float)e.ProgressPercentage / 100f;
 
             string value = string.Format("{0} kb/s", (e.BytesReceived / 1024d / sw.Elapsed.TotalSeconds).ToString("0.00"));
             NotiData data = new NotiData(NotiData.UPDATE_PROGRESS, value);
             if (m_SyncEvent != null) 
                 m_SyncEvent(data);
-
-            // if (e.ProgressPercentage == 100 && e.BytesReceived == e.TotalBytesToReceive) {
-            //     ProgressFinish(sender, null);
-            // }
         }
 
         void ProgressFinish(object sender, AsyncCompletedEventArgs e)

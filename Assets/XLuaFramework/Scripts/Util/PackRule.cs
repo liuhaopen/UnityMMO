@@ -5,6 +5,7 @@ public class PackRule
 {
     static string UIPath = "Assets/AssetBundleRes/ui/";
     static string ScenePath = "Assets/AssetBundleRes/scene/";
+    static string RolePath = "Assets/AssetBundleRes/role/";
     public static string PathToAssetBundleName(string path)
     {
         path = path.Replace('\\', '/');

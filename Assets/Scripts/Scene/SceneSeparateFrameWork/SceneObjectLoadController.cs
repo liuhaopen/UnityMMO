@@ -110,7 +110,7 @@ public class SceneObjectLoadController : MonoBehaviour
     /// <param name="minCreateCount">检查销毁时间间隔</param>
     public void Init(Vector3 center, Vector3 size, bool asyn, int maxCreateCount, int minCreateCount, SceneSeparateTreeType treeType)
     {
-        Init(center, size, asyn, maxCreateCount, minCreateCount, 1, 5, treeType);
+        Init(center, size, asyn, maxCreateCount, minCreateCount, 0.1f, 5, treeType);
     }
 
     void OnDestroy()
@@ -158,7 +158,7 @@ public class SceneObjectLoadController : MonoBehaviour
         if (!m_IsInitialized)
             return;
         //只有坐标发生改变才调用
-        if (m_OldRefreshPosition != detector.Position)
+        // if (m_OldRefreshPosition != detector.Position)
         {
             m_RefreshTime += Time.deltaTime;
             //达到刷新时间才刷新，避免区域更新频繁
