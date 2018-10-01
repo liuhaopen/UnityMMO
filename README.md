@@ -13,7 +13,7 @@
 )玩法逻辑:使用Unity2018自带的ECS系统配合图形化编程工具flowcanvas(要用Unity的ECS只能用C#)  
 )界面逻辑:使用自制的基于组件的UI系统,全lua开发,动画也由lua实现了一份cocos的action  
 )网络协议:使用sproto,玩法用c#版本,界面用lua版本  
-)场景管理:预先切割地形为NxN小块,使用四叉树管理场景模型的动态加载  
+)场景管理:用T2M切割地形为NxN小块,使用四叉树管理场景模型的动态加载  
 )资源管理:使用Unity新版的AssetBundleBrowser打包资源  
 )数据管理:使用redis,后面再看看要不要加入mysql  
 )同步模式:基于请求回应的状态+差异同步  
