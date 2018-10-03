@@ -364,6 +364,9 @@ PlayerSettings:
       m_SubKind: 
   m_BuildTargetBatching:
   - m_BuildTarget: Android
+    m_StaticBatching: 0
+    m_DynamicBatching: 1
+  - m_BuildTarget: Standalone
     m_StaticBatching: 1
     m_DynamicBatching: 1
   m_BuildTargetGraphicsAPIs:

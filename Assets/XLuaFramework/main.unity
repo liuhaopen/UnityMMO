@@ -368,7 +368,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &170076734
 Light:
   m_ObjectHideFlags: 0
@@ -1259,9 +1259,9 @@ MonoBehaviour:
   jumpForward: 3
   jumpHeight: 4
   useRootMotion: 0
-  freeWalkSpeed: 2.5
-  freeRunningSpeed: 3
-  freeSprintSpeed: 4
+  freeWalkSpeed: 22.5
+  freeRunningSpeed: 22
+  freeSprintSpeed: 24
   strafeWalkSpeed: 2.5
   strafeRunningSpeed: 3
   strafeSprintSpeed: 4
