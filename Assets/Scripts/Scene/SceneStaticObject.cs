@@ -21,6 +21,10 @@ public class SceneStaticObject : ISceneObject
     [SerializeField]
     [DataMember]
     private Vector3 m_Size;
+    [DataMember]
+    public int m_LightmapIndex;
+    [DataMember]
+    public Vector4 m_LightmapScaleOffset;
 
     private GameObject m_LoadStaticObj;
 
@@ -51,19 +55,25 @@ public class SceneStaticObject : ISceneObject
                 m_LoadStaticObj.transform.position = m_Position;
                 m_LoadStaticObj.transform.eulerAngles = m_Rotation;
                 m_LoadStaticObj.transform.localScale = m_Size;
+
+                Renderer renderer = m_LoadStaticObj.GetComponent<Renderer>();
+                renderer.lightmapIndex = m_LightmapIndex;
+                renderer.lightmapScaleOffset = m_LightmapScaleOffset;
             });
             return true;
         }
         return false;
     }
 
-    public SceneStaticObject(Bounds bounds, Vector3 position, Vector3 rotation, Vector3 size, string resPath)
+    public SceneStaticObject(Bounds bounds, Vector3 position, Vector3 rotation, Vector3 size, string resPath, int lightmapIndex, Vector4 lightmapScaleOffset)
     {
         m_Bounds = bounds;
         m_Position = position;
         m_Rotation = rotation;
         m_Size = size;
         m_ResPath = resPath;
+        m_LightmapIndex = lightmapIndex;
+        m_LightmapScaleOffset = lightmapScaleOffset;
     }
 }
 

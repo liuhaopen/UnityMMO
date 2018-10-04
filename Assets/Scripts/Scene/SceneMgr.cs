@@ -69,8 +69,10 @@ public class SceneMgr : MonoBehaviour
         using (var ms = new MemoryStream(Encoding.Unicode.GetBytes(scene_json)))
         {
             DataContractJsonSerializer deseralizer = new DataContractJsonSerializer(typeof(SceneInfo));
-            scene_info = (SceneInfo)deseralizer.ReadObject(ms);// //反序列化ReadObject
+            scene_info = (SceneInfo)deseralizer.ReadObject(ms);
         }
+
+        ApplyLightInfo(scene_info);
 
         m_Controller = gameObject.GetComponent<SceneObjectLoadController>();
         if (m_Controller == null)
@@ -84,6 +86,40 @@ public class SceneMgr : MonoBehaviour
         for (int i = 0; i < scene_info.ObjectInfoList.Count; i++)
         {
             m_Controller.AddSceneBlockObject(scene_info.ObjectInfoList[i]);
+        }
+    }
+
+    private void ApplyLightInfo(SceneInfo scene_info)
+    {
+        LightmapSettings.lightmapsMode = scene_info.LightmapMode;
+        int l1 = (scene_info.LightColorResPath == null) ? 0 : scene_info.LightColorResPath.Length;
+        int l2 = (scene_info.LightDirResPath == null) ? 0 : scene_info.LightDirResPath.Length;
+        int l = (l1 < l2) ? l2 : l1;
+        LightmapData[] lightmaps = null;
+        Debug.Log("ApplyLightInfo"+ l.ToString());
+        if (l > 0)
+        {
+            lightmaps = new LightmapData[l];
+            for (int i = 0; i < l; i++)
+            {
+                lightmaps[i] = new LightmapData();
+                if (i < l1)
+                {
+                    Debug.Log("load lightmap color texture : "+scene_info.LightColorResPath[i].ToString()+" objs:"+(objs[0]!=null));
+                    this.LoadAsset<Texture2D>(scene_info.LightColorResPath[i], delegate(UnityEngine.Object[] objs) {
+                        lightmaps[i].lightmapColor = objs[0];
+                    }
+                }
+                if (i < l2)
+                {
+                    Debug.Log("load lightmap dir texture : "+scene_info.LightDirResPath[i].ToString()+" objs:"+(objs[0]!=null));
+                    this.LoadAsset<Texture2D>(scene_info.LightDirResPath[i], delegate(UnityEngine.Object[] objs) {
+                        lightmaps[i].lightmapDir = objs[0];
+                    }
+                }
+            }
+ 
+            LightmapSettings.lightmaps = lightmaps;
         }
     }
 

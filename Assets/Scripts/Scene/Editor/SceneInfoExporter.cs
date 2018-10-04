@@ -44,6 +44,8 @@ public class SceneInfoExporter : Editor
         Vector3 center = new Vector3(minX + size.x/2, minY + size.y/2, minZ + size.z/2);
         export_info.Bounds = new Bounds(center, size);
 
+        SaveLightInfo(export_info);
+
         DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(SceneInfo));
         MemoryStream msObj = new MemoryStream();
         //将序列化之后的Json格式数据写入流中
@@ -55,17 +57,24 @@ public class SceneInfoExporter : Editor
         sr.Close();
         msObj.Close();
         Debug.Log("export : "+json);
+    }
 
-        //反序列化
-        // string toDes = json;
-        //string to = "{\"ID\":\"1\",\"Name\":\"曹操\",\"Sex\":\"男\",\"Age\":\"1230\"}";
-        // using (var ms = new MemoryStream(Encoding.Unicode.GetBytes(toDes)))
-        // {
-        //     DataContractJsonSerializer deseralizer = new DataContractJsonSerializer(typeof(SceneExportInfo));
-        //     SceneExportInfo model = (SceneExportInfo)deseralizer.ReadObject(ms);// //反序列化ReadObject
-        //     Debug.Log("ID=" + model.Bounds.ToString());
-        //     Debug.Log("Name=" + model.ObjectInfoList.Count.ToString());
-        // }
+    private static void SaveLightInfo(SceneInfo export_info)
+    {
+        export_info.LightmapMode = LightmapSettings.lightmapsMode;
+        export_info.LightColorResPath = new List<string>();
+        export_info.LightDirResPath = new List<string>();
+        if (LightmapSettings.lightmaps != null && LightmapSettings.lightmaps.Length > 0)
+        {
+            int l = LightmapSettings.lightmaps.Length;
+            for (int i = 0; i < l; i++)
+            {
+                string path = AssetDatabase.GetAssetPath(LightmapSettings.lightmaps[i].lightmapColor);
+                export_info.LightColorResPath.Add(path);
+                path = AssetDatabase.GetAssetPath(LightmapSettings.lightmaps[i].lightmapDir);
+                export_info.LightDirResPath.Add(path);
+            }
+        }
     }
 
     private static void PickChild(Transform transform, List<SceneStaticObject> sceneObjectList)
@@ -113,8 +122,9 @@ public class SceneInfoExporter : Editor
         if (size.z <= 0)
             size.z = 0.2f;
         bounds.size = size;
-        
-        SceneStaticObject obj = new SceneStaticObject(bounds, transform.position, transform.eulerAngles, transform.localScale, resPath);
+        int lightmapIndex = renderers[0].lightmapIndex;
+        Vector4 lightmapScaleOffset = renderers[0].lightmapScaleOffset;
+        SceneStaticObject obj = new SceneStaticObject(bounds, transform.position, transform.eulerAngles, transform.localScale, resPath, lightmapIndex, lightmapScaleOffset);
         return obj;
         
     }
