@@ -35,7 +35,7 @@ public class SceneStaticObject : ISceneObject
 
     public void OnHide()
     {
-        Debug.Log("m_LoadStaticObj : "+(m_LoadStaticObj!=null).ToString());
+        // Debug.Log("m_LoadStaticObj : "+(m_LoadStaticObj!=null).ToString());
         if (m_LoadStaticObj)
         {
             Object.Destroy(m_LoadStaticObj);
@@ -50,7 +50,7 @@ public class SceneStaticObject : ISceneObject
         {
             XLuaFramework.ResourceManager.GetInstance().LoadPrefabGameObjectWithAction(m_ResPath, delegate(UnityEngine.Object obj) {
                 m_LoadStaticObj = obj as GameObject;
-                Debug.Log("LoadScene obj "+(obj!=null).ToString() +" m_LoadStaticObj : "+(m_LoadStaticObj!=null).ToString());
+                // Debug.Log("LoadScene obj "+(obj!=null).ToString() +" m_LoadStaticObj : "+(m_LoadStaticObj!=null).ToString());
                 m_LoadStaticObj.transform.SetParent(parent);
                 m_LoadStaticObj.transform.position = m_Position;
                 m_LoadStaticObj.transform.eulerAngles = m_Rotation;

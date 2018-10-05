@@ -92,8 +92,8 @@ public class SceneMgr : MonoBehaviour
     private void ApplyLightInfo(SceneInfo scene_info)
     {
         LightmapSettings.lightmapsMode = scene_info.LightmapMode;
-        int l1 = (scene_info.LightColorResPath == null) ? 0 : scene_info.LightColorResPath.Length;
-        int l2 = (scene_info.LightDirResPath == null) ? 0 : scene_info.LightDirResPath.Length;
+        int l1 = (scene_info.LightColorResPath == null) ? 0 : scene_info.LightColorResPath.Count;
+        int l2 = (scene_info.LightDirResPath == null) ? 0 : scene_info.LightDirResPath.Count;
         int l = (l1 < l2) ? l2 : l1;
         LightmapData[] lightmaps = null;
         Debug.Log("ApplyLightInfo"+ l.ToString());
@@ -105,17 +105,17 @@ public class SceneMgr : MonoBehaviour
                 lightmaps[i] = new LightmapData();
                 if (i < l1)
                 {
-                    Debug.Log("load lightmap color texture : "+scene_info.LightColorResPath[i].ToString()+" objs:"+(objs[0]!=null));
-                    this.LoadAsset<Texture2D>(scene_info.LightColorResPath[i], delegate(UnityEngine.Object[] objs) {
-                        lightmaps[i].lightmapColor = objs[0];
-                    }
+                    XLuaFramework.ResourceManager.GetInstance().LoadAsset<Texture2D>(scene_info.LightColorResPath[i], delegate(UnityEngine.Object[] objs) {
+                        // Debug.Log("load lightmap color texture : "+scene_info.LightColorResPath[i].ToString()+" objs:"+(objs[0]!=null));
+                        lightmaps[i].lightmapColor = objs[0] as Texture2D;
+                    });
                 }
                 if (i < l2)
                 {
-                    Debug.Log("load lightmap dir texture : "+scene_info.LightDirResPath[i].ToString()+" objs:"+(objs[0]!=null));
-                    this.LoadAsset<Texture2D>(scene_info.LightDirResPath[i], delegate(UnityEngine.Object[] objs) {
-                        lightmaps[i].lightmapDir = objs[0];
-                    }
+                    XLuaFramework.ResourceManager.GetInstance().LoadAsset<Texture2D>(scene_info.LightDirResPath[i], delegate(UnityEngine.Object[] objs) {
+                        // Debug.Log("load lightmap dir texture : "+scene_info.LightDirResPath[i].ToString()+" objs:"+(objs[0]!=null));
+                        lightmaps[i].lightmapDir = objs[0] as Texture2D;
+                    });
                 }
             }
  
