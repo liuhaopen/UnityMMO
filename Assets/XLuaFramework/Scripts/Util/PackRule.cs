@@ -30,7 +30,14 @@ public class PackRule
             string sub_path = path.Substring(ScenePath.Length);
             string[] path_parts = sub_path.Split('/');
             if (path_parts.Length>0)
-                return  path_parts[0];
+                return  "scene_"+path_parts[0];
+        }
+        else if (path.StartsWith(RolePath))
+        {
+            string sub_path = path.Substring(RolePath.Length);
+            string[] path_parts = sub_path.Split('/');
+            if (path_parts.Length>0)
+                return "role_"+path_parts[0];
         }
         Debug.Log("PackRule:PathToAssetBundleName : cannot find ab name : " + path);
         return "";

@@ -5,7 +5,6 @@ using System.IO;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using XLuaFramework;
 
 public class Packager {
@@ -13,6 +12,8 @@ public class Packager {
     static List<string> paths = new List<string>();
     static List<string> files = new List<string>();
     static List<AssetBundleBuild> maps = new List<AssetBundleBuild>();
+    
+    const string ApachePathForAndroid = "E:/Apache24/htdocs/AndroidStreamingAssets";
 
     static string[] exts = { ".txt", ".xml", ".lua", ".assetbundle", ".json" };
     static bool CanCopy(string ext) {   //能不能复制
@@ -42,7 +43,7 @@ public class Packager {
     public static void BuildAndroidResourceAndCopy()
     {
         BuildAndroidResource();
-        CopyToServerFolder(AppConfig.GetStreamingAssetsTargetPathByPlatform(RuntimePlatform.Android), "E:/Apache24/htdocs/AndroidStreamingAssets");
+        CopyToServerFolder(AppConfig.GetStreamingAssetsTargetPathByPlatform(RuntimePlatform.Android), ApachePathForAndroid);
         UnityEngine.Debug.Log("Copy Succeed!");
     }
 
@@ -152,6 +153,8 @@ public class Packager {
             HandleSprotoBundle(streamPath);
 
 
+        HandleSceneBundles();
+        HandleRoleBundles();
         HandleUIBundles();
 
         BuildPipeline.BuildAssetBundles(streamPath, maps.ToArray(), BuildAssetBundleOptions.None, target);
@@ -256,7 +259,59 @@ public class Packager {
             File.Copy(files[i], dest, true);
         }
     }
-    
+
+    public static void HandleSceneBundles()
+    {
+        string path = "Assets/AssetBundleRes/scene/";
+        string[] dirs = Directory.GetDirectories(path);
+        if (dirs.Length == 0)
+            return;
+        for (int i = 0; i < dirs.Length; i++)
+        {
+            string asset_name = "scene_" + Path.GetFileName(dirs[i]);
+            List<string> file_list = new List<string>();//文件列表
+            paths.Clear(); files.Clear(); Recursive(dirs[i], false);
+            UnityEngine.Debug.Log("scene asset_name : "+asset_name+" filenum:"+files.Count.ToString());
+            // foreach (string f in files)
+            // {
+            //     string name = Path.GetFileName(f);
+            //     string ext = Path.GetExtension(f);
+            //     file_list.Add(f);
+            //     file_list.Add(f + ".meta");
+            // }
+            if (files.Count > 0)
+            {
+                AssetBundleBuild build = new AssetBundleBuild();
+                build.assetBundleName = asset_name;
+                //DeleteUICache(dataPath, build.assetBundleName);
+                build.assetNames = files.ToArray();
+                maps.Add(build);
+            }
+        }
+    }
+
+    public static void HandleRoleBundles()
+    {
+        string path = "Assets/AssetBundleRes/role/";
+        string[] dirs = Directory.GetDirectories(path);
+        if (dirs.Length == 0)
+            return;
+        for (int i = 0; i < dirs.Length; i++)
+        {
+            string asset_name = "role_" + Path.GetFileName(dirs[i]);
+            List<string> file_list = new List<string>();//文件列表
+            paths.Clear(); files.Clear(); Recursive(dirs[i], false);
+            UnityEngine.Debug.Log("role asset_name : "+asset_name+" filenum:"+files.Count.ToString());
+            if (files.Count > 0)
+            {
+                AssetBundleBuild build = new AssetBundleBuild();
+                build.assetBundleName = asset_name;
+                build.assetNames = files.ToArray();
+                maps.Add(build);
+            }
+        }
+    }
+
     public static void HandleUIBundles(string dataPath="")
     {
         string ui_path = "Assets/AssetBundleRes/ui/";
@@ -285,12 +340,9 @@ public class Packager {
             {
                 AssetBundleBuild build = new AssetBundleBuild();
                 build.assetBundleName = asset_name;
-
                 //DeleteUICache(dataPath, build.assetBundleName);
-
                 build.assetNames = prefab_list.ToArray();
                 maps.Add(build);
-
                 //string temp = asset_name.ToLower();
                 //assets_list.Add(build.assetBundleName);
             }
@@ -318,12 +370,9 @@ public class Packager {
             {
                 AssetBundleBuild build = new AssetBundleBuild();
                 build.assetBundleName = asset_name;
-
                 //DeleteUICache(dataPath, build.assetBundleName);
-
                 build.assetNames = asset_list.ToArray();
                 maps.Add(build);
-
                 //string temp = asset_name.ToLower();
                 //assets_list.Add(build.assetBundleName);
             }
@@ -342,7 +391,7 @@ public class Packager {
         string tool_path = Application.dataPath.Replace("/Assets", "") + "/Tools/sprotodumper/";
         string names = Util.GetFileNamesInFolder(AppConfig.LuaAssetsDir + "/Common/Proto", " ");
 
-        Process p = new Process();
+        System.Diagnostics.Process p = new System.Diagnostics.Process();
         p.StartInfo.FileName = "cmd.exe";
         p.StartInfo.UseShellExecute = false;    //是否使用操作系统shell启动
         p.StartInfo.RedirectStandardInput = true;//接受来自调用程序的输入信息
@@ -446,17 +495,17 @@ public class Packager {
     /// <summary>
     /// 遍历目录及其子目录
     /// </summary>
-    static void Recursive(string path) {
+    static void Recursive(string path, bool ignore_meta=true) {
         string[] names = Directory.GetFiles(path);
         string[] dirs = Directory.GetDirectories(path);
         foreach (string filename in names) {
             string ext = Path.GetExtension(filename);
-            if (ext.Equals(".meta")) continue;
+            if (ignore_meta && ext.Equals(".meta")) continue;
             files.Add(filename.Replace('\\', '/'));
         }
         foreach (string dir in dirs) {
             paths.Add(dir.Replace('\\', '/'));
-            Recursive(dir);
+            Recursive(dir, ignore_meta);
         }
     }
 
@@ -490,15 +539,15 @@ public class Packager {
             exedir = dataPath + "Tools/LuaEncoder/luajit_mac/";
         }
         Directory.SetCurrentDirectory(exedir);
-        ProcessStartInfo info = new ProcessStartInfo();
+        System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo();
         info.FileName = luaexe;
         info.Arguments = args;
-        info.WindowStyle = ProcessWindowStyle.Hidden;
+        info.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
         info.UseShellExecute = isWin;
         info.ErrorDialog = true;
         Util.Log(info.FileName + " " + info.Arguments);
 
-        Process pro = Process.Start(info);
+        System.Diagnostics.Process pro = System.Diagnostics.Process.Start(info);
         pro.WaitForExit();
         Directory.SetCurrentDirectory(currDir);
     }

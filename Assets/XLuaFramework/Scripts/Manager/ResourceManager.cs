@@ -151,17 +151,19 @@ public class AssetBundleInfo {
                 }
             }
 #endif
-            string assetName = System.IO.Path.GetFileNameWithoutExtension(file_path);
+            // string assetName = System.IO.Path.GetFileNameWithoutExtension(file_path);
             string abName = PackRule.PathToAssetBundleName(file_path);
-            this.LoadAsset<T>(abName, new string[] {assetName}, action, func);
+            string resName = file_path.ToLower();
+            this.LoadAsset<T>(abName, new string[] {resName}, action, func);
         }
 
         /// <summary>
         /// 载入素材
         /// </summary>
         void LoadAsset<T>(string abName, string[] assetNames, Action<UObject[]> action = null, LuaFunction func = null) where T : UObject {
-            Debug.Log("LoadAsset() abName : "+abName);
+            // Debug.Log("ResourceManager:LoadAsset() abName : "+abName+" assetNames:"+assetNames[0]);
             abName = GetRealAssetPath(abName);
+            // Debug.Log("ResourceManager:LoadAsset() real abName : "+abName);
 
             LoadAssetRequest request = new LoadAssetRequest();
             request.assetType = typeof(T);
