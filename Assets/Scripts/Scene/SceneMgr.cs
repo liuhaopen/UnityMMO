@@ -22,7 +22,6 @@ public class SceneMgr : MonoBehaviour
     public EntityArchetype RoleArchetype;
     public EntityArchetype MonsterArchetype;
     public EntityArchetype NPCArchetype;
-
     Dictionary<long, Entity> entityDic;
     Entity mainRole;
     public SceneDetectorBase detector;
@@ -37,10 +36,6 @@ public class SceneMgr : MonoBehaviour
 		EntityManager = World.Active.GetExistingManager<EntityManager>();
         entityDic = new Dictionary<long, Entity>();
 	}
-
-    void Start()
-    {
-    }
 
     void Update()
     {
@@ -131,9 +126,6 @@ public class SceneMgr : MonoBehaviour
  
         }
     }
-
-    private void LoadSceneObjectCollidersInfo(int scene_id)
-    {}
 
     public Entity AddMainRole(long uid)
 	{
