@@ -3,7 +3,7 @@ local LoginCreateRoleView = BaseClass()
 function LoginCreateRoleView:DefaultVar( )
 	return { 
 	UIConfig = {
-		prefab_path = "Assets/AssetBundleRes/ui/prefab/login/LoginCreateRoleView.prefab",
+		prefab_path = "Assets/AssetBundleRes/ui/login/LoginCreateRoleView.prefab",
 		canvas_name = "Normal",
 		components = {
 				{UI.HideOtherView},

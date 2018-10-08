@@ -3,7 +3,7 @@ local MainUIActivityView = BaseClass()
 function MainUIActivityView:DefaultVar( )
 	return { 
 	UIConfig = {
-		prefab_path = "Assets/AssetBundleRes/ui/prefab/mainui/MainUIActivityView.prefab",
+		prefab_path = "Assets/AssetBundleRes/ui/mainui/MainUIActivityView.prefab",
 		canvas_name = "Normal",
 		components = {
 				{UI.HideOtherView},

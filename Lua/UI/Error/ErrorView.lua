@@ -12,7 +12,7 @@ function ErrorView:Open(  )
         print('Cat:ErrorView.lua[16] self.account_txt', self.account_txt)
 		self:AddEvents()
 	end
-	PanelMgr:CreatePanel('Assets/AssetBundleRes/ui/prefab/Error/ErrorView.prefab', on_load_succeed)
+	PanelMgr:CreatePanel('Assets/AssetBundleRes/ui/Error/ErrorView.prefab', on_load_succeed)
 	
 end
 

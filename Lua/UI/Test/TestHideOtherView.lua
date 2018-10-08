@@ -2,7 +2,7 @@ local TestHideOtherView = BaseClass()
 
 function TestHideOtherView:DefaultVar()
 	return {UIConfig = {
-		prefab_path = "Assets/AssetBundleRes/ui/prefab/test/TestHideOtherView.prefab",
+		prefab_path = "Assets/AssetBundleRes/ui/test/TestHideOtherView.prefab",
 		canvas_name = "Normal",
 		components = {
 			{UI.HideOtherView},

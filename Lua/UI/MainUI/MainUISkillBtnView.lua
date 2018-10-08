@@ -3,7 +3,7 @@ local MainUISkillBtnView = BaseClass()
 function MainUISkillBtnView:DefaultVar( )
 	return { 
 	UIConfig = {
-		prefab_path = "Assets/AssetBundleRes/ui/prefab/mainui/MainUISkillBtnView.prefab",
+		prefab_path = "Assets/AssetBundleRes/ui/mainui/MainUISkillBtnView.prefab",
 		canvas_name = "Normal",
 		components = {
 				{UI.HideOtherView},

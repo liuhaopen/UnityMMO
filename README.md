@@ -32,8 +32,8 @@
 # Todo
 前端:   
 )人物场景漫游-ECS做法(70%)  
-)场景切割及动态加载(50%)  
-)基于组件的UI框架(70%)  
+)场景切割及动态加载(80%)  
+)基于组件的UI框架(85%)  
 )人物动作方面等Unity的新版Animation系统(IAnimationJob)完善后再介入吧  
 )战斗系统(flowcanvas)  
 )场景模型LOD,试试UnityGithub上的AutoLOD  

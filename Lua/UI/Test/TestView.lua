@@ -2,7 +2,7 @@ local TestView = BaseClass()
 
 function TestView:Constructor( )
 	self.UIConfig = {
-		prefab_path = "Assets/AssetBundleRes/ui/prefab/test/TestView.prefab",
+		prefab_path = "Assets/AssetBundleRes/ui/test/TestView.prefab",
 		canvas_name = "Normal",
 		components = {
 			-- {UI.PlayOpenCloseSound},
@@ -21,7 +21,7 @@ end
 -- function TestView:DefaultVar( )
 -- 	return { 
 -- 	UIConfig = {
--- 		prefab_path = "Assets/AssetBundleRes/ui/prefab/test/TestView.prefab",
+-- 		prefab_path = "Assets/AssetBundleRes/ui/test/TestView.prefab",
 -- 		canvas_name = "Normal",
 -- 		bg_alpha = 0.5,--背景的透明度,create_bg为true时才有效
 -- 		click_bg_to_close = true,--是否点击背景就关闭界面,create_bg为true时才有效
@@ -77,7 +77,7 @@ function TestView:UpdateView( )
 		{
 			UIConfig =
 			{
-				prefab_path = "Assets/AssetBundleRes/ui/prefab/test/TestItem.prefab",
+				prefab_path = "Assets/AssetBundleRes/ui/test/TestItem.prefab",
 			},
 			OnLoad = function(item)
 				local names = {"title","icon",}

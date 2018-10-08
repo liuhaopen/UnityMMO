@@ -40,7 +40,7 @@ function Message:PopAMsg( )
 	{
 		UIConfig =
 		{
-			prefab_path = "Assets/AssetBundleRes/ui/prefab/common/Message.prefab",
+			prefab_path = "Assets/AssetBundleRes/ui/common/Message.prefab",
 		},
 		OnLoad = function(msg_item)
 			UIHelper.SetParent(msg_item.transform, self.container)

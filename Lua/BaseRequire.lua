@@ -43,3 +43,7 @@ require("Common.Action.ActionExtend")
 require("Common.Action.ActionCatmullRom")
 require("Common.Action.ActionNodeWrapper")
 
+--顺序无关的
+require("Common.Util.Functor")
+
+

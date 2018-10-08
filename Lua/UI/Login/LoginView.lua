@@ -3,7 +3,7 @@ local LoginView = BaseClass()
 function LoginView:DefaultVar( )
 	return {
 	UIConfig = {
-			prefab_path = "Assets/AssetBundleRes/ui/prefab/login/LoginView.prefab",
+			prefab_path = "Assets/AssetBundleRes/ui/login/LoginView.prefab",
 			canvas_name = "Normal",
 		},
 	}
@@ -15,6 +15,7 @@ function LoginView:OnLoad(  )
 	self.login_btn = self.login.gameObject
     self.account_txt = self.account:GetComponent("InputField")
 
+    self.transform.sizeDelta = Vector2.New(0, 0)
 	self:AddEvents()
 end
 

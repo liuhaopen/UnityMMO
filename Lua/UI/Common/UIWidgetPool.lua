@@ -9,7 +9,7 @@ function UIWidgetPool:Init( hide_container )
 end
 
 function UIWidgetPool:RegisterWidgets( names, call_back )
-	print('Cat:UIWidgetPool.lua[16] AppConfig.DebugMode', AppConfig.DebugMode)
+	print('Cat:UIWidgetPool.lua[16] AppConfig.DebugMode', AppConfig.DebugMode, names, call_back)
 	-- if AppConfig.DebugMode then
 		for i,v in ipairs(names) do
 			local on_load = function ( objs )

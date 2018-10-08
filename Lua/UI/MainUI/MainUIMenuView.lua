@@ -3,7 +3,7 @@ local MainUIMenuView = BaseClass()
 function MainUIMenuView:DefaultVar( )
 	return { 
 	UIConfig = {
-		prefab_path = "Assets/AssetBundleRes/ui/prefab/mainui/MainUIMenuView.prefab",
+		prefab_path = "Assets/AssetBundleRes/ui/mainui/MainUIMenuView.prefab",
 		canvas_name = "Normal",
 		components = {
 				{UI.HideOtherView},

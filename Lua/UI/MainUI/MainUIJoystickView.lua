@@ -1,9 +1,9 @@
-local MainUITaskView = BaseClass()
+local MainUIJoystickView = BaseClass()
 
-function MainUITaskView:DefaultVar( )
+function MainUIJoystickView:DefaultVar( )
 	return { 
 	UIConfig = {
-		prefab_path = "Assets/AssetBundleRes/ui/mainui/MainUITaskView.prefab",
+		prefab_path = "Assets/AssetBundleRes/ui/mainui/MainUIJoystickView.prefab",
 		canvas_name = "Normal",
 		components = {
 				{UI.HideOtherView},
@@ -13,7 +13,7 @@ function MainUITaskView:DefaultVar( )
 	}
 end
 
-function MainUITaskView:OnLoad(  )
+function MainUIJoystickView:OnLoad(  )
 	local names = {}
 	UI.GetChildren(self, self.transform, names)
 
@@ -21,7 +21,7 @@ function MainUITaskView:OnLoad(  )
 	self:UpdateView()
 end
 
-function MainUITaskView:AddEvents(  )
+function MainUIJoystickView:AddEvents(  )
 	local on_click = function ( click_btn )
 		
 	end
@@ -29,8 +29,8 @@ function MainUITaskView:AddEvents(  )
 
 end
 
-function MainUITaskView:UpdateView(  )
+function MainUIJoystickView:UpdateView(  )
 	
 end
 
-return MainUITaskView
+return MainUIJoystickView

@@ -3,7 +3,7 @@ local LoginSelectRoleView = BaseClass()
 function LoginSelectRoleView:DefaultVar( )
 	return { 
 	UIConfig = {
-		prefab_path = "Assets/AssetBundleRes/ui/prefab/login/LoginSelectRoleView.prefab",
+		prefab_path = "Assets/AssetBundleRes/ui/login/LoginSelectRoleView.prefab",
 		canvas_name = "Normal",
 		components = {
 				{UI.HideOtherView},
@@ -46,7 +46,7 @@ function LoginSelectRoleView:UpdateView()
 		{
 			UIConfig =
 			{
-				prefab_path = "Assets/AssetBundleRes/ui/prefab/login/LoginSelectRoleItem.prefab",
+				prefab_path = "Assets/AssetBundleRes/ui/login/LoginSelectRoleItem.prefab",
 			},
 			OnLoad = function(item)
 				local names = {"head:img:obj","name:txt","click_bg:obj","plus:obj",}
@@ -59,9 +59,9 @@ function LoginSelectRoleView:UpdateView()
 					UI.SetVisible(item.head_obj, true)
 					UI.SetVisible(item.plus_obj, false)
 					if role_info.career == 1 then
-    					UIHelper.SetImage(item.head_img, "Assets/AssetBundleRes/ui/texutre/login/login_circle_head1_1.png")
+    					UIHelper.SetImage(item.head_img, "Assets/AssetBundleRes/ui/login/login_circle_head1_1.png")
     				else
-    					UIHelper.SetImage(item.head_img, "Assets/AssetBundleRes/ui/texutre/login/login_circle_head1_2.png")
+    					UIHelper.SetImage(item.head_img, "Assets/AssetBundleRes/ui/login/login_circle_head1_2.png")
     				end
 				else
 					item.name_txt.text = ""

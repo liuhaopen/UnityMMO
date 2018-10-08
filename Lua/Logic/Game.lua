@@ -29,14 +29,15 @@ function Game.InitUI()
 
     UIMgr:Init({"UICanvas/Normal","UICanvas/MainUI", "UICanvas/Dynamic"}, "Normal")
     --增加默认的UI组件
-    UIMgr:AddBeforeShowFunc(function ( view )
-        if view.UIConfig.canvas_name == "Normal" then
-        end
-    end)
+    -- UIMgr:AddBeforeShowFunc(function ( view )
+    --     if view.UIConfig.canvas_name == "Normal" then
+    --     end
+    -- end)
     local pre_load_prefab = {
-        "Assets/AssetBundleRes/ui/prefab/common/Background.prefab",
+        "Assets/AssetBundleRes/ui/common/Background.prefab",
     }
     UIWidgetPool:Init("UICanvas/HideUI")
+    print('Cat:Game.lua[40] pre_load_prefab[1]', pre_load_prefab[1])
     UIWidgetPool:RegisterWidgets(pre_load_prefab, call_back)
 end
 
@@ -45,6 +46,7 @@ function Game.InitControllers()
         -- "UI/Error/ErrorController", 
         "UI/Test/TestController",
         "UI/Login/LoginController", 
+        "UI/Login/MainUIController", 
     }
     for i,v in ipairs(ctrl_paths) do
         local ctrl = require(v)

@@ -312,72 +312,94 @@ public class Packager {
         }
     }
 
-    public static void HandleUIBundles(string dataPath="")
+    public static void HandleUIBundles()
     {
-        string ui_path = "Assets/AssetBundleRes/ui/";
-        string ui_prefab_path = ui_path + "prefab";
-        string ui_texture_path = ui_path + "texutre";
-        string[] ui_dirs = Directory.GetDirectories(ui_prefab_path);
-        if (ui_dirs.Length == 0)
+        string path = "Assets/AssetBundleRes/ui/";
+        string[] dirs = Directory.GetDirectories(path);
+        if (dirs.Length == 0)
             return;
-        for (int i = 0; i < ui_dirs.Length; i++)
+        for (int i = 0; i < dirs.Length; i++)
         {
-            string asset_name = "ui_" + Path.GetFileName(ui_dirs[i]);
-
-            List<string> prefab_list = new List<string>();//预制文件列表
-            paths.Clear(); files.Clear(); Recursive(ui_dirs[i]);
-            foreach (string f in files)
-            {
-                string name = Path.GetFileName(f);
-                string ext = Path.GetExtension(f);
-                if (ext.Equals(".prefab"))
-                {
-                    prefab_list.Add(f);
-                    prefab_list.Add(f + ".meta");
-                }
-            }
-            if (prefab_list.Count > 0)
+            string asset_name = "ui_" + Path.GetFileName(dirs[i]);
+            List<string> file_list = new List<string>();//文件列表
+            paths.Clear(); files.Clear(); Recursive(dirs[i], false);
+            UnityEngine.Debug.Log("ui asset_name : "+asset_name+" filenum:"+files.Count.ToString());
+            if (files.Count > 0)
             {
                 AssetBundleBuild build = new AssetBundleBuild();
                 build.assetBundleName = asset_name;
-                //DeleteUICache(dataPath, build.assetBundleName);
-                build.assetNames = prefab_list.ToArray();
+                build.assetNames = files.ToArray();
                 maps.Add(build);
-                //string temp = asset_name.ToLower();
-                //assets_list.Add(build.assetBundleName);
-            }
-        }
-        ui_dirs = Directory.GetDirectories(ui_texture_path);
-        if (ui_dirs.Length == 0)
-            return;
-        for (int i = 0; i < ui_dirs.Length; i++)
-        {
-            string asset_name = "ui_" + Path.GetFileName(ui_dirs[i]);
-
-            List<string> asset_list = new List<string>();//资源文件列表
-            paths.Clear(); files.Clear(); Recursive(ui_dirs[i]);
-            foreach (string f in files)
-            {
-                string name = Path.GetFileName(f);
-                string ext = Path.GetExtension(f);
-                if (ext.Equals(".png"))
-                {
-                    asset_list.Add(f);
-                    asset_list.Add(f + ".meta");
-                }
-            }
-            if (asset_list.Count > 0)
-            {
-                AssetBundleBuild build = new AssetBundleBuild();
-                build.assetBundleName = asset_name;
-                //DeleteUICache(dataPath, build.assetBundleName);
-                build.assetNames = asset_list.ToArray();
-                maps.Add(build);
-                //string temp = asset_name.ToLower();
-                //assets_list.Add(build.assetBundleName);
             }
         }
     }
+
+    // public static void HandleUIBundles(string dataPath="")
+    // {
+        // string ui_path = "Assets/AssetBundleRes/ui/";
+        // string ui_prefab_path = ui_path + "prefab";
+        // string ui_texture_path = ui_path + "texutre";
+        // string[] ui_dirs = Directory.GetDirectories(ui_prefab_path);
+        // if (ui_dirs.Length == 0)
+        //     return;
+        // for (int i = 0; i < ui_dirs.Length; i++)
+        // {
+        //     string asset_name = "ui_" + Path.GetFileName(ui_dirs[i]);
+
+        //     List<string> prefab_list = new List<string>();//预制文件列表
+        //     paths.Clear(); files.Clear(); Recursive(ui_dirs[i]);
+        //     foreach (string f in files)
+        //     {
+        //         string name = Path.GetFileName(f);
+        //         string ext = Path.GetExtension(f);
+        //         if (ext.Equals(".prefab"))
+        //         {
+        //             prefab_list.Add(f);
+        //             prefab_list.Add(f + ".meta");
+        //         }
+        //     }
+        //     if (prefab_list.Count > 0)
+        //     {
+        //         AssetBundleBuild build = new AssetBundleBuild();
+        //         build.assetBundleName = asset_name;
+        //         //DeleteUICache(dataPath, build.assetBundleName);
+        //         build.assetNames = prefab_list.ToArray();
+        //         maps.Add(build);
+        //         //string temp = asset_name.ToLower();
+        //         //assets_list.Add(build.assetBundleName);
+        //     }
+        // }
+        // ui_dirs = Directory.GetDirectories(ui_texture_path);
+        // if (ui_dirs.Length == 0)
+        //     return;
+        // for (int i = 0; i < ui_dirs.Length; i++)
+        // {
+        //     string asset_name = "ui_" + Path.GetFileName(ui_dirs[i]);
+
+        //     List<string> asset_list = new List<string>();//资源文件列表
+        //     paths.Clear(); files.Clear(); Recursive(ui_dirs[i]);
+        //     foreach (string f in files)
+        //     {
+        //         string name = Path.GetFileName(f);
+        //         string ext = Path.GetExtension(f);
+        //         if (ext.Equals(".png"))
+        //         {
+        //             asset_list.Add(f);
+        //             asset_list.Add(f + ".meta");
+        //         }
+        //     }
+        //     if (asset_list.Count > 0)
+        //     {
+        //         AssetBundleBuild build = new AssetBundleBuild();
+        //         build.assetBundleName = asset_name;
+        //         //DeleteUICache(dataPath, build.assetBundleName);
+        //         build.assetNames = asset_list.ToArray();
+        //         maps.Add(build);
+        //         //string temp = asset_name.ToLower();
+        //         //assets_list.Add(build.assetBundleName);
+        //     }
+        // }
+    // }
 
     //[MenuItem("Test/Build Sproto BinFile")]
     public static void TestHandleSprotoBundle()
