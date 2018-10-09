@@ -46,7 +46,7 @@ function Game.InitControllers()
         -- "UI/Error/ErrorController", 
         "UI/Test/TestController",
         "UI/Login/LoginController", 
-        "UI/Login/MainUIController", 
+        "UI/MainUI/MainUIController", 
     }
     for i,v in ipairs(ctrl_paths) do
         local ctrl = require(v)

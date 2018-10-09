@@ -15,6 +15,7 @@ namespace Invector.CharacterController
         public KeyCode jumpInput = KeyCode.Space;
         public KeyCode strafeInput = KeyCode.Tab;
         public KeyCode sprintInput = KeyCode.LeftShift;
+        public bool IgnoreCameraRotation = true;
 
         [Header("Camera Settings")]
         public string rotateCameraXInput ="Mouse X";
@@ -50,8 +51,8 @@ namespace Invector.CharacterController
             tpCamera = FindObjectOfType<vThirdPersonCamera>();
             if (tpCamera) tpCamera.SetMainTarget(this.transform);
 
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
+            // Cursor.visible = false;
+            // Cursor.lockState = CursorLockMode.Locked;
         }
 
         protected virtual void LateUpdate()
@@ -90,9 +91,25 @@ namespace Invector.CharacterController
         #region Basic Locomotion Inputs      
 
         protected virtual void MoveCharacter()
-        {            
-            cc.input.x = Input.GetAxis(horizontalInput);
-            cc.input.y = Input.GetAxis(verticallInput);
+        {          
+            Vector2 move = Vector2.zero;  
+            if (FixedJoystick.Instance)
+            {
+                move.x = FixedJoystick.Instance.Horizontal;
+                move.y = FixedJoystick.Instance.Vertical;
+            }
+            // move = TouchControlsKit.TCKInput.GetAxis("Joystick");
+            if (System.Math.Abs(move.x)>0.000001f || System.Math.Abs(move.y)>0.000001f)
+            {
+                cc.input.x = move.x;
+                cc.input.y = move.y;
+            }  
+            else
+            {
+                cc.input.x = Input.GetAxis(horizontalInput);
+                cc.input.y = Input.GetAxis(verticallInput);
+            }
+            // Debug.Log("cc.input : "+cc.input.x.ToString()+" y:"+cc.input.y.ToString());
         }
 
         protected virtual void StrafeInput()
@@ -133,7 +150,7 @@ namespace Invector.CharacterController
 
         protected virtual void CameraInput()
         {
-            if (tpCamera == null)
+            if (tpCamera == null || IgnoreCameraRotation)
                 return;
             var Y = Input.GetAxis(rotateCameraYInput);
             var X = Input.GetAxis(rotateCameraXInput);

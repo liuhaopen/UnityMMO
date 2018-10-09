@@ -13,3 +13,5 @@ function MainUIController:InitMainUIViews(  )
     local view = require("UI/MainUI/MainUIJoystickView").New()
     UIMgr:Show(view)
 end
+
+return MainUIController

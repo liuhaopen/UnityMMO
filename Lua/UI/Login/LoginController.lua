@@ -37,6 +37,7 @@ function LoginController:InitEvents(  )
                 local view = require("UI/Login/LoginCreateRoleView").New()
                 UIMgr:Show(view)
             end
+            GlobalEventSystem:Fire(MainUIConst.Event.InitMainUIViews)
         end
         NetDispatcher:SendMessage("account_get_role_list", nil, on_ack)
     end
