@@ -4,11 +4,11 @@ function MainUIJoystickView:DefaultVar( )
 	return { 
 	UIConfig = {
 		prefab_path = "Assets/AssetBundleRes/ui/mainui/MainUIJoystickView.prefab",
-		canvas_name = "Normal",
-		components = {
-				{UI.HideOtherView},
-				{UI.DelayDestroy, {delay_time=5}},
-			},
+		canvas_name = "MainUI",
+		-- components = {
+				-- {UI.HideOtherView},
+				-- {UI.DelayDestroy, {delay_time=5}},
+			-- },
 		},
 	}
 end

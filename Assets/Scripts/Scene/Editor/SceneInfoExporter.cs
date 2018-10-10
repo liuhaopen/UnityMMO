@@ -46,17 +46,20 @@ public class SceneInfoExporter : Editor
 
         SaveLightInfo(export_info);
 
-        DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(SceneInfo));
-        MemoryStream msObj = new MemoryStream();
-        //将序列化之后的Json格式数据写入流中
-        js.WriteObject(msObj, export_info);
-        msObj.Position = 0;
-        StreamReader sr = new StreamReader(msObj, Encoding.UTF8);
-        string json = sr.ReadToEnd();
+        // DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(SceneInfo));
+        // MemoryStream msObj = new MemoryStream();
+        // //将序列化之后的Json格式数据写入流中
+        // js.WriteObject(msObj, export_info);
+        // msObj.Position = 0;
+        // StreamReader sr = new StreamReader(msObj, Encoding.UTF8);
+        // string json = sr.ReadToEnd();
+        // File.WriteAllText(SavePath+Selection.activeGameObject.name+"/scene_info.json", json);
+        // sr.Close();
+        // msObj.Close();
+        string json = JsonUtility.ToJson(export_info);
         File.WriteAllText(SavePath+Selection.activeGameObject.name+"/scene_info.json", json);
-        sr.Close();
-        msObj.Close();
         Debug.Log("export : "+json);
+        // Debug.Log("export : "+json);
     }
 
     private static void SaveLightInfo(SceneInfo export_info)

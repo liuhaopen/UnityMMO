@@ -1,0 +1,1 @@
+find resources in : https://github.com/liuhaopen/UnityMMO-Resource/tree/master/Assets/AssetBundleRes

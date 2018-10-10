@@ -55,33 +55,42 @@ public class SceneMgr : MonoBehaviour
 		Instance = null;
 	}
 
+    private static string Repalce(string str)
+    {
+        str = System.Text.RegularExpressions.Regex.Replace(str, @"<", "lt;");
+        str = System.Text.RegularExpressions.Regex.Replace(str, @">", "gt;");
+        // str = System.Text.RegularExpressions.Regex.Replace(str, @"\\", "quot;");
+        str = System.Text.RegularExpressions.Regex.Replace(str, @"\r", "");
+        str = System.Text.RegularExpressions.Regex.Replace(str, @"\n", "");
+        str = System.Text.RegularExpressions.Regex.Replace(str, @"\/", "/");
+        return str;
+    }
+
     public void LoadScene(int scene_id, float pos_x=0.0f, float pos_y=0.0f, float pos_z=0.0f)
     {
         Debug.Log("LoadScene scene_id "+(scene_id).ToString());
         //load scene info from json file(which export from SceneInfoExporter.cs)
-        string scene_json = File.ReadAllText(SceneInfoPath+"scene_"+scene_id.ToString()+"/scene_info.json", Encoding.UTF8);
-        SceneInfo scene_info;
-        using (var ms = new MemoryStream(Encoding.Unicode.GetBytes(scene_json)))
-        {
-            DataContractJsonSerializer deseralizer = new DataContractJsonSerializer(typeof(SceneInfo));
-            scene_info = (SceneInfo)deseralizer.ReadObject(ms);
-        }
+        XLuaFramework.ResourceManager.GetInstance().LoadAsset<TextAsset>(SceneInfoPath+"scene_"+scene_id.ToString() +"/scene_info.json", delegate(UnityEngine.Object[] objs) {
+            TextAsset txt = objs[0] as TextAsset;
+            string scene_json = txt.text;
+            scene_json = Repalce(scene_json);
+            SceneInfo scene_info = JsonUtility.FromJson<SceneInfo>(scene_json);
+            ApplyLightInfo(scene_info);
+            
+            m_Controller = gameObject.GetComponent<SceneObjectLoadController>();
+            if (m_Controller == null)
+                m_Controller = gameObject.AddComponent<SceneObjectLoadController>();
 
-        ApplyLightInfo(scene_info);
+            int max_create_num = 19;
+            int min_create_num = 0;
+            m_Controller.Init(scene_info.Bounds.center, scene_info.Bounds.size, true, max_create_num, min_create_num, SceneSeparateTreeType.QuadTree);
 
-        m_Controller = gameObject.GetComponent<SceneObjectLoadController>();
-        if (m_Controller == null)
-            m_Controller = gameObject.AddComponent<SceneObjectLoadController>();
-
-        int max_create_num = 9;
-        int min_create_num = 0;
-        m_Controller.Init(scene_info.Bounds.center, scene_info.Bounds.size, true, max_create_num, min_create_num, SceneSeparateTreeType.QuadTree);
-
-        Debug.Log("scene_info.ObjectInfoList.Count : "+scene_info.ObjectInfoList.Count.ToString());
-        for (int i = 0; i < scene_info.ObjectInfoList.Count; i++)
-        {
-            m_Controller.AddSceneBlockObject(scene_info.ObjectInfoList[i]);
-        }
+            Debug.Log("scene_info.ObjectInfoList.Count : "+scene_info.ObjectInfoList.Count.ToString());
+            for (int i = 0; i < scene_info.ObjectInfoList.Count; i++)
+            {
+                m_Controller.AddSceneBlockObject(scene_info.ObjectInfoList[i]);
+            }
+        });
     }
     LightmapData[] lightmaps = null;
 

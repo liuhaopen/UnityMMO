@@ -5,7 +5,8 @@ public class FixedJoystick : Joystick
 {
     public static FixedJoystick Instance;
     Vector2 joystickPosition = Vector2.zero;
-    private Camera cam = new Camera();
+    // private Camera cam = new Camera();
+    public Camera UICamera;
 
     void Awake() {
         Instance = this;
@@ -13,7 +14,7 @@ public class FixedJoystick : Joystick
 
     void Start()
     {
-        joystickPosition = RectTransformUtility.WorldToScreenPoint(cam, background.position);
+        joystickPosition = RectTransformUtility.WorldToScreenPoint(UICamera, background.position);
     }
 
     public override void OnDrag(PointerEventData eventData)

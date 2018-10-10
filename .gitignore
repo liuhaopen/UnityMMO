@@ -53,3 +53,13 @@ sysinfo.txt
 UnityMMO.VC.db
 Assets/UIEditor/Res/Preview.meta
 .vscode/settings.json
+Assets/AssetBundleRes/scene
+Assets/AssetBundleRes/scene.meta
+Assets/AssetBundleRes/monster
+Assets/AssetBundleRes/monster.meta
+Assets/AssetBundleRes/npc
+Assets/AssetBundleRes/npc.meta
+Assets/AssetBundleRes/font
+Assets/AssetBundleRes/font.meta
+Assets/AssetBundleRes/sound
+Assets/AssetBundleRes/sound.meta
