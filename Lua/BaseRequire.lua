@@ -33,15 +33,15 @@ require("Common.Util.Timer")
 UpdateManager = require "Common.UpdateManager"
 require "Common.GlobalEventSystem"
 
-require("Common.Action.ActionTweenFunction")
-require("Common.Action.Action")
-require("Common.Action.ActionInterval")
-require("Common.Action.ActionEase")
-require("Common.Action.ActionInstant")
-require("Common.Action.ActionManager")
-require("Common.Action.ActionExtend")
-require("Common.Action.ActionCatmullRom")
-require("Common.Action.ActionNodeWrapper")
+require("UI.Common.Action.ActionTweenFunction")
+require("UI.Common.Action.Action")
+require("UI.Common.Action.ActionInterval")
+require("UI.Common.Action.ActionEase")
+require("UI.Common.Action.ActionInstant")
+require("UI.Common.Action.ActionManager")
+require("UI.Common.Action.ActionCatmullRom")
+require("UI.Common.Action.ActionNodeWrapper")
+-- require("UI.Common.Action.ActionExtend")
 
 --顺序无关的
 require("Common.Util.Functor")

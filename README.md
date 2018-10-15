@@ -13,7 +13,7 @@
 )运行:./run.sh跑起服务端  
 
 # 各模块的技术选型
-)玩法逻辑:使用Unity2018自带的ECS系统配合ScriptableObject(要用Unity的ECS只能用C#)  
+)玩法逻辑:使用Unity2018自带的ECS系统(要用Unity的ECS只能用C#)  
 )界面逻辑:使用自制的基于组件的UI系统,全lua开发,动画也由lua实现了一份cocos的action  
 )网络协议:使用sproto,玩法用c#版本,界面用lua版本  
 )场景管理:用T2M切割地形为NxN小块,使用四叉树管理场景模型的动态加载  
@@ -38,7 +38,7 @@
 )场景切割及动态加载(85%)  
 )基于组件的UI框架(85%)  
 )人物动作方面等Unity的新版Animation系统(IAnimationJob)完善后再介入吧  
-)战斗系统(用Unity新版ScriptableObject)  
+)战斗系统  
 )场景模型LOD,试试UnityGithub上的AutoLOD  
 
 后端:  
