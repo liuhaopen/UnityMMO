@@ -76,6 +76,13 @@ namespace XLuaFramework
             lock (m_lockObject2)
             {
                 LogInfo li = new LogInfo(message, type);
+                string day_str = System.DateTime.Now.Day.ToString()+"/";
+                string hour_str = System.DateTime.Now.Hour.ToString()+":";
+                string minute_str = System.DateTime.Now.Minute.ToString()+":";
+                string second_str = System.DateTime.Now.Second.ToString()+":";
+                li.message = day_str+hour_str+minute_str+second_str+li.message;
+                if (li.type == LogType.Error || li.type == LogType.Exception)
+                    li.message += " trace back : " + new System.Diagnostics.StackTrace().ToString();
                 log_list.Enqueue(li);
             }
         }

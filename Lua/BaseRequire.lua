@@ -47,3 +47,5 @@ require("UI.Common.Action.ActionNodeWrapper")
 require("Common.Util.Functor")
 
 
+require("Tools.CookieWrapper")
+CookieWrapper:Init()
