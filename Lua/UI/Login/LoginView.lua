@@ -29,8 +29,22 @@ function LoginView:AddEvents(  )
             account = account
         }
         GlobalEventSystem:Fire(LoginConst.Event.StartLogin, login_info)
+        print("Cat:LoginView [start:32] login_info:", login_info)
+        PrintTable(login_info)
+        print("Cat:LoginView [end]")
+        CookieWrapper:GetInstance():SaveCookie(CookieLevelType.Account, CookieTimeType.TYPE_ALWAYS, CookieKey.LastLoginInfo, login_info)
 	end
 	UIHelper.BindClickEvent(self.login_btn, on_click)
+end
+
+function LoginView:UpdateView(  )
+	local last_login_info = CookieWrapper:GetInstance():GetCookie(CookieLevelType.Account, CookieKey.LastLoginInfo)
+	print("Cat:LoginView [start:42] last_login_info:", last_login_info)
+	PrintTable(last_login_info)
+	print("Cat:LoginView [end]")
+	if last_login_info then
+		self.account_txt.text = last_login_info.account
+	end
 end
         
 return LoginView

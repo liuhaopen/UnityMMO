@@ -18,9 +18,10 @@ CookieTimeType = {
 }
 
 CookieKey = {
-	LastLoginRoleID					= "CookieKey.LastLoginRoleID",				--上次登录的角色
-	LastLoginAccount				= "CookieKey.LastLoginAccount",			--上次登录的用户名
-	LastLoginPassword				= "CookieKey.LastLoginPassword",		--上次登录的密码
+	LastLoginInfo					= "CookieKey.LastLoginInfo",			--上次登录的信息
+	-- LastLoginRoleID					= "CookieKey.LastLoginRoleID",			--上次登录的角色
+	-- LastLoginAccount				= "CookieKey.LastLoginAccount",			--上次登录的用户名
+	-- LastLoginPassword				= "CookieKey.LastLoginPassword",		--上次登录的密码
 }
 
 function CookieWrapper:Init()
@@ -43,6 +44,13 @@ function CookieWrapper:Init()
 	self.is_dirty = false
 	self.role_pos_is_dirty = false
 
+end
+
+function CookieWrapper:GetInstance()
+	if CookieWrapper.Instance==nil then
+		CookieWrapper:Init()
+	end
+	return CookieWrapper.Instance
 end
 
 function CookieWrapper:InitCommonValue()

@@ -48,4 +48,3 @@ require("Common.Util.Functor")
 
 
 require("Tools.CookieWrapper")
-CookieWrapper:Init()
