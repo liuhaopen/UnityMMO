@@ -140,6 +140,9 @@ namespace XLua.LuaDLL
         [DllImport(LUADLL,CallingConvention=CallingConvention.Cdecl)]
 		public static extern void lua_setmetatable(IntPtr L, int objIndex);
 
+        [DllImport(LUADLL,CallingConvention=CallingConvention.Cdecl)]
+		public static extern int lua_getmetatable(IntPtr L, int objIndex);
+
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int lua_rawequal(IntPtr L, int index1, int index2);
 
@@ -288,7 +291,7 @@ namespace XLua.LuaDLL
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void xlua_pushuint(IntPtr L, uint value);
 
-        public static void lua_pushstring(IntPtr L, string str) //业务使用
+        public static void lua_pushstring(IntPtr L, string str) //业锟斤拷使锟斤拷
         {
             if (str == null)
             {
@@ -524,7 +527,7 @@ namespace XLua.LuaDLL
         //[DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         //public static extern void xlua_pushbuffer(IntPtr L, byte[] buff);
 
-        //对于Unity，仅浮点组成的struct较多，这几个api用于优化这类struct
+        //锟斤拷锟斤拷Unity锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷傻锟絪truct锟较多，锟解几锟斤拷api锟斤拷锟斤拷锟脚伙拷锟斤拷锟斤拷struct
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool xlua_pack_float2(IntPtr buff, int offset, float f1, float f2);
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]

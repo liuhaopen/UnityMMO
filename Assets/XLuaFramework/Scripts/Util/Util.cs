@@ -382,5 +382,23 @@ namespace XLuaFramework {
             else
                 return n;
         }  
+
+        public static uint SwapUInt32(uint n)  
+        {  
+            return (uint)(((SwapUInt16((ushort)n) & 0xffff) << 0x10) |  
+                (SwapUInt16((ushort)(n >> 0x10)) & 0xffff));  
+        }  
+
+        public static long SwapInt64(long n)  
+        {  
+            return (long)(((SwapInt32((int)n) & 0xffffffffL) << 0x20) |  
+                (SwapInt32((int)(n >> 0x20)) & 0xffffffffL));  
+        }  
+
+        public static ulong SwapUInt64(ulong n)  
+        {  
+            return (ulong)(((SwapUInt32((uint)n) & 0xffffffffL) << 0x20) |  
+                (SwapUInt32((uint)(n >> 0x20)) & 0xffffffffL));  
+        }
     }
 }

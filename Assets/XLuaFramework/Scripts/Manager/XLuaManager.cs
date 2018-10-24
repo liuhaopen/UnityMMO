@@ -89,13 +89,13 @@ public class XLuaManager : MonoBehaviour
         return luaEnv;
     }
 
-    public void SafeDoString(string scriptContent)
+    public void SafeDoString(string scriptContent, string chunkName="chunk")
     {
         if (luaEnv != null)
         {
             try
             {
-                luaEnv.DoString(scriptContent);
+                luaEnv.DoString(scriptContent, chunkName);
             }
             catch (System.Exception ex)
             {
@@ -108,6 +108,11 @@ public class XLuaManager : MonoBehaviour
     void LoadScript(string scriptName)
     {
         SafeDoString(string.Format("require('{0}')", scriptName));
+    }
+
+    public void LoadOutsideFile(string file_path)
+    {
+        SafeDoString(File.ReadAllText(file_path));
     }
 
     static bool IsUseLuaFileWithoutBundle = false;//just for debug 

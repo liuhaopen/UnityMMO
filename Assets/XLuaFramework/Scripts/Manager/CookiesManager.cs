@@ -355,15 +355,14 @@ namespace XLuaFramework
                 Debug.Log("Read Cookie Failed! : " + file_name_str);
                 return false;
             }
-            object[] result = null;
             if (content.Substring(content.Length - 1) == "#")
             {
                 byte[] byteArray = Convert.FromBase64String(content.Remove(content.Length - 1));
-                result = LuaManager.DoString(Encoding.UTF8.GetString(byteArray), write_path);
+                XLuaManager.Instance.SafeDoString(Encoding.UTF8.GetString(byteArray), write_path);
             }
             else
             {
-                result = LuaManager.DoOutSideFile(write_path);
+                XLuaManager.Instance.LoadOutsideFile(write_path);
             }
            
             return true;
@@ -408,7 +407,7 @@ namespace XLuaFramework
             }
             else
             {
-                LuaManager.DoOutSideFile(write_path);
+                XLuaManager.Instance.LoadOutsideFile(write_path);
             }
 
             return true;

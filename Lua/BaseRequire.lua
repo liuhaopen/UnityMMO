@@ -8,6 +8,7 @@ GameObject = CS.UnityEngine.GameObject
 GameConst = CS.UnityMMO.GameConst
 GameVariable = CS.UnityMMO.GameVariable
 SceneMgr = CS.UnityMMO.SceneMgr
+cookiesManager = CS.UnityMMO.CookiesManager
 
 Mathf		= require "Common.UnityEngine.Mathf"
 Vector2		= require "Common.UnityEngine.Vector2"
@@ -33,6 +34,7 @@ require("Common.Util.Timer")
 UpdateManager = require "Common.UpdateManager"
 require "Common.GlobalEventSystem"
 
+require("UI.Common.Action.ActionNodeWrapper")
 require("UI.Common.Action.ActionTweenFunction")
 require("UI.Common.Action.Action")
 require("UI.Common.Action.ActionInterval")
@@ -40,7 +42,6 @@ require("UI.Common.Action.ActionEase")
 require("UI.Common.Action.ActionInstant")
 require("UI.Common.Action.ActionManager")
 require("UI.Common.Action.ActionCatmullRom")
-require("UI.Common.Action.ActionNodeWrapper")
 -- require("UI.Common.Action.ActionExtend")
 
 --顺序无关的

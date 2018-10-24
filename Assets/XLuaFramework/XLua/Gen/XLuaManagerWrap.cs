@@ -21,13 +21,14 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(XLuaManager);
-			Utils.BeginObjectRegister(type, L, translator, 0, 5, 0, 0);
+			Utils.BeginObjectRegister(type, L, translator, 0, 6, 0, 0);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "InitLuaEnv", _m_InitLuaEnv);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "StartLogin", _m_StartLogin);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "OnLoginOk", _m_OnLoginOk);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetLuaEnv", _m_GetLuaEnv);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "SafeDoString", _m_SafeDoString);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "LoadOutsideFile", _m_LoadOutsideFile);
 			
 			
 			
@@ -200,11 +201,54 @@ namespace XLua.CSObjectWrap
                 XLuaManager gen_to_be_invoked = (XLuaManager)translator.FastGetCSObj(L, 1);
             
             
-                
+			    int gen_param_count = LuaAPI.lua_gettop(L);
+            
+                if(gen_param_count == 3&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)&& (LuaAPI.lua_isnil(L, 3) || LuaAPI.lua_type(L, 3) == LuaTypes.LUA_TSTRING)) 
+                {
+                    string _scriptContent = LuaAPI.lua_tostring(L, 2);
+                    string _chunkName = LuaAPI.lua_tostring(L, 3);
+                    
+                    gen_to_be_invoked.SafeDoString( _scriptContent, _chunkName );
+                    
+                    
+                    
+                    return 0;
+                }
+                if(gen_param_count == 2&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)) 
                 {
                     string _scriptContent = LuaAPI.lua_tostring(L, 2);
                     
                     gen_to_be_invoked.SafeDoString( _scriptContent );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+            return LuaAPI.luaL_error(L, "invalid arguments to XLuaManager.SafeDoString!");
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_LoadOutsideFile(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                XLuaManager gen_to_be_invoked = (XLuaManager)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    string _file_path = LuaAPI.lua_tostring(L, 2);
+                    
+                    gen_to_be_invoked.LoadOutsideFile( _file_path );
                     
                     
                     

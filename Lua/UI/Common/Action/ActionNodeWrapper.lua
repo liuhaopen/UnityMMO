@@ -7,6 +7,7 @@ function cc.Wrapper.SetLocalPosition( node, x, y, z )
 	if node ~= nil then
 		node:SetLocalPosXYZ(x, y, z)
 	end
+end
 
 function cc.Wrapper.GetLocalPosition( node )
 	return GetLocalPosition(node)

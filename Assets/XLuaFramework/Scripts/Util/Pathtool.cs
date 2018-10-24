@@ -82,7 +82,7 @@ namespace XLuaFramework
         public static bool SaveDataToFile(string path, byte[] buffer)
         {
             //���������ļ������⣬������
-            if(path.IndexOf(AppConst.StreamingAssets) != -1 && AppConst.UpdateMode)
+            if(path.IndexOf(AppConfig.AssetDir) != -1 && AppConfig.UpdateMode)
             {
                 if(File.Exists(path))
                 {
@@ -96,7 +96,7 @@ namespace XLuaFramework
             }
 
             //���������ļ������⣬������
-            if (!File.Exists(path) && path.IndexOf( AppConst.StreamingAssets) == -1 || !AppConst.UpdateMode)
+            if (!File.Exists(path) && path.IndexOf( AppConfig.AssetDir) == -1 || !AppConfig.UpdateMode)
             {
                 CreatePath(path);
             }
