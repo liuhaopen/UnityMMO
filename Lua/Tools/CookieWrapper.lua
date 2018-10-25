@@ -124,7 +124,7 @@ function CookieWrapper:SaveCookie(level_type, cache_type, key, value)
 	local item = {}
 	item.value = value
 	item.time_type = cache_type
-	item.server_time = TimeUtil:getServerTime()
+	item.server_time = Time:GetServerTime()
 
 	if level_type == CookieLevelType.Common then
 		Cookies["Common"][key] = item
@@ -166,7 +166,6 @@ function CookieWrapper:GetCookie(level_type, key)
 			handle_item = Cookies[CookieAccountInfo][self.account_name]["Common"][key]
 		end
 	end
-
 	if handle_item then
 		return handle_item.value
 	end
@@ -175,7 +174,7 @@ end
 function CookieWrapper:ClearOverdueItem(handle_table)
 	local del_arr = {}
 
-	local server_time = TimeUtil:getServerTime()
+	local server_time = Time:GetServerTime()
 	for key, item in pairs(handle_table) do
 		if type(item) == "table" and item.time_type ~= CookieTimeType.TYPE_ALWAYS and
 				server_time - item.server_time > 3600 * 24 then

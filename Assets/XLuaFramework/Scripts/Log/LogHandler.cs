@@ -40,6 +40,8 @@ namespace XLuaFramework
             });
 
             string log_dir = AppConfig.DataPath + "log";
+            if (!Directory.Exists(log_dir))
+                Directory.CreateDirectory(log_dir);
 
             if (Application.isEditor)
                 output_path = log_dir + "/out_put.txt";
@@ -47,14 +49,14 @@ namespace XLuaFramework
                 output_path = log_dir + "/out_put_uneditor.txt";
             Debug.Log("LogHandler.cs log_dir : " + log_dir+ "  Directory.Exists(log_dir)"+ Directory.Exists(log_dir).ToString());
             //每次启动先删除旧的
-            // if (File.Exists(output_path))
-            // {
-            //     File.Delete(output_path);
-            // }
-            if (!Directory.Exists(log_dir))
-                Directory.CreateDirectory(log_dir);
-            if (!File.Exists(output_path))
-                File.Create(output_path);
+            if (File.Exists(output_path))
+            {
+                File.Delete(output_path);
+            }
+            // if (!Directory.Exists(log_dir))
+            //     Directory.CreateDirectory(log_dir);
+            // if (!File.Exists(output_path))
+            //     File.Create(output_path);
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
             console.Initialize();

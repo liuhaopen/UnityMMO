@@ -32,7 +32,17 @@ namespace XLuaFramework
     [LuaCallCSharp]
     public class CookiesManager
     {
-        // [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static CookiesManager instance;
+        public static CookiesManager GetInstance()
+        {
+            if (instance != null)
+                return instance;
+            instance = new CookiesManager();
+            instance.Init();
+            return instance;
+        }
+
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         internal static int CheckNewType(IntPtr L)
         {
             if (!LuaAPI.lua_istable(L, 1))
@@ -166,12 +176,11 @@ namespace XLuaFramework
             LuaAPI.lua_newtable(m_lua_state);
             int table_index = LuaAPI.lua_gettop(m_lua_state);
 
-            LuaAPI.lua_newtable(m_lua_state);
-            LuaAPI.lua_pushstring(m_lua_state, "__newindex");
-            LuaAPI.lua_pushstdcallcfunction(m_lua_state, CheckNewType);
-            LuaAPI.xlua_psettable(m_lua_state, -3);
-
-            LuaAPI.lua_setmetatable(m_lua_state, table_index);
+            // LuaAPI.lua_newtable(m_lua_state);
+            // LuaAPI.lua_pushstring(m_lua_state, "__newindex");
+            // LuaAPI.lua_pushstdcallcfunction(m_lua_state, CheckNewType);
+            // LuaAPI.xlua_psettable(m_lua_state, -3);
+            // LuaAPI.lua_setmetatable(m_lua_state, table_index);
             LuaAPI.xlua_setglobal(m_lua_state, DefineConstantsCookieHandler.COOKIE_VAR);
 
             return true;
@@ -270,7 +279,7 @@ namespace XLuaFramework
         public bool WriteCookie(string file_name, string table_list, string ext_path)
         {
             ByteBuffer write_file = new ByteBuffer();
-
+            // Debug.Log("WriteCookie file_name : "+file_name +" table_list :"+table_list+" ext_path:"+ext_path);
             string table_list_str = (table_list != "") ? table_list : DefineConstantsCookieHandler.COOKIE_COMMON;
             string parent_str;
 
@@ -313,7 +322,7 @@ namespace XLuaFramework
             // 写入表中的数据
             bool rlt = SerializeTableType(ref write_file, parent_str);
             LuaAPI.lua_pop(m_lua_state, 1);
-
+            // Debug.Log("write rlt:"+rlt.ToString());
             if (rlt)
             {
                 SaveToFile(file_name, write_file, ext_path);
@@ -340,7 +349,7 @@ namespace XLuaFramework
             file_name_str = file_name_str.Replace("\\", "/");
 
             write_path = write_path + file_name_str;
-            Debug.Log("Read Cookie Path :" + file_name_str);
+            // Debug.Log("Read Cookie Path :" + file_name_str);
 
             if (!File.Exists(write_path))
             {
@@ -383,7 +392,7 @@ namespace XLuaFramework
             file_name_str = file_name_str.Replace( "\\", "/");
 
             write_path = write_path + file_name_str;
-            Debug.Log("Read Cookie Path :" +  file_name_str);
+            // Debug.Log("Read Cookie Path :" +  file_name_str+ " write_path:"+write_path);
 
             byte[] file_data = new byte[1024*100];
             Pathtool.GetDataToFile(write_path, out file_data);
@@ -394,7 +403,6 @@ namespace XLuaFramework
             }
 
             //DataEncrypt.DecryptHashTableData(out file_data, (uint)file_data.Length, DefineConstantsCookieHandler.CFGFILE_SEED);
-
             //int rlt = Ogre.CCLuaEngine.defaultEngine().executeString((string)file_data.contents(), (uint)file_data.Length, file_name_str);
 
             //[修改] 解密后使用DoString执行lua代码
@@ -403,10 +411,13 @@ namespace XLuaFramework
             {
                 string str = Encoding.UTF8.GetString(file_data);
                 byte[] byteArray = Convert.FromBase64String(str.Substring(0, str.Length - 1));
+                string show_str = System.Text.Encoding.Default.GetString(byteArray);
+                // Debug.Log("read cookie str : "+show_str);
                 XLuaManager.Instance.SafeDoString(Encoding.UTF8.GetString(byteArray), write_path);
             }
             else
             {
+                // Debug.Log("load outside file : "+write_path);
                 XLuaManager.Instance.LoadOutsideFile(write_path);
             }
 
@@ -427,9 +438,6 @@ namespace XLuaFramework
             write_path = write_path + file_path_str;
             string full_path = write_path + file_name_str + ".cfg";
             full_path = full_path.Replace("\\", "/");
-
-            //Debug.Log("Write Cookie Path :" + full_path);
-
             //DataEncrypt.EncryptHashTableData(out write_buff, (uint)write_buff.size(), DefineConstantsCookieHandler.CFGFILE_SEED);
 
             if (File.Exists(full_path))
@@ -439,10 +447,8 @@ namespace XLuaFramework
             string str = Convert.ToBase64String(write_buff.ToBytes());
             str = str.Insert(str.Length, "#"); 
             bool ret = Pathtool.SaveDataToFile(full_path, Encoding.UTF8.GetBytes(str));
-            //bool ret = Pathtool.SaveDataToFile(full_path, write_buff.ToBytes());
-
+            // Debug.Log("Write Cookie Path :" + full_path + " str:"+str+" ret:"+ret.ToString());
             write_buff.Close();
-
             return ret;
         }
 
@@ -465,7 +471,6 @@ namespace XLuaFramework
             {
                 out_buff = string.Format("{0}", LuaAPI.lua_toboolean(m_lua_state, -1) ? "true" : "false");
                 return out_buff.Length;
-
                // return sprintf(out_buff, "%s", LuaAPI.lua_toboolean(m_lua_state, -1) ? "true" : "false");
             }
             else

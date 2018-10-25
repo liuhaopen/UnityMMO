@@ -17,34 +17,35 @@ function LoginView:OnLoad(  )
 
     self.transform.sizeDelta = Vector2.New(0, 0)
 	self:AddEvents()
+	self:UpdateView()
 end
 
 function LoginView:AddEvents(  )
 	local on_click = function (  )
         local account = tonumber(self.account_txt.text)
+        print('Cat:LoginView.lua[26] account, ', account, self.account_txt.text)
         if not account then
             account = 123
         end
         local login_info = {
-            account = account
+            account = account,
+            password = "123",
         }
         GlobalEventSystem:Fire(LoginConst.Event.StartLogin, login_info)
-        print("Cat:LoginView [start:32] login_info:", login_info)
-        PrintTable(login_info)
-        print("Cat:LoginView [end]")
-        CookieWrapper:GetInstance():SaveCookie(CookieLevelType.Account, CookieTimeType.TYPE_ALWAYS, CookieKey.LastLoginInfo, login_info)
+        CookieWrapper:GetInstance():SaveCookie(CookieLevelType.Common, CookieTimeType.TYPE_ALWAYS, CookieKey.LastLoginInfo, login_info)
 	end
 	UIHelper.BindClickEvent(self.login_btn, on_click)
 end
 
 function LoginView:UpdateView(  )
-	local last_login_info = CookieWrapper:GetInstance():GetCookie(CookieLevelType.Account, CookieKey.LastLoginInfo)
+	local last_login_info = CookieWrapper:GetInstance():GetCookie(CookieLevelType.Common, CookieKey.LastLoginInfo)
 	print("Cat:LoginView [start:42] last_login_info:", last_login_info)
 	PrintTable(last_login_info)
 	print("Cat:LoginView [end]")
 	if last_login_info then
 		self.account_txt.text = last_login_info.account
 	end
+
 end
         
 return LoginView

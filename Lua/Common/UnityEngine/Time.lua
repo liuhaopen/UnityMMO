@@ -23,6 +23,7 @@ local _Time =
 	timeSinceLevelLoad	= 0,
 	unscaledDeltaTime	= 0,	
 	unscaledTime		= 0,	
+	serverTime  		= 0,
 }
 
 local _set = {}
@@ -93,6 +94,14 @@ function Time:SetDeltaTime(deltaTime, unscaledDeltaTime)
 		_Time.timeSinceLevelLoad = _Time.timeSinceLevelLoad + deltaTime	
 		_Time.unscaledTime = _Time.unscaledTime + unscaledDeltaTime 
 	end		
+end
+
+function Time:GetServerTime( )
+	return self.serverTime
+end
+
+function Time:SetServerTime( value )
+	self.serverTime = value
 end
 
 function Time:SetFixedDelta(fixedDeltaTime)	
