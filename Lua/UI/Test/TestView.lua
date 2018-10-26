@@ -71,6 +71,11 @@ function TestView:SetData( data )
 end
 
 function TestView:UpdateView( )
+	-- self:TestCreateItem()
+	self:TestItemListCreator()
+end
+
+function TestView:TestCreateItem(  )
 	self.title_txt.text = self.data or 1
 	for i=1,5 do
 		local item = 
@@ -93,8 +98,49 @@ function TestView:UpdateView( )
 	end
 end
 
-function TestView:OnVisibleChanged( is_focus )
-	
+function TestView:TestItemListCreator( )
+	local test_flag = 1
+	if not self.rank_item_com then
+		self.rank_item_com = self:AddUIComponent(UI.ItemListCreator)
+	end
+	self.rank_item_com:Reset()
+	local info = self.info or {
+		data_list = {1,2,3,4,4,1,2,3,4,4,1}, 
+		item_con = self.item_con, 
+		item_height = 60, 
+		-- item_width = 250, 
+		space_y = 5, 
+		start_y = -50,
+		space_x=10,
+		scroll_view = self.scroll_view,
+		-- reuse_item_num = 0,
+		create_frequency = 0.0,
+		-- is_scroll_back_on_update = true,
+	}
+	-- table.insert(info.data_list, 1)
+	table.remove(info.data_list, 1)
+	self.info = info
+	if test_flag == 1 then
+		info.item_class = TestItem
+		info.on_update_item = function(item, i, v)
+			item:SetData({i=i, v=v})
+		end
+	elseif test_flag == 2 then
+		info.prefab_ab_name = "test"
+		info.prefab_res_name = "TestItem"
+		info.child_names = {"city_name:img","room_name:img","num:txt",}
+		info.on_update_item = function(item, i, v)
+			item.num_txt.text = i
+		end
+	elseif test_flag == 3 then
+		info.obj_pool_type = UIObjPool.UIType.AwardItem
+		info.item_height = 80
+		info.space_y = 10
+		info.on_update_item = function(item, i, v)
+			item:SetData(110003, i)
+		end
+	end
+	self.rank_item_com:UpdateItems(info)
 end
 
 function TestView:OnClose(  )

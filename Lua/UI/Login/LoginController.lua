@@ -194,15 +194,14 @@ function LoginController:OnReceiveMsg( bytes )
         GlobalEventSystem:Fire(LoginConst.Event.LoginSucceed)
         CS.XLuaManager.Instance:OnLoginOk()
 
-        local on_server_time_ack = function ( server_time_info )
-            print('Cat:LoginController.lua[118] server_time_info:', server_time_info.server_time)
-            self.server_time = server_time_info.server_time
-        end
-        NetDispatcher:SendMessage("account_get_server_time", nil, on_server_time_ack)
+        Time:StartSynchServerTime()
     else
+        Message:show("与游戏服务器握手失败:"..result)
         --Cat_Todo : 处理握手失败
     end
 end
+
+
 
 function LoginController:Disconnect()
 	print('Cat:LoginController.lua[Disconnect]')

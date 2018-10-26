@@ -126,6 +126,30 @@ function Time:GetTimestamp()
 	return gettime()
 end
 
+function Time:StartSynchServerTime(  )
+    if not self.is_start_synch_time then
+        self.is_start_synch_time = true
+        local synch_time
+        synch_time = function()
+            self.req_time = _Time.unscaledTime
+            local on_server_time_ack = function ( server_time_info )
+            	--从请求至收到回复的时间间隔
+            	local time_offset = _Time.unscaledTime - self.req_time
+                print('Cat:LoginController.lua[118] server_time_info:', server_time_info.server_time, " time_offset:", time_offset)
+                Time:SetServerTime(server_time_info.server_time+time_offset/2)
+                local timer = Timer.New(function()
+                	--每隔几秒就同步一次
+	                synch_time()
+				end, 5)
+				timer:Start()
+            end
+            NetDispatcher:SendMessage("account_get_server_time", nil, on_server_time_ack)
+        end
+    end
+   
+end
+
+
 Time.unity_time = unity_time
 CS.UnityEngine.Time = Time
 setmetatable(Time, _Time)

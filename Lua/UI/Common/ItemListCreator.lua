@@ -1,7 +1,7 @@
 --[[说明:
 用于创建Item列表的组件,支持三种创建方式:
 )传入Item类名:使用字段item_class
-)传入prefab资源名:使用字段prefab_ab_name和prefab_res_name
+)传入prefab资源名:使用字段prefab_path
 )对象池类型如:UIObjPool.UIType.AwardItem:使用字段obj_pool_type
 各字段使用说明:
 data_list:子节点的信息列表
@@ -15,7 +15,7 @@ show_col:显示的列数, 暂不支持控制行数
 on_update_item:子节点刷新事件的回调
 reuse_item_num:复用子节点的数量,为nil或大于0时开启,默认是开启的,一般不需要手动指定,默认情况下将只创建可视区域里可见的最少数量节点,当子节点超出可视区域时会复用它填补到可视区域
 alignment:对齐方式,目前只支持左上角,水平居中,垂直居中,当非左上角布局时优化选项无效(即reuse_item_num为0),有空再兼容处理吧
-child_names:仅当prefab_ab_name和prefab_res_name有值时才有效,指定子节点的子节点们的名字集
+child_names:仅当prefab_path有值时才有效,指定子节点的子节点们的名字集
 fitsize_scroll_view:是否把滚动容器的大小设为刚好容纳子节点们的大小
 is_scroll_back_on_update:是否每次设置的时候重置滚动容器坐标
 ]]--
@@ -102,7 +102,7 @@ local function GetAlignInfo( self, info, items_sum_width, items_sum_height )
 	local con_align_y = 0
 	local new_con_size_w = items_sum_width
 	local new_con_size_h = items_sum_height
-	local alignment = info and info.alignment or UnityEngine.TextAnchor.UpperLeft
+	local alignment = info and info.alignment or CS.UnityEngine.TextAnchor.UpperLeft
 	
 	local visual_width, visual_height = GetSizeDeltaXY(info.scroll_view)
 	local hori_align, vert_align = AlignTypeToStr(alignment)
@@ -237,7 +237,7 @@ local function GetItemCreator(self, info)
 			item:SetPosition(self.get_item_pos_xy_func(item._real_index_for_item_creator_))
 			update_item_for_creator(info, item)
 		end
-	elseif info.prefab_ab_name and info.prefab_res_name then
+	elseif info.prefab_path then
 		creator = function(i, v)
 			local item = self.item_list[i]
 			if not item then
@@ -249,7 +249,7 @@ local function GetItemCreator(self, info)
 					item:SetPosition(self.get_item_pos_xy_func(item._real_index_for_item_creator_))
 					update_item_for_creator(info, item)
 				end
-				lua_resM:LoadPrefabView(self, info.prefab_ab_name, info.prefab_res_name, on_load_ok)
+				ResMgr:LoadPrefab(self, info.prefab_path, on_load_ok)
 			else
 				item.gameObject:SetActive(true)
 				item:SetPosition(self.get_item_pos_xy_func(item._real_index_for_item_creator_))
@@ -262,7 +262,8 @@ local function GetItemCreator(self, info)
 		creator = function(i, v)
 			local item = self.item_list[i]
 			if not item then
-				item = UIObjPool:PopItem(info.obj_pool_type, info.item_con)
+				item = UIWidgetPool:CreateWidget(info.obj_pool_type)
+				item.transform:SetParent(info.item_con)
 				self.item_list[i] = item
 				item._real_index_for_item_creator_ = i
 			end
@@ -320,7 +321,6 @@ local function HandleScrollChange(self)
 			if item then
 				local new_real_index = last_index + i
 				if new_real_index > all_data_num then
-					--Cat_Todo : 有空优化下,不需要循环这么多次的: 最起码不用on_update_item:(new_unvisible_row*move_num_per_operate-i)<=#self.item_list
 					last_index = -i+1
 					new_real_index = 1
 				end

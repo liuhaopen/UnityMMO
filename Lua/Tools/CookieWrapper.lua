@@ -32,11 +32,8 @@ function CookieWrapper:Init()
 
 	self.cookie_root_path = cookiesManager:GetCookiePath()
 	self.account_info_path = self.cookie_root_path .. "account_info/"
-	self.chat_histroy_path = self.cookie_root_path .. "chat_histroy/"
 
 	self:InitCommonValue()
-
-	self.chat_histroy_id = nil
 
 	self.account_info_init = false
 	self.account_name = nil
@@ -80,8 +77,6 @@ function CookieWrapper:InitAccountValue(account_name)
 		return
 	end
 
-	self.chat_histroy_id = nil
-
 	self.account_name = tostring(account_name)
 	cookiesManager:LoadCookie(self.account_name, self.account_info_path)
 
@@ -115,11 +110,7 @@ function CookieWrapper:SaveCookie(level_type, cache_type, key, value)
 		return
 	end
 
-	if key == CookieKey.SCENE_X_Y then
-		self.role_pos_is_dirty = true
-	else
-		self.is_dirty = true
-	end
+	self.is_dirty = true
 
 	local item = {}
 	item.value = value
@@ -223,93 +214,6 @@ function CookieWrapper:OnDestroy()
 		GlobalTimerQuest:CancelQuest(self.timer_id)
 		self.timer_id = 0
 	end
-
-	--添加保存聊天记录
-	self:WriteChatHistroy()
-	if self.chat_timer_id ~= 0 then
-		GlobalTimerQuest:CancelQuest(self.chat_timer_id)
-		self.chat_timer_id = 0
-	end
-
-end
-
-function CookieWrapper:initChatValue(playerid)
-	--这里层次结构为[str][自身id][密聊玩家id]
-	--以cookiekey为第一层，没使用cookietype
-	if not self.account_name or not playerid then return end
-	playerid = tostring(playerid)
-	local path = self.chat_histroy_path..self.account_name.."/"
-	cookiesManager:LoadCookie(tostring(playerid), path)
-	if not Cookies[CookieKey.CHAT_HISTROY] then
-		Cookies[CookieKey.CHAT_HISTROY] = {}
-	end
-	if not Cookies[CookieKey.CHAT_HISTROY][self.account_name] then
-		Cookies[CookieKey.CHAT_HISTROY][self.account_name] = {}
-	end
-	if not Cookies[CookieKey.CHAT_HISTROY][self.account_name][playerid] then
-		Cookies[CookieKey.CHAT_HISTROY][self.account_name][playerid] = {}
-	end
-end
-
-function CookieWrapper:WriteChatHistroy()
-	--保存场景为，每一分钟/关闭chatview/密聊返回btn/switchbar
-	-- if not self.chat_histroy_id or not self.account_name then return end
-	-- if IsTableEmpty(Cookies[CookieKey.CHAT_HISTROY][self.account_name][self.chat_histroy_id]) then return end
-	-- local table_name = CookieKey.CHAT_HISTROY.."."..self.account_name.."."..self.chat_histroy_id
-	-- local path = self.chat_histroy_path..self.account_name.."/"
-	-- cookiesManager:WriteCookie(tostring(self.chat_histroy_id), table_name, path)
-	if Cookies[CookieKey.CHAT_HISTROY] and Cookies[CookieKey.CHAT_HISTROY][self.account_name] then
-		for k,v in pairs(Cookies[CookieKey.CHAT_HISTROY][self.account_name]) do
-			local table_name = CookieKey.CHAT_HISTROY.."."..self.account_name.."."..k
-			local path = self.chat_histroy_path..self.account_name.."/"
-			cookiesManager:WriteCookie(k, table_name, path)
-		end
-	end
-end
-
-function CookieWrapper:SaveChatHistroy(playerid,cache_type,value)
-	--这里不做增删操作，value就是整个table --value需要经过简单处理
-	--修改：value传的只是增操作，退出窗口私聊内容的列表就清空了...
-	if not playerid or not cache_type or not value then return end
-	playerid = tostring(playerid)
-	self:GetChatHistroy(playerid)
-	local item = value
-	Cookies[CookieKey.CHAT_HISTROY][self.account_name][playerid] = item
-end
-
-function CookieWrapper:GetChatHistroy(playerid,all)
-	if not playerid then return end
-	playerid = tostring(playerid)
-
-	--全部玩家手动删除一次聊天cookie  已经解决cookie数据错误的问题了， 这段代码去掉
-	local tb = CookieWrapper.Instance:GetCookie(CookieLevelType.Account,CookieKey.DEL_CHAT_COOKIE) or {}
-	if not tb[playerid] then
-		local file_path = Util.DataPath..CookieWrapper.Instance.chat_histroy_path..CookieWrapper.Instance.account_name.."/"..playerid..".cfg"
-		local result,log = os.remove(file_path)
-		tb[playerid] = true
-		CookieWrapper.Instance:SaveCookie(CookieLevelType.Account,CookieTimeType.TYPE_ALWAYS, CookieKey.DEL_CHAT_COOKIE, tb)
-	end
-
-	-- if self.chat_histroy_id ~= playerid then
-	-- 	self:initChatValue(playerid)
-	-- 	self.chat_histroy_id = playerid
-	-- end
-	if not Cookies[CookieKey.CHAT_HISTROY] or not Cookies[CookieKey.CHAT_HISTROY][self.account_name] or not Cookies[CookieKey.CHAT_HISTROY][self.account_name][playerid] then
-		self:initChatValue(playerid)
-	end
-	if all then
-		return Cookies[CookieKey.CHAT_HISTROY][self.account_name]
-	else
-		return Cookies[CookieKey.CHAT_HISTROY][self.account_name][playerid]
-	end
-end
-
-function CookieWrapper:DeleteChatHistroyFile(playerid)
-	if not playerid then return end
-	local file_path = Util.DataPath..self.chat_histroy_path..self.account_name.."/"..playerid..".cfg"
-	local result,log = os.remove(file_path)
-	CookieWrapper.Instance:SaveChatHistroy(playerid,CookieTimeType.TYPE_ALWAYS,{})
-	self:WriteAll()
 end
 
 return CookieWrapper
