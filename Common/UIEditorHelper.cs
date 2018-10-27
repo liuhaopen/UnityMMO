@@ -71,6 +71,7 @@ namespace U3DExtends
                 RectTransform trans = testUI.GetComponent<RectTransform>();
                 trans.position = Configure.UITestNodePos;
                 trans.sizeDelta = Configure.UITestNodeSize;
+                testUI.AddComponent<ReopenLayoutOnExitGame>();
             }
             return testUI;
         }
@@ -178,7 +179,7 @@ namespace U3DExtends
             }
         }
 
-        [MenuItem("UIEditor/清空界面 " + Configure.ShortCut.ClearAllCanvas)]
+        // [MenuItem("UIEditor/清空界面 " + Configure.ShortCut.ClearAllCanvas)]
         public static void ClearAllCanvas()
         {
             bool isDeleteAll = EditorUtility.DisplayDialog("警告", "是否清空掉所有界面？", "干！", "不了");
@@ -312,26 +313,35 @@ namespace U3DExtends
                 Debug.Log("Try to reload unsaved layout failed");
         }
 
-        public static void LoadLayoutByPath(string select_path)
+        public static Transform LoadLayoutByPath(string select_path)
         {
+            //Debug.Log("select_path : "+select_path);
             GameObject new_layout = CreatNewLayout(false);
             new_layout.transform.localPosition = new Vector3(new_layout.transform.localPosition.x, new_layout.transform.localPosition.y, 0);
             LayoutInfo layoutInfo = new_layout.GetComponent<LayoutInfo>();
             layoutInfo.LayoutPath = select_path;
+            if (!File.Exists(select_path))
+            {
+                Debug.Log("UIEditorHelper:LoadLayoutByPath cannot find layout file:"+select_path);
+                return null;
+            }
+            string asset_relate_path = select_path;
+            if (!select_path.StartsWith("Assets/"))
+                asset_relate_path = FileUtil.GetProjectRelativePath(select_path);
 
-            select_path = FileUtil.GetProjectRelativePath(select_path);
-
-            Object prefab = AssetDatabase.LoadAssetAtPath(select_path, typeof(Object));
+            Object prefab = AssetDatabase.LoadAssetAtPath(asset_relate_path, typeof(Object));
             GameObject new_view = PrefabUtility.InstantiateAttachedAsset(prefab) as GameObject;
             new_view.transform.SetParent(new_layout.transform);
             new_view.transform.localPosition = Vector3.zero;
             new_view.transform.localScale = Vector3.one;
-            string just_name = System.IO.Path.GetFileNameWithoutExtension(select_path);
+            string just_name = System.IO.Path.GetFileNameWithoutExtension(asset_relate_path);
             new_view.name = just_name;
             new_layout.gameObject.name = just_name + "_Canvas";
             PrefabUtility.DisconnectPrefabInstance(new_view);//链接中的话删里面的子节点时会报警告，所以还是一直失联的好，保存时直接覆盖prefab就行了
             //打开界面时,从项目临时文件夹找到对应界面的参照图配置,然后生成参照图
-            layoutInfo.ApplyConfig(select_path);
+            layoutInfo.ApplyConfig(asset_relate_path);
+            ReopenLayoutOnExitGame.RecordOpenLayout(select_path, new_layout.transform.localPosition);
+            return new_layout.transform;
         }
 
         //[MenuItem("UIEditor/加载界面 " + Configure.ShortCut.LoadUIPrefab, false, 1)]
@@ -916,6 +926,11 @@ namespace U3DExtends
         static private void InitScrollView(bool isHorizontal)
         {
             ScrollRect scroll = Selection.activeTransform.GetComponent<ScrollRect>();
+            if (scroll==null)
+                return;
+            Image img = Selection.activeTransform.GetComponent<Image>();
+            if (img != null)
+                Object.DestroyImmediate(img);
             scroll.horizontal = isHorizontal;
             scroll.vertical = !isHorizontal;
             scroll.horizontalScrollbar = null;

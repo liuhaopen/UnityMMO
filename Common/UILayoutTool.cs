@@ -9,7 +9,6 @@ namespace U3DExtends
 {
     public class UILayoutTool : MonoBehaviour
     {
-        //[MenuItem("UIEditor/排序所有界面 " + Configure.ShortCut.SortAllCanvas)]
         public static void ResortAllLayout()
         {
             GameObject testUI = GameObject.Find(Configure.UITestNodeName);
@@ -123,7 +122,6 @@ namespace U3DExtends
             }
         }
 
-        //[MenuItem("UIEditor/显示 " + Configure.ShortCut.SortAllCanvas)]
         public static void ShowAllSelectedWidgets()
         {
             foreach (var item in Selection.gameObjects)
@@ -131,7 +129,6 @@ namespace U3DExtends
                 item.SetActive(true);
             }
         }
-        //[MenuItem("UIEditor/隐藏 " + Configure.ShortCut.SortAllCanvas)]
         public static void HideAllSelectedWidgets()
         {
             foreach (var item in Selection.gameObjects)
