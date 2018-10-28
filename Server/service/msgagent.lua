@@ -3,7 +3,7 @@ local sproto = require "Common.Util.sproto"
 local sprotoloader = require "Common.Util.sprotoloader"
 local print_r = require "Common.Util.print_r"
 require "Common.Util.util"
-local netdispatcher = require "netdispatcher"
+local netdispatcher = require "game.netdispatcher"
 
 skynet.register_protocol {
 	name = "client",
@@ -59,6 +59,7 @@ skynet.start(function()
 	skynet.dispatch("client", function(_,_, msg)
 		-- print('Cat:msgagent.lua[50] msg|'..msg.."| c2s_sproto:", c2s_sproto)
 		local tag, msg = string.unpack(">I4c"..#msg-4, msg)
+			-- print('Cat:msgagent.lua[62] tag:', tag, " msg:", msg)
 			--收到前端的请求,先解析再分发
 			local proto_info = c2s_sproto:query_proto(tag)
 			if proto_info and proto_info.name then

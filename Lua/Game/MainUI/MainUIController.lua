@@ -1,5 +1,5 @@
-require("UI/MainUI/MainUIConst")
-require("UI/MainUI/MainUIModel")
+require("Game/MainUI/MainUIConst")
+require("Game/MainUI/MainUIModel")
 
 MainUIController = {}
 
@@ -10,7 +10,7 @@ end
 
 function MainUIController:InitMainUIViews(  )
     print('Cat:MainUIController.lua[InitMainUIViews]')
-    local view = require("UI/MainUI/MainUIJoystickView").New()
+    local view = require("Game/MainUI/MainUIJoystickView").New()
     UIMgr:Show(view)
 end
 

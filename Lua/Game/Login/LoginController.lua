@@ -1,5 +1,5 @@
-require("UI/Login/LoginConst")
-require("UI/Login/LoginModel")
+require("Game/Login/LoginConst")
+require("Game/Login/LoginModel")
 local crypt = require "crypt"
 
 LoginController = {}
@@ -9,7 +9,7 @@ function LoginController:Init(  )
 
 	self:InitEvents()
 
-    local loginView = require("UI/Login/LoginView").New()
+    local loginView = require("Game/Login/LoginView").New()
     UIMgr:Show(loginView)
 end
 
@@ -30,11 +30,11 @@ function LoginController:InitEvents(  )
             LoginModel:GetInstance():SetRoleList(role_list)
             if role_list and #role_list > 0 then
                 --已有角色就先进入选择角色界面
-                local view = require("UI/Login/LoginSelectRoleView").New()
+                local view = require("Game/Login/LoginSelectRoleView").New()
                 UIMgr:Show(view)
             else
                 --还没有角色就先进入创建角色界面
-                local view = require("UI/Login/LoginCreateRoleView").New()
+                local view = require("Game/Login/LoginCreateRoleView").New()
                 UIMgr:Show(view)
             end
             GlobalEventSystem:Fire(MainUIConst.Event.InitMainUIViews)

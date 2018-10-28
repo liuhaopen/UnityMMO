@@ -1,8 +1,8 @@
-require "UI/Common/UIHelper"
-require "UI/Common/UIManager"
-require "UI/Common/UIWidgetPool"
-require "UI/Common/UIComponent"
-require("UI/Common/Message")
+require "Game/Common/UIHelper"
+require "Game/Common/UIManager"
+require "Game/Common/UIWidgetPool"
+require "Game/Common/UIComponent"
+require("Game/Common/Message")
 
 --管理器--
 Game = {}
@@ -43,10 +43,10 @@ end
 
 function Game.InitControllers()
     local ctrl_paths = {
-        -- "UI/Error/ErrorController", 
-        "UI/Test/TestController",
-        "UI/Login/LoginController", 
-        "UI/MainUI/MainUIController", 
+        -- "Game/Error/ErrorController", 
+        "Game/Test/TestController",
+        "Game/Login/LoginController", 
+        "Game/MainUI/MainUIController", 
     }
     for i,v in ipairs(ctrl_paths) do
         local ctrl = require(v)

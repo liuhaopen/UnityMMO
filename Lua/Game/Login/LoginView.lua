@@ -29,7 +29,7 @@ function LoginView:AddEvents(  )
         end
         local login_info = {
             account = account,
-            password = "123",
+            password = "password",
         }
         GlobalEventSystem:Fire(LoginConst.Event.StartLogin, login_info)
         CookieWrapper:GetInstance():SaveCookie(CookieLevelType.Common, CookieTimeType.TYPE_ALWAYS, CookieKey.LastLoginInfo, login_info)

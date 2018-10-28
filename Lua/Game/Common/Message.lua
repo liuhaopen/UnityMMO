@@ -46,7 +46,7 @@ function Message:PopAMsg( )
 			UIHelper.SetParent(msg_item.transform, self.container)
 			msg_item.label = msg_item.transform:GetComponent("Text")
 			msg_item.label.text = msg_info.msg
-			local action = cc.MoveBy.create(0.5, 0, 60)
+			local action = cc.MoveBy.createLocalType(0.5, 0, 60)
 			local on_end = function (  )
 				GameObject.Destroy(msg_item.gameObject)
 			end

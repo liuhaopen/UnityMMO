@@ -75,7 +75,7 @@ function LoginSelectRoleView:UpdateView()
 						--Cat_Todo : 加个人物模型才行啊,现在太难看了
 					else
 						--显示创建角色界面
-						local view = require("UI/Login/LoginCreateRoleView").New()
+						local view = require("Game/Login/LoginCreateRoleView").New()
                 		UIMgr:Show(view)
 					end
 				end

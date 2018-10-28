@@ -24,6 +24,9 @@ local _Time =
 	unscaledDeltaTime	= 0,	
 	unscaledTime		= 0,	
 	serverTime  		= 0,
+	req_time			= 0,
+	is_start_synch_time = false,
+
 }
 
 local _set = {}
@@ -97,11 +100,11 @@ function Time:SetDeltaTime(deltaTime, unscaledDeltaTime)
 end
 
 function Time:GetServerTime( )
-	return self.serverTime
+	return _Time.serverTime
 end
 
 function Time:SetServerTime( value )
-	self.serverTime = value
+	_Time.serverTime = value
 end
 
 function Time:SetFixedDelta(fixedDeltaTime)	
@@ -127,15 +130,15 @@ function Time:GetTimestamp()
 end
 
 function Time:StartSynchServerTime(  )
-    if not self.is_start_synch_time then
-        self.is_start_synch_time = true
+    if not _Time.is_start_synch_time then
+        _Time.is_start_synch_time = true
         local synch_time
         synch_time = function()
-            self.req_time = _Time.unscaledTime
+            _Time.req_time = _Time.unscaledTime
             local on_server_time_ack = function ( server_time_info )
             	--从请求至收到回复的时间间隔
-            	local time_offset = _Time.unscaledTime - self.req_time
-                print('Cat:LoginController.lua[118] server_time_info:', server_time_info.server_time, " time_offset:", time_offset)
+            	local time_offset = _Time.unscaledTime - _Time.req_time
+                -- print('Cat:LoginController.lua[118] server_time_info:', server_time_info.server_time, " time_offset:", time_offset)
                 Time:SetServerTime(server_time_info.server_time+time_offset/2)
                 local timer = Timer.New(function()
                 	--每隔几秒就同步一次
@@ -145,6 +148,7 @@ function Time:StartSynchServerTime(  )
             end
             NetDispatcher:SendMessage("account_get_server_time", nil, on_server_time_ack)
         end
+        synch_time()
     end
    
 end

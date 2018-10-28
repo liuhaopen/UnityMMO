@@ -55,7 +55,7 @@ public class XLuaManager : MonoBehaviour
 
             if (NetworkManager.GetInstance())
             {
-                SafeDoString("require 'Logic.NetDispatcher'");
+                SafeDoString("require 'NetDispatcher'");
                 NetworkManager.GetInstance().OnConnectCallBack += luaEnv.Global.Get<Action<byte[]>>("OnConnectServer");
                 NetworkManager.GetInstance().OnDisConnectCallBack += luaEnv.Global.Get<Action<byte[]>>("OnDisConnectFromServer");
                 NetworkManager.GetInstance().OnReceiveLineCallBack += luaEnv.Global.Get<Action<byte[]>>("OnReceiveLineFromServer");
