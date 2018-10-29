@@ -14,7 +14,7 @@ function LoginView:OnLoad(  )
 	UI.GetChildren(self, self.transform, names)
 	self.login_btn = self.login.gameObject
     self.account_txt = self.account:GetComponent("InputField")
-
+    -- local x, y, z = self.transform.localPosition.xyz
     self.transform.sizeDelta = Vector2.New(0, 0)
 	self:AddEvents()
 	self:UpdateView()

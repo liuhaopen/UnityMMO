@@ -31,7 +31,7 @@ namespace XLua.CSObjectWrap
 			Utils.EndObjectRegister(type, L, translator, null, null,
 			    null, null, null);
 
-		    Utils.BeginClassRegister(type, L, __CreateInstance, 27, 0, 0);
+		    Utils.BeginClassRegister(type, L, __CreateInstance, 32, 0, 0);
 			Utils.RegisterFunc(L, Utils.CLS_IDX, "SetPosition", _m_SetPosition_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "SetPositionX", _m_SetPositionX_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "SetPositionY", _m_SetPositionY_xlua_st_);
@@ -46,6 +46,11 @@ namespace XLua.CSObjectWrap
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetLocalPositionX", _m_GetLocalPositionX_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetLocalPositionY", _m_GetLocalPositionY_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetLocalPositionZ", _m_GetLocalPositionZ_xlua_st_);
+            Utils.RegisterFunc(L, Utils.CLS_IDX, "SetAnchoredPosition", _m_SetAnchoredPosition_xlua_st_);
+            Utils.RegisterFunc(L, Utils.CLS_IDX, "SetAnchoredPositionX", _m_SetAnchoredPositionX_xlua_st_);
+            Utils.RegisterFunc(L, Utils.CLS_IDX, "SetAnchoredPositionY", _m_SetAnchoredPositionY_xlua_st_);
+            Utils.RegisterFunc(L, Utils.CLS_IDX, "GetAnchoredPositionX", _m_GetAnchoredPositionX_xlua_st_);
+            Utils.RegisterFunc(L, Utils.CLS_IDX, "GetAnchoredPositionY", _m_GetAnchoredPositionY_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "SetLocalScale", _m_SetLocalScale_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "SetLocalRotation", _m_SetLocalRotation_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "SetRotate", _m_SetRotate_xlua_st_);
@@ -466,6 +471,142 @@ namespace XLua.CSObjectWrap
                     UnityEngine.Transform _transform = (UnityEngine.Transform)translator.GetObject(L, 1, typeof(UnityEngine.Transform));
                     
                         float gen_ret = XLuaFramework.UIHelper.GetLocalPositionZ( _transform );
+                        LuaAPI.lua_pushnumber(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_SetAnchoredPosition_xlua_st_(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+            
+                
+                {
+                    UnityEngine.RectTransform _transform = (UnityEngine.RectTransform)translator.GetObject(L, 1, typeof(UnityEngine.RectTransform));
+                    float _x = (float)LuaAPI.lua_tonumber(L, 2);
+                    float _y = (float)LuaAPI.lua_tonumber(L, 3);
+                    
+                    XLuaFramework.UIHelper.SetAnchoredPosition( _transform, _x, _y );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_SetAnchoredPositionX_xlua_st_(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+            
+                
+                {
+                    UnityEngine.RectTransform _transform = (UnityEngine.RectTransform)translator.GetObject(L, 1, typeof(UnityEngine.RectTransform));
+                    float _x = (float)LuaAPI.lua_tonumber(L, 2);
+                    
+                    XLuaFramework.UIHelper.SetAnchoredPositionX( _transform, _x );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_SetAnchoredPositionY_xlua_st_(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+            
+                
+                {
+                    UnityEngine.RectTransform _transform = (UnityEngine.RectTransform)translator.GetObject(L, 1, typeof(UnityEngine.RectTransform));
+                    float _y = (float)LuaAPI.lua_tonumber(L, 2);
+                    
+                    XLuaFramework.UIHelper.SetAnchoredPositionY( _transform, _y );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_GetAnchoredPositionX_xlua_st_(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+            
+                
+                {
+                    UnityEngine.RectTransform _transform = (UnityEngine.RectTransform)translator.GetObject(L, 1, typeof(UnityEngine.RectTransform));
+                    
+                        float gen_ret = XLuaFramework.UIHelper.GetAnchoredPositionX( _transform );
+                        LuaAPI.lua_pushnumber(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_GetAnchoredPositionY_xlua_st_(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+            
+                
+                {
+                    UnityEngine.RectTransform _transform = (UnityEngine.RectTransform)translator.GetObject(L, 1, typeof(UnityEngine.RectTransform));
+                    
+                        float gen_ret = XLuaFramework.UIHelper.GetAnchoredPositionY( _transform );
                         LuaAPI.lua_pushnumber(L, gen_ret);
                     
                     

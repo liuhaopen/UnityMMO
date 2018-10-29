@@ -41,6 +41,7 @@ public class XLuaManager : MonoBehaviour
 
     public void InitLuaEnv()
     {
+        // XLua.LuaEnv.AddIniter(XLua.CSObjectWrap.XLua_Gen_Manual_Register__.Init);
         luaEnv = new LuaEnv();
         if (luaEnv != null)
         {

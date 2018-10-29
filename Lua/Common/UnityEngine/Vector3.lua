@@ -36,6 +36,7 @@ Vector3.__index = function(t,k)
 	end
 	
 	var = rawget(_getter, k)
+	-- print('Cat:Vector3.lua[39] var, k', var, k, var)
 	if var ~= nil then
 		return var(t)
 	end
@@ -466,6 +467,13 @@ _getter.forward = function() return _new(0,0,1) end
 _getter.back	= function() return _new(0,0,-1) end
 _getter.zero	= function() return _new(0,0,0) end
 _getter.one		= function() return _new(1,1,1) end
+_getter.xyz		= function(self) 
+	-- print("Cat:Vector3 [start:470] self:", self)
+	-- PrintTable(self)
+	-- print("Cat:Vector3 [end]")
+	-- print("Cat:Vector3 [473] : ",debug.traceback())
+	return self.x, self.y, self.z
+end
 
 _getter.magnitude	= Vector3.Magnitude
 _getter.normalized	= Vector3.Normalize

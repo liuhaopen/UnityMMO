@@ -25,25 +25,22 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(XLuaManager), XLuaManagerWrap.__Register);
         
         
-            translator.DelayWrapLoader(typeof(UnityMMO.GameVariable), UnityMMOGameVariableWrap.__Register);
-        
-        
-            translator.DelayWrapLoader(typeof(UnityMMO.GameConst), UnityMMOGameConstWrap.__Register);
-        
-        
-            translator.DelayWrapLoader(typeof(UnityMMO.SceneMgr), UnityMMOSceneMgrWrap.__Register);
-        
-        
             translator.DelayWrapLoader(typeof(UnityMMO.SceneInfoKey), UnityMMOSceneInfoKeyWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(UnityMMO.SceneObjectType), UnityMMOSceneObjectTypeWrap.__Register);
         
         
-            translator.DelayWrapLoader(typeof(XLuaFramework.Util), XLuaFrameworkUtilWrap.__Register);
+            translator.DelayWrapLoader(typeof(UnityMMO.SceneMgr), UnityMMOSceneMgrWrap.__Register);
         
         
-            translator.DelayWrapLoader(typeof(XLuaFramework.ResourceManager), XLuaFrameworkResourceManagerWrap.__Register);
+            translator.DelayWrapLoader(typeof(UnityMMO.GameVariable), UnityMMOGameVariableWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(UnityMMO.GameConst), UnityMMOGameConstWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(XLua.CSObjectWrap.TransformWrap_Manual), XLuaCSObjectWrapTransformWrap_ManualWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(XLuaFramework.NetPackageType), XLuaFrameworkNetPackageTypeWrap.__Register);
@@ -52,13 +49,19 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(XLuaFramework.NetworkManager), XLuaFrameworkNetworkManagerWrap.__Register);
         
         
-            translator.DelayWrapLoader(typeof(XLuaFramework.CookiesManager), XLuaFrameworkCookiesManagerWrap.__Register);
+            translator.DelayWrapLoader(typeof(XLuaFramework.ResourceManager), XLuaFrameworkResourceManagerWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(XLuaFramework.Util), XLuaFrameworkUtilWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(XLuaFramework.AppConfig), XLuaFrameworkAppConfigWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(XLuaFramework.UIHelper), XLuaFrameworkUIHelperWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(XLuaFramework.CookiesManager), XLuaFrameworkCookiesManagerWrap.__Register);
         
         
         

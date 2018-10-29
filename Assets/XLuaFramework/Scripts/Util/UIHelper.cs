@@ -128,6 +128,49 @@ namespace XLuaFramework
             }
             return 0;
         }
+
+        public static void SetAnchoredPosition(RectTransform transform, float x, float y)
+        {
+            if (transform != null)
+            {
+                transform.anchoredPosition = new Vector2(x, y);
+            }
+        }
+
+        public static void SetAnchoredPositionX(RectTransform transform, float x)
+        {
+            if (transform != null)
+            {
+                transform.anchoredPosition = new Vector2(x, transform.anchoredPosition.y);
+            }
+        }
+
+        public static void SetAnchoredPositionY(RectTransform transform, float y)
+        {
+            if (transform != null)
+            {
+                transform.anchoredPosition = new Vector2(transform.anchoredPosition.x, y);
+            }
+        }
+
+        public static float GetAnchoredPositionX(RectTransform transform)
+        {
+            if (transform != null)
+            {
+                return transform.anchoredPosition.x;
+            }
+            return 0;
+        }
+
+        public static float GetAnchoredPositionY(RectTransform transform)
+        {
+            if (transform != null)
+            {
+                return transform.anchoredPosition.y;
+            }
+            return 0;
+        }
+
         public static void SetLocalScale(Transform transform, float x, float y, float z)
         {
             if (transform != null)

@@ -5,33 +5,33 @@ cc.Wrapper = cc.Wrapper or {}
 
 function cc.Wrapper.SetLocalPosition( node, x, y, z )
 	UIHelper.SetLocalPosition(node, x, y, z)
-	-- if node ~= nil then
-	-- 	node:SetLocalPosXYZ(x, y, z)
-	-- end
 end
 
 function cc.Wrapper.GetLocalPosition( node )
-	return GetLocalPosition(node)
+	local pos = node.localPosition
+	return pos.x, pos.y, pos.z
 end
 
 function cc.Wrapper.SetAnchoredPosition( node, x, y )
-	SetAnchoredPosition(node, x, y)
+	UIHelper.SetAnchoredPosition(node, x, y)
 end
 
 function cc.Wrapper.GetAnchoredPosition( node )
-	return GetAnchoredPosition(node)
+	local pos = node.anchoredPosition
+	return pos.x, pos.y
 end
 
 function cc.Wrapper.SetPosition( node, x, y, z )
-	SetGlobalPosition(node, x, y, z)
+	UIHelper.SetPosition(node, x, y, z)
 end
 
 function cc.Wrapper.GetPosition( node )
-	return GetGlobalPosition(node)
+	local pos = node.position
+	return pos.x, pos.y, pos.z
 end
 
 function cc.Wrapper.SetVisible( node, is_show )
-	SetVisible(node, is_show)
+	UI.SetVisible(node, is_show)
 end
 
 function cc.Wrapper.GetVisible( node )
