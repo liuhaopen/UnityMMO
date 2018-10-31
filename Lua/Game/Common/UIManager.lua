@@ -44,18 +44,6 @@ function UIMgr:AddUIComponent( view, component, arge )
 	table.insert(view._components_for_uimgr_, new_comp)
 	print("Cat:UIManager [start:45] new_comp:", new_comp, new_comp.OnLoad)
 	return new_comp
-	-- assert(view.UIConfig, "cannot find UIConfig in view", view)
-	-- view.UIConfig.components = view.UIConfig.components or {}
-	-- local had_component = false
-	-- for i,v in ipairs(view.UIConfig.components) do
-	-- 	if v == component then
-	-- 		had_component = true
-	-- 		break
-	-- 	end
-	-- end
-	-- if not had_component then
-		-- table.insert(view.UIConfig.components, new_comp)
-	-- end
 end
 
 --清掉界面堆栈
@@ -129,13 +117,6 @@ function UIMgr:Close( view )
 		end
 		view._components_for_uimgr_ = nil
 	end
-	-- if view.UIConfig.components then
-	-- 	for i,v in ipairs(view.UIConfig.components) do
-	-- 		if v.OnClose then
-	-- 			v.OnClose(view)
-	-- 		end
-	-- 	end
-	-- end
 	if not view.is_destroyed then
 		GameObject.Destroy(view.gameObject)
 	end

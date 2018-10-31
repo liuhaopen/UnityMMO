@@ -5,7 +5,6 @@ ResMgr = CS.XLuaFramework.ResourceManager.GetInstance()
 NetMgr = CS.XLuaFramework.NetworkManager.GetInstance()
 UIHelper = CS.XLuaFramework.UIHelper
 cookiesManager = CS.XLuaFramework.CookiesManager.GetInstance()
-print('Cat:BaseRequire.lua[8] cookiesManager', cookiesManager)
 GameObject = CS.UnityEngine.GameObject
 GameConst = CS.UnityMMO.GameConst
 GameVariable = CS.UnityMMO.GameVariable

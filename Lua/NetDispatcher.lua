@@ -8,7 +8,7 @@ NetDispatcher.Event = {
     OnDisConnect = "NetDispatcher.Event.OnDisConnect",
     OnReceiveLine = "NetDispatcher.Event.OnReceiveLine",
 }
---当连接建立时--
+--当连接建立时
 function OnConnectServer() 
     print("Game Server connected!!")
     GlobalEventSystem:Fire(NetDispatcher.Event.OnConnect)

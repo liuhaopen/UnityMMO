@@ -53,28 +53,6 @@ function UI.UpdateVisibleByJury( obj, is_show, reason )
 	end
 end
 
---滚动到目标点，让其尽量显示在滚动容器的中间
-function UI.ScrollToCenter( Content, item, item_width, size )--最后一个是容器 size 的大小
-	-- print("huangcong: [318] Content, item, item_width: ",Content, item, item_width,size)
-	--画布 item item_width scrollSize
-	item_width = item_width or 80--默认把节点的高度当作100
-	local scroll_size = size
-	local scroll_real_size = Content.sizeDelta 
-	local item_real_pos = nil
-	item_real_pos = item:GetPosition()
-	local new_fit_x = 0
-	local condition1 = item_real_pos.x - scroll_size.x/2 --第一部分是判断左边极限
-	local condition2 = item_real_pos.x + scroll_size.x/2 - scroll_real_size.x--右边极限
-	if condition1 > 0 and condition2 < 0 then
-		new_fit_x = -(item_real_pos.x - scroll_size.x/2) - item_width/2
-	elseif condition1 <= 0 then
-		new_fit_x = 0
-	elseif condition2 >= 0 then
-		new_fit_x = -(scroll_real_size.x - scroll_size.x)+1
-	end
-	Content.localPosition = Vector3(new_fit_x ,0 ,0)
-end
-
 local find = string.find
 local gsub = string.gsub
 local Split = Split
@@ -82,7 +60,7 @@ UI.G_ComponentMapForGetChildren = {
 	img = "Image", txt = "Text", tog = "Toggle",
 }
 function UI.GetChildren( self, parent, names )
-	--Cat_Todo : cache find method
+	assert(parent, "UIHelper:GetChildren() cannot find transform!")
 	for i=1,#names do
 		local name_parts = Split(names[i], ":")
 		local full_name = name_parts[1]
