@@ -239,7 +239,7 @@ namespace U3DExtends
 
     public class PriorityTool
     {
-        [MenuItem("UIEditor/层次/最里层 " + Configure.ShortCut.MoveNodeTop)]
+        // [MenuItem("UIEditor/层次/最里层 " + Configure.ShortCut.MoveNodeTop)]
         public static void MoveToTopWidget()
         {
             Transform curSelect = Selection.activeTransform;
@@ -248,7 +248,7 @@ namespace U3DExtends
                 curSelect.SetAsFirstSibling();
             }
         }
-        [MenuItem("UIEditor/层次/最外层 " + Configure.ShortCut.MoveNodeBottom)]
+        // [MenuItem("UIEditor/层次/最外层 " + Configure.ShortCut.MoveNodeBottom)]
         public static void MoveToBottomWidget()
         {
             Transform curSelect = Selection.activeTransform;
@@ -258,7 +258,7 @@ namespace U3DExtends
             }
         }
 
-        [MenuItem("UIEditor/层次/往里挤 " + Configure.ShortCut.MoveNodeUp)]
+        // [MenuItem("UIEditor/层次/往里挤 " + Configure.ShortCut.MoveNodeUp)]
         public static void MoveUpWidget()
         {
             Transform curSelect = Selection.activeTransform;
@@ -270,7 +270,7 @@ namespace U3DExtends
             }
         }
 
-        [MenuItem("UIEditor/层次/往外挤 " + Configure.ShortCut.MoveNodeDown)]
+        // [MenuItem("UIEditor/层次/往外挤 " + Configure.ShortCut.MoveNodeDown)]
         public static void MoveDownWidget()
         {
             Transform curSelect = Selection.activeTransform;
@@ -286,7 +286,7 @@ namespace U3DExtends
 
     public class AlignTool
     {
-        [MenuItem("UIEditor/对齐/左对齐 ←")]
+        // [MenuItem("UIEditor/对齐/左对齐 ←")]
         internal static void AlignInHorziontalLeft()
         {
             float x = Mathf.Min(Selection.gameObjects.Select(obj => obj.transform.localPosition.x).ToArray());
@@ -298,7 +298,7 @@ namespace U3DExtends
             }
         }
 
-        [MenuItem("UIEditor/对齐/右对齐 →")]
+        // [MenuItem("UIEditor/对齐/右对齐 →")]
         public static void AlignInHorziontalRight()
         {
             float x = Mathf.Max(Selection.gameObjects.Select(obj => obj.transform.localPosition.x +
@@ -310,7 +310,7 @@ namespace U3DExtends
             }
         }
 
-        [MenuItem("UIEditor/对齐/上对齐 ↑")]
+        // [MenuItem("UIEditor/对齐/上对齐 ↑")]
         public static void AlignInVerticalUp()
         {
             float y = Mathf.Max(Selection.gameObjects.Select(obj => obj.transform.localPosition.y).ToArray());
@@ -320,7 +320,7 @@ namespace U3DExtends
             }
         }
 
-        [MenuItem("UIEditor/对齐/下对齐 ↓")]
+        // [MenuItem("UIEditor/对齐/下对齐 ↓")]
         public static void AlignInVerticalDown()
         {
             float y = Mathf.Min(Selection.gameObjects.Select(obj => obj.transform.localPosition.y -
@@ -333,7 +333,7 @@ namespace U3DExtends
         }
 
 
-        [MenuItem("UIEditor/对齐/水平均匀 |||")]
+        // [MenuItem("UIEditor/对齐/水平均匀 |||")]
         public static void UniformDistributionInHorziontal()
         {
             int count = Selection.gameObjects.Length;
@@ -348,7 +348,7 @@ namespace U3DExtends
             }
         }
 
-        [MenuItem("UIEditor/对齐/垂直均匀 ☰")]
+        // [MenuItem("UIEditor/对齐/垂直均匀 ☰")]
         public static void UniformDistributionInVertical()
         {
             int count = Selection.gameObjects.Length;
@@ -363,7 +363,7 @@ namespace U3DExtends
             }
         }
 
-        [MenuItem("UIEditor/对齐/一样大 ■")]
+        // [MenuItem("UIEditor/对齐/一样大 ■")]
         public static void ResizeMax()
         {
             var height = Mathf.Max(Selection.gameObjects.Select(obj => ((RectTransform)obj.transform).sizeDelta.y).ToArray());
@@ -374,7 +374,7 @@ namespace U3DExtends
             }
         }
 
-        [MenuItem("UIEditor/对齐/一样小 ●")]
+        // [MenuItem("UIEditor/对齐/一样小 ●")]
         public static void ResizeMin()
         {
             var height = Mathf.Min(Selection.gameObjects.Select(obj => ((RectTransform)obj.transform).sizeDelta.y).ToArray());

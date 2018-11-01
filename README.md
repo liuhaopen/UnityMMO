@@ -5,12 +5,7 @@ git subtree add --prefix=Assets/UGUI-Editor https://github.com/liuhaopen/UGUI-Ed
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UGUI-Editor/configure.png)
 
 ## PrefabWin窗口
-一般一些通用常用的资源我们都会做成prefab,比如某些按钮,文本样式等,然后用到时就在Project视图把它拉入场景,但说实话Project视图真的太丑了,你是想这样的?  
-![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UGUI-Editor/origin_prefab_win.png)  
-还是这样的?  
-![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UGUI-Editor/new_prefab_win.png)  
-图2对于有用过NGUI的人应该不陌生  
-所以用UIEditor的开发流程一般就是从PrefabWin这个窗口拉控件出去的,拉到场景时会判断控件落在哪个Canvas上,有则挂其上,无则自动生成一个给你,然后右键保存为一个界面prefab,或者随便你怎么处理那坨界面:  
+一般一些通用常用的资源我们都会做成prefab,比如某些按钮,文本样式等,然后用到时就在Project视图把它拉入场景,但project视图看不到prefab的预览图,都是蓝色的方块比较难辩认,所以可以用PrefabWin这个窗口拉控件出去,拉到场景时会判断控件落在哪个Canvas上,有则挂其上,无则自动生成一个Canvas,然后右键保存为一个界面prefab:  
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UGUI-Editor/prefab_win.gif)  
 PrefabWin窗口可以从菜单Window-&gt;PrefabWin打开  
 PrefabWin窗口一开始时肯定是没东西的啦,你可以往里面拉prefab,然后它会自动生成预览图的.2D3D的prefab都可以.底下还有个搜索框可以让你快速过滤.  
@@ -34,6 +29,9 @@ PrefabWin窗口一开始时肯定是没东西的啦,你可以往里面拉prefab,
 有时一些旧资源想删而不敢删,怕其它地方用到了,这时可以在Project视图右键菜单查找整个项目里有哪些prefab用到了该资源:
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UGUI-Editor/find_references.gif)  
 
+## 打开整个文件夹里的prefab界面
+![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UGUI-Editor/open_folder.gif)  
+
 ## 合并组和解体
 有时需要把几个节点合成一个组,这时可以这样:  
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UGUI-Editor/make_group.gif)  
@@ -43,7 +41,11 @@ PrefabWin窗口一开始时肯定是没东西的啦,你可以往里面拉prefab,
 
 ## 对齐工具
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UGUI-Editor/align_menu.png)
-![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UGUI-Editor/align_tool.gif)
+![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UGUI-Editor/align_tool.gif)  
+
+## 运行时修改防重置
+运行时可以放心地修改并保存prefab,结束运行时也会重新加载到最新的(默认情况下unity结束运行后是会重置到运行前的状态的)  
+![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UGUI-Editor/reload_after_exit.gif)   
 
 ## 其它功能
 )运行结束后重新加载所有正在编辑的界面(因为运行期间的修改在运行结束后会重置的)  

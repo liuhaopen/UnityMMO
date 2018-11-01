@@ -188,18 +188,16 @@ namespace U3DExtends
                 GameObject test = GameObject.Find(Configure.UITestNodeName);
                 if (test != null)
                 {
-                    Canvas[] allLayouts = test.transform.GetComponentsInChildren<Canvas>(true);
+                    LayoutInfo[] allLayouts = test.transform.GetComponentsInChildren<LayoutInfo>(true);
                     foreach (var item in allLayouts)
                     {
-                        //Undo.DestroyObjectImmediate(item.gameObject);
-                        GameObject.DestroyImmediate(item.gameObject);
+                        Undo.DestroyObjectImmediate(item.gameObject);
                     }
-                    GameObject.DestroyImmediate(test);
+                    // GameObject.DestroyImmediate(test);
                 }
             }
         }
 
-        [MenuItem("UIEditor/加载文件夹", false, 1)]
         public static void LoadLayoutWithFolder()
         {
             string default_path = PathSaver.GetInstance().GetLastPath(PathType.SaveLayout);
