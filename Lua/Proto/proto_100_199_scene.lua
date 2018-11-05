@@ -41,15 +41,7 @@ scene_get_main_role_info 100 {
 	}
 }
 
-scene_get_cur_scene_info 101 {
-	response {
-		role_list 0 : *scene_role_info
-		monster_list 1 : *scene_monster_info
-		npc_list 2 : *scene_npc_info
-	}
-}
-
-scene_walk 102 {
+scene_walk 101 {
 	request {
 		pos_x 0 : integer
 		pos_y 1 : integer
@@ -60,7 +52,7 @@ scene_walk 102 {
 	}
 }
 
-scene_get_objs_info_change 103 {
+scene_get_objs_info_change 102 {
 	request {
 	}
 	response {
@@ -68,13 +60,27 @@ scene_get_objs_info_change 103 {
 	}
 }
 
-scene_enter_scene 104 {
+scene_change_aoi_radius 103 {
 	request {
-		scene_id 0 : integer
+		radius 0 : integer
+	}
+}
+
+scene_get_role_detail 104 {
+	request {
+		uid 0 : integer
 	}
 	response {
-		result 0 : integer
-		role_info 1 : scene_main_role_info
+		role_info 0 : scene_role_info
+	}
+}
+
+scene_get_monster_detail 105 {
+	request {
+		uid 0 : integer
+	}
+	response {
+		monster_info 0 : scene_monster_info
 	}
 }
 
