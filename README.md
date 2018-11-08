@@ -6,7 +6,7 @@
 要求:Unity2018以上并从菜单Window/Package Manager里下载Entities  
 前端:  
 下载下来后整个目录就是Unity的项目目录,用Unity打开,运行main.unity场景即可进入游戏的登录界面  
-注:由于游戏资源过大且经常变更(每个版本的资源都会保存在.git文件夹里,clone就要好久了),所以放到另外的项目管理,可在[UnityMMO-Resource](https://github.com/liuhaopen/UnityMMO-Resource/tree/master/Assets/AssetBundleRes "UnityMMO-Resource")下载里面的文件并复制到本项目的Assets/AssetBundleRes里  
+注:由于游戏资源过大且经常变更(每个版本的资源都会保存在.git文件夹里,clone就要好久了),所以放到另外的项目管理,可在[UnityMMO-Resource](https://github.com/liuhaopen/UnityMMO-Resource/tree/master/Assets/AssetBundleRes "UnityMMO-Resource")下载里面的文件并复制到本项目的Assets/AssetBundleRes里(注:有些插件因为版权问题就没上传了,从其中的download-page见购买链接)  
 后端:  
 )安装虚拟机,我使用的是CentOS7,然后设置整个项目目录为虚拟机的共享目录,cd到Server目录,先编译skynet:[skynet主页](https://github.com/cloudwu/skynet "skynet主页")  
 )在虚拟机安装mysql并导入Server/data/里的两个数据库文件  
