@@ -1,15 +1,64 @@
 local config = {
-	scene_id = 1001,
-	scene_name = "新手村",
-	door_list = {
-		{door_id=1, x=0, y=0, z=2, target_scene_id=1002, target_x=1, target_y=2, target_x=3}, 
-	},
-	npc_list = {
-		{npc_type_id=1, x=0, y=0, z=2}
-	},
-	monster_list = {
-		{monster_type_id=1, x=0, y=0, z=2},
-		{monster_type_id=1, x=0, y=0, z=2, name="other_name"},
-	},
+scene_id = 1001,
+scene_name = "main_city",
+door_list = {{
+		pos_x = 509,
+		pos_y = 162.3,
+		pos_z = 991,
+		door_id = 1,
+		target_scene_id = 1002,
+		target_x = 1,
+		target_y = 2,
+		target_z = 3,
+},
+{
+		pos_x = 509,
+		pos_y = 162.3,
+		pos_z = 991,
+		door_id = 2,
+		target_scene_id = 1003,
+		target_x = 11,
+		target_y = 22,
+		target_z = 33,
+},
+},
+npc_list = {{
+		pos_x = 510.18,
+		pos_y = 163.48,
+		pos_z = 992.82,
+		npc_id = 1,
+},
+{
+		pos_x = 487.04,
+		pos_y = 162.3,
+		pos_z = 978.77,
+		npc_id = 2,
+},
+{
+		pos_x = 516.5,
+		pos_y = 163.01,
+		pos_z = 994.53,
+		npc_id = 3,
+},
+},
+monster_list = {{
+		pos_x = 509,
+		pos_y = 162.3,
+		pos_z = 991,
+		monster_id = 1,
+},
+{
+		pos_x = 509,
+		pos_y = 162.3,
+		pos_z = 991,
+		monster_id = 1,
+},
+{
+		pos_x = 513.44,
+		pos_y = 162.5,
+		pos_z = 998.42,
+		monster_id = 1,
+},
+},
 }
 return config

@@ -7,6 +7,8 @@ local this = {
 	--the scene object includes the role monster npc
 	scene_uid = 0,
 	role_lists = {},
+	npc_lists = {},
+	monster_lists = {},
 }
 local SceneObjectType={
 	Role=1,Monster=2,NPC=3,
@@ -17,8 +19,8 @@ local SceneInfoKey = {
     PosChange=3,
 }
 
-local new_scene_uid = function (  )
-	this.scene_uid = this.scene_uid + 1
+local new_scene_uid = function ( scene_obj_type )
+	this.scene_uid = scene_obj_type*10000000000+this.scene_uid + 1
 	return this.scene_uid
 end
 
@@ -43,8 +45,28 @@ local add_info_item = function ( change_obj_infos, scene_uid, info_item )
 	return change_obj_infos
 end
 
+local init_npc = function (  )
+	if not this.scene_cfg or not this.scene_cfg.npc_list then return end
+	
+	for k,v in pairs(this.scene_cfg.npc_list) do
+		local npc = {}
+		npc.id = v.npc_id
+		npc.uid = new_scene_uid(SceneObjectType.Role)
+		npc.pos_x = v.pos_x
+		npc.pos_y = v.pos_y
+		npc.pos_z = v.pos_z
+	end
+end
+
+local init_monster = function (  )
+	
+end
+
 function CMD.init(scene_id)
 	print('Cat:scene.lua[init] scene_id', scene_id)
+	this.scene_cfg = require("Config.scene.config_scene_"..scene_id)
+	init_npc()
+	init_monster()
 	skynet.fork(function()
 		while true do
 			--synch info at fixed time
@@ -72,7 +94,7 @@ function CMD.role_enter_scene(role_id)
 		end
 	end
 	if not this.role_lists[role_id] then
-		local scene_uid = new_scene_uid()
+		local scene_uid = new_scene_uid(SceneObjectType.Role)
 		this.role_lists[role_id] = {scene_uid=scene_uid}
 		--tell the new guy
 		for k,v in pairs(this.role_lists) do

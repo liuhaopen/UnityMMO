@@ -56,8 +56,8 @@ skynet.start (function ()
 	local self = skynet.self()
 
 	--初始化所有场景服务
-	for i=1,5 do
-		local scene_service = skynet.newservice ("scene", self)
+	for i=1,1 do
+		local scene_service = skynet.newservice("scene", self)
 		skynet.call(scene_service, "lua", "init", scene_ids[i])
 		scene_services[scene_ids[i]] = scene_service
 	end
