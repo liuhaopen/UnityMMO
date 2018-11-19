@@ -48,6 +48,9 @@ public class SceneMgr : MonoBehaviour
 		RoleArchetype = EntityManager.CreateArchetype(
                 typeof(Position),typeof(TargetPosition),
                 typeof(MoveSpeed));
+
+        NPCArchetype = EntityManager.CreateArchetype(
+                typeof(Position),
 	}
 
 	public void OnDestroy()
@@ -157,10 +160,21 @@ public class SceneMgr : MonoBehaviour
         return role;
 	}
 
+    public Entity AddNPC(long uid)
+	{
+		Entity entity = EntityManager.CreateEntity(NPCArchetype);
+        EntityManager.SetComponentData(entity, new Position {Value = new int3(0, 0, 0)});
+        EntityManager.AddSharedComponentData(entity, GetLookFromPrototype("Prototype/NPCRenderPrototype"));
+        entityDic.Add(uid, entity);
+        return entity;
+	}
+
     public Entity AddSceneObject(long uid, SceneObjectType type)
     {
         if (type == SceneObjectType.Role)
             return AddRole(uid);
+        else if (type == SceneObjectType.NPC)
+            return AddNPC(uid);
         return Entity.Null;
     }
 

@@ -55,6 +55,7 @@ local init_npc = function (  )
 		npc.pos_x = v.pos_x
 		npc.pos_y = v.pos_y
 		npc.pos_z = v.pos_z
+		table.insert(this.npc_list, npc)
 	end
 end
 
@@ -96,11 +97,14 @@ function CMD.role_enter_scene(role_id)
 	if not this.role_lists[role_id] then
 		local scene_uid = new_scene_uid(SceneObjectType.Role)
 		this.role_lists[role_id] = {scene_uid=scene_uid}
-		--tell the new guy
+		--tell the new guy who are here
 		for k,v in pairs(this.role_lists) do
 			if v.scene_uid ~= scene_uid then
 				this.role_lists[role_id].change_obj_infos = add_info_item(this.role_lists[role_id].change_obj_infos, v.scene_uid, {key=SceneInfoKey.EnterScene, value=SceneObjectType.Role, time=os.time()})
 			end
+		end
+		for k,v in pairs(this.npc_list) do
+			this.role_lists[role_id].change_obj_infos = add_info_item(this.role_lists[role_id].change_obj_infos, v.scene_uid, {key=SceneInfoKey.EnterScene, value=SceneObjectType.NPC, time=0})
 		end
 	end
 end
