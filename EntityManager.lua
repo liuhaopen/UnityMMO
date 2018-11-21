@@ -1,15 +1,21 @@
 local Entity = {
 	
 }
-local EntityManager = {
-	
-}
+local EntityManager = BaseClass()
 
 function EntityManager:CreateEntity( com_type )
 	
 end
 
 function EntityManager:DestroyEntity( entity )
+	
+end
+
+function EntityManager:CreateArchetype( com_types )
+	
+end
+
+function EntityManager:Update(  )
 	
 end
 
