@@ -1,14 +1,16 @@
 local skynet = require "skynet"
 require "Common.Util.util"
+require "game.ECS.ECSRequire"
 
 local NORET = {}
 local CMD = {}
 local this = {
 	--the scene object includes the role monster npc
 	scene_uid = 0,
-	role_lists = {},
-	npc_lists = {},
-	monster_lists = {},
+	role_list = {},
+	npc_list = {},
+	monster_list = {},
+	entity_mgr = false,
 }
 local SceneObjectType={
 	Role=1,Monster=2,NPC=3,
@@ -26,7 +28,7 @@ end
 
 --enter_radius should be smaller than leave_radius
 local get_around_roles = function ( role_id, enter_radius, leave_radius )
-	return this.role_lists
+	return this.role_list
 end
 
 local add_info_item = function ( change_obj_infos, scene_uid, info_item )
@@ -64,6 +66,12 @@ local init_monster = function (  )
 end
 
 function CMD.init(scene_id)
+	-- World.Active = World.New("scene_world")
+	-- this.entity_mgr = World.Active:GetOrCreateManager()
+	-- this.npc_archetype = this.entity_mgr:CreateArchetype({ECS.Position, ECS.Rotation})
+
+	-- this.entity_mgr:CreateEntity(this.npc_archetype)
+
 	print('Cat:scene.lua[init] scene_id', scene_id)
 	this.scene_cfg = require("Config.scene.config_scene_"..scene_id)
 	init_npc()
@@ -71,7 +79,7 @@ function CMD.init(scene_id)
 	skynet.fork(function()
 		while true do
 			--synch info at fixed time
-			for k,role_info in pairs(this.role_lists) do
+			for k,role_info in pairs(this.role_list) do
 				-- print("Cat:scene [start:46] role_info.change_obj_infos:", role_info.change_obj_infos)
 				-- PrintTable(role_info.change_obj_infos)
 				-- print("Cat:scene [end]")
@@ -90,32 +98,32 @@ function CMD.role_enter_scene(role_id)
 	print('Cat:scene.lua[role_enter_scene] role_id', role_id)
 	do 
 		--tell every one a new role enter scene
-		for k,v in pairs(this.role_lists) do
+		for k,v in pairs(this.role_list) do
 			v.change_obj_infos = add_info_item(v.change_obj_infos, v.scene_uid, {key=SceneInfoKey.EnterScene, value=SceneObjectType.Role, time=os.time()})
 		end
 	end
-	if not this.role_lists[role_id] then
+	if not this.role_list[role_id] then
 		local scene_uid = new_scene_uid(SceneObjectType.Role)
-		this.role_lists[role_id] = {scene_uid=scene_uid}
+		this.role_list[role_id] = {scene_uid=scene_uid}
 		--tell the new guy who are here
-		for k,v in pairs(this.role_lists) do
+		for k,v in pairs(this.role_list) do
 			if v.scene_uid ~= scene_uid then
-				this.role_lists[role_id].change_obj_infos = add_info_item(this.role_lists[role_id].change_obj_infos, v.scene_uid, {key=SceneInfoKey.EnterScene, value=SceneObjectType.Role, time=os.time()})
+				this.role_list[role_id].change_obj_infos = add_info_item(this.role_list[role_id].change_obj_infos, v.scene_uid, {key=SceneInfoKey.EnterScene, value=SceneObjectType.Role, time=os.time()})
 			end
 		end
 		for k,v in pairs(this.npc_list) do
-			this.role_lists[role_id].change_obj_infos = add_info_item(this.role_lists[role_id].change_obj_infos, v.scene_uid, {key=SceneInfoKey.EnterScene, value=SceneObjectType.NPC, time=0})
+			this.role_list[role_id].change_obj_infos = add_info_item(this.role_list[role_id].change_obj_infos, v.scene_uid, {key=SceneInfoKey.EnterScene, value=SceneObjectType.NPC, time=0})
 		end
 	end
 end
 
 function CMD.role_leave_scene(role_id)
-	local role_info = this.role_lists[role_id]
+	local role_info = this.role_list[role_id]
 	print('Cat:scene.lua[role_leave_scene] role_id', role_id, role_info)
 	if not role_info then return end
 	
 	--tell every one this role leave scene
-	for k,v in pairs(this.role_lists) do
+	for k,v in pairs(this.role_list) do
 		local cur_role_id = k
 		if v.cur_role_id ~= role_id then
 			v.change_obj_infos = add_info_item(v.change_obj_infos, role_info.scene_uid, {key=SceneInfoKey.LeaveScene, value=SceneObjectType.Role, time=os.time()})
@@ -124,14 +132,14 @@ function CMD.role_leave_scene(role_id)
 	if role_info.ack_scene_get_objs_info_change then
 		role_info.ack_scene_get_objs_info_change(true, {})
 	end
-	this.role_lists[role_id] = nil
+	this.role_list[role_id] = nil
 end
 
 function CMD.scene_get_main_role_info( user_info, req_data )
 	print('Cat:scene.lua[scene_get_main_role_info] user_info, req_data', user_info, user_info.cur_role_id)
 	return {
 		role_info={
-			scene_uid=this.role_lists[user_info.cur_role_id].scene_uid,
+			scene_uid=this.role_list[user_info.cur_role_id].scene_uid,
 			role_id=user_info.cur_role_id,
 			career=2,name="haha"
 			}
@@ -140,13 +148,13 @@ end
 
 function CMD.scene_walk( user_info, req_data )
 	-- print('Cat:scene.lua[scene_get_main_role_info] user_info, req_data', user_info, user_info.cur_role_id)
-	local role_info = this.role_lists[user_info.cur_role_id]
+	local role_info = this.role_list[user_info.cur_role_id]
 	if role_info then
 		role_info.pos = {x=req_data.pos_x, y=req_data.pos_y, z=req_data.pos_z}
 		local pos_info = role_info.pos.x..","..role_info.pos.y..","..role_info.pos.z
 		-- print('Cat:scene.lua[116] pos_info', pos_info, role_info.scene_uid)
 		--for test 
-		for k,v in pairs(this.role_lists) do
+		for k,v in pairs(this.role_list) do
 			local role_id = k
 			-- print('Cat:scene.lua[101] role_id, user_info.cur_role_id', role_id, user_info.cur_role_id, v.scene_uid, role_info.scene_uid)
 			if role_id ~= user_info.cur_role_id then
@@ -159,7 +167,7 @@ end
 
 function CMD.scene_get_objs_info_change( user_info, req_data )
 	-- print('Cat:scene.lua[scene_get_objs_info_change] user_info, role_id', user_info, user_info.cur_role_id)
-	local role_info = this.role_lists[user_info.cur_role_id]
+	local role_info = this.role_list[user_info.cur_role_id]
 	if role_info and not role_info.ack_scene_get_objs_info_change then
 		--synch info at fixed time
 		role_info.ack_scene_get_objs_info_change = skynet.response()

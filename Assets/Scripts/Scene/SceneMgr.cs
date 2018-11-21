@@ -45,12 +45,13 @@ public class SceneMgr : MonoBehaviour
 
 	public void InitArcheType()
 	{
+        // World.Active.GetOrCreateManager<PlayerMoveSystem>().Enabled = false;
 		RoleArchetype = EntityManager.CreateArchetype(
                 typeof(Position),typeof(TargetPosition),
                 typeof(MoveSpeed));
 
         NPCArchetype = EntityManager.CreateArchetype(
-                typeof(Position),
+                typeof(Position));
 	}
 
 	public void OnDestroy()
