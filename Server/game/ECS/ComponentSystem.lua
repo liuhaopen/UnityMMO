@@ -1,17 +1,17 @@
-local ComponentSystem = BaseClass()
+ECS = ECS or {}
+local ComponentSystem = ECS.ComponentSystem or BaseClass()
+ECS.ComponentSystem = ComponentSystem
 
+function ComponentSystem:OnCreateManager(  )
+	
+end
 
--- ECSSystems = ECSSystems or {}
--- ECSSystems.SampleSystem = BaseClass(ComponentSystem)
--- function SampleSystem:Constructor(  )
--- 	UpdateAfter(SampleSystem2)
--- 	self.inject = {}
--- end
+function ComponentSystem:Update(  )
+	
+end
 
--- function SampleSystem:OnUpdate(  )
--- 	for i,v in ipairs(self.group) do
---         v.count = v.count+1;
--- 	end
--- end
+function ComponentSystem:Notify(  )
+	
+end
 
 return ComponentSystem
