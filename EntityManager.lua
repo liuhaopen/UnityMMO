@@ -1,10 +1,19 @@
-local Entity = {
-	
+ECS = ECS or {}
+ECS.Entity = {
+	Index=0, Version=0
 }
-local EntityManager = BaseClass()
+EntityManager = BaseClass()
+ECS.EntityManager = EntityManager
 
-function EntityManager:CreateEntity( com_type )
-	
+function EntityManager:Constructor(  )
+	self.entities_free_id = 0
+end
+
+function EntityManager:CreateEntity( com_types )
+	local entity = ECS.Entity.New()
+	entity.Index = self.entities_free_id
+	self.entities_free_id = self.entities_free_id + 1
+	return entity
 end
 
 function EntityManager:DestroyEntity( entity )
@@ -12,10 +21,6 @@ function EntityManager:DestroyEntity( entity )
 end
 
 function EntityManager:CreateArchetype( com_types )
-	
-end
-
-function EntityManager:Update(  )
 	
 end
 
@@ -62,7 +67,5 @@ end
 function EntityManager:GetComponentCount( entity )
 	
 end
-
-
 
 return EntityManager

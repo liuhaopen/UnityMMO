@@ -1,13 +1,16 @@
-local DefaultWorldInitialization = BaseClass()
+ECS = ECS or {}
+ECS.DefaultWorldInitialization = ECS.DefaultWorldInitialization or BaseClass()
 
-function DefaultWorldInitialization:Initialize( worldName )
-	local world = World.New(worldName)
-	World.Active = world
+function ECS.DefaultWorldInitialization:Initialize( worldName )
+	local world = ECS.World.New(worldName)
+	ECS.World.Active = world
 
 	--register all systems
-	for k,v in pairs(ECSSystems or {}) do
+	for k,v in pairs(ECS.Systems or {}) do
 		world:GetOrCreateManager(k)
 	end
+
+	ECS.ScriptBehaviourUpdateOrder.UpdatePlayerLoop(world)
 end
 
-return DefaultWorldInitialization
+return ECS.DefaultWorldInitialization
