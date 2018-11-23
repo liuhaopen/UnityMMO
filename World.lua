@@ -1,4 +1,3 @@
-ECS = ECS or {}
 local World = BaseClass()
 ECS.World = World
 

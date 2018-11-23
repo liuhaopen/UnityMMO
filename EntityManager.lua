@@ -1,4 +1,3 @@
-ECS = ECS or {}
 ECS.Entity = {
 	Index=0, Version=0
 }
@@ -7,6 +6,10 @@ ECS.EntityManager = EntityManager
 
 function EntityManager:Constructor(  )
 	self.entities_free_id = 0
+end
+
+function EntityManager:OnCreateManager( capacity )
+	
 end
 
 function EntityManager:CreateEntity( com_types )

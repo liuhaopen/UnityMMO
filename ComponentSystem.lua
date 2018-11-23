@@ -1,8 +1,7 @@
-ECS = ECS or {}
-local ComponentSystem = ECS.ComponentSystem or BaseClass()
+local ComponentSystem = BaseClass()
 ECS.ComponentSystem = ComponentSystem
 
-function ComponentSystem:OnCreateManager(  )
+function ComponentSystem:OnCreateManager( capacity )
 	
 end
 
