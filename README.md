@@ -13,7 +13,7 @@
 )运行:./run.sh跑起服务端  
 
 # 各模块的技术选型
-)玩法逻辑:使用Unity2018自带的ECS系统(要用Unity的ECS只能用C#)  
+)玩法逻辑:使用Unity2018自带的ECS系统(要用Unity的ECS只能用C#)，服务端也用lua实现一套类似的ECS系统  
 )界面逻辑:使用自制的基于组件的UI系统,全lua开发,动画也由lua实现了一份cocos的action  
 )网络协议:使用sproto,玩法用c#版本,界面用lua版本  
 )场景管理:用T2M切割地形为NxN小块,使用四叉树管理场景模型的动态加载  
@@ -29,8 +29,10 @@
 )在PC和安卓手机平台测试通过了,可以连虚拟机上的服务端并登录  
 )给xlua集成了lpeg,sproto,lua-crypt第三方库  
 )创建玩家帐号数据库和相关操作服务  
-)登录流程相关界面    
+)登录流程相关界面  
+)导出场景信息（前端json后端lua格式）  
 )玩家进入退出场景及坐标信息的同步  
+)九宫格加载场景块  
 
 # Todo
 前端:   
@@ -42,11 +44,13 @@
 )场景模型LOD,试试UnityGithub上的AutoLOD  
 
 后端:  
+)lua版本的ECS(10%)  
 )人物的移动同步(80%)  
+)NPC与怪物AI  
 )使用Redis  
 )AOI  
-)NPC与怪物AI  
 
-# 最近游戏截图
-初步完成的大世界场景分块加载:  
+# 进况
+由于unity的entities版本更新修改较多导致之前的部分逻辑要重写了，感觉还是暂时先不弄前端的game play逻辑较好，先弄寻路和后端逻辑吧  
+初步完成的大世界场景分块加载（还在考虑无限场景的NavMesh资源管理，先尝试用跳跃点连接n个地图块的navmesh）:  
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/run_in_terrain.gif)  

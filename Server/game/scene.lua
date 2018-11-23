@@ -1,6 +1,6 @@
 local skynet = require "skynet"
 require "Common.Util.util"
-require "game.ECS.ECSRequire"
+require "game.ECS.ECS"
 
 local NORET = {}
 local CMD = {}
@@ -66,16 +66,28 @@ local init_monster = function (  )
 end
 
 function CMD.init(scene_id)
-	-- World.Active = World.New("scene_world")
-	-- this.entity_mgr = World.Active:GetOrCreateManager()
+	ECS:Init("scene_world")
+	this.entity_mgr = World.Active:GetOrCreateManager()
 	-- this.npc_archetype = this.entity_mgr:CreateArchetype({ECS.Position, ECS.Rotation})
-
 	-- this.entity_mgr:CreateEntity(this.npc_archetype)
 
 	print('Cat:scene.lua[init] scene_id', scene_id)
 	this.scene_cfg = require("Config.scene.config_scene_"..scene_id)
 	init_npc()
 	init_monster()
+
+	Time = {deltaTime=0}
+	lastUpdateTime = os.time()
+	skynet.fork(function()
+		while true do
+			local curTime = os.time()
+			Time.deltaTime = curTime-lastUpdateTime
+			lastUpdateTime = curTime
+			
+			ECS:Update()
+			skynet.sleep(10)
+		end
+	end)
 	skynet.fork(function()
 		while true do
 			--synch info at fixed time
