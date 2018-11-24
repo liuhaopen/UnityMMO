@@ -4,7 +4,6 @@ require "Common.BaseClass"
 require "game.ECS.World"
 require "game.ECS.EntityManager"
 require "game.ECS.ComponentSystem"
-require "game.ECS.DefaultWorldInitialization"
 require "game.ECS.ScriptBehaviourUpdateOrder"
 
 function ECS:Init( worldName )

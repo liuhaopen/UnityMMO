@@ -9,6 +9,7 @@ function TestSystem:Constructor(  )
 		position = "ECS.Position:r",
 		rotation = "ECS.Rotation:subtractive",
 		othersys = "ECS.TestSystem2",
+		entities = "EntityArray",
 	}
 	self.group = {}
 	ECS.Inject(self.group, data)
@@ -22,7 +23,9 @@ end
 
 function TestSystem:OnCreateManager( capacity )
 	ECS.ComponentSystem.OnCreateManager(self, capacity)
-    self.group = self:GetComponentGroup("ECS.Position:r")
+
+
+    self.group_with_filter = self:GetComponentGroup({"ECS.Position:r", "ECS.CodeLOD"})
 end
 
 function TestSystem:OnUpdate(  )
@@ -31,5 +34,11 @@ function TestSystem:OnUpdate(  )
 	end
 	for i,v in ipairs(self.group2) do
         v.asd.x = v.asd.x+1
+	end
+
+	self.group_with_filter:SetFilter(ECS.CodeLOD.New(1))
+	local positions = self.group_with_filter:GetComponentDataArray(ECS.Position)
+	for i=1,#positions do
+		positions[i].x = positions[i].x+1
 	end
 end

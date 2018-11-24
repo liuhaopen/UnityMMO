@@ -1,2 +1,6 @@
-ECS.ScriptBehaviourUpdateOrder = ECS.ScriptBehaviourUpdateOrder or {}
+local ScriptBehaviourUpdateOrder = {}
+ECS.ScriptBehaviourUpdateOrder = ScriptBehaviourUpdateOrder
 
+function ScriptBehaviourUpdateOrder.UpdatePlayerLoop( world )
+	
+end
