@@ -10,8 +10,8 @@ end
 
 function MainUIController:InitMainUIViews(  )
     print('Cat:MainUIController.lua[InitMainUIViews]')
-    local view = require("Game/MainUI/MainUIJoystickView").New()
-    UIMgr:Show(view)
+    -- local view = require("Game/MainUI/MainUIJoystickView").New()
+    -- UIMgr:Show(view)
 end
 
 return MainUIController

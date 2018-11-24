@@ -6,9 +6,9 @@ PatrolSystem.UpdateInGroup = {"GroupSystem"}
 
 function PatrolSystem:Constructor(  )
 	local data = {
-		position = "ECS.Position:list",
-		born_pos = "UMMO.BornPosition:list:read",
-		speed = "UMMO.Speed:list:read",
+		position = "ECS.Position:List",
+		born_pos = "UMMO.BornPosition:List:Read",
+		speed = "UMMO.Speed:List:Read",
 	}
 	self.group = {}
 

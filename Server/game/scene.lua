@@ -67,7 +67,7 @@ end
 
 function CMD.init(scene_id)
 	ECS:Init("scene_world")
-	this.entity_mgr = World.Active:GetOrCreateManager()
+	this.entity_mgr = ECS.World.Active:GetOrCreateManager(ECS.EntityManager)
 	-- this.npc_archetype = this.entity_mgr:CreateArchetype({ECS.Position, ECS.Rotation})
 	-- this.entity_mgr:CreateEntity(this.npc_archetype)
 
@@ -83,7 +83,7 @@ function CMD.init(scene_id)
 			local curTime = os.time()
 			Time.deltaTime = curTime-lastUpdateTime
 			lastUpdateTime = curTime
-			
+
 			ECS:Update()
 			skynet.sleep(10)
 		end
