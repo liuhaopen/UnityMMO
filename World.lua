@@ -1,11 +1,12 @@
 local World = BaseClass()
 ECS.World = World
 
-local AddTypeLookup
+ECS.World.allWorlds = {}
 function World:Constructor( name )
 	self.name = name
 	self.behaviour_mgrs = {}
 	self.behaviour_mgrs_lookup = {}
+	table.insert(ECS.World.allWorlds, self)
 end
 
 function World:GetBehaviourManagers(  )

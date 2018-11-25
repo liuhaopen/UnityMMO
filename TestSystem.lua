@@ -6,26 +6,19 @@ TestSystem.UpdateInGroup = {"GroupSystem"}
 
 function TestSystem:Constructor(  )
 	local data = {
-		position = "ECS.Position:r",
-		rotation = "ECS.Rotation:subtractive",
+		position = "ECS.Position:Read",
+		rotation = "ECS.Rotation:Subtractive",
 		othersys = "ECS.TestSystem2",
 		entities = "EntityArray",
 	}
 	self.group = {}
 	ECS.Inject(self.group, data)
 
-	local data2 = {
-		asd = "ECS.ASD",
-	}
-	self.group2 = {}
-	ECS.Inject(self.group2, data2)
 end
 
 function TestSystem:OnCreateManager( capacity )
 	ECS.ComponentSystem.OnCreateManager(self, capacity)
-
-
-    self.group_with_filter = self:GetComponentGroup({"ECS.Position:r", "ECS.CodeLOD"})
+    self.group_with_filter = self:GetComponentGroup({"ECS.Position:Read", "ECS.CodeLOD"})
 end
 
 function TestSystem:OnUpdate(  )
