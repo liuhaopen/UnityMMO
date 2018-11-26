@@ -13,8 +13,8 @@ function ComponentType:Constructor(  )
 
 end
 
-function ComponentType.Create( type )
-	return ComponentType.FromTypeIndex(TypeManager.GetTypeIndex(type))
+function ComponentType.Create( type_name )
+	return ComponentType.FromTypeIndex(TypeManager.GetTypeIndexByName(type_name))
 end
 
 function ComponentType.FromTypeIndex( typeIndex )

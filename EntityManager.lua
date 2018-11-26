@@ -3,20 +3,36 @@ ECS.Entity = {
 }
 EntityManager = BaseClass()
 ECS.EntityManager = EntityManager
-
+local table_insert = table.insert
 function EntityManager:Constructor(  )
 	self.entities_free_id = 0
 end
 
 function EntityManager:OnCreateManager( capacity )
-	
+	ECS.TypeManager.Initialize()
+	self.Entities = ECS.EntityDataManager.New(capacity)
+	self.m_SharedComponentManager = ECS.SharedComponentDataManager.New()
+	self.ArchetypeManager = ECS.ArchetypeManager.New(self.m_SharedComponentManager)
+	-- self.ComponentJobSafetyManager = ECS.ComponentJobSafetyManager.New()
+	self.m_GroupManager = ECS.EntityGroupManager.New(self.ComponentJobSafetyManager)
+	self.m_CachedComponentTypeArray = {}
+	self.m_CachedComponentTypeInArchetypeArray = {}
 end
 
 local CreateEntities = function ( archetype, num )
-	local entity = ECS.Entity.New()
-	entity.Index = self.entities_free_id
-	self.entities_free_id = self.entities_free_id + 1
-	return entity
+	if num == 1 then
+		local entity = {Index=self.entities_free_id, }
+		self.entities_free_id = self.entities_free_id + 1
+		return entity
+	else
+		local entities = {}
+		for i=1,num do
+			local entity = {Index=self.entities_free_id, }
+			table_insert(entities, entity)
+		end
+		self.entities_free_id = self.entities_free_id + num
+		return entities
+	end
 end
 
 function EntityManager:CreateEntityByArcheType( archetype, num )
@@ -27,16 +43,12 @@ function EntityManager:CreateEntityByComponents( com_types )
 	return CreateEntities(self:CreateArchetype(com_types), num or 1)
 end
 
-local PopulatedCachedTypeInArchetypeArray = function ( requiredComponents )
-	
-end
-
 function EntityManager:CreateArchetype( com_types )
-	local cachedComponentCount = PopulatedCachedTypeInArchetypeArray(com_types);
+	-- local cachedComponentCount = PopulatedCachedTypeInArchetypeArray(com_types);
 
     local entityArchetype = {}
     entityArchetype.Archetype =
-        ArchetypeManager.GetExistingArchetype(self.m_CachedComponentTypeInArchetypeArray, cachedComponentCount);
+        ArchetypeManager.GetExistingArchetype(self.m_CachedComponentTypeInArchetypeArray)
     if entityArchetype.Archetype ~= nil then
         return entityArchetype
     end
