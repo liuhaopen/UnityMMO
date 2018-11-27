@@ -3,7 +3,7 @@ ECS:RegisterSystem(TestSystem, "TestSystem")
 TestSystem.UpdateAfter = {"LastSystem"}
 TestSystem.UpdateBefore = {"FirstSystem"}
 TestSystem.UpdateInGroup = {"GroupSystem"}
-
+TestSystem.AlwaysUpdateSystem = true
 function TestSystem:Constructor(  )
 	local data = {
 		position = "ECS.Position:Read",

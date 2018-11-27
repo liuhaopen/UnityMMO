@@ -6,6 +6,7 @@ function World:Constructor( name )
 	self.name = name
 	self.behaviour_mgrs = {}
 	self.behaviour_mgrs_lookup = {}
+	self.IsCreated = true
 	table.insert(ECS.World.allWorlds, self)
 end
 
