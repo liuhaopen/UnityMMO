@@ -1,6 +1,7 @@
 ECS = ECS or {}
 
 require "Common.BaseClass"
+require "game.ECS.ScriptBehaviourManager"
 require "game.ECS.World"
 require "game.ECS.EntityManager"
 require "game.ECS.ComponentSystem"

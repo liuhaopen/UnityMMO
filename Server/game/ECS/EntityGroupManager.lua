@@ -15,3 +15,6 @@ function EntityGroupManager:CreateEntityGroup( typeMgr, entityDataMgr, requiredT
 	
 end
 
+function EntityGroupManager:CreateEntityGroup( typeMan, entityDataManager, requiredTypes )
+	
+end

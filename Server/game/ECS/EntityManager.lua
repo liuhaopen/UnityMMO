@@ -104,6 +104,10 @@ function EntityManager:GetComponentCount( entity )
 	
 end
 
+function EntityManager:CreateComponentGroup( requiredComponents )
+    return self.m_GroupManager:CreateEntityGroup(self.ArchetypeManager, self.Entities, requiredComponents)
+end
+
 function EntityManager:DestroyEntity( entity )
 	
 end
