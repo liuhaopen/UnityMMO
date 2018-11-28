@@ -6,13 +6,13 @@ TestSystem.UpdateInGroup = {"GroupSystem"}
 TestSystem.AlwaysUpdateSystem = true
 function TestSystem:Constructor(  )
 	local data = {
-		position = "ECS.Position:Read",
+		position = "ECS.Position:Array:Read",
 		rotation = "ECS.Rotation:Subtractive",
-		othersys = "ECS.TestSystem2",
+		othersys = "ECS.TestSystem2:ScriptMgr",
 		entities = "EntityArray",
 	}
 	self.group = {}
-	ECS.Inject(self.group, data)
+	self:Inject(self.group, data)
 
 end
 
