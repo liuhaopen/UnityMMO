@@ -11,6 +11,7 @@ function ComponentSystemBase:Constructor(  )
 	self.m_AlwaysUpdateSystem = false
 	self.m_PreviouslyEnabled = false
 	self.Enabled = true
+	self.inject_info_list = {}
 end
 
 function ComponentSystemBase:ShouldRunSystem(  )
@@ -31,7 +32,15 @@ function ComponentSystemBase:ShouldRunSystem(  )
     --         return true;
     -- }
 
-    return false;
+    return false
+end
+
+function ComponentSystem:Inject( inject_target_tl, inject_info )
+	table.insert(self.inject_info_list, {inject_target_tl, inject_info})
+end
+
+function ComponentSystem:GetInjectInfoList(  )
+	return self.inject_info_list
 end
 
 function ComponentSystemBase:OnBeforeCreateManagerInternal( world, capacity )
@@ -77,9 +86,9 @@ function ComponentSystemBase:UpdateInjectedComponentGroups(  )
 	
 	local pinnedSystemPtr = 0
 	for i,group in ipairs(self.m_InjectedComponentGroups) do
-        group.UpdateInjection(pinnedSystemPtr)
+        group:UpdateInjection(pinnedSystemPtr)
 	end
-	self.m_InjectFromEntityData:UpdateInjection(pinnedSystemPtr, self.m_EntityManager);
+	-- self.m_InjectFromEntityData:UpdateInjection(pinnedSystemPtr, self.m_EntityManager);
 end                
 
 
@@ -95,15 +104,40 @@ local ComponentSystem = BaseClass(ECS.ComponentSystemBase)
 ECS.ComponentSystem = ComponentSystem
 
 function ComponentSystem:OnCreateManager( capacity )
+	self.PostUpdateCommands = nil
 	--提取需要组件的类型信息
 end
 
-function ComponentSystem:Update(  )
-	
+function ComponentSystem:BeforeOnUpdate(  )
+	self:BeforeUpdateVersioning()
+	self:CompleteDependencyInternal()
+	self:UpdateInjectedComponentGroups()
+	-- self.PostUpdateCommands = ECS.EntityCommandBuffer.New()
 end
 
+function ComponentSystem:InternalUpdate(  )
+	if self.Enabled and self:ShouldRunSystem() then
+        if not self.m_PreviouslyEnabled then
+            self.m_PreviouslyEnabled = true
+            self:OnStartRunning()
+        end
+        self:BeforeOnUpdate()
+        self:OnUpdate()
+        self:AfterOnUpdate()
+    elseif self.m_PreviouslyEnabled then
+        self.m_PreviouslyEnabled = false
+        self:OnStopRunning()
+    end
+end
+
+function ComponentSystem:AfterOnUpdate(  )
+	self:AfterUpdateVersioning()
+	-- self.m_DeferredEntities:Playback(self.m_EntityManager)
+	-- self.m_DeferredEntities:Delete()
+end
+
+--Cat_Todo : call on entity's component changed
 function ComponentSystem:Notify(  )
-	
 end
 
 return ComponentSystem
