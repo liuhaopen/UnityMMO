@@ -6,7 +6,7 @@ function ArchetypeManager:Constructor(  )
 	
 end
 
-local GetHash = function ( componentTypeInArchetype, count )
+local GetHash = function ( componentTypeInArchetype )
 	
 end
 
@@ -33,18 +33,37 @@ local GetOrCreateArchetypeInternal = function ( types, groupManager )
 	}
     self.m_LastArchetype = type
 
-    self.m_TypeLookup.Add(GetHash(types, count), type);
+    self.m_TypeLookup.Add(GetHash(types), type)
     groupManager.OnArchetypeAdded(type)
  	return type
 end           
 
 
-function ArchetypeManager:GetExistingArchetype( componentTypeInArchetype, count )
+function ArchetypeManager:GetExistingArchetype( componentTypeInArchetype )
 	
 end
 
-function ArchetypeManager:GetOrCreateArchetype( componentTypeInArchetype, count, groupManager )
-	
+function ArchetypeManager:GetOrCreateArchetype( componentTypeInArchetype, groupManager )
+    local srcArchetype = GetOrCreateArchetypeInternal(types, groupManager)
+    local removedTypes = 0
+    local prefabTypeIndex = TypeManager.GetTypeIndex("Prefab")
+    for t=1,srcArchetype.TypesCount do
+        local type = srcArchetype.Types[t]
+        local skip = type.IsSystemStateComponent or type.IsSystemStateSharedComponent or (type.TypeIndex == prefabTypeIndex)
+        if (skip) then
+            removedTypes = removedTypes + 1
+        else
+            types[t - removedTypes] = srcArchetype.Types[t]
+        end
+    end
+
+    srcArchetype.InstantiableArchetype = srcArchetype
+    if removedTypes > 0 then
+        local instantiableArchetype = GetOrCreateArchetypeInternal(types, count-removedTypes, groupManager)
+        srcArchetype.InstantiableArchetype = instantiableArchetype
+        instantiableArchetype.InstantiableArchetype = instantiableArchetype
+    end
+    return srcArchetype
 end
 
 function ArchetypeManager:AddExistingChunk( chunk )
