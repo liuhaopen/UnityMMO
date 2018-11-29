@@ -53,6 +53,8 @@ function ComponentSystemInjection.Inject( componentSystem, world, entityManager,
 			end
 		end
 	end
+	--生成ComponentSystem.OnUpdate的环境table，只有Inject的才可以访问
+
 end
 
 --Cat_Todo : inject ScriptMgr class
