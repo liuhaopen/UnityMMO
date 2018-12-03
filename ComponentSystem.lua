@@ -35,11 +35,11 @@ function ComponentSystemBase:ShouldRunSystem(  )
     return false
 end
 
-function ComponentSystem:Inject( inject_target_tl, inject_info )
+function ComponentSystemBase:Inject( inject_target_tl, inject_info )
 	table.insert(self.inject_info_list, {inject_target_tl, inject_info})
 end
 
-function ComponentSystem:GetInjectInfoList(  )
+function ComponentSystemBase:GetInjectInfoList(  )
 	return self.inject_info_list
 end
 
@@ -67,7 +67,7 @@ function ComponentSystemBase:GetArchetypeChunkComponentType( com_type_name, isRe
 	
 end
 
-function ComponentSystemBase:GetComponentGroupInternal( componentTypes )
+function ComponentSystemBase:GetComponentGroup( componentTypes )
 	for i,v in ipairs(self.m_ComponentGroups) do
 		if v:CompareComponents(componentTypes) then
 			return v
@@ -91,14 +91,6 @@ function ComponentSystemBase:UpdateInjectedComponentGroups(  )
 	-- self.m_InjectFromEntityData:UpdateInjection(pinnedSystemPtr, self.m_EntityManager);
 end                
 
-
-function ComponentSystemBase:xxxxxxxx(  )
-	
-end
-
-function ComponentSystemBase:xxxxxxxx(  )
-	
-end
 
 local ComponentSystem = BaseClass(ECS.ComponentSystemBase)
 ECS.ComponentSystem = ComponentSystem

@@ -1,8 +1,9 @@
 local InjectComponentGroupData = BaseClass()
 ECS.InjectComponentGroupData = InjectComponentGroupData
 
-function InjectComponentGroupData:Constructor(  )
+function InjectComponentGroupData:Constructor( system, componentRequirements )
 	self.m_ComponentDataInjections = {}
+	self.m_EntityGroup = system:GetComponentGroup(componentRequirements)
 end
 
 function InjectComponentGroupData:CreateInjection( injectedGroupType, groupField, system )
