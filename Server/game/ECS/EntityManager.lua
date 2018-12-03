@@ -84,12 +84,23 @@ function EntityManager:AddComponentData( entity, com_data )
 	
 end
 
-function EntityManager:SetComponentData( entity, com_data )
-	
+function EntityManager:SetComponentData( entity, com_type_name, com_data )
+	local typeIndex = TypeManager.GetTypeIndex(com_type_name)
+    self.Entities:AssertEntityHasComponent(entity, typeIndex)
+
+    -- ComponentJobSafetyManager.CompleteReadAndWriteDependency(typeIndex);
+
+    local ptr = self.Entities:GetComponentDataWithTypeRW(entity, typeIndex, self.Entities.GlobalSystemVersion)
+    -- UnsafeUtility.CopyStructureToPtr(ref componentData, ptr);
 end
 
-function EntityManager:GetComponentData( entity )
-	
+function EntityManager:GetComponentData( entity, com_type_name )
+    local typeIndex = ECS.TypeManager.GetTypeIndex(com_type_name)
+    self.Entities:AssertEntityHasComponent(entity, typeIndex)
+    -- ComponentJobSafetyManager.CompleteWriteDependency(typeIndex);
+
+    local value = self.Entities:GetComponentDataWithTypeRO(entity, typeIndex)
+    return value
 end
 
 function EntityManager:GetAllEntities(  )
