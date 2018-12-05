@@ -66,7 +66,7 @@ local init_monster = function (  )
 end
 
 function CMD.init(scene_id)
-	ECS:Init("scene_world")
+	ECS:InitWorld("scene_world")
 	this.entity_mgr = ECS.World.Active:GetOrCreateManager(ECS.EntityManager)
 	-- this.npc_archetype = this.entity_mgr:CreateArchetype({ECS.Position, ECS.Rotation})
 	-- this.entity_mgr:CreateEntity(this.npc_archetype)

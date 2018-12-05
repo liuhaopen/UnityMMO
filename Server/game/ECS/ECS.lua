@@ -7,7 +7,7 @@ require "game.ECS.EntityManager"
 require "game.ECS.ComponentSystem"
 require "game.ECS.ScriptBehaviourUpdateOrder"
 
-function ECS:Init( worldName )
+function ECS:InitWorld( worldName )
 	self.system_list = {}
 
 	local world = ECS.World.New(worldName)
@@ -26,6 +26,10 @@ function ECS:RegisterSystem( system_type )
 end
 
 function ECS:Update(  )
-	
+	--Cat_Todo : 按照UpdateBefore,After等标签把system们先排好序
+	local systems = ECS.World.Active:GetBehaviourManagers()
+	for k,v in pairs(systems) do
+		v:Update()
+	end
 end
 
