@@ -1,7 +1,7 @@
 ECS.Entity = {
 	Index=0, Version=0
 }
-EntityManager = BaseClass()
+EntityManager = BaseClass(ECS.ScriptBehaviourManager)
 ECS.EntityManager = EntityManager
 local table_insert = table.insert
 function EntityManager:Constructor(  )
@@ -20,19 +20,7 @@ function EntityManager:OnCreateManager( capacity )
 end
 
 local CreateEntities = function ( archetype, num )
-	if num == 1 then
-		local entity = {Index=self.entities_free_id, }
-		self.entities_free_id = self.entities_free_id + 1
-		return entity
-	else
-		local entities = {}
-		for i=1,num do
-			local entity = {Index=self.entities_free_id, }
-			table_insert(entities, entity)
-		end
-		self.entities_free_id = self.entities_free_id + num
-		return entities
-	end
+    return self.Entities:CreateEntities(self.ArchetypeManager, archetype.Archetype)
 end
 
 function EntityManager:CreateEntityByArcheType( archetype, num )
@@ -45,7 +33,6 @@ end
 
 function EntityManager:CreateArchetype( com_types )
 	-- local cachedComponentCount = PopulatedCachedTypeInArchetypeArray(com_types);
-
     local entityArchetype = {}
     entityArchetype.Archetype =
         ArchetypeManager.GetExistingArchetype(self.m_CachedComponentTypeInArchetypeArray)
