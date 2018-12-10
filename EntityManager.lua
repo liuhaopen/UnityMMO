@@ -60,25 +60,29 @@ function EntityManager:Instantiate( srcEntity )
 end
 
 function EntityManager:AddComponent( entity, com_type )
-	
+	self:BeforeStructuralChange()
+    -- self.Entities:AssertEntitiesExist(&entity, 1);
+    self.Entities:AddComponent(entity, com_type, self.ArchetypeManager, self.m_SharedComponentManager, self.m_GroupManager,
+        self.m_CachedComponentTypeInArchetypeArray)
 end
 
 function EntityManager:RemoveComponent( entity, com_type )
 	
 end
 
-function EntityManager:AddComponentData( entity, com_data )
-	
+function EntityManager:AddComponentData( entity, com_type_name, com_data )
+	self:AddComponent(entity, com_type_name)
+    self:SetComponentData(entity, com_type_name, com_data)
 end
 
 function EntityManager:SetComponentData( entity, com_type_name, com_data )
 	local typeIndex = TypeManager.GetTypeIndex(com_type_name)
     self.Entities:AssertEntityHasComponent(entity, typeIndex)
 
-    -- ComponentJobSafetyManager.CompleteReadAndWriteDependency(typeIndex);
+    -- ComponentJobSafetyManager.CompleteReadAndWriteDependency(typeIndex)
 
     local ptr = self.Entities:GetComponentDataWithTypeRW(entity, typeIndex, self.Entities.GlobalSystemVersion)
-    -- UnsafeUtility.CopyStructureToPtr(ref componentData, ptr);
+    -- UnsafeUtility.CopyStructureToPtr(ref componentData, ptr)
 end
 
 function EntityManager:GetComponentData( entity, com_type_name )
