@@ -44,7 +44,7 @@
 )场景模型LOD,试试UnityGithub上的AutoLOD  
 
 后端:  
-)lua版本的ECS(20%)  
+)lua版本的ECS(30%)  
 )人物的移动同步(80%)  
 )NPC与怪物AI  
 )使用Redis  
