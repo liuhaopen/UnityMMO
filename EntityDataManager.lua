@@ -69,8 +69,7 @@ function EntityDataManager:IncrementComponentTypeOrderVersion( archetype )
 	end
 end
 
-function EntityDataManager:AddComponent( entity, com_type, archetypeManager, sharedComponentDataManager
-	, groupManager, componentTypeInArchetypeArray )
+function EntityDataManager:AddComponent( entity, com_type, archetypeManager, sharedComponentDataManager, groupManager, componentTypeInArchetypeArray )
     local componentType = ECS.ComponentTypeInArchetype.New(type)
 	local archetype = self:GetArchetype(entity)
 

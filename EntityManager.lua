@@ -48,11 +48,20 @@ function EntityManager:CreateArchetype( com_types )
 end
 
 function EntityManager:Exists( entity )
-	
+	local index = entity.Index
+    -- self:ValidateEntity(entity)
+    local versionMatches = self.m_Entities[index].Version == entity.Version
+    local hasChunk = self.m_Entities[index].Chunk ~= nil
+    return versionMatches and hasChunk;
 end
 
 function EntityManager:HasComponent( entity, com_type )
-	
+	if not self:Exists(entity) then
+        return false
+    end
+
+    local archetype = self.m_Entities[entity.Index].Archetype
+    return ChunkDataUtility.GetIndexInTypeArray(archetype, type) ~= -1;
 end
 
 function EntityManager:Instantiate( srcEntity )
