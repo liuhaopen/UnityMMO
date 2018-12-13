@@ -8,11 +8,25 @@ function ComponentGroup:Constructor(  )
 end
 
 function ComponentGroup:GetComponentDataArray( com_type )
-	
+    local typeIndex = TypeManager.GetTypeIndex(com_type)
+	local length
+    local iterator
+    self:GetComponentChunkIterator(length, iterator)
+    local indexInComponentGroup = self:GetIndexInComponentGroup(typeIndex)
+
+    local res = {}
+    self:GetComponentDataArray(iterator, indexInComponentGroup, length, res)
+    return res;
 end
 
 function ComponentGroup:GetSharedComponentDataArray( shared_com_type )
-	
+	local length
+    local iterator
+    self:GetComponentChunkIterator(length, iterator)
+    local indexInComponentGroup = self:GetIndexInComponentGroup(TypeManager.GetTypeIndex(shared_com_type))
+    local res = {}
+    self:GetSharedComponentDataArray(iterator, indexInComponentGroup, length, res)
+    return res;
 end
 
 function ComponentGroup:GetEntityArray(  )

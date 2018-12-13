@@ -65,7 +65,13 @@ function EntityManager:HasComponent( entity, com_type )
 end
 
 function EntityManager:Instantiate( srcEntity )
-	
+	self:BeforeStructuralChange()
+    if not Entities:Exists(srcEntity) then
+        assert(false, "srcEntity is not a valid entity")
+    end
+
+    self.Entities:InstantiateEntities(self.ArchetypeManager, self.m_SharedComponentManager, self.m_GroupManager, srcEntity, outputEntities,
+        count, self.m_CachedComponentTypeInArchetypeArray)
 end
 
 function EntityManager:AddComponent( entity, com_type )
@@ -76,7 +82,15 @@ function EntityManager:AddComponent( entity, com_type )
 end
 
 function EntityManager:RemoveComponent( entity, com_type )
-	
+	self:BeforeStructuralChange()
+    self.Entities:AssertEntityHasComponent(entity, type)
+    self.Entities:RemoveComponent(entity, type, self.ArchetypeManager, self.m_SharedComponentManager, self.m_GroupManager,
+                self.m_CachedComponentTypeInArchetypeArray)
+
+    local archetype = self.Entities:GetArchetype(entity)
+    if (archetype.SystemStateCleanupComplete) then
+        self.Entities:TryRemoveEntityId(entity, 1, self.ArchetypeManager, self.m_SharedComponentManager, self.m_GroupManager, self.m_CachedComponentTypeInArchetypeArray)
+    end
 end
 
 function EntityManager:AddComponentData( entity, com_type_name, com_data )

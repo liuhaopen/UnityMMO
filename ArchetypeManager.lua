@@ -185,7 +185,18 @@ end
 
 
 function ArchetypeManager:GetExistingArchetype( componentTypeInArchetype )
-	
+	local typePtr
+    local it = {}
+    if (not self.m_TypeLookup:TryGetFirstValue(self:GetHash(types, count), typePtr, it)) then
+        return nil
+    end
+    repeat
+        local type = typePtr
+        if (ComponentTypeInArchetype.CompareArray(type.Types, type.TypesCount, types, count)) then
+            return type
+        end
+    until (not (self.m_TypeLookup:TryGetNextValue(typePtr, it)))
+    return nil
 end
 
 function ArchetypeManager:GetOrCreateArchetype( componentTypeInArchetype, count, groupManager )
@@ -195,7 +206,7 @@ function ArchetypeManager:GetOrCreateArchetype( componentTypeInArchetype, count,
     for t=1,srcArchetype.TypesCount do
         local type = srcArchetype.Types[t]
         local skip = type.IsSystemStateComponent or type.IsSystemStateSharedComponent or (type.TypeIndex == prefabTypeIndex)
-        if (skip) then
+        if skip then
             removedTypes = removedTypes + 1
         else
             types[t - removedTypes] = srcArchetype.Types[t]
@@ -212,7 +223,20 @@ function ArchetypeManager:GetOrCreateArchetype( componentTypeInArchetype, count,
 end
 
 function ArchetypeManager:AddExistingChunk( chunk )
-	
+	local archetype = chunk.Archetype
+    archetype.ChunkList.Add(chunk.ChunkListNode)
+    archetype.ChunkCount = archetype.ChunkCount + 1
+    archetype.EntityCount = archetype.EntityCount + chunk.Count
+    for var=1,archetype.NumSharedComponents do
+        m_SharedComponentManager.AddReference(chunk.SharedComponentValueArray[i])
+    end
+    if (chunk.Count < chunk.Capacity) then
+        if (archetype.NumSharedComponents == 0) then
+            archetype.ChunkListWithEmptySlots.Add(chunk.ChunkListWithEmptySlotsNode)
+        else
+            archetype.FreeChunksBySharedComponents.Add(chunk)
+        end
+    end
 end
 
 function ArchetypeManager:ConstructChunk(  )
