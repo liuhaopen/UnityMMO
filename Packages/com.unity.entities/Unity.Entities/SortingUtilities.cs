@@ -9,6 +9,17 @@ namespace Unity.Entities
 {
     internal struct SortingUtilities
     {
+        public static unsafe void InsertSorted(int* data, int length, int newValue)
+        {
+            while (length > 0 && newValue < data[length - 1])
+            {
+                data[length] = data[length - 1];
+                --length;
+            }
+
+            data[length] = newValue;
+        }
+        
         public static unsafe void InsertSorted(ComponentType* data, int length, ComponentType newValue)
         {
             while (length > 0 && newValue < data[length - 1])

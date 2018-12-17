@@ -49,7 +49,7 @@ namespace Unity.Entities.Editor
 
         private void OnLostFocus()
         {
-            Close();
+            EditorApplication.delayCall += Close;
         }
     }
 }

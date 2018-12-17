@@ -1,8 +1,5 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Unity.Entities.Tests;
-using UnityEditor;
-using UnityEngine;
 
 namespace Unity.Entities.Editor.Tests
 {

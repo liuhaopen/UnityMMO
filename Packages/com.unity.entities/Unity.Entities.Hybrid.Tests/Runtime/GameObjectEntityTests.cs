@@ -1,6 +1,5 @@
 ﻿using System;
 using NUnit.Framework;
-using Unity.Entities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -31,11 +30,13 @@ namespace Unity.Entities.Tests
 
         unsafe struct MyEntity
         {
+#pragma warning disable 649
             public Light              light;
             public Rigidbody          rigidbody;
 
             public EcsTestData*       testData;
             public EcsTestData2*      testData2;
+#pragma warning restore 649
         }
 
         [Test]

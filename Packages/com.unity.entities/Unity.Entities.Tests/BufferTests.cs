@@ -1,9 +1,9 @@
 ﻿using NUnit.Framework;
 using Unity.Collections;
 using System;
-using Unity.Entities;
+using System.Collections.Generic;
+using System.Linq;
 using Unity.Jobs;
-using UnityEditor.Experimental.UIElements;
 
 namespace Unity.Entities.Tests
 {
@@ -92,6 +92,48 @@ namespace Unity.Entities.Tests
                 Assert.AreEqual(i, buffer[i].Value);
             }
 		}
+
+	    [Test]
+	    public void InsertWorks()
+	    {
+	        var arrayType = ComponentType.Create<EcsIntElement>();
+	        var entity = m_Manager.CreateEntity(arrayType);
+	        var buffer = m_Manager.GetBuffer<EcsIntElement>(entity);
+	        // Insert at end
+	        for (int i = 0; i < 189; ++i)
+	            buffer.Insert(i, i);
+
+	        Assert.AreEqual(189, buffer.Length);
+	        for (int i = 0; i < 189; ++i)
+	        {
+	            Assert.AreEqual(i, buffer[i].Value);
+	        }
+
+	        buffer.Clear();
+
+	        // Insert at beginning
+	        for (int i = 0; i < 189; ++i)
+	            buffer.Insert(0, i);
+
+	        Assert.AreEqual(189, buffer.Length);
+	        for (int i = 0; i < 189; ++i)
+	        {
+	            Assert.AreEqual(188-i, buffer[i].Value);
+	        }
+
+	        buffer.Clear();
+
+	        // Insert in middle
+	        for (int i = 0; i < 189; ++i)
+	            buffer.Insert(i/2, i);
+
+	        Assert.AreEqual(189, buffer.Length);
+	        for (int i = 0; i < 189; ++i)
+	        {
+	            int expectedValue = i<94 ? i*2+1 : (188-i)*2;
+	            Assert.AreEqual(expectedValue, buffer[i].Value);
+	        }
+	    }
 
 		[Test]
 		public void AddRangeWorks()
@@ -369,7 +411,9 @@ namespace Unity.Entities.Tests
                 public BufferArray<EcsIntElement> Buffers;
             }
 
+#pragma warning disable 649
             [Inject] Data m_Data;
+#pragma warning restore 649
 
             public struct MyJob : IJobParallelFor
             {
@@ -469,7 +513,7 @@ namespace Unity.Entities.Tests
 	        buffer = m_Manager.GetBuffer<EcsIntElement>(original);
 	        var buffer2 = m_Manager.GetBuffer<EcsIntElement>(clone);
 
-	        Assert.AreNotEqual((UIntPtr)buffer.GetBasePointer(), (UIntPtr)buffer2.GetBasePointer());
+	        Assert.AreNotEqual((UIntPtr)buffer.GetUnsafePtr(), (UIntPtr)buffer2.GetUnsafePtr());
 	        Assert.AreEqual(buffer.Length, buffer2.Length);
 	        for (int i = 0; i < buffer.Length; ++i)
 	        {
@@ -489,7 +533,7 @@ namespace Unity.Entities.Tests
 	        buffer = m_Manager.GetBuffer<EcsIntElement>(original);
 	        var buffer2 = m_Manager.GetBuffer<EcsIntElement>(clone);
 
-	        Assert.AreNotEqual((UIntPtr)buffer.GetBasePointer(), (UIntPtr)buffer2.GetBasePointer());
+	        Assert.AreNotEqual((UIntPtr)buffer.GetUnsafePtr(), (UIntPtr)buffer2.GetUnsafePtr());
 	        Assert.AreEqual(buffer.Length, buffer2.Length);
 	        for (int i = 0; i < buffer.Length; ++i)
 	        {
@@ -499,7 +543,9 @@ namespace Unity.Entities.Tests
 
 	    internal struct ElementWithoutCapacity : IBufferElementData
 	    {
+#pragma warning disable 649
 	        public float Value;
+#pragma warning restore 649
 	    }
 
 	    [Test]
@@ -522,7 +568,14 @@ namespace Unity.Entities.Tests
 	        buffer.Add(2);
 	        Assert.Throws<InvalidOperationException>(() =>
 	        {
+#pragma warning disable 0219 // assigned but its value is never used
 	            int value = array[0].Value;
+#pragma warning restore 0219
+	        });
+	        
+	        Assert.Throws<InvalidOperationException>(() =>
+	        {
+	            array[0] = 5;
 	        });
 	    }
 
@@ -543,6 +596,7 @@ namespace Unity.Entities.Tests
 
 	        b0.Add(1);
 
+#pragma warning disable 0219 // assigned but its value is never used
 	        Assert.Throws<InvalidOperationException>(() =>
 	        {
 	            int value = a0[0].Value;
@@ -552,6 +606,7 @@ namespace Unity.Entities.Tests
 	        {
 	            int value = a1[0].Value;
 	        });
+#pragma warning restore 0219
 	    }
 
 	    [Test]
@@ -588,6 +643,192 @@ namespace Unity.Entities.Tests
 	        handle.Complete();
 	    }
 
+	    #pragma warning disable 649
+	    struct MockData0 : IComponentData { public double Value; }
+
+	    struct MockData1 : IComponentData { public double Value; }
+	    #pragma warning restore 649
+
+	    [InternalBufferCapacity(BufferCapacity)]
+	    struct MockElement : IBufferElementData
+	    {
+	        public const int BufferCapacity = 5;
+	        public byte Value;
+	    }
+
+	    [Test]
+	    public void DuplicatingEntity_WhenPrototypeHasDynamicBuffer_DoesNotWriteOutOfBounds()
+	    {
+	        // ensure there are two different archetypes
+	        var prototype0 = m_Manager.CreateEntity();
+	        m_Manager.AddComponent(prototype0, typeof(MockData0));
+	        m_Manager.AddBuffer<MockElement>(prototype0);
+	        var buffer = m_Manager.GetBuffer<MockElement>(prototype0);
+	        for (var i = 0; i < MockElement.BufferCapacity; ++i)
+	            buffer.Add(new MockElement { Value = 0 });
+
+	        var prototype1 = m_Manager.CreateEntity();
+	        m_Manager.AddComponent(prototype1, typeof(MockData1));
+	        m_Manager.AddBuffer<MockElement>(prototype1);
+	        buffer = m_Manager.GetBuffer<MockElement>(prototype1);
+	        for (var i = 0; i < MockElement.BufferCapacity; ++i)
+	            buffer.Add(new MockElement { Value = 0 });
+
+	        // set up test data
+	        var prototypes = (IReadOnlyList<Entity>)new[] { prototype0, prototype1 };
+	        var duplicates = (IReadOnlyList<NativeArray<Entity>>)new []
+	        {
+	            new NativeArray<Entity>(100, Allocator.Temp),
+	            new NativeArray<Entity>(100, Allocator.Temp)
+	        };
+	        var testValuesEven = (IReadOnlyList<IReadOnlyList<byte>>)new[]
+	        {
+	            Enumerable.Range(0, MockElement.BufferCapacity).Select(e => (byte)13).ToArray(),
+	            Enumerable.Range(0, MockElement.BufferCapacity).Select(e => (byte)17).ToArray()
+	        };
+	        var testValuesOdd = (IReadOnlyList<IReadOnlyList<byte>>)new[] { testValuesEven[1], testValuesEven[0] };
+
+	        var verifiedDuplicates = new HashSet<Entity>();
+
+	        try
+	        {
+	            // alternate duplicating each different prototype so chunks are adjusted between duplications
+	            for (var iteration = 0; iteration < 3; ++iteration)
+	            {
+	                // alternate values written to each set of duplicates with each iteration to detect out-of-bounds writing
+	                var testValues = (iteration & 1) == 0 ? testValuesEven : testValuesOdd;
+
+	                // first duplicate both of the prototypes
+	                for (var prototypeIndex = 0; prototypeIndex < prototypes.Count; ++prototypeIndex)
+	                {
+	                    // write test values to prototype
+	                    var prototype = prototypes[prototypeIndex];
+	                    buffer = m_Manager.GetBuffer<MockElement>(prototype);
+	                    var testValue = testValues[prototypeIndex];
+	                    for (var i = 0; i < testValue.Count; ++i)
+	                        buffer[i] = new MockElement { Value = testValue[i] };
+
+	                    // duplicate prototype
+	                    m_Manager.Instantiate(prototype, duplicates[prototypeIndex]);
+	                }
+
+	                // verify duplicates' buffers have expected values
+	                for (var prototypeIndex = 0; prototypeIndex < prototypes.Count; ++prototypeIndex)
+	                {
+	                    var testValue = testValues[prototypeIndex];
+	                    foreach (var duplicate in duplicates[prototypeIndex])
+	                    {
+	                        Assert.That(verifiedDuplicates, Has.None.EqualTo(duplicate));
+	                        verifiedDuplicates.Add(duplicate);
+
+	                        var b = m_Manager.GetBuffer<MockElement>(duplicate);
+	                        Assert.That(
+	                            Enumerable.Range(0, b.Length).Select(i => b[i].Value).ToArray(), Is.EqualTo(testValue),
+	                            $"Invalid data for duplicate of prototype {prototypeIndex} on iteration {iteration}."
+	                        );
+	                    }
+	                }
+	            }
+	        }
+	        finally
+	        {
+	            foreach (var duplicate in duplicates)
+	                duplicate.Dispose();
+	        }
+	    }
+
+
+	    struct WriteJob : IJobChunk
+	    {
+	        public ArchetypeChunkBufferType<EcsIntElement> Int;
+
+	        public void Execute(ArchetypeChunk chunk, int chunkIndex)
+	        {
+	            var intValue = chunk.GetBufferAccessor(Int)[0];
+	            
+	            Assert.AreEqual(intValue.Length, 1);
+
+	            var intValueArray = intValue.ToNativeArray();
+	            
+	            Assert.AreEqual(5, intValue[0].Value);
+	            Assert.AreEqual(5, intValueArray[0].Value);
+
+	            intValueArray[0] = 6;
+
+	            Assert.AreEqual(intValueArray.Length, 1);
+	            Assert.AreEqual(6, intValue[0].Value);
+	        }
+	    }
+
+	    [Test]
+	    public void ReadWriteDynamicBuffer()
+	    {
+	        var original = m_Manager.CreateEntity(typeof(EcsIntElement));
+	        var buffer = m_Manager.GetBuffer<EcsIntElement>(original);
+	        buffer.Add(5);
+
+	        var group = EmptySystem.GetComponentGroup(new EntityArchetypeQuery {All = new ComponentType[] {typeof(EcsIntElement)}});
+	        var job = new WriteJob
+	        {
+	            //@TODO: Throw exception when read only flag is not accurately passed to job for buffers...
+	            Int = EmptySystem.GetArchetypeChunkBufferType<EcsIntElement>()
+	        };
+        
+	        job.Schedule(group).Complete();
+	    }
+	    
+	    struct ReadOnlyJob : IJobChunk
+	    {
+	        [ReadOnly]
+	        public ArchetypeChunkBufferType<EcsIntElement> Int;
+
+	        public void Execute(ArchetypeChunk chunk, int chunkIndex)
+	        {
+	            var intValue = chunk.GetBufferAccessor(Int)[0];
+	            
+	            // Reading buffer
+	            Assert.AreEqual(intValue.Length, 1);
+	            Assert.AreEqual(5, intValue[0].Value);
+
+	            // Reading casted native array
+	            var intValueArray = intValue.ToNativeArray();
+	            Assert.AreEqual(intValueArray.Length, 1);
+	            Assert.AreEqual(5, intValueArray[0].Value);
+
+	            // Can't write to buffer...
+	            Assert.Throws<InvalidOperationException>(() => { intValue[0] = 5; });
+	            Assert.Throws<InvalidOperationException>(() => { intValueArray[0] = 5; });
+	        }
+	    }
+
+	    public void ReadOnlyDynamicBufferImpl(bool readOnlyType)
+	    {
+	        var original = m_Manager.CreateEntity(typeof(EcsIntElement));
+	        var buffer = m_Manager.GetBuffer<EcsIntElement>(original);
+	        buffer.Add(5);
+
+	        var group = EmptySystem.GetComponentGroup(new EntityArchetypeQuery {All = new ComponentType[] {typeof(EcsIntElement)}});
+	        var job = new ReadOnlyJob
+            {
+                Int = EmptySystem.GetArchetypeChunkBufferType<EcsIntElement>(readOnlyType)
+            };
+        
+            job.Schedule(group).Complete();
+	    }
+
+	    [Test]
+	    public void ReadOnlyDynamicBufferReadOnly()
+	    {
+	        ReadOnlyDynamicBufferImpl(true);
+	    }
+
+	    [Test]
+	    [Ignore("Joe is fixing for 19.1. https://ono.unity3d.com/unity/unity/changeset/7fba7166055c164f6d10a8b7d12bd0588ee12025")]
+	    public void ReadOnlyDynamicBufferWritable()
+	    {
+	        ReadOnlyDynamicBufferImpl(false);
+	    }
+
 	    struct BufferConsumingJob : IJob
 	    {
 	        public DynamicBuffer<EcsIntElement> Buffer;
@@ -608,5 +849,49 @@ namespace Unity.Entities.Tests
 	        Assert.Throws<InvalidOperationException>(() => m_Manager.DestroyEntity(original));
 	        handle.Complete();
 	    }
+	    
+	    struct ReadOnlyNativeArrayJob : IJob
+	    {
+	        [ReadOnly]
+	        public NativeArray<EcsIntElement> IntArray;
+
+	        public void Execute()
+	        {
+	            var array = IntArray;
+	            
+	            // Reading casted native array
+	            Assert.AreEqual(array.Length, 1);
+	            Assert.AreEqual(5, array[0].Value);
+
+	            // Can't write to buffer...
+	            Assert.Throws<InvalidOperationException>(() => { array[0] = 5; });
+	            Assert.Throws<InvalidOperationException>(() => { array[0] = 5; });
+	        }
+	    }
+
+	    [Test]
+	    public void NativeArrayInJobReadOnly()
+	    {
+	        var original = m_Manager.CreateEntity(typeof(EcsIntElement));
+	        var buffer = m_Manager.GetBuffer<EcsIntElement>(original);
+	        buffer.Add(5);
+
+	        var job = new ReadOnlyNativeArrayJob
+	        {
+	            IntArray = buffer.ToNativeArray()
+	        };
+            var jobHandle = job.Schedule();
+
+	        Assert.Throws<InvalidOperationException>(() => { buffer.Add(5); });
+	        Assert.Throws<InvalidOperationException>(() => { buffer[0] = 6; });
+	        Assert.Throws<InvalidOperationException>(() => { job.IntArray[0] = 6; });
+	        Assert.Throws<InvalidOperationException>(() => { job.IntArray[0] = 6; });
+
+	        Assert.AreEqual(5, buffer[0].Value);
+	        Assert.AreEqual(5, job.IntArray[0].Value);
+ 
+            jobHandle.Complete();
+	    }
+	    
 	}
 }

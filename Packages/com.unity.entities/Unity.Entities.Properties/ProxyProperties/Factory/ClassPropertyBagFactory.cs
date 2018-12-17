@@ -21,7 +21,7 @@ namespace Unity.Entities.Properties
 
             var bag = new ClassPropertyBag<ObjectContainerProxy>();
 
-            bag.AddProperty(new TypeIdClassProperty((ObjectContainerProxy c) => c.o.GetType().FullName));
+            bag.AddProperty(new TypeIdClassProperty((ObjectContainerProxy c) => c.o.GetType().Name));
 
             foreach (var f in type.GetFields(BindingFlags.Public | BindingFlags.Instance))
             {
@@ -42,7 +42,7 @@ namespace Unity.Entities.Properties
                     // TODO: only class type for now
                     else if (f.FieldType.IsClass)
                     {
-                        if (f.FieldType.FullName != type.FullName)
+                        if (f.FieldType.Name != type.Name)
                         {
                             bag.AddProperty(new ClassObjectProxyProperty(f.FieldType, value, primitiveTypes));
                         }

@@ -178,7 +178,7 @@ namespace Unity.Entities.Tests
                 typeof(EcsState1)
             );
 
-            var entity1 = m_Manager.Instantiate(entity0);
+            m_Manager.Instantiate(entity0);
             
             VerifyComponentCount<EcsState1>(1);
         }

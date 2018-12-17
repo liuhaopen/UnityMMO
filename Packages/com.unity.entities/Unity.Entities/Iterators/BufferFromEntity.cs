@@ -1,15 +1,18 @@
 ﻿using System;
-using Unity.Collections;
+using System.Runtime.InteropServices;
 using Unity.Collections.LowLevel.Unsafe;
 
 namespace Unity.Entities
 {
     [NativeContainer]
+    [StructLayout(LayoutKind.Sequential)]
     public unsafe struct BufferFromEntity<T> where T : struct, IBufferElementData
     {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-        private readonly AtomicSafetyHandle m_Safety;
+        private readonly AtomicSafetyHandle m_Safety0;
         private readonly AtomicSafetyHandle m_ArrayInvalidationSafety;
+        private int m_SafetyReadOnlyCount;
+        private int m_SafetyReadWriteCount;
 #endif
         [NativeDisableUnsafePtrRestriction] private readonly EntityDataManager* m_Entities;
         private readonly int m_TypeIndex;
@@ -21,8 +24,10 @@ namespace Unity.Entities
         internal BufferFromEntity(int typeIndex, EntityDataManager* entityData, bool isReadOnly,
             AtomicSafetyHandle safety, AtomicSafetyHandle arrayInvalidationSafety)
         {
-            m_Safety = safety;
+            m_Safety0 = safety;
             m_ArrayInvalidationSafety = arrayInvalidationSafety;
+            m_SafetyReadOnlyCount = isReadOnly ? 2 : 0;
+            m_SafetyReadWriteCount = isReadOnly ? 0 : 2;
             m_TypeIndex = typeIndex;
             m_Entities = entityData;
             m_IsReadOnly = isReadOnly;
@@ -47,7 +52,7 @@ namespace Unity.Entities
         public bool Exists(Entity entity)
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            AtomicSafetyHandle.CheckReadAndThrow(m_Safety);
+            AtomicSafetyHandle.CheckReadAndThrow(m_Safety0);
 #endif
             //@TODO: out of bounds index checks...
 
@@ -61,7 +66,7 @@ namespace Unity.Entities
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                 // Note that this check is only for the lookup table into the entity manager
                 // The native array performs the actual read only / write only checks
-                AtomicSafetyHandle.CheckReadAndThrow(m_Safety);
+                AtomicSafetyHandle.CheckReadAndThrow(m_Safety0);
 
                 m_Entities->AssertEntityHasComponent(entity, m_TypeIndex);
 #endif
@@ -70,7 +75,7 @@ namespace Unity.Entities
                 BufferHeader* header = (BufferHeader*) m_Entities->GetComponentDataWithTypeRW(entity, m_TypeIndex, m_GlobalSystemVersion, ref m_TypeLookupCache);
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                return new DynamicBuffer<T>(header, m_Safety, m_ArrayInvalidationSafety);
+                return new DynamicBuffer<T>(header, m_Safety0, m_ArrayInvalidationSafety, m_IsReadOnly);
 #else
                 return new DynamicBuffer<T>(header);
 #endif

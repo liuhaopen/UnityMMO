@@ -3,7 +3,6 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
-using UnityEngine.Profiling;
 
 namespace Unity.Entities
 {
@@ -11,7 +10,7 @@ namespace Unity.Entities
     {
         [NativeDisableUnsafePtrRestriction] internal Chunk* m_Chunk;
         public int Count => m_Chunk->Count;
-        
+
         public static bool operator ==(ArchetypeChunk lhs, ArchetypeChunk rhs)
         {
             return lhs.m_Chunk == rhs.m_Chunk;
@@ -74,10 +73,38 @@ namespace Unity.Entities
             return result;
         }
 
+        public bool DidAddOrChange<T>(ArchetypeChunkComponentType<T> chunkComponentType, uint version) where T : struct, IComponentData
+        {
+            return ChangeVersionUtility.DidAddOrChange(GetComponentVersion(chunkComponentType), version);
+        }
+
+        public bool DidAddOrChange<T>(ArchetypeChunkBufferType<T> chunkBufferType, uint version) where T : struct, IBufferElementData
+        {
+            return ChangeVersionUtility.DidAddOrChange(GetComponentVersion(chunkBufferType), version);
+        }
+
+        public bool DidChange<T>(ArchetypeChunkComponentType<T> chunkComponentType) where T : struct, IComponentData
+        {
+            return ChangeVersionUtility.DidChange(GetComponentVersion(chunkComponentType), chunkComponentType.GlobalSystemVersion);
+        }
+
+        public bool DidChange<T>(ArchetypeChunkBufferType<T> chunkBufferType) where T : struct, IBufferElementData
+        {
+            return ChangeVersionUtility.DidChange(GetComponentVersion(chunkBufferType), chunkBufferType.GlobalSystemVersion);
+        }
+
         public uint GetComponentVersion<T>(ArchetypeChunkComponentType<T> chunkComponentType)
             where T : struct, IComponentData
         {
             var typeIndexInArchetype = ChunkDataUtility.GetIndexInTypeArray(m_Chunk->Archetype, chunkComponentType.m_TypeIndex);
+            if (typeIndexInArchetype == -1) return 0;
+            return m_Chunk->ChangeVersion[typeIndexInArchetype];
+        }
+
+        public uint GetComponentVersion<T>(ArchetypeChunkBufferType<T> chunkBufferType)
+            where T : struct, IBufferElementData
+        {
+            var typeIndexInArchetype = ChunkDataUtility.GetIndexInTypeArray(m_Chunk->Archetype, chunkBufferType.m_TypeIndex);
             if (typeIndexInArchetype == -1) return 0;
             return m_Chunk->ChangeVersion[typeIndexInArchetype];
         }
@@ -100,14 +127,21 @@ namespace Unity.Entities
             var typeIndexInArchetype = ChunkDataUtility.GetIndexInTypeArray(m_Chunk->Archetype, chunkComponentType.m_TypeIndex);
             return (typeIndexInArchetype != -1);
         }
-        
+
+        public bool Has<T>(ArchetypeChunkBufferType<T> chunkBufferType)
+            where T : struct, IBufferElementData
+        {
+            var typeIndexInArchetype = ChunkDataUtility.GetIndexInTypeArray(m_Chunk->Archetype, chunkBufferType.m_TypeIndex);
+            return (typeIndexInArchetype != -1);
+        }
+
         public NativeArray<T> GetNativeArray<T>(ArchetypeChunkComponentType<T> chunkComponentType)
             where T : struct, IComponentData
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             if (chunkComponentType.m_IsZeroSized)
-                throw new ArgumentException($"GetArchetypeChunkComponentType<{typeof(T)}> cannot be called on zero-sized IComponentData");
-            
+                throw new ArgumentException($"ArchetypeChunk.GetNativeArray<{typeof(T)}> cannot be called on zero-sized IComponentData");
+
             AtomicSafetyHandle.CheckReadAndThrow(chunkComponentType.m_Safety);
 #endif
             var archetype = m_Chunk->Archetype;
@@ -138,7 +172,7 @@ namespace Unity.Entities
             where T : struct, IBufferElementData
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            AtomicSafetyHandle.CheckReadAndThrow(bufferComponentType.m_Safety);
+            AtomicSafetyHandle.CheckReadAndThrow(bufferComponentType.m_Safety0);
 #endif
             var archetype = m_Chunk->Archetype;
             var typeIndex = bufferComponentType.m_TypeIndex;
@@ -146,9 +180,9 @@ namespace Unity.Entities
             if (typeIndexInArchetype == -1)
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                return new BufferAccessor<T>(null, 0, 0, true, bufferComponentType.m_Safety, bufferComponentType.m_ArrayInvalidationSafety);
+                return new BufferAccessor<T>(null, 0, 0, true, bufferComponentType.m_Safety0, bufferComponentType.m_Safety1);
 #else
-                return new BufferAccessor<T>(null, 0, 0, true);
+                return new BufferAccessor<T>(null, 0, 0);
 #endif
             }
 
@@ -160,9 +194,9 @@ namespace Unity.Entities
             var startOffset = archetype->Offsets[typeIndexInArchetype];
             int stride = archetype->SizeOfs[typeIndexInArchetype];
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            return new BufferAccessor<T>(buffer + startOffset, length, stride, bufferComponentType.IsReadOnly, bufferComponentType.m_Safety, bufferComponentType.m_ArrayInvalidationSafety);
+            return new BufferAccessor<T>(buffer + startOffset, length, stride, bufferComponentType.IsReadOnly, bufferComponentType.m_Safety0, bufferComponentType.m_Safety1);
 #else
-            return new BufferAccessor<T>(buffer + startOffset, length, stride, bufferComponentType.IsReadOnly);
+            return new BufferAccessor<T>(buffer + startOffset, length, stride);
 #endif
         }
     }
@@ -175,13 +209,21 @@ namespace Unity.Entities
         private byte* m_BasePointer;
         private int m_Length;
         private int m_Stride;
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
         private bool m_IsReadOnly;
+#endif
 
         public int Length => m_Length;
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-        private AtomicSafetyHandle m_Safety;
+        private AtomicSafetyHandle m_Safety0;
         private AtomicSafetyHandle m_ArrayInvalidationSafety;
+
+#pragma warning disable 0414 // assigned but its value is never used
+        private int m_SafetyReadOnlyCount;
+        private int m_SafetyReadWriteCount;
+#pragma warning restore 0414
+
 #endif
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
@@ -190,17 +232,18 @@ namespace Unity.Entities
             m_BasePointer = basePointer;
             m_Length = length;
             m_Stride = stride;
-            m_Safety = safety;
+            m_Safety0 = safety;
             m_ArrayInvalidationSafety = arrayInvalidationSafety;
             m_IsReadOnly = readOnly;
+            m_SafetyReadOnlyCount = readOnly ? 2 : 0;
+            m_SafetyReadWriteCount = readOnly ? 0 : 2;
         }
 #else
-        public BufferAccessor(byte* basePointer, int length, int stride, bool readOnly)
+        public BufferAccessor(byte* basePointer, int length, int stride)
         {
             m_BasePointer = basePointer;
             m_Length = length;
             m_Stride = stride;
-            m_IsReadOnly = readOnly;
         }
 #endif
 
@@ -209,10 +252,7 @@ namespace Unity.Entities
             get
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                if (m_IsReadOnly)
-                    AtomicSafetyHandle.CheckReadAndThrow(m_Safety);
-                else
-                    AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
+                AtomicSafetyHandle.CheckReadAndThrow(m_Safety0);
 
                 if (index < 0 || index >= Length)
                     throw new InvalidOperationException($"index {index} out of range in LowLevelBufferAccessor of length {Length}");
@@ -220,7 +260,7 @@ namespace Unity.Entities
                 BufferHeader* hdr = (BufferHeader*) (m_BasePointer + index * m_Stride);
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                return new DynamicBuffer<T>(hdr, m_Safety, m_ArrayInvalidationSafety);
+                return new DynamicBuffer<T>(hdr, m_Safety0, m_ArrayInvalidationSafety, m_IsReadOnly);
 #else
                 return new DynamicBuffer<T>(hdr);
 #endif
@@ -243,7 +283,7 @@ namespace Unity.Entities
             var chunk = (Chunk*) archetype.Archetype->ChunkList.Begin;
             var offset = Offsets[index];
             var dstChunksPtr = (Chunk**) Chunks.GetUnsafePtr();
-            
+
             for (int j = 0; j < chunkCount; j++)
             {
                 dstChunksPtr[offset + j] = chunk;
@@ -268,7 +308,7 @@ namespace Unity.Entities
                 offsets[i] = length;
                 length += archetypes[i].Archetype->ChunkCount;
             }
-            
+
             var chunks = new NativeArray<ArchetypeChunk>(length, allocator, NativeArrayOptions.UninitializedMemory);
             var gatherChunksJob = new GatherChunks
             {
@@ -278,7 +318,7 @@ namespace Unity.Entities
             };
             var gatherChunksJobHandle = gatherChunksJob.Schedule(archetypeCount,1);
             gatherChunksJobHandle.Complete();
-            
+
             offsets.Dispose();
             return chunks;
         }
@@ -347,7 +387,6 @@ namespace Unity.Entities
         internal readonly uint m_GlobalSystemVersion;
         internal readonly bool m_IsReadOnly;
 
-        public int TypeIndex => m_TypeIndex;
         public uint GlobalSystemVersion => m_GlobalSystemVersion;
         public bool IsReadOnly => m_IsReadOnly;
 
@@ -356,8 +395,11 @@ namespace Unity.Entities
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
         private readonly int m_MinIndex;
         private readonly int m_MaxIndex;
-        internal readonly AtomicSafetyHandle m_Safety;
-        internal readonly AtomicSafetyHandle m_ArrayInvalidationSafety;
+        
+        internal AtomicSafetyHandle m_Safety0;
+        internal AtomicSafetyHandle m_Safety1;
+        internal int m_SafetyReadOnlyCount;
+        internal int m_SafetyReadWriteCount;
 #endif
 #pragma warning restore 0414
 
@@ -375,8 +417,10 @@ namespace Unity.Entities
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             m_MinIndex = 0;
             m_MaxIndex = 0;
-            m_Safety = safety;
-            m_ArrayInvalidationSafety = arrayInvalidationSafety;
+            m_Safety0 = safety;
+            m_Safety1 = arrayInvalidationSafety;
+            m_SafetyReadOnlyCount = isReadOnly ? 2 : 0;
+            m_SafetyReadWriteCount = isReadOnly ? 0 : 2;
 #endif
         }
     }

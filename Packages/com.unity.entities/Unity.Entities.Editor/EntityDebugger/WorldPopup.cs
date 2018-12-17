@@ -1,21 +1,20 @@
-﻿
-
-using System;
-using System.Linq;
+﻿using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Experimental.LowLevel;
 
 namespace Unity.Entities.Editor
 {
     
     public delegate void WorldSelectionSetter(World world);
+
+    public delegate bool ShowInactiveSystemsGetter();
     
     internal class WorldPopup
     {
         public const string kNoWorldName = "\n\n\n";
 
         private const string kPlayerLoopName = "Show Full Player Loop";
+        private const string kShowInactiveSystemsName = "Show Inactive Systems";
 
         private GenericMenu Menu
         {
@@ -36,17 +35,27 @@ namespace Unity.Entities.Editor
                 }
                 menu.AddSeparator("");
                 menu.AddItem(new GUIContent(kPlayerLoopName), currentSelection == null, () => setWorldSelection(null));
+                menu.AddSeparator("");
+                menu.AddItem(new GUIContent(kShowInactiveSystemsName), getShowInactiveSystems(), setShowInactiveSystems);
                 return menu;
             }
         }
 
         private readonly WorldSelectionGetter getWorldSelection;
         private readonly WorldSelectionSetter setWorldSelection;
+        
+        private readonly ShowInactiveSystemsGetter getShowInactiveSystems;
+        private readonly GenericMenu.MenuFunction setShowInactiveSystems;
+        
+        
 
-        public WorldPopup(WorldSelectionGetter getWorld, WorldSelectionSetter setWorld)
+        public WorldPopup(WorldSelectionGetter getWorld, WorldSelectionSetter setWorld, ShowInactiveSystemsGetter getShowSystems, GenericMenu.MenuFunction setShowSystems)
         {
             getWorldSelection = getWorld;
             setWorldSelection = setWorld;
+
+            getShowInactiveSystems = getShowSystems;
+            setShowInactiveSystems = setShowSystems;
         }
         
         public void OnGUI(bool showingPlayerLoop, string lastSelectedWorldName)

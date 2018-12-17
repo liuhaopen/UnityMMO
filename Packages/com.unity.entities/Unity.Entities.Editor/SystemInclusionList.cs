@@ -11,6 +11,7 @@ namespace Unity.Entities.Editor
     public class SystemInclusionList
     {
         private readonly List<Tuple<ScriptBehaviourManager, List<ComponentGroup>>> cachedMatches = new List<Tuple<ScriptBehaviourManager, List<ComponentGroup>>>();
+        private readonly Dictionary<ComponentGroup, ComponentGroupGUIControl> cachedControls = new Dictionary<ComponentGroup, ComponentGroupGUIControl>();
         private bool repainted = true;
 
         [SerializeField] private bool showSystems;
@@ -27,6 +28,16 @@ namespace Unity.Entities.Editor
                 {
                     cachedMatches.Clear();
                     WorldDebuggingTools.MatchEntityInComponentGroups(world, entity, cachedMatches);
+                    foreach (var pair in cachedMatches)
+                    {
+                        foreach (var componentGroup in pair.Item2)
+                        {
+                            if (!cachedControls.ContainsKey(componentGroup))
+                            {
+                                cachedControls.Add(componentGroup, new ComponentGroupGUIControl(componentGroup.GetQueryTypes(), false));
+                            }
+                        }
+                    }
                     repainted = false;
                 }
 
@@ -37,7 +48,7 @@ namespace Unity.Entities.Editor
                     ++EditorGUI.indentLevel;
                     foreach (var componentGroup in pair.Item2)
                     {
-                        ComponentGroupGUI.ComponentListGUILayout(componentGroup.Types, EditorGUIUtility.currentViewWidth - 30f);
+                        cachedControls[componentGroup].OnGUILayout(EditorGUIUtility.currentViewWidth - 60f);
                         if (GUILayout.Button("Show", GUILayout.ExpandWidth(false)))
                         {
                             EntityDebugger.SetAllSelections(world, pair.Item1 as ComponentSystemBase, new EntityListQuery(componentGroup), entity);

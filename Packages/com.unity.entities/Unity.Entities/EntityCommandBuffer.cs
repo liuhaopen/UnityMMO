@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading;
+using Unity.Assertions;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs.LowLevel.Unsafe;
@@ -14,6 +16,7 @@ namespace Unity.Entities
     {
         public int CommandType;
         public int TotalSize;
+        public int SortIndex;  /// Used to order command execution during playback
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -23,7 +26,7 @@ namespace Unity.Entities
         public EntityArchetype Archetype;
         public int BatchCount;
     }
-    
+
     [StructLayout(LayoutKind.Sequential)]
     internal struct EntityCommand
     {
@@ -69,6 +72,7 @@ namespace Unity.Entities
         }
     }
 
+    [StructLayout(LayoutKind.Sequential, Size = (64 > JobsUtility.CacheLineSize) ? 64 : JobsUtility.CacheLineSize)]
     internal unsafe struct EntityCommandBufferChain
     {
         public ECBChunk* m_Tail;
@@ -76,6 +80,120 @@ namespace Unity.Entities
         public EntitySharedComponentCommand* m_CleanupList;
         public CreateCommand*                m_PrevCreateCommand;
         public EntityCommand*                m_PrevEntityCommand;
+        public EntityCommandBufferChain* m_NextChain;
+        public int m_LastSortIndex;
+
+        public void TemporaryForceDisableBatching()
+        {
+            // Batching does not currently work on Concurrent command buffers.
+            // Until it is fixed, this function prevents commands from forming batches
+            // of size >1.
+            m_PrevCreateCommand = null;
+            m_PrevEntityCommand = null;
+        }
+    }
+
+    internal unsafe struct ECBSharedPlaybackState
+    {
+        public int CreateEntityBatchOffset;
+        public int InstantiateEntityBatchOffset;
+        public Entity* CreateEntityBatch;
+        public Entity* InstantiateEntityBatch;
+        public Entity CurrentEntity;
+    }
+
+    internal unsafe struct ECBChainPlaybackState
+    {
+        public ECBChunk* Chunk;
+        public int Offset;
+        public int NextSortIndex;
+    }
+
+    internal unsafe struct ECBChainHeapElement
+    {
+        public int SortIndex;
+        public int ChainIndex;
+    }
+    internal unsafe struct ECBChainPriorityQueue : IDisposable
+    {
+        private readonly ECBChainHeapElement* m_Heap;
+        private int m_Size;
+        private readonly Allocator m_Allocator;
+        private static readonly int BaseIndex = 1;
+        public ECBChainPriorityQueue(NativeArray<ECBChainPlaybackState> chainStates, Allocator alloc)
+        {
+            m_Size = chainStates.Length;
+            m_Allocator = alloc;
+            m_Heap = (ECBChainHeapElement*)UnsafeUtility.Malloc((m_Size + BaseIndex) * sizeof(ECBChainHeapElement), 64, m_Allocator);
+            for (int i = m_Size - 1; i >= m_Size / 2; --i)
+            {
+                m_Heap[BaseIndex + i].SortIndex = chainStates[i].NextSortIndex;
+                m_Heap[BaseIndex + i].ChainIndex = i;
+            }
+            for (int i = m_Size/2 - 1; i >= 0; --i)
+            {
+                m_Heap[BaseIndex + i].SortIndex = chainStates[i].NextSortIndex;
+                m_Heap[BaseIndex + i].ChainIndex = i;
+                Heapify(BaseIndex + i);
+            }
+        }
+        public void Dispose()
+        {
+            UnsafeUtility.Free(m_Heap, m_Allocator);
+        }
+        public bool Empty { get { return m_Size <= 0; } }
+        public ECBChainHeapElement Peek()
+        {
+            //Assert.IsTrue(!Empty, "Can't Peek() an empty heap");
+            if (Empty)
+            {
+                return new ECBChainHeapElement{ ChainIndex = -1, SortIndex = -1};
+            }
+            return m_Heap[BaseIndex];
+        }
+        public ECBChainHeapElement Pop()
+        {
+            //Assert.IsTrue(!Empty, "Can't Pop() an empty heap");
+            if (Empty)
+            {
+                return new ECBChainHeapElement{ ChainIndex = -1, SortIndex = -1};
+            }
+            ECBChainHeapElement top = Peek();
+            m_Heap[BaseIndex] = m_Heap[m_Size--];
+            if (!Empty)
+            {
+                Heapify(BaseIndex);
+            }
+            return top;
+        }
+        public void ReplaceTop(ECBChainHeapElement value)
+        {
+            Assert.IsTrue(!Empty, "Can't ReplaceTop() an empty heap");
+            m_Heap[BaseIndex] = value;
+            Heapify(BaseIndex);
+        }
+        private void Heapify(int i)
+        {
+            // The index taken by this function is expected to be already biased by BaseIndex.
+            // Thus, m_Heap[size] is a valid element (specifically, the final element in the heap)
+            Assert.IsTrue(i >= BaseIndex && i <= m_Size, "heap index " + i + " is out of range with size=" + m_Size);
+            ECBChainHeapElement val = m_Heap[i];
+            while (i <= m_Size / 2)
+            {
+                int child = 2 * i;
+                if (child < m_Size && (m_Heap[child+1].SortIndex < m_Heap[child].SortIndex))
+                {
+                    child++;
+                }
+                if (val.SortIndex < m_Heap[child].SortIndex)
+                {
+                    break;
+                }
+                m_Heap[i] = m_Heap[child];
+                i = child;
+            }
+            m_Heap[i] = val;
+        }
     }
 
     internal enum ECBCommand
@@ -84,7 +202,7 @@ namespace Unity.Entities
 
         CreateEntity,
         DestroyEntity,
-        
+
         AddComponent,
         RemoveComponent,
         SetComponent,
@@ -115,19 +233,32 @@ namespace Unity.Entities
             Used += size;
             return off;
         }
-    }
 
+        internal int BaseSortIndex
+        {
+            get
+            {
+                fixed (ECBChunk* pThis = &this)
+                {
+                    if (Used < sizeof(BasicCommand))
+                    {
+                        return -1;
+                    }
+                    var buf = (byte*)pThis + sizeof(ECBChunk);
+                    var header = (BasicCommand*)(buf);
+                    return header->SortIndex;
+                }
+            }
+        }
+    }
 
     internal unsafe struct EntityCommandBufferData
     {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-        public AtomicSafetyHandle m_BufferSafety;
-        public AtomicSafetyHandle m_ArrayInvalidationSafety;
-#endif
-
         public EntityCommandBufferChain m_MainThreadChain;
 
         public EntityCommandBufferChain* m_ThreadedChains;
+
+        public int m_RecordedChainCount;
 
         public int m_MinimumChunkSize;
 
@@ -144,7 +275,7 @@ namespace Unity.Entities
             // PERF: It's be great if we had a way to actually get the number of worst-case threads so we didn't have to allocate 128.
             int allocSize = sizeof(EntityCommandBufferChain) * JobsUtility.MaxJobThreadCount;
 
-            m_ThreadedChains = (EntityCommandBufferChain*) UnsafeUtility.Malloc(allocSize, 8, m_Allocator);
+            m_ThreadedChains = (EntityCommandBufferChain*) UnsafeUtility.Malloc(allocSize, JobsUtility.CacheLineSize, m_Allocator);
             UnsafeUtility.MemClear(m_ThreadedChains, allocSize);
         }
 
@@ -157,7 +288,7 @@ namespace Unity.Entities
             }
         }
 
-        internal void AddCreateCommand(EntityCommandBufferChain* chain, ECBCommand op, EntityArchetype archetype)
+        internal void AddCreateCommand(EntityCommandBufferChain* chain, int jobIndex, ECBCommand op, EntityArchetype archetype)
         {
             if (chain->m_PrevCreateCommand != null &&
                 chain->m_PrevCreateCommand->Archetype == archetype &&
@@ -165,19 +296,21 @@ namespace Unity.Entities
             {
                 ++chain->m_PrevCreateCommand->BatchCount;
 
-                var data = (CreateCommand*) Reserve(chain, sizeof(CreateCommand));
+                var data = (CreateCommand*) Reserve(chain, jobIndex, sizeof(CreateCommand));
 
                 data->Header.CommandType = (int) op;
                 data->Header.TotalSize = sizeof(CreateCommand);
+                data->Header.SortIndex = chain->m_LastSortIndex;
                 data->Archetype = archetype;
                 data->BatchCount = 0;
             }
             else
             {
-                var data = (CreateCommand*) Reserve(chain, sizeof(CreateCommand));
+                var data = (CreateCommand*) Reserve(chain, jobIndex, sizeof(CreateCommand));
 
                 data->Header.CommandType = (int) op;
                 data->Header.TotalSize = sizeof(CreateCommand);
+                data->Header.SortIndex = chain->m_LastSortIndex;
                 data->Archetype = archetype;
                 data->BatchCount = 1;
 
@@ -185,7 +318,7 @@ namespace Unity.Entities
             }
         }
 
-        internal void AddEntityCommand(EntityCommandBufferChain* chain, ECBCommand op, Entity e)
+        internal void AddEntityCommand(EntityCommandBufferChain* chain, int jobIndex, ECBCommand op, Entity e)
         {
             if (chain->m_PrevEntityCommand != null &&
                 chain->m_PrevEntityCommand->Entity == e &&
@@ -193,19 +326,21 @@ namespace Unity.Entities
             {
                 ++chain->m_PrevEntityCommand->BatchCount;
 
-                var data = (EntityCommand*) Reserve(chain, sizeof(EntityCommand));
+                var data = (EntityCommand*) Reserve(chain, jobIndex, sizeof(EntityCommand));
 
                 data->Header.CommandType = (int) op;
                 data->Header.TotalSize = sizeof(EntityCommand);
+                data->Header.SortIndex = chain->m_LastSortIndex;
                 data->Entity = e;
                 data->BatchCount = 0;
             }
             else
             {
-                var data = (EntityCommand*) Reserve(chain, sizeof(EntityCommand));
+                var data = (EntityCommand*) Reserve(chain, jobIndex, sizeof(EntityCommand));
 
                 data->Header.CommandType = (int) op;
                 data->Header.TotalSize = sizeof(EntityCommand);
+                data->Header.SortIndex = chain->m_LastSortIndex;
                 data->Entity = e;
                 data->BatchCount = 1;
 
@@ -213,16 +348,19 @@ namespace Unity.Entities
             }
         }
 
-        internal void AddEntityComponentCommand<T>(EntityCommandBufferChain* chain, ECBCommand op, Entity e, T component) where T : struct
+        internal void AddEntityComponentCommand<T>(EntityCommandBufferChain* chain, int jobIndex, ECBCommand op, Entity e, T component) where T : struct
         {
-            var typeSize = UnsafeUtility.SizeOf<T>();
             var typeIndex = TypeManager.GetTypeIndex<T>();
+            // NOTE: This has to be sizeof not TypeManager.SizeInChunk since we use UnsafeUtility.CopyStructureToPtr
+            //       even on zero size components.
+            var typeSize = UnsafeUtility.SizeOf<T>();
             var sizeNeeded = Align(sizeof(EntityComponentCommand) + typeSize, 8);
 
-            var data = (EntityComponentCommand*)Reserve(chain, sizeNeeded);
+            var data = (EntityComponentCommand*)Reserve(chain, jobIndex, sizeNeeded);
 
             data->Header.Header.CommandType = (int)op;
             data->Header.Header.TotalSize = sizeNeeded;
+            data->Header.Header.SortIndex = chain->m_LastSortIndex;
             data->Header.Entity = e;
             data->ComponentTypeIndex = typeIndex;
             data->ComponentSize = typeSize;
@@ -230,21 +368,23 @@ namespace Unity.Entities
             UnsafeUtility.CopyStructureToPtr(ref component, (byte*)(data + 1));
         }
 
-        internal BufferHeader* AddEntityBufferCommand<T>(EntityCommandBufferChain* chain, ECBCommand op, Entity e) where T : struct, IBufferElementData
+        internal BufferHeader* AddEntityBufferCommand<T>(EntityCommandBufferChain* chain, int jobIndex, ECBCommand op, Entity e) where T : struct, IBufferElementData
         {
             var typeIndex = TypeManager.GetTypeIndex<T>();
             var type = TypeManager.GetTypeInfo<T>();
             var sizeNeeded = Align(sizeof(EntityBufferCommand) + type.SizeInChunk, 8);
 
-            var data = (EntityBufferCommand*)Reserve(chain, sizeNeeded);
+            var data = (EntityBufferCommand*)Reserve(chain, jobIndex, sizeNeeded);
 
             data->Header.Header.CommandType = (int)op;
             data->Header.Header.TotalSize = sizeNeeded;
+            data->Header.Header.SortIndex = chain->m_LastSortIndex;
             data->Header.Entity = e;
             data->ComponentTypeIndex = typeIndex;
             data->ComponentSize = type.SizeInChunk;
 
             BufferHeader.Initialize(&data->TempBuffer, type.BufferCapacity);
+
             return &data->TempBuffer;
         }
 
@@ -253,28 +393,30 @@ namespace Unity.Entities
             return (size + alignmentPowerOfTwo - 1) & ~(alignmentPowerOfTwo - 1);
         }
 
-        internal void AddEntityComponentTypeCommand(EntityCommandBufferChain* chain, ECBCommand op, Entity e, ComponentType t)
+        internal void AddEntityComponentTypeCommand(EntityCommandBufferChain* chain, int jobIndex, ECBCommand op, Entity e, ComponentType t)
         {
             var sizeNeeded = Align(sizeof(EntityComponentCommand), 8);
 
-            var data = (EntityComponentCommand*)Reserve(chain, sizeNeeded);
+            var data = (EntityComponentCommand*)Reserve(chain, jobIndex, sizeNeeded);
 
             data->Header.Header.CommandType = (int)op;
             data->Header.Header.TotalSize = sizeNeeded;
+            data->Header.Header.SortIndex = chain->m_LastSortIndex;
             data->Header.Entity = e;
             data->ComponentTypeIndex = t.TypeIndex;
         }
 
-        internal void AddEntitySharedComponentCommand<T>(EntityCommandBufferChain* chain, ECBCommand op, Entity e, int hashCode, object boxedObject)
+        internal void AddEntitySharedComponentCommand<T>(EntityCommandBufferChain* chain, int jobIndex, ECBCommand op, Entity e, int hashCode, object boxedObject)
             where T : struct
         {
             var typeIndex = TypeManager.GetTypeIndex<T>();
             var sizeNeeded = Align(sizeof(EntitySharedComponentCommand), 8);
 
-            var data = (EntitySharedComponentCommand*)Reserve(chain, sizeNeeded);
+            var data = (EntitySharedComponentCommand*)Reserve(chain, jobIndex, sizeNeeded);
 
             data->Header.Header.CommandType = (int)op;
             data->Header.Header.TotalSize = sizeNeeded;
+            data->Header.Header.SortIndex = chain->m_LastSortIndex;
             data->Header.Entity = e;
             data->ComponentTypeIndex = typeIndex;
             data->HashCode = hashCode;
@@ -292,8 +434,18 @@ namespace Unity.Entities
             }
         }
 
-        internal byte* Reserve(EntityCommandBufferChain* chain, int size)
+        internal byte* Reserve(EntityCommandBufferChain* chain, int jobIndex, int size)
         {
+            int newSortIndex = jobIndex;
+            if (newSortIndex < chain->m_LastSortIndex)
+            {
+                EntityCommandBufferChain* archivedChain = (EntityCommandBufferChain*) UnsafeUtility.Malloc(sizeof(EntityCommandBufferChain), 8, m_Allocator);
+                *archivedChain = *chain;
+                UnsafeUtility.MemClear(chain, sizeof(EntityCommandBufferChain));
+                chain->m_NextChain = archivedChain;
+            }
+            chain->m_LastSortIndex = newSortIndex;
+
             if (chain->m_Tail == null || chain->m_Tail->Capacity < size)
             {
                 var chunkSize = math.max(m_MinimumChunkSize, size);
@@ -307,7 +459,13 @@ namespace Unity.Entities
 
                 if (prev != null) prev->Next = c;
 
-                if (chain->m_Head == null) chain->m_Head = c;
+                if (chain->m_Head == null)
+                {
+                    chain->m_Head = c;
+                    // This seems to be the best place to track the number of non-empty command buffer chunks
+                    // during the recording process.
+                    Interlocked.Increment(ref m_RecordedChainCount);
+                }
 
                 chain->m_Tail = c;
             }
@@ -317,15 +475,19 @@ namespace Unity.Entities
             return ptr;
         }
 
-        public DynamicBuffer<T> CreateBufferCommand<T>(ECBCommand commandType, EntityCommandBufferChain* chain, Entity e) where T : struct, IBufferElementData
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+        public DynamicBuffer<T> CreateBufferCommand<T>(ECBCommand commandType, EntityCommandBufferChain* chain, int jobIndex, Entity e, AtomicSafetyHandle bufferSafety, AtomicSafetyHandle arrayInvalidationSafety) where T : struct, IBufferElementData
+#else
+        public DynamicBuffer<T> CreateBufferCommand<T>(ECBCommand commandType, EntityCommandBufferChain* chain, int jobIndex, Entity e) where T : struct, IBufferElementData
+#endif
         {
-            BufferHeader* header = AddEntityBufferCommand<T>(chain, commandType, e);
+            BufferHeader* header = AddEntityBufferCommand<T>(chain, jobIndex, commandType, e);
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            var safety = m_BufferSafety;
+            var safety = bufferSafety;
             AtomicSafetyHandle.UseSecondaryVersion(ref safety);
-            var arraySafety = m_ArrayInvalidationSafety;
-            return new DynamicBuffer<T>(header, safety, arraySafety);
+            var arraySafety = arrayInvalidationSafety;
+            return new DynamicBuffer<T>(header, safety, arraySafety, false);
 #else
             return new DynamicBuffer<T>(header);
 #endif
@@ -349,8 +511,15 @@ namespace Unity.Entities
         [NativeDisableUnsafePtrRestriction] private EntityCommandBufferData* m_Data;
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-        private AtomicSafetyHandle m_Safety;
+        private AtomicSafetyHandle m_Safety0;
+        private AtomicSafetyHandle m_BufferSafety;
+        private AtomicSafetyHandle m_ArrayInvalidationSafety;
+        private int m_SafetyReadOnlyCount;
+        private int m_SafetyReadWriteCount;
+
         [NativeSetClassTypeToNullOnSchedule] private DisposeSentinel m_DisposeSentinel;
+
+        internal int SystemID;
 #endif
 
         /// <summary>
@@ -359,8 +528,8 @@ namespace Unity.Entities
         /// Larger sizes are more efficient, but create more waste in the allocator.
         public int MinimumChunkSize
         {
-            get => m_Data->m_MinimumChunkSize > 0 ? m_Data->m_MinimumChunkSize : kDefaultMinimumChunkSize;
-            set => m_Data->m_MinimumChunkSize = Math.Max(0, value);
+            get { return m_Data->m_MinimumChunkSize > 0 ? m_Data->m_MinimumChunkSize : kDefaultMinimumChunkSize; }
+            set { m_Data->m_MinimumChunkSize = Math.Max(0, value); }
         }
 
         /// <summary>
@@ -371,9 +540,9 @@ namespace Unity.Entities
         /// the buffer from playing back when the user code is not in control
         /// of the site of playback.
         ///
-        /// For example, is a buffer has been aquired from a barrier and partially
+        /// For example, is a buffer has been acquired from a barrier and partially
         /// filled in with data, but it is discovered that the work should be aborted,
-        /// this property can be set to true to prevent the buffer from playing back.
+        /// this property can be set to false to prevent the buffer from playing back.
         public bool ShouldPlayback
         {
             get { return m_Data != null ? m_Data->m_ShouldPlayback : false; }
@@ -384,7 +553,7 @@ namespace Unity.Entities
         private void EnforceSingleThreadOwnership()
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
+            AtomicSafetyHandle.CheckWriteAndThrow(m_Safety0);
 #endif
         }
 
@@ -405,19 +574,26 @@ namespace Unity.Entities
             m_Data->m_MainThreadChain.m_Head = null;
             m_Data->m_MainThreadChain.m_PrevCreateCommand = null;
             m_Data->m_MainThreadChain.m_PrevEntityCommand = null;
+            m_Data->m_MainThreadChain.m_LastSortIndex = -1;
+            m_Data->m_MainThreadChain.m_NextChain = null;
 
             m_Data->m_ThreadedChains = null;
+            m_Data->m_RecordedChainCount = 0;
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            // Used for all buffers returned from the API, so we can invalidate them once Playback() has been called.
-            m_Data->m_BufferSafety = AtomicSafetyHandle.Create();
-            // Used to invalidate array aliases to buffers
-            m_Data->m_ArrayInvalidationSafety = AtomicSafetyHandle.Create();
 #if UNITY_2018_3_OR_NEWER
-            DisposeSentinel.Create(out m_Safety, out m_DisposeSentinel, 8, label);
+            DisposeSentinel.Create(out m_Safety0, out m_DisposeSentinel, 8, label);
 #else
-            DisposeSentinel.Create(out m_Safety, out m_DisposeSentinel, 8);
+            DisposeSentinel.Create(out m_Safety0, out m_DisposeSentinel, 8);
 #endif
+            // Used for all buffers returned from the API, so we can invalidate them once Playback() has been called.
+            m_BufferSafety = AtomicSafetyHandle.Create();
+            // Used to invalidate array aliases to buffers
+            m_ArrayInvalidationSafety = AtomicSafetyHandle.Create();
+
+            m_SafetyReadOnlyCount = 0;
+            m_SafetyReadWriteCount = 3;
+            SystemID = 0;
 #endif
         }
 
@@ -425,19 +601,16 @@ namespace Unity.Entities
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
 #if UNITY_2018_3_OR_NEWER
-            DisposeSentinel.Dispose(ref m_Safety, ref m_DisposeSentinel);
+            DisposeSentinel.Dispose(ref m_Safety0, ref m_DisposeSentinel);
 #else
-            DisposeSentinel.Dispose(m_Safety, ref m_DisposeSentinel);
+            DisposeSentinel.Dispose(m_Safety0, ref m_DisposeSentinel);
 #endif
+            AtomicSafetyHandle.Release(m_ArrayInvalidationSafety);
+            AtomicSafetyHandle.Release(m_BufferSafety);
 #endif
 
             if (m_Data != null)
             {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-                AtomicSafetyHandle.Release(m_Data->m_ArrayInvalidationSafety);
-                AtomicSafetyHandle.Release(m_Data->m_BufferSafety);
-#endif
-
                 FreeChain(&m_Data->m_MainThreadChain);
 
                 if (m_Data->m_ThreadedChains != null)
@@ -457,6 +630,10 @@ namespace Unity.Entities
 
         private void FreeChain(EntityCommandBufferChain* chain)
         {
+            if (chain == null)
+            {
+                return;
+            }
             var cleanup_list = chain->m_CleanupList;
             while (cleanup_list != null)
             {
@@ -474,30 +651,38 @@ namespace Unity.Entities
             }
 
             chain->m_Head = null;
+            if (chain->m_NextChain != null)
+            {
+                FreeChain(chain->m_NextChain);
+                UnsafeUtility.Free(chain->m_NextChain, m_Data->m_Allocator);
+                chain->m_NextChain = null;
+            }
         }
+
+        private const int MainThreadJobIndex = Int32.MaxValue;
 
         public void CreateEntity()
         {
             EnforceSingleThreadOwnership();
-            m_Data->AddCreateCommand(&m_Data->m_MainThreadChain, ECBCommand.CreateEntity, new EntityArchetype());
+            m_Data->AddCreateCommand(&m_Data->m_MainThreadChain, MainThreadJobIndex, ECBCommand.CreateEntity, new EntityArchetype());
         }
 
         public void CreateEntity(EntityArchetype archetype)
         {
             EnforceSingleThreadOwnership();
-            m_Data->AddCreateCommand(&m_Data->m_MainThreadChain, ECBCommand.CreateEntity, archetype);
+            m_Data->AddCreateCommand(&m_Data->m_MainThreadChain, MainThreadJobIndex, ECBCommand.CreateEntity, archetype);
         }
 
         public void Instantiate(Entity e)
         {
             EnforceSingleThreadOwnership();
-            m_Data->AddEntityCommand(&m_Data->m_MainThreadChain, ECBCommand.InstantiateEntity, e);
+            m_Data->AddEntityCommand(&m_Data->m_MainThreadChain, MainThreadJobIndex, ECBCommand.InstantiateEntity, e);
         }
-        
+
         public void DestroyEntity(Entity e)
         {
             EnforceSingleThreadOwnership();
-            m_Data->AddEntityCommand(&m_Data->m_MainThreadChain, ECBCommand.DestroyEntity, e);
+            m_Data->AddEntityCommand(&m_Data->m_MainThreadChain, MainThreadJobIndex, ECBCommand.DestroyEntity, e);
         }
 
         public DynamicBuffer<T> AddBuffer<T>() where T : struct, IBufferElementData
@@ -508,7 +693,11 @@ namespace Unity.Entities
         public DynamicBuffer<T> AddBuffer<T>(Entity e) where T : struct, IBufferElementData
         {
             EnforceSingleThreadOwnership();
-            return m_Data->CreateBufferCommand<T>(ECBCommand.AddBuffer, &m_Data->m_MainThreadChain, e);
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            return m_Data->CreateBufferCommand<T>(ECBCommand.AddBuffer, &m_Data->m_MainThreadChain, MainThreadJobIndex, e, m_BufferSafety, m_ArrayInvalidationSafety);
+#else
+            return m_Data->CreateBufferCommand<T>(ECBCommand.AddBuffer, &m_Data->m_MainThreadChain, MainThreadJobIndex, e);
+#endif
         }
 
         public DynamicBuffer<T> SetBuffer<T>() where T : struct, IBufferElementData
@@ -519,13 +708,17 @@ namespace Unity.Entities
         public DynamicBuffer<T> SetBuffer<T>(Entity e) where T : struct, IBufferElementData
         {
             EnforceSingleThreadOwnership();
-            return m_Data->CreateBufferCommand<T>(ECBCommand.SetBuffer, &m_Data->m_MainThreadChain, e);
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            return m_Data->CreateBufferCommand<T>(ECBCommand.SetBuffer, &m_Data->m_MainThreadChain, MainThreadJobIndex, e, m_BufferSafety, m_ArrayInvalidationSafety);
+#else
+            return m_Data->CreateBufferCommand<T>(ECBCommand.SetBuffer, &m_Data->m_MainThreadChain, MainThreadJobIndex, e);
+#endif
         }
 
         public void AddComponent<T>(Entity e, T component) where T : struct, IComponentData
         {
             EnforceSingleThreadOwnership();
-            m_Data->AddEntityComponentCommand(&m_Data->m_MainThreadChain, ECBCommand.AddComponent, e, component);
+            m_Data->AddEntityComponentCommand(&m_Data->m_MainThreadChain, MainThreadJobIndex, ECBCommand.AddComponent, e, component);
         }
 
         public void AddComponent<T>(T component) where T : struct, IComponentData
@@ -541,7 +734,7 @@ namespace Unity.Entities
         public void SetComponent<T>(Entity e, T component) where T : struct, IComponentData
         {
             EnforceSingleThreadOwnership();
-            m_Data->AddEntityComponentCommand(&m_Data->m_MainThreadChain, ECBCommand.SetComponent, e, component);
+            m_Data->AddEntityComponentCommand(&m_Data->m_MainThreadChain, MainThreadJobIndex, ECBCommand.SetComponent, e, component);
         }
 
         public void RemoveComponent<T>(Entity e)
@@ -552,10 +745,10 @@ namespace Unity.Entities
         public void RemoveComponent(Entity e, ComponentType componentType)
         {
             EnforceSingleThreadOwnership();
-            m_Data->AddEntityComponentTypeCommand(&m_Data->m_MainThreadChain, ECBCommand.RemoveComponent, e, componentType);
+            m_Data->AddEntityComponentTypeCommand(&m_Data->m_MainThreadChain, MainThreadJobIndex, ECBCommand.RemoveComponent, e, componentType);
         }
-        
-        
+
+
         private static bool IsDefaultObject<T>(ref T component, out int hashCode) where T : struct, ISharedComponentData
         {
             var typeIndex = TypeManager.GetTypeIndex<T>();
@@ -575,9 +768,9 @@ namespace Unity.Entities
             EnforceSingleThreadOwnership();
             int hashCode;
             if (IsDefaultObject(ref component, out hashCode))
-                m_Data->AddEntitySharedComponentCommand<T>(&m_Data->m_MainThreadChain, ECBCommand.AddSharedComponentData, e, hashCode, null);
+                m_Data->AddEntitySharedComponentCommand<T>(&m_Data->m_MainThreadChain, MainThreadJobIndex, ECBCommand.AddSharedComponentData, e, hashCode, null);
             else
-                m_Data->AddEntitySharedComponentCommand<T>(&m_Data->m_MainThreadChain, ECBCommand.AddSharedComponentData, e, hashCode, component);
+                m_Data->AddEntitySharedComponentCommand<T>(&m_Data->m_MainThreadChain, MainThreadJobIndex, ECBCommand.AddSharedComponentData, e, hashCode, component);
         }
 
         public void SetSharedComponent<T>(T component) where T : struct, ISharedComponentData
@@ -590,9 +783,9 @@ namespace Unity.Entities
             EnforceSingleThreadOwnership();
             int hashCode;
             if (IsDefaultObject(ref component, out hashCode))
-                m_Data->AddEntitySharedComponentCommand<T>(&m_Data->m_MainThreadChain, ECBCommand.SetSharedComponentData, e, hashCode, null);
+                m_Data->AddEntitySharedComponentCommand<T>(&m_Data->m_MainThreadChain, MainThreadJobIndex, ECBCommand.SetSharedComponentData, e, hashCode, null);
             else
-                m_Data->AddEntitySharedComponentCommand<T>(&m_Data->m_MainThreadChain, ECBCommand.SetSharedComponentData, e, hashCode, component);
+                m_Data->AddEntitySharedComponentCommand<T>(&m_Data->m_MainThreadChain, MainThreadJobIndex, ECBCommand.SetSharedComponentData, e, hashCode, component);
         }
 
         /// <summary>
@@ -610,46 +803,115 @@ namespace Unity.Entities
                 return;
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            AtomicSafetyHandle.CheckWriteAndBumpSecondaryVersion(m_Data->m_BufferSafety);
-            AtomicSafetyHandle.CheckWriteAndBumpSecondaryVersion(m_Data->m_ArrayInvalidationSafety);
+            AtomicSafetyHandle.CheckWriteAndBumpSecondaryVersion(m_BufferSafety);
+            AtomicSafetyHandle.CheckWriteAndBumpSecondaryVersion(m_ArrayInvalidationSafety);
 #endif
 
             Profiler.BeginSample("EntityCommandBuffer.Playback");
 
-            PlaybackChain(mgr, &m_Data->m_MainThreadChain);
-
-            var threadedChains = m_Data->m_ThreadedChains;
-            if (threadedChains != null)
+            // Walk all chains (Main + Threaded) and build a NativeArray of PlaybackState objects.
+            // Only chains with non-null Head pointers will be included.
+            var chainStates = new NativeArray<ECBChainPlaybackState>(m_Data->m_RecordedChainCount, Allocator.Temp);
+            using (chainStates)
             {
-                for (int i = 0; i < JobsUtility.MaxJobThreadCount; ++i)
+                int initialChainCount = 0;
+                for (var chain = &m_Data->m_MainThreadChain; chain != null; chain = chain->m_NextChain)
                 {
-                    var chain = &threadedChains[i];
-                    PlaybackChain(mgr, chain);
+                    if (chain->m_Head != null)
+                    {
+#pragma warning disable 728
+                        chainStates[initialChainCount++] = new ECBChainPlaybackState
+                        {
+                            Chunk = chain->m_Head,
+                            Offset = 0,
+                            NextSortIndex = chain->m_Head->BaseSortIndex
+                        };
+#pragma warning restore 728
+                    }
+                }
+                if (m_Data->m_ThreadedChains != null)
+                {
+                    for (int i = 0; i < JobsUtility.MaxJobThreadCount; ++i)
+                    {
+                        for (var chain = &m_Data->m_ThreadedChains[i]; chain != null; chain = chain->m_NextChain)
+                        {
+                            if (chain->m_Head != null)
+                            {
+#pragma warning disable 728
+                                chainStates[initialChainCount++] = new ECBChainPlaybackState
+                                {
+                                    Chunk = chain->m_Head,
+                                    Offset = 0,
+                                    NextSortIndex = chain->m_Head->BaseSortIndex
+                                };
+#pragma warning restore 728
+                            }
+                        }
+                    }
+                }
+                Assert.AreEqual<int>(m_Data->m_RecordedChainCount, initialChainCount);
+
+                // Play back the recorded commands in increasing sortIndex order
+                Entity* createEntitiesBatch = stackalloc Entity[EntityCommandBufferData.kMaxBatchCount];
+                Entity* instantiateEntitiesBatch = stackalloc Entity[EntityCommandBufferData.kMaxBatchCount];
+                ECBSharedPlaybackState playbackState = new ECBSharedPlaybackState
+                {
+                    CreateEntityBatchOffset = 0,
+                    InstantiateEntityBatchOffset = 0,
+                    CreateEntityBatch = createEntitiesBatch,
+                    InstantiateEntityBatch = instantiateEntitiesBatch,
+                    CurrentEntity = Entity.Null,
+                };
+
+                using (ECBChainPriorityQueue chainQueue = new ECBChainPriorityQueue(chainStates, Allocator.Temp))
+                {
+                    ECBChainHeapElement currentElem = chainQueue.Pop();
+                    while (currentElem.ChainIndex != -1)
+                    {
+                        ECBChainHeapElement nextElem = chainQueue.Peek();
+                        PlaybackChain(mgr, ref playbackState, chainStates, currentElem.ChainIndex, nextElem.ChainIndex);
+                        if (chainStates[currentElem.ChainIndex].Chunk == null)
+                        {
+                            chainQueue.Pop(); // ignore return value; we already have it as nextElem
+                        }
+                        else
+                        {
+                            currentElem.SortIndex = chainStates[currentElem.ChainIndex].NextSortIndex;
+                            chainQueue.ReplaceTop(currentElem);
+                        }
+                        currentElem = nextElem;
+                    }
                 }
             }
 
             Profiler.EndSample();
         }
 
-        private static unsafe void PlaybackChain(EntityManager mgr, EntityCommandBufferChain* chain)
+        private static unsafe void PlaybackChain(EntityManager mgr, ref ECBSharedPlaybackState playbackState, NativeArray<ECBChainPlaybackState> chainStates, int currentChain, int nextChain)
         {
-            var head = chain->m_Head;
+            int nextChainSortIndex = (nextChain != -1) ? chainStates[nextChain].NextSortIndex : -1;
 
-            Entity currentEntity = new Entity();
+            var chunk = chainStates[currentChain].Chunk;
+            Assert.IsTrue(chunk != null);
+            var off = chainStates[currentChain].Offset;
+            Assert.IsTrue(off >= 0 && off < chunk->Used);
 
-            int createEntityBatchOffset = 0;
-            int instantiateEntityBatchOffset = 0;
-            Entity* createEntityBatch = stackalloc Entity[EntityCommandBufferData.kMaxBatchCount];
-            Entity* instantiateEntityBatch = stackalloc Entity[EntityCommandBufferData.kMaxBatchCount];
-
-            while (head != null)
+            while (chunk != null)
             {
-                var off = 0;
-                var buf = (byte*)head + sizeof(ECBChunk);
-
-                while (off < head->Used)
+                var buf = (byte*)chunk + sizeof(ECBChunk);
+                while (off < chunk->Used)
                 {
                     var header = (BasicCommand*)(buf + off);
+                    if (nextChain != -1 && header->SortIndex > nextChainSortIndex)
+                    {
+                        // early out because a different chain needs to playback
+                        var state = chainStates[currentChain];
+                        state.Chunk = chunk;
+                        state.Offset = off;
+                        state.NextSortIndex = header->SortIndex;
+                        chainStates[currentChain] = state;
+                        return;
+                    }
 
                     switch ((ECBCommand)header->CommandType)
                     {
@@ -662,7 +924,7 @@ namespace Unity.Entities
                         case ECBCommand.RemoveComponent:
                             {
                                 var cmd = (EntityComponentCommand*)header;
-                                var entity = cmd->Header.Entity == Entity.Null ? currentEntity : cmd->Header.Entity;
+                                var entity = cmd->Header.Entity == Entity.Null ? playbackState.CurrentEntity : cmd->Header.Entity;
                                 mgr.RemoveComponent(entity, TypeManager.GetType(cmd->ComponentTypeIndex));
                             }
                             break;
@@ -670,51 +932,52 @@ namespace Unity.Entities
                         case ECBCommand.CreateEntity:
                             {
                                 var cmd = (CreateCommand*)header;
-
                                 if (cmd->BatchCount > 0)
                                 {
-                                    createEntityBatchOffset = 0;
+                                    playbackState.CreateEntityBatchOffset = 0;
                                     EntityArchetype at = cmd->Archetype;
-                                    
+
                                     if (!at.Valid)
                                     {
                                         at = mgr.CreateArchetype(null, 0);
                                     }
-                                    
-                                    mgr.CreateEntityInternal(at, createEntityBatch, cmd->BatchCount);
+
+                                    mgr.CreateEntityInternal(at, playbackState.CreateEntityBatch, cmd->BatchCount);
                                 }
 
-                                currentEntity = createEntityBatch[createEntityBatchOffset++];
+                                playbackState.CurrentEntity = playbackState.CreateEntityBatch[playbackState.CreateEntityBatchOffset++];
                             }
                             break;
-                        
+
                         case ECBCommand.InstantiateEntity:
                             {
                                 var cmd = (EntityCommand*)header;
-    
+
                                 if (cmd->BatchCount > 0)
                                 {
-                                    instantiateEntityBatchOffset = 0;
-                                    mgr.InstantiateInternal(cmd->Entity, instantiateEntityBatch, cmd->BatchCount);
+                                    playbackState.InstantiateEntityBatchOffset = 0;
+                                    mgr.InstantiateInternal(cmd->Entity, playbackState.InstantiateEntityBatch, cmd->BatchCount);
                                 }
-    
-                                currentEntity = instantiateEntityBatch[instantiateEntityBatchOffset++];
+
+                                playbackState.CurrentEntity = playbackState.InstantiateEntityBatch[playbackState.InstantiateEntityBatchOffset++];
                             }
                             break;
+
                         case ECBCommand.AddComponent:
                             {
                                 var cmd = (EntityComponentCommand*)header;
                                 var componentType = (ComponentType)TypeManager.GetType(cmd->ComponentTypeIndex);
-                                var entity = cmd->Header.Entity == Entity.Null ? currentEntity : cmd->Header.Entity;
+                                var entity = cmd->Header.Entity == Entity.Null ? playbackState.CurrentEntity : cmd->Header.Entity;
                                 mgr.AddComponent(entity, componentType);
-                                mgr.SetComponentDataRaw(entity, cmd->ComponentTypeIndex, cmd + 1, cmd->ComponentSize);
+                                if (!componentType.IsZeroSized)
+                                    mgr.SetComponentDataRaw(entity, cmd->ComponentTypeIndex, cmd + 1, cmd->ComponentSize);
                             }
                             break;
 
                         case ECBCommand.SetComponent:
                             {
                                 var cmd = (EntityComponentCommand*)header;
-                                var entity = cmd->Header.Entity == Entity.Null ? currentEntity : cmd->Header.Entity;
+                                var entity = cmd->Header.Entity == Entity.Null ? playbackState.CurrentEntity : cmd->Header.Entity;
                                 mgr.SetComponentDataRaw(entity, cmd->ComponentTypeIndex, cmd + 1, cmd->ComponentSize);
                             }
                             break;
@@ -722,7 +985,7 @@ namespace Unity.Entities
                         case ECBCommand.AddBuffer:
                             {
                                 var cmd = (EntityBufferCommand*)header;
-                                var entity = cmd->Header.Entity == Entity.Null ? currentEntity : cmd->Header.Entity;
+                                var entity = cmd->Header.Entity == Entity.Null ? playbackState.CurrentEntity : cmd->Header.Entity;
                                 mgr.AddComponent(entity, ComponentType.FromTypeIndex(cmd->ComponentTypeIndex));
                                 mgr.SetBufferRaw(entity, cmd->ComponentTypeIndex, &cmd->TempBuffer, cmd->ComponentSize);
                             }
@@ -731,7 +994,7 @@ namespace Unity.Entities
                         case ECBCommand.SetBuffer:
                             {
                                 var cmd = (EntityBufferCommand*)header;
-                                var entity = cmd->Header.Entity == Entity.Null ? currentEntity : cmd->Header.Entity;
+                                var entity = cmd->Header.Entity == Entity.Null ? playbackState.CurrentEntity : cmd->Header.Entity;
                                 mgr.SetBufferRaw(entity, cmd->ComponentTypeIndex, &cmd->TempBuffer, cmd->ComponentSize);
                             }
                             break;
@@ -739,7 +1002,7 @@ namespace Unity.Entities
                         case ECBCommand.AddSharedComponentData:
                             {
                                 var cmd = (EntitySharedComponentCommand*)header;
-                                var entity = cmd->Header.Entity == Entity.Null ? currentEntity : cmd->Header.Entity;
+                                var entity = cmd->Header.Entity == Entity.Null ? playbackState.CurrentEntity : cmd->Header.Entity;
                                 mgr.AddSharedComponentDataBoxed(entity, cmd->ComponentTypeIndex, cmd->HashCode,
                                     cmd->GetBoxedObject());
                             }
@@ -748,11 +1011,12 @@ namespace Unity.Entities
                         case ECBCommand.SetSharedComponentData:
                             {
                                 var cmd = (EntitySharedComponentCommand*)header;
-                                var entity = cmd->Header.Entity == Entity.Null ? currentEntity : cmd->Header.Entity;
+                                var entity = cmd->Header.Entity == Entity.Null ? playbackState.CurrentEntity : cmd->Header.Entity;
                                 mgr.SetSharedComponentDataBoxed(entity, cmd->ComponentTypeIndex, cmd->HashCode,
                                     cmd->GetBoxedObject());
                             }
                             break;
+
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                         default:
                             throw new System.InvalidOperationException("Invalid command buffer");
@@ -761,167 +1025,222 @@ namespace Unity.Entities
 
                     off += header->TotalSize;
                 }
-
-                head = head->Next;
+                // Reached the end of a chunk; advance to the next one
+                chunk = chunk->Next;
+                off = 0;
+            }
+            // Reached the end of the chain; update its playback state to make sure it's ignored
+            // for the remainder of playback.
+            {
+                var state = chainStates[currentChain];
+                state.Chunk = null;
+                state.Offset = 0;
+                state.NextSortIndex = Int32.MinValue;
+                chainStates[currentChain] = state;
             }
         }
 
+        public Concurrent ToConcurrent()
+        {
+            EntityCommandBuffer.Concurrent concurrent;
+
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            AtomicSafetyHandle.CheckWriteAndThrow(m_Safety0);
+            concurrent.m_Safety0 = m_Safety0;
+            AtomicSafetyHandle.UseSecondaryVersion(ref concurrent.m_Safety0);
+            concurrent.m_BufferSafety = m_BufferSafety;
+            concurrent.m_ArrayInvalidationSafety = m_ArrayInvalidationSafety;
+            concurrent.m_SafetyReadOnlyCount = 0;
+            concurrent.m_SafetyReadWriteCount = 3;
+
+            if (m_Data->m_Allocator == Allocator.Temp)
+            {
+                throw new InvalidOperationException("EntityCommandBuffer.Concurrent can not use Allocator.Temp; use Allocator.TempJob instead");
+            }
+#endif
+            concurrent.m_Data = m_Data;
+            concurrent.m_ThreadIndex = -1;
+
+            if (concurrent.m_Data != null)
+            {
+                concurrent.m_Data->InitConcurrentAccess();
+            }
+
+            return concurrent;
+        }
+
         /// <summary>
-        /// Allows concurrent (non-deterministic) command buffer recording.
+        /// Allows concurrent (deterministic) command buffer recording.
         /// </summary>
         [NativeContainer]
         [NativeContainerIsAtomicWriteOnly]
+        [StructLayout(LayoutKind.Sequential)]
         unsafe public struct Concurrent
         {
-			[NativeDisableUnsafePtrRestriction] EntityCommandBufferData* m_Data;
+            [NativeDisableUnsafePtrRestriction] internal EntityCommandBufferData* m_Data;
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            private AtomicSafetyHandle m_Safety;
+            internal AtomicSafetyHandle m_Safety0;
+            internal AtomicSafetyHandle m_BufferSafety;
+            internal AtomicSafetyHandle m_ArrayInvalidationSafety;
+            internal int m_SafetyReadOnlyCount;
+            internal int m_SafetyReadWriteCount;
 #endif
 
-		    [NativeSetThreadIndex]
-			private int m_ThreadIndex;
+            [NativeSetThreadIndex]
+            internal int m_ThreadIndex;
 
             [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
             private void CheckWriteAccess()
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
+                AtomicSafetyHandle.CheckWriteAndThrow(m_Safety0);
 #endif
             }
-
-            unsafe public static implicit operator EntityCommandBuffer.Concurrent(EntityCommandBuffer buffer)
-			{
-				EntityCommandBuffer.Concurrent concurrent;
-
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-				AtomicSafetyHandle.CheckWriteAndThrow(buffer.m_Safety);
-				concurrent.m_Safety = buffer.m_Safety;
-				AtomicSafetyHandle.UseSecondaryVersion(ref concurrent.m_Safety);
-#endif
-				concurrent.m_Data = buffer.m_Data;
-				concurrent.m_ThreadIndex = 0;
-
-                if (concurrent.m_Data != null)
-                {
-                    concurrent.m_Data->InitConcurrentAccess();
-                }
-
-				return concurrent;
-			}
 
             private EntityCommandBufferChain* ThreadChain
             {
-                get { return &m_Data->m_ThreadedChains[m_ThreadIndex]; }
+                get {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+                    if (m_ThreadIndex == -1)
+                    {
+                        throw new InvalidOperationException("EntityCommandBuffer.Concurrent must only be used in a Job");
+                    }
+#endif
+                    return &m_Data->m_ThreadedChains[m_ThreadIndex];
+                }
             }
 
-            public void CreateEntity()
+            public void CreateEntity(int jobIndex)
             {
                 CheckWriteAccess();
-                m_Data->AddCreateCommand(ThreadChain, ECBCommand.CreateEntity, new EntityArchetype());
+                var chain = ThreadChain;
+                m_Data->AddCreateCommand(chain, jobIndex, ECBCommand.CreateEntity, new EntityArchetype());
+                chain->TemporaryForceDisableBatching();
             }
 
-            public void CreateEntity(EntityArchetype archetype)
+            public void CreateEntity(int jobIndex, EntityArchetype archetype)
             {
                 CheckWriteAccess();
-                m_Data->AddCreateCommand(ThreadChain, ECBCommand.CreateEntity, archetype);
+                var chain = ThreadChain;
+                m_Data->AddCreateCommand(chain, jobIndex, ECBCommand.CreateEntity, archetype);
+                chain->TemporaryForceDisableBatching();
             }
 
-            public void Instantiate(Entity e)
+            public void Instantiate(int jobIndex, Entity e)
             {
                 CheckWriteAccess();
-                m_Data->AddEntityCommand(ThreadChain, ECBCommand.InstantiateEntity, e);
+                var chain = ThreadChain;
+                m_Data->AddEntityCommand(chain, jobIndex, ECBCommand.InstantiateEntity, e);
+                chain->TemporaryForceDisableBatching();
             }
 
-            public void DestroyEntity(Entity e)
+            public void DestroyEntity(int jobIndex, Entity e)
             {
                 CheckWriteAccess();
-                m_Data->AddEntityCommand(ThreadChain, ECBCommand.DestroyEntity, e);
+                var chain = ThreadChain;
+                m_Data->AddEntityCommand(chain, jobIndex, ECBCommand.DestroyEntity, e);
+                chain->TemporaryForceDisableBatching();
             }
 
-            public void AddComponent<T>(Entity e, T component) where T : struct, IComponentData
+            public void AddComponent<T>(int jobIndex, Entity e, T component) where T : struct, IComponentData
             {
                 CheckWriteAccess();
-                m_Data->AddEntityComponentCommand(ThreadChain, ECBCommand.AddComponent, e, component);
+                var chain = ThreadChain;
+                m_Data->AddEntityComponentCommand(chain, jobIndex, ECBCommand.AddComponent, e, component);
             }
 
-            public DynamicBuffer<T> AddBuffer<T>() where T : struct, IBufferElementData
+            public DynamicBuffer<T> AddBuffer<T>(int jobIndex) where T : struct, IBufferElementData
             {
-                return AddBuffer<T>(Entity.Null);
+                return AddBuffer<T>(jobIndex, Entity.Null);
             }
 
-            public DynamicBuffer<T> AddBuffer<T>(Entity e) where T : struct, IBufferElementData
+            public DynamicBuffer<T> AddBuffer<T>(int jobIndex, Entity e) where T : struct, IBufferElementData
             {
                 CheckWriteAccess();
-                return m_Data->CreateBufferCommand<T>(ECBCommand.AddBuffer, ThreadChain, e);
+                var chain = ThreadChain;
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+                return m_Data->CreateBufferCommand<T>(ECBCommand.AddBuffer, chain, jobIndex, e, m_BufferSafety, m_ArrayInvalidationSafety);
+#else
+                return m_Data->CreateBufferCommand<T>(ECBCommand.AddBuffer, chain, jobIndex, e);
+#endif
             }
 
-            public DynamicBuffer<T> SetBuffer<T>() where T : struct, IBufferElementData
+            public DynamicBuffer<T> SetBuffer<T>(int jobIndex) where T : struct, IBufferElementData
             {
-                return SetBuffer<T>(Entity.Null);
+                return SetBuffer<T>(jobIndex, Entity.Null);
             }
 
-            public DynamicBuffer<T> SetBuffer<T>(Entity e) where T : struct, IBufferElementData
+            public DynamicBuffer<T> SetBuffer<T>(int jobIndex, Entity e) where T : struct, IBufferElementData
             {
                 CheckWriteAccess();
-                return m_Data->CreateBufferCommand<T>(ECBCommand.SetBuffer, ThreadChain, e);
+                var chain = ThreadChain;
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+                return m_Data->CreateBufferCommand<T>(ECBCommand.SetBuffer, chain, jobIndex, e, m_BufferSafety, m_ArrayInvalidationSafety);
+#else
+                return m_Data->CreateBufferCommand<T>(ECBCommand.SetBuffer, chain, jobIndex, e);
+#endif
             }
 
-            public void AddComponent<T>(T component) where T : struct, IComponentData
+            public void AddComponent<T>(int jobIndex, T component) where T : struct, IComponentData
             {
-                AddComponent(Entity.Null, component);
+                AddComponent(jobIndex, Entity.Null, component);
             }
 
-            public void SetComponent<T>(T component) where T : struct, IComponentData
+            public void SetComponent<T>(int jobIndex, T component) where T : struct, IComponentData
             {
-                SetComponent(Entity.Null, component);
+                SetComponent(jobIndex, Entity.Null, component);
             }
 
-            public void SetComponent<T>(Entity e, T component) where T : struct, IComponentData
+            public void SetComponent<T>(int jobIndex, Entity e, T component) where T : struct, IComponentData
             {
                 CheckWriteAccess();
-                m_Data->AddEntityComponentCommand(ThreadChain, ECBCommand.SetComponent, e, component);
+                var chain = ThreadChain;
+                m_Data->AddEntityComponentCommand(chain, jobIndex, ECBCommand.SetComponent, e, component);
             }
 
-            public void RemoveComponent<T>(Entity e)
+            public void RemoveComponent<T>(int jobIndex, Entity e)
             {
-                RemoveComponent(e, ComponentType.Create<T>());
+                RemoveComponent(jobIndex, e, ComponentType.Create<T>());
             }
 
-            public void RemoveComponent(Entity e, ComponentType componentType)
+            public void RemoveComponent(int jobIndex, Entity e, ComponentType componentType)
             {
                 CheckWriteAccess();
-                m_Data->AddEntityComponentTypeCommand(ThreadChain, ECBCommand.RemoveComponent, e, componentType);
-            }
-            
-            public void AddSharedComponent<T>(T component) where T : struct, ISharedComponentData
-            {
-                AddSharedComponent(Entity.Null, component);
+                var chain = ThreadChain;
+                m_Data->AddEntityComponentTypeCommand(chain, jobIndex, ECBCommand.RemoveComponent, e, componentType);
             }
 
-            public void AddSharedComponent<T>(Entity e, T component) where T : struct, ISharedComponentData
+            public void AddSharedComponent<T>(int jobIndex, T component) where T : struct, ISharedComponentData
+            {
+                AddSharedComponent(jobIndex, Entity.Null, component);
+            }
+
+            public void AddSharedComponent<T>(int jobIndex, Entity e, T component) where T : struct, ISharedComponentData
             {
                 CheckWriteAccess();
+                var chain = ThreadChain;
                 int hashCode;
                 if (IsDefaultObject(ref component, out hashCode))
-                    m_Data->AddEntitySharedComponentCommand<T>(ThreadChain, ECBCommand.AddSharedComponentData, e, hashCode, null);
+                    m_Data->AddEntitySharedComponentCommand<T>(chain, jobIndex, ECBCommand.AddSharedComponentData, e, hashCode, null);
                 else
-                    m_Data->AddEntitySharedComponentCommand<T>(ThreadChain, ECBCommand.AddSharedComponentData, e, hashCode, component);
+                    m_Data->AddEntitySharedComponentCommand<T>(chain, jobIndex, ECBCommand.AddSharedComponentData, e, hashCode, component);
             }
 
-            public void SetSharedComponent<T>(T component) where T : struct, ISharedComponentData
+            public void SetSharedComponent<T>(int jobIndex, T component) where T : struct, ISharedComponentData
             {
-                SetSharedComponent(Entity.Null, component);
+                SetSharedComponent(jobIndex, Entity.Null, component);
             }
 
-            public void SetSharedComponent<T>(Entity e, T component) where T : struct, ISharedComponentData
+            public void SetSharedComponent<T>(int jobIndex, Entity e, T component) where T : struct, ISharedComponentData
             {
                 CheckWriteAccess();
+                var chain = ThreadChain;
                 int hashCode;
                 if (IsDefaultObject(ref component, out hashCode))
-                    m_Data->AddEntitySharedComponentCommand<T>(ThreadChain, ECBCommand.SetSharedComponentData, e, hashCode, null);
+                    m_Data->AddEntitySharedComponentCommand<T>(chain, jobIndex, ECBCommand.SetSharedComponentData, e, hashCode, null);
                 else
-                    m_Data->AddEntitySharedComponentCommand<T>(ThreadChain, ECBCommand.SetSharedComponentData, e, hashCode, component);
+                    m_Data->AddEntitySharedComponentCommand<T>(chain, jobIndex, ECBCommand.SetSharedComponentData, e, hashCode, component);
             }
         }
     }

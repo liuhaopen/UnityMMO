@@ -12,6 +12,9 @@ namespace Unity.Entities
         readonly EntityDataManager*      m_Entities;
         readonly int                     m_TypeIndex;
         readonly uint                    m_GlobalSystemVersion;
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+        readonly bool                    m_IsZeroSized;          // cache of whether T is zero-sized
+#endif
         int                              m_TypeLookupCache;
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
@@ -22,6 +25,7 @@ namespace Unity.Entities
             m_Entities = entityData;
             m_TypeLookupCache = 0;
             m_GlobalSystemVersion = entityData->GlobalSystemVersion;
+            m_IsZeroSized = ComponentType.FromTypeIndex(typeIndex).IsZeroSized;
         }
 #else
         internal ComponentDataFromEntity(int typeIndex, EntityDataManager* entityData)
@@ -52,8 +56,13 @@ namespace Unity.Entities
 #endif
                 m_Entities->AssertEntityHasComponent(entity, m_TypeIndex);
 
-                void* ptr = m_Entities->GetComponentDataWithTypeRO(entity, m_TypeIndex, ref m_TypeLookupCache);
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+                if (m_IsZeroSized)
+                   throw new System.ArgumentException($"ComponentDataFromEntity<{typeof(T)}> indexer can not get the component because it is zero sized, you can use Exists instead.");
+#endif
+                
                 T data;
+                void* ptr = m_Entities->GetComponentDataWithTypeRO(entity, m_TypeIndex, ref m_TypeLookupCache);
                 UnsafeUtility.CopyPtrToStructure(ptr, out data);
 
                 return data;
@@ -64,6 +73,11 @@ namespace Unity.Entities
                 AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
 #endif
                 m_Entities->AssertEntityHasComponent(entity, m_TypeIndex);
+
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+			    if (m_IsZeroSized)
+			        throw new System.ArgumentException($"ComponentDataFromEntity<{typeof(T)}> indexer can not set the component because it is zero sized, you can use Exists instead.");
+#endif
 
                 void* ptr = m_Entities->GetComponentDataWithTypeRW(entity, m_TypeIndex, m_GlobalSystemVersion, ref m_TypeLookupCache);
                 UnsafeUtility.CopyStructureToPtr(ref value, ptr);

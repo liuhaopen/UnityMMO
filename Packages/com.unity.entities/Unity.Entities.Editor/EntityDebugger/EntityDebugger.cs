@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEditor.IMGUI.Controls;
@@ -10,6 +9,27 @@ namespace Unity.Entities.Editor
     public class EntityDebugger : EditorWindow
     {
         private const float kSystemListWidth = 350f;
+        private const float kChunkInfoViewWidth = 250f;
+
+        public bool ShowingChunkInfoView
+        {
+            get { return showingChunkInfoView; }
+            set
+            {
+                if (showingChunkInfoView != value)
+                {
+                    showingChunkInfoView = value;
+                    if (!showingChunkInfoView)
+                    {
+                        chunkInfoListView.ClearSelection();
+                    }
+                }
+            }
+        }
+        private bool showingChunkInfoView = true;
+
+        private float CurrentEntityViewWidth =>
+            Mathf.Max(100f, position.width - kSystemListWidth - (showingChunkInfoView ? kChunkInfoViewWidth : 0f));
 
         [MenuItem("Window/Analysis/Entity Debugger", false)]
         private static void OpenWindow()
@@ -17,32 +37,41 @@ namespace Unity.Entities.Editor
             GetWindow<EntityDebugger>("Entity Debugger");
         }
 
-        private static GUIStyle Box
+        private static GUIStyle LabelStyle
         {
             get
             {
-                if (box == null)
+                return labelStyle ?? (labelStyle = new GUIStyle(EditorStyles.label)
                 {
-                    box = new GUIStyle(GUI.skin.box)
-                    {
-                        margin = new RectOffset(),
-                        padding = new RectOffset(1, 0, 1, 0),
-                        overflow = new RectOffset(0, 1, 0, 1)
-                    };
-                }
-
-                return box;
+                    margin = EditorStyles.boldLabel.margin,
+                    richText = true
+                });
             }
         }
 
-        private static GUIStyle box;
+        private static GUIStyle labelStyle;
+
+        private static GUIStyle BoxStyle
+        {
+            get
+            {
+                return boxStyle ?? (boxStyle = new GUIStyle(GUI.skin.box)
+                {
+                    margin = new RectOffset(),
+                    padding = new RectOffset(1, 0, 1, 0),
+                    overflow = new RectOffset(0, 1, 0, 1)
+                });
+            }
+        }
+
+        private static GUIStyle boxStyle;
 
         public ScriptBehaviourManager SystemSelection { get; private set; }
 
         public World SystemSelectionWorld
         {
-            get => systemSelectionWorld?.IsCreated == true ? systemSelectionWorld : null;
-            private set => systemSelectionWorld = value;
+            get { return systemSelectionWorld?.IsCreated == true ? systemSelectionWorld : null; }
+            private set { systemSelectionWorld = value; }
         }
 
         public void SetSystemSelection(ScriptBehaviourManager manager, World world, bool updateList, bool propagate)
@@ -67,6 +96,7 @@ namespace Unity.Entities.Editor
 
         public void SetEntityListSelection(EntityListQuery newSelection, bool updateList, bool propagate)
         {
+            chunkInfoListView.ClearSelection();
             EntityListQuerySelection = newSelection;
             if (updateList)
                 componentGroupListView.SetEntityListSelection(newSelection);
@@ -96,7 +126,7 @@ namespace Unity.Entities.Editor
             Entity entity)
         {
             if (Instance == null)
-                return;
+                OpenWindow();
             Instance.SetWorldSelection(world, false);
             Instance.SetSystemSelection(system, world, true, false);
             Instance.SetEntityListSelection(entityQuery, true, false);
@@ -118,6 +148,9 @@ namespace Unity.Entities.Editor
 
         [SerializeField] private TreeViewState entityListState = new TreeViewState();
         private EntityListView entityListView;
+        
+        [SerializeField] private ChunkInfoListView.State chunkInfoListState = new ChunkInfoListView.State();
+        private ChunkInfoListView chunkInfoListView;
 
         internal WorldPopup m_WorldPopup;
         
@@ -133,11 +166,9 @@ namespace Unity.Entities.Editor
             }
         }
         
-        
         [SerializeField] private string lastEditModeWorldSelection = WorldPopup.kNoWorldName;
         [SerializeField] private string lastPlayModeWorldSelection = WorldPopup.kNoWorldName;
         [SerializeField] private bool showingPlayerLoop;
-        
 
         public void SetWorldSelection(World selection, bool propagate)
         {
@@ -159,15 +190,28 @@ namespace Unity.Entities.Editor
             }
         }
 
+        public void SetEntityListChunkFilter(ChunkFilter filter)
+        {
+            entityListView.SetFilter(filter);
+        }
+
         private void CreateEntityListView()
         {
             entityListView?.Dispose();
-            entityListView = new EntityListView(entityListState, EntityListQuerySelection, x => SetEntitySelection(x, false), () => SystemSelectionWorld ?? WorldSelection, () => SystemSelection);
+
+            entityListView = new EntityListView(
+                entityListState,
+                EntityListQuerySelection,
+                x => SetEntitySelection(x, false),
+                () => SystemSelectionWorld ?? WorldSelection,
+                () => SystemSelection,
+                x => chunkInfoListView.SetChunkArray(x)
+                );
         }
 
         private void CreateSystemListView()
         {
-            systemListView = SystemListView.CreateList(systemListStates, systemListStateNames, (system, world) => SetSystemSelection(system, world, false, true), () => WorldSelection);
+            systemListView = SystemListView.CreateList(systemListStates, systemListStateNames, (system, world) => SetSystemSelection(system, world, false, true), () => WorldSelection, () => ShowInactiveSystems);
             systemListView.multiColumnHeader.ResizeToFit();
         }
 
@@ -176,9 +220,25 @@ namespace Unity.Entities.Editor
             componentGroupListView = ComponentGroupListView.CreateList(SystemSelection as ComponentSystemBase, componentGroupListStates, componentGroupListStateNames, x => SetEntityListSelection(x, false, true), () => SystemSelectionWorld);
         }
 
+        [SerializeField] private bool ShowInactiveSystems;
+
         private void CreateWorldPopup()
         {
-            m_WorldPopup = new WorldPopup(() => WorldSelection, x => SetWorldSelection(x, true));
+            m_WorldPopup = new WorldPopup(
+                () => WorldSelection,
+                x => SetWorldSelection(x, true),
+                () => ShowInactiveSystems,
+                () =>
+                {
+                    ShowInactiveSystems = !ShowInactiveSystems;
+                    systemListView.Reload();
+                }
+                );
+        }
+
+        private void CreateChunkInfoListView()
+        {
+            chunkInfoListView = new ChunkInfoListView(chunkInfoListState, SetEntityListChunkFilter);
         }
 
         private World worldSelection;
@@ -186,15 +246,28 @@ namespace Unity.Entities.Editor
         private void OnEnable()
         {
             Instance = this;
-            selectionProxy = ScriptableObject.CreateInstance<EntitySelectionProxy>();
-            selectionProxy.hideFlags = HideFlags.HideAndDontSave;
             filterUI = new ComponentTypeFilterUI(SetAllEntitiesFilter, () => WorldSelection);
+
+            CreateEntitySelectionProxy();
             CreateWorldPopup();
             CreateSystemListView();
             CreateComponentGroupListView();
             CreateEntityListView();
+            CreateChunkInfoListView();
             systemListView.TouchSelection();
+
             EditorApplication.playModeStateChanged += OnPlayModeStateChange;
+        }
+
+        private void CreateEntitySelectionProxy()
+        {
+            selectionProxy = ScriptableObject.CreateInstance<EntitySelectionProxy>();
+            selectionProxy.hideFlags = HideFlags.HideAndDontSave;
+
+            selectionProxy.EntityControlDoubleClick += entity =>
+            {
+                entityListView?.OnEntitySelected(entity);
+            };
         }
 
         private void OnDestroy()
@@ -205,6 +278,7 @@ namespace Unity.Entities.Editor
         private void OnDisable()
         {
             entityListView?.Dispose();
+            chunkInfoListView?.Dispose();
             if (Instance == this)
                 Instance = null;
             if (selectionProxy)
@@ -220,16 +294,23 @@ namespace Unity.Entities.Editor
             if (change == PlayModeStateChange.ExitingPlayMode && Selection.activeObject == selectionProxy)
                 Selection.activeObject = null;
         }
-        
-        private float lastUpdate;
+
+        private readonly RepaintLimiter repaintLimiter = new RepaintLimiter();
 
         private void Update()
         {
             systemListView.UpdateTimings();
             
-            if (Time.realtimeSinceStartup > lastUpdate + 0.5f) 
-            { 
-                Repaint(); 
+            
+
+            if (repaintLimiter.SimulationAdvanced())
+            {
+                Repaint();
+            }
+            else if (!Application.isPlaying)
+            {
+                if (systemListView.NeedsReload || componentGroupListView.NeedsReload || entityListView.NeedsReload || !filterUI.TypeListValid())
+                    Repaint();
             }
         }
 
@@ -256,41 +337,46 @@ namespace Unity.Entities.Editor
             GUILayout.BeginHorizontal();
             GUILayout.Label("Systems", EditorStyles.boldLabel);
             GUILayout.FlexibleSpace();
-            AlignHeader(ShowWorldPopup);
+            ShowWorldPopup();
             GUILayout.EndHorizontal();
         }
+        
+        const float kChunkInfoButtonWidth = 60f;
 
         private void EntityHeader()
         {
-            if (WorldSelection == null && SystemSelectionWorld == null)
-                return;
-            GUILayout.BeginHorizontal();
-            if (SystemSelection == null)
+            if (WorldSelection != null || SystemSelectionWorld != null)
             {
-                GUILayout.Label("All Entities", EditorStyles.boldLabel);
-            }
-            else
-            {
-                var type = SystemSelection.GetType();
-                AlignHeader(() => GUILayout.Label(type.Namespace, EditorStyles.label));
-                GUILayout.Label(type.Name, EditorStyles.boldLabel);
-                GUILayout.FlexibleSpace();
-                var system = SystemSelection as ComponentSystemBase;
-                if (system != null)
+                var rect = new Rect(kSystemListWidth, 3f, CurrentEntityViewWidth, kLineHeight);
+                if (SystemSelection == null)
                 {
-                    var running = system.Enabled && system.ShouldRunSystem();
-                    AlignHeader(() => GUILayout.Label($"running: {(running ? "yes" : "no")}"));
+                    GUI.Label(rect, "All Entities", EditorStyles.boldLabel);
+                }
+                else
+                {
+                    var type = SystemSelection.GetType();
+                    GUI.Label(rect, $"<b>{type.Namespace}</b>.{type.Name}", LabelStyle);
                 }
             }
-            GUILayout.EndHorizontal();
+            if (!showingChunkInfoView)
+            {
+                ChunkInfoToggle(new Rect(kSystemListWidth + CurrentEntityViewWidth - kChunkInfoButtonWidth, 0f, kChunkInfoButtonWidth, kLineHeight));
+            }
+        }
+
+        private void ChunkInfoToggle(Rect rect)
+        {
+            ShowingChunkInfoView = GUI.Toggle(rect, ShowingChunkInfoView, "Chunk Info", EditorStyles.miniButton);
         }
 
         private void ComponentGroupList()
         {
             if (SystemSelection is ComponentSystemBase)
             {
-                GUILayout.BeginVertical(Box, GUILayout.Height(componentGroupListView.Height + Box.padding.bottom + Box.padding.top));
-
+                componentGroupListView.SetWidth(CurrentEntityViewWidth);
+                var height = Mathf.Min(componentGroupListView.Height + BoxStyle.padding.vertical, position.height*0.5f);
+                GUILayout.BeginVertical(BoxStyle, GUILayout.Height(height));
+                
                 componentGroupListView.OnGUI(GUIHelpers.GetExpandingRect());
                 GUILayout.EndVertical();
             }
@@ -306,6 +392,7 @@ namespace Unity.Entities.Editor
 
         private EntityListQuery filterQuery;
         private World systemSelectionWorld;
+        private const float kLineHeight = 18f;
 
         public void SetAllEntitiesFilter(EntityListQuery entityQuery)
         {
@@ -322,17 +409,38 @@ namespace Unity.Entities.Editor
 
         void EntityList()
         {
-            GUILayout.BeginVertical(Box);
+            GUILayout.BeginVertical(BoxStyle);
             entityListView.OnGUI(GUIHelpers.GetExpandingRect());
             GUILayout.EndVertical();
         }
-
-        private void AlignHeader(System.Action header)
+        
+        private void ChunkInfoView()
         {
-            GUILayout.BeginVertical();
-            GUILayout.Space(6f);
-            header();
-            GUILayout.EndVertical();
+            GUILayout.BeginHorizontal(BoxStyle);
+            if (entityListView.ShowingSomething)
+            {
+                GUILayout.Label($"Matching chunks: {entityListView.ChunkArray.Length}");
+            }
+            GUILayout.FlexibleSpace();
+            ChunkInfoToggle(GUILayoutUtility.GetRect(kChunkInfoButtonWidth, kLineHeight));
+            GUILayout.EndHorizontal();
+            if (entityListView.ShowingSomething)
+            {
+                GUILayout.BeginHorizontal(BoxStyle);
+                chunkInfoListView.OnGUI(GUIHelpers.GetExpandingRect());
+                GUILayout.EndHorizontal();
+                if (chunkInfoListView.HasSelection())
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.FlexibleSpace();
+                    if (GUILayout.Button("Clear Selection"))
+                    {
+                        chunkInfoListView.ClearSelection();
+                        EditorGUIUtility.ExitGUI();
+                    }
+                    GUILayout.EndHorizontal();
+                }
+            }
         }
 
         private void OnSelectionChange()
@@ -347,10 +455,10 @@ namespace Unity.Entities.Editor
         {
             if (Event.current.type == EventType.Layout)
             {
-                systemListView.UpdateIfNecessary();
-                componentGroupListView.UpdateIfNecessary();
+                systemListView.ReloadIfNecessary();
                 filterUI.GetTypes();
-                entityListView.UpdateIfNecessary();
+                componentGroupListView.ReloadIfNecessary();
+                entityListView.ReloadIfNecessary();
             }
             
             if (Selection.activeObject == selectionProxy)
@@ -361,29 +469,30 @@ namespace Unity.Entities.Editor
                     entityListView.SelectNothing();
                 }
             }
-
-            GUILayout.BeginHorizontal();
-            
-            GUILayout.BeginVertical(GUILayout.Width(kSystemListWidth)); // begin System side
+            GUILayout.BeginArea(new Rect(0f, 0f, kSystemListWidth, position.height)); // begin System side
             SystemHeader();
             
-            GUILayout.BeginVertical(Box);
+            GUILayout.BeginVertical(BoxStyle);
             SystemList();
             GUILayout.EndVertical();
             
-            GUILayout.EndVertical(); // end System side
+            GUILayout.EndArea(); // end System side
             
-            GUILayout.BeginVertical(GUILayout.Width(position.width - kSystemListWidth)); // begin Entity side
-
             EntityHeader();
+            
+            GUILayout.BeginArea(new Rect(kSystemListWidth, kLineHeight, CurrentEntityViewWidth, position.height - kLineHeight));
             ComponentGroupList();
             EntityList();
-            
-            GUILayout.EndVertical(); // end Entity side
-            
-            GUILayout.EndHorizontal();
+            GUILayout.EndArea();
 
-            lastUpdate = Time.realtimeSinceStartup;
+            if (showingChunkInfoView)
+            {
+                GUILayout.BeginArea(new Rect(kSystemListWidth + CurrentEntityViewWidth, 0f, kChunkInfoViewWidth + 1, position.height));
+                ChunkInfoView();
+                GUILayout.EndArea();
+            }
+            
+            repaintLimiter.RecordRepaint();
         }
     }
 }

@@ -2,62 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace Unity.Entities.Editor
 {
     public static class ComponentGroupGUI
     {
-        public static void CalculateDrawingParts(List<ComponentType> types, bool archetypeQueryMode, float width, out float height, out List<GUIStyle> styles, out List<GUIContent> names, out List<Rect> rects)
-        {
-            types.Sort((Comparison<ComponentType>) CompareTypes);
-            styles = new List<GUIStyle>(types.Count);
-            names = new List<GUIContent>(types.Count);
-            rects = new List<Rect>(types.Count);
-            var x = 0f;
-            var y = 0f;
-            foreach (var type in types)
-            {
-                var style = StyleForAccessMode(type.AccessModeType, archetypeQueryMode);
-                var content = new GUIContent((string) SpecifiedTypeName(type.GetManagedType()));
-                var rect = new Rect(new Vector2(x, y), style.CalcSize(content));
-                if (rect.xMax > width && x != 0f)
-                {
-                    rect.x = 0f;
-                    rect.y += rect.height + 2f;
-                }
-
-                x = rect.xMax + 2f;
-                y = rect.y;
-
-                styles.Add(style);
-                names.Add(content);
-                rects.Add(rect);
-            }
-
-            height = rects.Last().yMax;
-        }
-
-        public static void DrawComponentList(Rect wholeRect, List<GUIStyle> styles, List<GUIContent> names, List<Rect> rects) 
-        {
-            if (Event.current.type == EventType.Repaint)
-            {
-                for (var i = 0; i < rects.Count; ++i)
-                {
-                    var rect = rects[i];
-                    rect.position += wholeRect.position;
-                    styles[i].Draw(rect, names[i], false, false, false, false);
-                }
-            }
-        }
-
-        public static void ComponentListGUILayout(ComponentType[] types, float width)
-        {
-            CalculateDrawingParts(types.ToList(), false, width, out var height, out var styles, out var names, out var rects);
-
-            var wholeRect = GUILayoutUtility.GetRect(width, height);
-            DrawComponentList(wholeRect, styles, names, rects);
-        }
 
         internal static int CompareTypes(ComponentType x, ComponentType y)
         {
@@ -82,13 +33,40 @@ namespace Unity.Entities.Editor
 
         public static string SpecifiedTypeName(Type type)
         {
+            return SpecifiedTypeName(type, new Queue<Type>(type.GetGenericArguments()));
+        }
+
+        static string SpecifiedTypeName(Type type, Queue<Type> args)
+        {
             var name = type.Name;
+
+            if (type.IsGenericParameter)
+            {
+                return name;
+            } 
+            if (type.IsNested)
+            {
+                name = $"{SpecifiedTypeName(type.DeclaringType, args)}.{name}";
+            }
             if (type.IsGenericType)
             {
-                name = name.Remove(name.IndexOf('`'));
+                var tickIndex = name.IndexOf('`');
+                if (tickIndex > -1)
+                    name = name.Remove(tickIndex);
                 var genericTypes = type.GetGenericArguments();
-                var genericTypeNames = String.Join(", ", genericTypes.Select(SpecifiedTypeName));
-                name = $"{name}<{genericTypeNames}>";
+
+                var genericTypeNames = new StringBuilder();
+                for (var i = 0; i < genericTypes.Length && args.Count > 0; i++)
+                {
+                    if (i != 0)
+                        genericTypeNames.Append(", ");
+                    genericTypeNames.Append(SpecifiedTypeName(args.Dequeue()));
+                }
+
+                if (genericTypeNames.Length > 0) 
+                {
+                    name = $"{name}<{genericTypeNames}>";
+                }
             }
 
             return name;
@@ -99,9 +77,9 @@ namespace Unity.Entities.Editor
             switch (mode)
             {
                 case ComponentType.AccessMode.ReadOnly:
-                    return archetypeQueryMode ? EntityDebuggerStyles.ComponentRequired : EntityDebuggerStyles.ComponentReadOnly;
+                    return EntityDebuggerStyles.ComponentReadOnly;
                 case ComponentType.AccessMode.ReadWrite:
-                    return archetypeQueryMode ? EntityDebuggerStyles.ComponentRequired : EntityDebuggerStyles.ComponentReadWrite;
+                    return EntityDebuggerStyles.ComponentReadWrite;
                 case ComponentType.AccessMode.Subtractive:
                     return EntityDebuggerStyles.ComponentSubtractive;
                 default:

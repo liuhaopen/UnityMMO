@@ -1,11 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Threading;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
-using Unity.Jobs.LowLevel.Unsafe;
-using UnityEngine;
 
 namespace Unity.Entities
 {
@@ -17,7 +12,7 @@ namespace Unity.Entities
         public int Length;
         public int Capacity;
 
-        public static unsafe byte* GetElementPointer(BufferHeader* header)
+        public static byte* GetElementPointer(BufferHeader* header)
         {
             if (header->Pointer != null)
                 return header->Pointer;
@@ -31,7 +26,7 @@ namespace Unity.Entities
             RetainOldData
         }
 
-        public static unsafe void EnsureCapacity(BufferHeader* header, int count, int typeSize, int alignment, TrashMode trashMode)
+        public static void EnsureCapacity(BufferHeader* header, int count, int typeSize, int alignment, TrashMode trashMode)
         {
             if (header->Capacity >= count)
                 return;
@@ -58,7 +53,7 @@ namespace Unity.Entities
             header->Capacity = newCapacity;
         }
 
-        public static unsafe void Assign(BufferHeader* header, byte* source, int count, int typeSize, int alignment)
+        public static void Assign(BufferHeader* header, byte* source, int count, int typeSize, int alignment)
         {
             EnsureCapacity(header, count, typeSize, alignment, TrashMode.TrashOldData);
 

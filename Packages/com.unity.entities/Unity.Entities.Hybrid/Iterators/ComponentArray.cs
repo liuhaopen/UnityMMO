@@ -3,7 +3,6 @@ using System.Reflection;
 
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
-using UnityEngine.Profiling;
 using UnityEngine.Scripting;
 
 namespace Unity.Entities
@@ -12,16 +11,12 @@ namespace Unity.Entities
     {
         public static ComponentArray<T> GetComponentArray<T>(this ComponentGroup group) where T : Component
         {
-            Profiler.BeginSample("GetComponentArray");
-            
             int length;
             ComponentChunkIterator iterator;
             group.GetComponentChunkIterator(out length, out iterator);
             var indexInComponentGroup = group.GetIndexInComponentGroup(TypeManager.GetTypeIndex<T>());
 
             iterator.IndexInComponentGroup = indexInComponentGroup;
-            
-            Profiler.EndSample();
             return new ComponentArray<T>(iterator, length, group.ArchetypeManager);
         }
     }
@@ -85,7 +80,7 @@ namespace Unity.Entities
 
     [Preserve]
     [CustomInjectionHook]
-    public class ComponentArrayInjectionHook : InjectionHook
+    sealed class ComponentArrayInjectionHook : InjectionHook
     {
         public override Type FieldTypeOfInterest => typeof(ComponentArray<>);
 

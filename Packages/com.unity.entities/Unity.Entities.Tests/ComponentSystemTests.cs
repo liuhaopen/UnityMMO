@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using Unity.Burst;
 using Unity.Collections;
-using Unity.Entities;
 using Unity.Jobs;
 
 namespace Unity.Entities.Tests
@@ -18,7 +17,7 @@ namespace Unity.Entities.Tests
             {
             }
 
-            protected override void OnCreateManager(int capacity)
+            protected override void OnCreateManager()
             {
                 Created = true;
             }
@@ -40,7 +39,7 @@ namespace Unity.Entities.Tests
         [DisableAutoCreation]
         class ThrowExceptionSystem : TestSystem
         {
-            protected override void OnCreateManager(int capacity)
+            protected override void OnCreateManager()
             {
                 throw new System.Exception();
             }
@@ -193,6 +192,24 @@ namespace Unity.Entities.Tests
             Assert.AreEqual(3, EmptySystem.ComponentGroups.Length);
         }
         
+        [Test]
+        public void GetComponentGroupArchetypeQuery()
+        {
+            var query1 = new ComponentType[] { typeof(EcsTestData) };
+            var query2 = new EntityArchetypeQuery { All = new ComponentType[] {typeof(EcsTestData)} };
+            var query3 = new EntityArchetypeQuery { All = new ComponentType[] {typeof(EcsTestData), typeof(EcsTestData2)} };
+            
+            var group1 = EmptySystem.GetComponentGroup(query1);
+            var group2 = EmptySystem.GetComponentGroup(query2);
+            var group3 = EmptySystem.GetComponentGroup(query3);
+
+            Assert.AreEqual(group1, EmptySystem.GetComponentGroup(query1));
+            Assert.AreEqual(group2, EmptySystem.GetComponentGroup(query2));
+            Assert.AreEqual(group3, EmptySystem.GetComponentGroup(query3));
+            
+            Assert.AreEqual(3, EmptySystem.ComponentGroups.Length);
+        }
+        
         //@TODO: Behaviour is a slightly dodgy... Should probably just ignore and return same as single typeof(EcsTestData)
         [Test]
         public void GetComponentGroupWithEntityThrows()
@@ -249,8 +266,8 @@ namespace Unity.Entities.Tests
             {
                 var job = new Issue101Job()
                 {
-                    hashMap = hashMap,
-                    keys = keys,
+                    hashMap = hashMap.ToConcurrent(),
+                    keys = keys.ToConcurrent(),
                     Index = 1,
                 };
 

@@ -1,12 +1,7 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using Unity.Collections;
 using NUnit.Framework;
-using Unity.Entities;
-using UnityEngine;
 using System.Collections.Generic;
-using UnityEditor.VersionControl;
 
 namespace Unity.Entities.Tests
 {

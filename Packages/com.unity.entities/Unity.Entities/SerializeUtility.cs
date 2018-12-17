@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using Unity.Assertions;
 using Unity.Collections;
-using UnityEngine;
 using Unity.Collections.LowLevel.Unsafe;
 
 namespace Unity.Entities.Serialization
@@ -20,16 +17,15 @@ namespace Unity.Entities.Serialization
             public int AllocSizeBytes;
         }
 
-        public static int CurrentFileFormatVersion = 6;
+        public static int CurrentFileFormatVersion = 7;
 
-        public static unsafe void DeserializeWorld(ExclusiveEntityTransaction manager, BinaryReader reader)
+        public static unsafe void DeserializeWorld(ExclusiveEntityTransaction manager, BinaryReader reader, int numSharedComponents)
         {
             if (manager.ArchetypeManager.CountEntities() != 0)
             {
                 throw new ArgumentException(
                     $"DeserializeWorld can only be used on completely empty EntityManager. Please create a new empty World and use EntityManager.MoveEntitiesFrom to move the loaded entities into the destination world instead.");
             }
-            
             int storedVersion = reader.ReadInt();
             if (storedVersion != CurrentFileFormatVersion)
             {
@@ -38,7 +34,8 @@ namespace Unity.Entities.Serialization
             }
 
             var types = ReadTypeArray(reader);
-            var archetypes = ReadArchetypes(reader, types, manager, out var totalEntityCount);
+            int totalEntityCount;
+            var archetypes = ReadArchetypes(reader, types, manager, out totalEntityCount);
             manager.AllocateConsecutiveEntitiesForLoading(totalEntityCount);
 
             int totalChunkCount = reader.ReadInt();
@@ -52,6 +49,18 @@ namespace Unity.Entities.Serialization
                 // Fixup the pointer to the shared component values
                 // todo: more generic way of fixing up pointers?
                 chunk->SharedComponentValueArray = (int*)((byte*)(chunk) + Chunk.GetSharedComponentOffset(chunk->Archetype->NumSharedComponents));
+
+                var numSharedComponentsInArchetype = chunk->Archetype->NumSharedComponents;
+                for (int j = 0; j < numSharedComponentsInArchetype; ++j)
+                {
+                    // The shared component 0 is not part of the array, so an index equal to the array size is valid.
+                    if (chunk->SharedComponentValueArray[j] > numSharedComponents)
+                    {
+                        throw new ArgumentException(
+                            $"Archetype uses shared component at index {chunk->SharedComponentValueArray[j]} but only {numSharedComponents} are available, check if the shared scene has been properly loaded.");
+                    }
+                }
+
                 chunk->ChangeVersion = (uint*) ((byte*) chunk +
                                                 Chunk.GetChangedComponentOffset(chunk->Archetype->TypesCount,
                                                     chunk->Archetype->NumSharedComponents));
@@ -193,10 +202,19 @@ namespace Unity.Entities.Serialization
 
         public static unsafe void SerializeWorld(EntityManager entityManager, BinaryWriter writer, out int[] sharedComponentsToSerialize)
         {
+            var entityRemapInfos = new NativeArray<EntityRemapUtility.EntityRemapInfo>(entityManager.EntityCapacity, Allocator.Temp);
+            SerializeWorld(entityManager, writer, out sharedComponentsToSerialize, entityRemapInfos);
+            entityRemapInfos.Dispose();
+        }
+
+        public static unsafe void SerializeWorld(EntityManager entityManager, BinaryWriter writer, out int[] sharedComponentsToSerialize, NativeArray<EntityRemapUtility.EntityRemapInfo> entityRemapInfos)
+        {
             writer.Write(CurrentFileFormatVersion);
             var archetypeManager = entityManager.ArchetypeManager;
 
-            GetAllArchetypes(archetypeManager, out var archetypeToIndex, out var archetypeArray);
+            Dictionary<EntityArchetype, int> archetypeToIndex;
+            EntityArchetype[] archetypeArray;
+            GetAllArchetypes(archetypeManager, out archetypeToIndex, out archetypeArray);
 
             var typeindices = new HashSet<int>();
             foreach (var archetype in archetypeArray)
@@ -246,9 +264,8 @@ namespace Unity.Entities.Serialization
 
             //TODO: ensure chunks are defragged?
 
-            NativeArray<EntityRemapUtility.EntityRemapInfo> entityRemapInfos;
             var bufferPatches = new NativeList<BufferPatchRecord>(128, Allocator.Temp);
-            var totalChunkCount = GenerateRemapInfo(entityManager, archetypeArray, out entityRemapInfos);
+            var totalChunkCount = GenerateRemapInfo(entityManager, archetypeArray, entityRemapInfos);
 
             writer.Write(totalChunkCount);
 
@@ -266,6 +283,7 @@ namespace Unity.Entities.Serialization
                     tempChunk->SharedComponentValueArray = (int*)((byte*)(tempChunk) + Chunk.GetSharedComponentOffset(archetype->NumSharedComponents));
 
                     byte* tempChunkBuffer = tempChunk->Buffer;
+                    EntityRemapUtility.PatchEntities(archetype->ScalarEntityPatches, archetype->ScalarEntityPatchCount, archetype->BufferEntityPatches, archetype->BufferEntityPatchCount, tempChunkBuffer, tempChunk->Count, ref entityRemapInfos);
 
                     // Find all buffer pointer locations and work out how much memory the deserializer must allocate on load.
                     for (int ti = 0; ti < archetype->TypesCount; ++ti)
@@ -295,8 +313,6 @@ namespace Unity.Entities.Serialization
                             header = (BufferHeader*)OffsetFromPointer(header, stride);
                         }
                     }
-
-                    EntityRemapUtility.PatchEntities(archetype->ScalarEntityPatches, archetype->ScalarEntityPatchCount, archetype->BufferEntityPatches, archetype->BufferEntityPatchCount, tempChunkBuffer, tempChunk->Count, ref entityRemapInfos);
 
                     ClearUnusedChunkData(tempChunk);
                     tempChunk->ChunkListNode.Next = null;
@@ -355,7 +371,6 @@ namespace Unity.Entities.Serialization
             }
 
             bufferPatches.Dispose();
-            entityRemapInfos.Dispose();
             UnsafeUtility.Free(tempChunk, Allocator.Temp);
 
             sharedComponentsToSerialize = new int[sharedIndexToSerialize.Count];
@@ -385,11 +400,9 @@ namespace Unity.Entities.Serialization
             }
         }
 
-        static unsafe int GenerateRemapInfo(EntityManager entityManager, EntityArchetype[] archetypeArray, out NativeArray<EntityRemapUtility.EntityRemapInfo> entityRemapInfos)
+        static unsafe int GenerateRemapInfo(EntityManager entityManager, EntityArchetype[] archetypeArray, NativeArray<EntityRemapUtility.EntityRemapInfo> entityRemapInfos)
         {
             int nextEntityId = 1; //0 is reserved for Entity.Null;
-
-            entityRemapInfos = new NativeArray<EntityRemapUtility.EntityRemapInfo>(entityManager.EntityCapacity, Allocator.Temp);
 
             int totalChunkCount = 0;
             for (int archetypeIndex = 0; archetypeIndex < archetypeArray.Length; ++archetypeIndex)

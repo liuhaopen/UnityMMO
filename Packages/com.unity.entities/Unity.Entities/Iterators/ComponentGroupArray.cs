@@ -53,7 +53,7 @@ namespace Unity.Entities
                     componentDataFieldOffsetsBuilder.Add(offset);
                     componentDataTypesBuilder.Add(new ComponentType(elementType, accessMode));
                 }
-                else if (fieldType.IsSubclassOf(TypeManager.UnityEngineComponentType))
+                else if (TypeManager.UnityEngineComponentType?.IsAssignableFrom(fieldType) ?? false)
                 {
                     componentFieldOffsetsBuilder.Add(offset);
                     componentTypesBuilder.Add(fieldType);

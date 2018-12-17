@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -17,9 +19,14 @@ namespace Unity.Entities.Tests
             public int Value;
         }
 
+        [DisallowMultipleComponent]
         class MockWrapper : ComponentDataWrapper<MockData>, IIntegerContainer
         {
-            public int Integer { get => Value.Value; set => Value = new MockData { Value = value }; }
+            public int Integer
+            {
+                get { return Value.Value; }
+                set { Value = new MockData {Value = value}; }
+            }
         }
 
         struct MockSharedData : ISharedComponentData
@@ -29,7 +36,11 @@ namespace Unity.Entities.Tests
 
         class MockSharedWrapper : SharedComponentDataWrapper<MockSharedData>, IIntegerContainer
         {
-            public int Integer { get => Value.Value; set => Value = new MockSharedData { Value = value }; }
+            public int Integer
+            {
+                get { return Value.Value; }
+                set { Value = new MockSharedData {Value = value}; }
+            }
         }
 
         GameObject m_GameObject;
@@ -47,12 +58,10 @@ namespace Unity.Entities.Tests
         {
             m_GameObject = new GameObject(TestContext.CurrentContext.Test.Name, wrapperType);
             var wrapper = m_GameObject.GetComponent<ComponentDataWrapperBase>();
-            // manually call OnEnable so that wrapper's component will exist in entity manager
-            // represents loading GameObjectEntity when wrappers already exist (e.g., loading a scene, domain reload)
-            var gameObjectEntity = wrapper.GetComponent<GameObjectEntity>();
-            gameObjectEntity.OnEnable();
+            EntityManager entityManager;
+            Entity entity;
             Assert.That(
-                wrapper.CanSynchronizeWithEntityManager(out var entityManager, out var entity), Is.True,
+                wrapper.CanSynchronizeWithEntityManager(out entityManager, out entity), Is.True,
                 "EntityManager is not in correct state in arrangement for synchronization to occur"
             );
             var integerWrapper = wrapper as IIntegerContainer;
@@ -64,8 +73,79 @@ namespace Unity.Entities.Tests
             integerWrapper.Integer = 1;
             Assert.That(integerWrapper.Integer, Is.EqualTo(1), $"Setting value on {wrapperType} failed");
 
-            var so = new SerializedObject(wrapper);
+            new SerializedObject(wrapper);
             Assert.That(integerWrapper.Integer, Is.EqualTo(1), $"Value was reset after deserializing {wrapperType}");
+        }
+
+        [Test]
+        public void AllComponentDataWrappers_DisallowMultipleComponent()
+        {
+            TestTypes(typeof(ComponentDataWrapper<>), true);
+        }
+
+        // currently enforced due to implementation of SerializeUtilityHybrid
+        // ideally all types should ultimately have DisallowMultipleComponent
+        [Test]
+        public void NoSharedComponentDataWrappers_DisallowMultipleComponent()
+        {
+            TestTypes(
+                typeof(SharedComponentDataWrapper<>),
+                false,
+                ignoreTypes: typeof(MockSharedDisallowMultipleComponent)
+            );
+        }
+
+        void TestTypes(Type testType, bool shouldDisallowMultiple, params Type[] ignoreTypes)
+        {
+            var errorTypes = new HashSet<Type>();
+            var whiteList = new HashSet<Type>(ignoreTypes);
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                try
+                {
+                    foreach (var type in assembly.GetTypes())
+                    {
+                        if (
+                            type.BaseType == null
+                            || type.IsAbstract
+                            || !typeof(ComponentDataWrapperBase).IsAssignableFrom(type)
+                            || whiteList.Contains(type)
+                        )
+                            continue;
+
+                        var t = type;
+                        while (t != typeof(ComponentDataWrapperBase))
+                        {
+                            if (t.IsGenericType && t.GetGenericTypeDefinition() == testType)
+                            {
+                                t = t.GetGenericTypeDefinition();
+                                break;
+                            }
+                            t = t.BaseType;
+                        }
+                        if (t != testType)
+                            continue;
+
+                        var disallowsMultiple = Attribute.IsDefined(type, typeof(DisallowMultipleComponent), true);
+                        if (disallowsMultiple != shouldDisallowMultiple)
+                            errorTypes.Add(type);
+                    }
+                }
+                // ignore if error loading some type from a dll
+                catch (TypeLoadException)
+                {
+                }
+            }
+
+            Assert.That(
+                errorTypes.Count, Is.EqualTo(0),
+                string.Format("Following {0} types {1} have {2}\n - {3}\n",
+                    testType,
+                    shouldDisallowMultiple ? $"should" : "should not",
+                    typeof(DisallowMultipleComponent),
+                    string.Join("\n - ", errorTypes.Select(t => t.FullName).ToArray())
+                )
+            );
         }
     }
 }

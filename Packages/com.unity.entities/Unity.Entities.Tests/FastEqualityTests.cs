@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Runtime.InteropServices;
 using NUnit.Framework;
-using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Collections.LowLevel.Unsafe;
 

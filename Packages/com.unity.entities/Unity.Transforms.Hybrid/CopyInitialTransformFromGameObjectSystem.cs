@@ -8,11 +8,9 @@ using UnityEngine.Jobs;
 namespace Unity.Transforms
 {
     [UpdateBefore(typeof(EndFrameTransformSystem))]
+    [UpdateBefore(typeof(CopyTransformToGameObjectSystem))]
     public class CopyInitialTransformFromGameObjectSystem : JobComponentSystem
     {
-        [Inject] ComponentDataFromEntity<Position> m_Positions;
-        [Inject] ComponentDataFromEntity<Rotation> m_Rotations;
-
         struct TransformStash
         {
             public float3 position;
@@ -34,13 +32,12 @@ namespace Unity.Transforms
             }
         }
 
-        // [BurstCompile]
+        [BurstCompile]
         struct CopyTransforms : IJobParallelFor
         {
             [NativeDisableParallelForRestriction] public ComponentDataFromEntity<Position> positions;
             [NativeDisableParallelForRestriction] public ComponentDataFromEntity<Rotation> rotations;
-            [ReadOnly]
-            public EntityArray entities;
+            [ReadOnly] public EntityArray entities;
             [DeallocateOnJobCompletion] public NativeArray<TransformStash> transformStashes;
 
             public void Execute(int index)
@@ -60,8 +57,7 @@ namespace Unity.Transforms
 
         struct RemoveCopyInitialTransformFromGameObjectComponent : IJob
         {
-            [ReadOnly]
-            public EntityArray entities;
+            [ReadOnly] public EntityArray entities;
             public EntityCommandBuffer entityCommandBuffer;
 
             public void Execute()
@@ -74,12 +70,13 @@ namespace Unity.Transforms
             }
         }
 
-        [Inject] private EndFrameBarrier m_EndFrameBarrier;
+        EndFrameBarrier m_EndFrameBarrier;
 
         ComponentGroup m_InitialTransformGroup;
 
-        protected override void OnCreateManager(int capacity)
+        protected override void OnCreateManager()
         {
+            m_EndFrameBarrier = World.GetOrCreateManager<EndFrameBarrier>();
             m_InitialTransformGroup = GetComponentGroup(ComponentType.ReadOnly(typeof(CopyInitialTransformFromGameObject)),typeof(UnityEngine.Transform));
         }
 
@@ -98,8 +95,8 @@ namespace Unity.Transforms
 
             var copyTransformsJob = new CopyTransforms
             {
-                positions = m_Positions,
-                rotations = m_Rotations,
+                positions = GetComponentDataFromEntity<Position>(),
+                rotations = GetComponentDataFromEntity<Rotation>(),
                 transformStashes = transformStashes,
                 entities = entities
             };

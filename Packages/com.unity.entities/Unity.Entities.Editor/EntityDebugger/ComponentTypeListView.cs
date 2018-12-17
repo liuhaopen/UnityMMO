@@ -10,6 +10,7 @@ namespace Unity.Entities.Editor
     {
         private List<ComponentType> types;
         private List<bool> typeSelections;
+        private List<GUIContent> typeNames;
 
         private CallbackAction callback;
 
@@ -18,6 +19,9 @@ namespace Unity.Entities.Editor
             this.callback = callback;
             this.types = types;
             this.typeSelections = typeSelections;
+            typeNames = new List<GUIContent>(types.Count);
+            for (var i = 0; i < types.Count; ++i)
+                typeNames.Add(new GUIContent(ComponentGroupGUI.SpecifiedTypeName(types[i].GetManagedType())));
             Reload();
         }
 
@@ -32,7 +36,7 @@ namespace Unity.Entities.Editor
             {
                 for (var i = 0; i < types.Count; ++i)
                 {
-                    var displayName = (types[i].AccessModeType == ComponentType.AccessMode.Subtractive ? "-" : "") + types[i].GetManagedType().Name;
+                    var displayName = (types[i].AccessModeType == ComponentType.AccessMode.Subtractive ? "" : "+") + typeNames[i].text;
                     root.AddChild(new TreeViewItem {id = i, displayName = displayName});
                 }
             }
@@ -49,7 +53,7 @@ namespace Unity.Entities.Editor
                 ? EntityDebuggerStyles.ComponentSubtractive
                 : EntityDebuggerStyles.ComponentRequired;
             var indent = GetContentIndent(args.item);
-            var content = new GUIContent(types[args.item.id].GetManagedType().Name);
+            var content = typeNames[args.item.id];
             var labelRect = args.rowRect;
             labelRect.xMin = labelRect.xMin + indent;
             labelRect.size = style.CalcSize(content);

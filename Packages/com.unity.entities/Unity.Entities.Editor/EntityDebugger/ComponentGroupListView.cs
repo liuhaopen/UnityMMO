@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEditor.IMGUI.Controls;
+﻿using UnityEditor.IMGUI.Controls;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -21,9 +20,9 @@ namespace Unity.Entities.Editor
             {
                 var query = new EntityArchetypeQuery()
                 {
-                    All = group.Types.Where(x => x.AccessModeType != ComponentType.AccessMode.Subtractive).ToArray(),
+                    All = group.GetQueryTypes().Where(x => x.AccessModeType != ComponentType.AccessMode.Subtractive).ToArray(),
                     Any = new ComponentType[0],
-                    None = group.Types.Where(x => x.AccessModeType == ComponentType.AccessMode.Subtractive).ToArray()
+                    None = group.GetQueryTypes().Where(x => x.AccessModeType == ComponentType.AccessMode.Subtractive).ToArray()
                 };
                 queriesByGroup.Add(group, query);
             }
@@ -33,10 +32,7 @@ namespace Unity.Entities.Editor
         
         private readonly Dictionary<int, ComponentGroup> componentGroupsById = new Dictionary<int, ComponentGroup>();
         private readonly Dictionary<int, EntityArchetypeQuery> queriesById = new Dictionary<int, EntityArchetypeQuery>();
-        private readonly Dictionary<int, List<GUIStyle>> stylesById = new Dictionary<int, List<GUIStyle>>();
-        private readonly Dictionary<int, List<GUIContent>> namesById = new Dictionary<int, List<GUIContent>>();
-        private readonly Dictionary<int, List<Rect>> rectsById = new Dictionary<int, List<Rect>>();
-        private readonly Dictionary<int, float> heightsById = new Dictionary<int, float>();
+        private readonly Dictionary<int, ComponentGroupGUIControl> controlsById = new Dictionary<int, ComponentGroupGUIControl>();
 
         public ComponentSystemBase SelectedSystem
         {
@@ -91,16 +87,17 @@ namespace Unity.Entities.Editor
             Reload();
         }
 
-        public float Height => Mathf.Max(queriesById.Count + componentGroupsById.Count, 1)*rowHeight;
+        public float Height { get; private set; }
 
         protected override float GetCustomRowHeight(int row, TreeViewItem item)
         {
-            return heightsById.ContainsKey(item.id) ? heightsById[item.id] + 2 : rowHeight;
+            return controlsById.ContainsKey(item.id) ? controlsById[item.id].Height + 2 : rowHeight;
         }
 
         private static List<EntityArchetypeQuery> GetQueriesForSystem(ComponentSystemBase system)
         {
-            if (queriesBySystem.TryGetValue(system, out var queries))
+            List<EntityArchetypeQuery> queries;
+            if (queriesBySystem.TryGetValue(system, out queries))
                 return queries;
             
             queries = new List<EntityArchetypeQuery>();
@@ -125,7 +122,7 @@ namespace Unity.Entities.Editor
         {
             componentGroupsById.Clear();
             queriesById.Clear();
-            heightsById.Clear();
+            controlsById.Clear();
             var currentId = 0;
             var root  = new TreeViewItem { id = currentId++, depth = -1, displayName = "Root" };
             if (getWorldSelection() == null)
@@ -163,94 +160,89 @@ namespace Unity.Entities.Editor
                 else
                 {
                     SetupDepthsFromParentsAndChildren(root);
+                    
+                    foreach (var idGroupPair in componentGroupsById)
+                    {
+                        var newControl = new ComponentGroupGUIControl(idGroupPair.Value.GetQueryTypes(), idGroupPair.Value.GetReadAndWriteTypes(), true);
+                        controlsById.Add(idGroupPair.Key, newControl);
+                    }
+                    foreach (var idQueryPair in queriesById)
+                    {
+                        var types = idQueryPair.Value.All.Concat(idQueryPair.Value.Any);
+                        types = types.Concat(idQueryPair.Value.None.Select(x => ComponentType.Subtractive(x.GetManagedType())));
+                
+                        var newControl = new ComponentGroupGUIControl(types, true);
+                        controlsById.Add(idQueryPair.Key, newControl);
+                    }
                 }
             }
             return root;
         }
 
         private float width;
+        private const float kBorderWidth = 60f;
 
-        private void CalculateDrawingParts(float newWidth)
+        public void SetWidth(float newWidth)
         {
-            width = newWidth;
-            stylesById.Clear();
-            namesById.Clear();
-            rectsById.Clear();
-            heightsById.Clear();
-            foreach (var idGroupPair in componentGroupsById)
+            newWidth -= kBorderWidth;
+            if (newWidth != width)
             {
-                ComponentGroupGUI.CalculateDrawingParts(new List<ComponentType>(idGroupPair.Value.Types.Skip(1)), false, width, out var height, out var styles, out var names, out var rects);
-                stylesById.Add(idGroupPair.Key, styles);
-                namesById.Add(idGroupPair.Key, names);
-                rectsById.Add(idGroupPair.Key, rects);
-                heightsById.Add(idGroupPair.Key, height);
-            }
-            foreach (var idQueryPair in queriesById)
-            {
-                var types = new List<ComponentType>();
-                types.AddRange(idQueryPair.Value.All);
-                types.AddRange(idQueryPair.Value.Any);
-                types.AddRange(idQueryPair.Value.None.Select(x => ComponentType.Subtractive(x.GetManagedType())));
-                
-                ComponentGroupGUI.CalculateDrawingParts(types, true, width, out var height, out var styles, out var names, out var rects);
-                stylesById.Add(idQueryPair.Key, styles);
-                namesById.Add(idQueryPair.Key, names);
-                rectsById.Add(idQueryPair.Key, rects);
-                heightsById.Add(idQueryPair.Key, height);
+                width = newWidth;
+                foreach (var control in controlsById.Values)
+                    control.UpdateSize(width);
             }
             RefreshCustomRowHeights();
+            var height = 0f;
+            foreach (var child in rootItem.children)
+                height += GetCustomRowHeight(0, child);
+            Height = height;
         }
 
         public override void OnGUI(Rect rect)
         {
-
             if (getWorldSelection()?.GetExistingManager<EntityManager>()?.IsCreated == true)
             {
                 if (Event.current.type == EventType.Repaint)
                 {
-                    CalculateDrawingParts(rect.width - 60f);
+                    SetWidth(rect.width);
                 }
                 base.OnGUI(rect);
             }
         }
 
-        protected override void BeforeRowsGUI()
-        {
-            base.BeforeRowsGUI();
-        }
-
         protected void DrawCount(RowGUIArgs args)
         {
-            if (componentGroupsById.TryGetValue(args.item.id, out var componentGroup))
+            ComponentGroup componentGroup;
+            if (componentGroupsById.TryGetValue(args.item.id, out componentGroup))
             {
                 var countString = componentGroup.CalculateLength().ToString();
                 DefaultGUI.LabelRightAligned(args.rowRect, countString, args.selected, args.focused);
             }
-            else if (queriesById.TryGetValue(args.item.id, out var query))
+            else
             {
-                var entityManager = getWorldSelection().GetExistingManager<EntityManager>();
-                var chunkArray = entityManager.CreateArchetypeChunkArray(query, Allocator.TempJob);
-                var count = chunkArray.Sum(x => x.Count);
-                chunkArray.Dispose();
-                DefaultGUI.LabelRightAligned(args.rowRect, count.ToString(), args.selected, args.focused);
+                EntityArchetypeQuery query;
+                if (queriesById.TryGetValue(args.item.id, out query))
+                {
+                    var entityManager = getWorldSelection().GetExistingManager<EntityManager>();
+                    var chunkArray = entityManager.CreateArchetypeChunkArray(query, Allocator.TempJob);
+                    var count = chunkArray.Sum(x => x.Count);
+                    chunkArray.Dispose();
+                    DefaultGUI.LabelRightAligned(args.rowRect, count.ToString(), args.selected, args.focused);
+                }
             }
         }
 
         protected override void RowGUI(RowGUIArgs args)
         {
             base.RowGUI(args);
-            if (Event.current.type != EventType.Repaint || !heightsById.ContainsKey(args.item.id))
+            if (Event.current.type != EventType.Repaint || !controlsById.ContainsKey(args.item.id))
                 return;
 
             var position = args.rowRect.position;
             position.x = GetContentIndent(args.item);
             position.y += 1;
-            
-            ComponentGroupGUI.DrawComponentList(
-                new Rect(position.x, position.y, heightsById[args.item.id], width),
-                stylesById[args.item.id],
-                namesById[args.item.id],
-                rectsById[args.item.id]);
+
+            controlsById[args.item.id].OnGUI(position);
 
             DrawCount(args);
         }
@@ -259,10 +251,15 @@ namespace Unity.Entities.Editor
         {
             if (selectedIds.Count > 0)
             {
-                if (componentGroupsById.TryGetValue(selectedIds[0], out var componentGroup))
+                ComponentGroup componentGroup;
+                if (componentGroupsById.TryGetValue(selectedIds[0], out componentGroup))
                     entityListSelectionCallback(new EntityListQuery(componentGroup));
-                else if (queriesById.TryGetValue(selectedIds[0], out var query))
-                    entityListSelectionCallback(new EntityListQuery(query));
+                else
+                {
+                    EntityArchetypeQuery query;
+                    if (queriesById.TryGetValue(selectedIds[0], out query))
+                        entityListSelectionCallback(new EntityListQuery(query));
+                }
             }
             else
             {
@@ -316,11 +313,20 @@ namespace Unity.Entities.Editor
         {
             SetSelection(GetSelection(), TreeViewSelectionOptions.FireSelectionChanged);
         }
-
-        public void UpdateIfNecessary()
+        
+        public bool NeedsReload
         {
-            var expectedGroupCount = SelectedSystem?.ComponentGroups?.Length ?? 0; 
-            if (expectedGroupCount != componentGroupsById.Count)
+            get
+            {
+                var expectedGroupCount = SelectedSystem?.ComponentGroups?.Length ?? 0;
+                return expectedGroupCount != componentGroupsById.Count;
+            }
+            
+        }
+
+        public void ReloadIfNecessary()
+        {
+            if (NeedsReload)
                 Reload();
         }
     }

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Unity.Collections;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -10,13 +9,15 @@ namespace Unity.Entities.Tests
     [TestFixture]
     public class TransformTests : ECSTestsFixture
     {
+        const float k_Tolerance = 0.01f;
+        
         unsafe bool AssertCloseEnough(float4x4 a, float4x4 b)
         {
             float* ap = (float*) &a.c0.x;
             float* bp = (float*) &b.c0.x;
             for (int i = 0; i < 16; i++)
             {
-                Assert.AreEqual(expected:ap[i],actual:bp[i],delta:0.01f);
+                Assert.That(bp[i], Is.EqualTo(ap[i]).Within(k_Tolerance));
             }
             return true;
         }
@@ -28,7 +29,7 @@ namespace Unity.Entities.Tests
             Debug.Log($"{a.c2.x:0.000} {a.c2.y:0.000} {a.c2.z:0.000} {a.c2.w:0.000}");
             Debug.Log($"{a.c3.x:0.000} {a.c3.y:0.000} {a.c3.z:0.000} {a.c3.w:0.000}");
         }
-            
+
         [Test]
         public void TRS_ChildPosition()
         {
@@ -37,16 +38,16 @@ namespace Unity.Entities.Tests
             var attach = m_Manager.CreateEntity(typeof(Attach));
 
             m_Manager.SetComponentData(parent, new Position {Value = new float3(0, 2, 0)});
-            m_Manager.SetComponentData(parent, new Rotation {Value = quaternion.lookRotation(new float3(1.0f, 0.0f, 0.0f), math.up())});
+            m_Manager.SetComponentData(parent, new Rotation {Value = quaternion.LookRotation(new float3(1.0f, 0.0f, 0.0f), math.up())});
             m_Manager.SetComponentData(child, new Position {Value = new float3(0, 0, 1)});
             m_Manager.SetComponentData(attach, new Attach {Parent = parent, Child = child});
 
             World.GetOrCreateManager<EndFrameTransformSystem>().Update();
 
             var childWorldPosition = m_Manager.GetComponentData<LocalToWorld>(child).Value.c3;
-            Assert.AreEqual(expected:1.0f,actual:childWorldPosition.x,delta:0.01f);
-            Assert.AreEqual(expected:2.0f,actual:childWorldPosition.y,delta:0.01f);
-            Assert.AreEqual(expected:0.0f,actual:childWorldPosition.z,delta:0.01f);
+            Assert.That(childWorldPosition.x, Is.EqualTo(1f).Within(k_Tolerance));
+            Assert.That(childWorldPosition.y, Is.EqualTo(2f).Within(k_Tolerance));
+            Assert.That(childWorldPosition.z, Is.EqualTo(0f).Within(k_Tolerance));
         }
 
         [Test]
@@ -57,7 +58,7 @@ namespace Unity.Entities.Tests
             var attach = m_Manager.CreateEntity(typeof(Attach));
 
             m_Manager.SetComponentData(parent, new Position {Value = new float3(0, 2, 0)});
-            m_Manager.SetComponentData(parent, new Rotation {Value = quaternion.lookRotation(new float3(1.0f, 0.0f, 0.0f), math.up())});
+            m_Manager.SetComponentData(parent, new Rotation {Value = quaternion.LookRotation(new float3(1.0f, 0.0f, 0.0f), math.up())});
             m_Manager.SetComponentData(child, new Position {Value = new float3(0, 0, 1)});
             m_Manager.SetComponentData(attach, new Attach {Parent = parent, Child = child});
 
@@ -84,13 +85,13 @@ namespace Unity.Entities.Tests
             var attach = m_Manager.CreateEntity(typeof(Attach));
 
             m_Manager.SetComponentData(parent, new Position {Value = new float3(0, 2, 0)});
-            m_Manager.SetComponentData(parent, new Rotation {Value = quaternion.lookRotation(new float3(1.0f, 0.0f, 0.0f), math.up())});
+            m_Manager.SetComponentData(parent, new Rotation {Value = quaternion.LookRotation(new float3(1.0f, 0.0f, 0.0f), math.up())});
             m_Manager.SetComponentData(child, new Position {Value = new float3(0, 0, 1)});
             m_Manager.SetComponentData(attach, new Attach {Parent = parent, Child = child});
 
             World.GetOrCreateManager<EndFrameTransformSystem>().Update();
 
-            m_Manager.SetComponentData(parent, new Rotation {Value = quaternion.lookRotation(new float3(0.0f, 1.0f, 0.0f), math.up())});
+            m_Manager.SetComponentData(parent, new Rotation {Value = quaternion.LookRotation(new float3(0.0f, 1.0f, 0.0f), math.up())});
 
             World.GetOrCreateManager<EndFrameTransformSystem>().Update();
 
@@ -98,16 +99,16 @@ namespace Unity.Entities.Tests
             Assert.IsTrue(m_Manager.HasComponent<Frozen>(child));
 
             var childWorldPosition = m_Manager.GetComponentData<LocalToWorld>(child).Value.c3;
-            Assert.AreEqual(expected:1.0f,actual:childWorldPosition.x,delta:0.01f);
-            Assert.AreEqual(expected:2.0f,actual:childWorldPosition.y,delta:0.01f);
-            Assert.AreEqual(expected:0.0f,actual:childWorldPosition.z,delta:0.01f);
+            Assert.That(childWorldPosition.x, Is.EqualTo(1f).Within(k_Tolerance));
+            Assert.That(childWorldPosition.y, Is.EqualTo(2f).Within(k_Tolerance));
+            Assert.That(childWorldPosition.z, Is.EqualTo(0f).Within(k_Tolerance));
 
             m_Manager.DestroyEntity(parent);
             m_Manager.DestroyEntity(child);
 
             World.GetOrCreateManager<EndFrameTransformSystem>().Update();
 
-            Assert.AreEqual(0, m_ManagerDebug.EntityCount);
+            Assert.That(m_ManagerDebug.EntityCount, Is.EqualTo(0));
         }
 
         [Test]
@@ -118,20 +119,20 @@ namespace Unity.Entities.Tests
             var attach = m_Manager.CreateEntity(typeof(Attach));
 
             m_Manager.SetComponentData(parent, new Position {Value = new float3(0, 2, 0)});
-            m_Manager.SetComponentData(parent, new Rotation {Value = quaternion.lookRotation(new float3(1.0f, 0.0f, 0.0f), math.up())});
+            m_Manager.SetComponentData(parent, new Rotation {Value = quaternion.LookRotation(new float3(1.0f, 0.0f, 0.0f), math.up())});
             m_Manager.SetComponentData(child, new Position {Value = new float3(0, 0, 1)});
             m_Manager.SetComponentData(attach, new Attach {Parent = parent, Child = child});
 
             World.GetOrCreateManager<EndFrameTransformSystem>().Update();
 
-            m_Manager.SetComponentData(parent, new Rotation {Value = quaternion.lookRotation(new float3(0.0f, 1.0f, 0.0f), math.up())});
+            m_Manager.SetComponentData(parent, new Rotation {Value = quaternion.LookRotation(new float3(0.0f, 1.0f, 0.0f), new float3(0.0f, 0.0f, 1.0f)) });
 
             World.GetOrCreateManager<EndFrameTransformSystem>().Update();
 
             var childWorldPosition = m_Manager.GetComponentData<LocalToWorld>(child).Value.c3;
-            Assert.AreEqual(expected:0.0f,actual:childWorldPosition.x,delta:0.01f);
-            Assert.AreEqual(expected:3.0f,actual:childWorldPosition.y,delta:0.01f);
-            Assert.AreEqual(expected:0.0f,actual:childWorldPosition.z,delta:0.01f);
+            Assert.That(childWorldPosition.x, Is.EqualTo(0f).Within(k_Tolerance));
+            Assert.That(childWorldPosition.y, Is.EqualTo(3f).Within(k_Tolerance));
+            Assert.That(childWorldPosition.z, Is.EqualTo(0f).Within(k_Tolerance));
         }
 
         [Test]
@@ -144,7 +145,7 @@ namespace Unity.Entities.Tests
             var attach2 = m_Manager.CreateEntity(typeof(Attach));
 
             m_Manager.SetComponentData(parent, new Position {Value = new float3(0, 2, 0)});
-            m_Manager.SetComponentData(parent, new Rotation {Value = quaternion.lookRotation(new float3(1.0f, 0.0f, 0.0f), math.up())});
+            m_Manager.SetComponentData(parent, new Rotation {Value = quaternion.LookRotation(new float3(1.0f, 0.0f, 0.0f), math.up())});
             m_Manager.SetComponentData(parent2, new Position {Value = new float3(0, 0, 1)});
             m_Manager.SetComponentData(child, new Position {Value = new float3(0, 0, 1)});
 
@@ -156,13 +157,13 @@ namespace Unity.Entities.Tests
             var parentDepth = m_Manager.GetSharedComponentData<Depth>(parent);
             var parent2Depth = m_Manager.GetSharedComponentData<Depth>(parent2);
 
-            Assert.AreEqual(0,parentDepth.Value);
-            Assert.AreEqual(1,parent2Depth.Value);
+            Assert.That(parentDepth.Value, Is.EqualTo(0));
+            Assert.That(parent2Depth.Value, Is.EqualTo(1));
 
             var childWorldPosition = m_Manager.GetComponentData<LocalToWorld>(child).Value.c3;
-            Assert.AreEqual(expected:2.0f,actual:childWorldPosition.x,delta:0.01f);
-            Assert.AreEqual(expected:2.0f,actual:childWorldPosition.y,delta:0.01f);
-            Assert.AreEqual(expected:0.0f,actual:childWorldPosition.z,delta:0.01f);
+            Assert.That(childWorldPosition.x, Is.EqualTo(2f).Within(k_Tolerance));
+            Assert.That(childWorldPosition.y, Is.EqualTo(2f).Within(k_Tolerance));
+            Assert.That(childWorldPosition.z, Is.EqualTo(0f).Within(k_Tolerance));
         }
 
         [Test]
@@ -175,7 +176,7 @@ namespace Unity.Entities.Tests
             var attach2 = m_Manager.CreateEntity(typeof(Attach));
 
             m_Manager.SetComponentData(parent, new Position {Value = new float3(0, 2, 0)});
-            m_Manager.SetComponentData(parent, new Rotation {Value = quaternion.lookRotation(new float3(1.0f, 0.0f, 0.0f), math.up())});
+            m_Manager.SetComponentData(parent, new Rotation {Value = quaternion.LookRotation(new float3(1.0f, 0.0f, 0.0f), math.up())});
             m_Manager.SetComponentData(parent2, new Position {Value = new float3(0, 0, 1)});
             m_Manager.SetComponentData(child, new Position {Value = new float3(0, 0, 1)});
 
@@ -185,14 +186,14 @@ namespace Unity.Entities.Tests
             World.GetOrCreateManager<EndFrameTransformSystem>().Update();
 
             var parent2LocalPosition = m_Manager.GetComponentData<LocalToParent>(parent2).Value.c3;
-            Assert.AreEqual(expected:0.0f,actual:parent2LocalPosition.x,delta:0.01f);
-            Assert.AreEqual(expected:0.0f,actual:parent2LocalPosition.y,delta:0.01f);
-            Assert.AreEqual(expected:1.0f,actual:parent2LocalPosition.z,delta:0.01f);
+            Assert.That(parent2LocalPosition.x, Is.EqualTo(0f).Within(k_Tolerance));
+            Assert.That(parent2LocalPosition.y, Is.EqualTo(0f).Within(k_Tolerance));
+            Assert.That(parent2LocalPosition.z, Is.EqualTo(1f).Within(k_Tolerance));
 
             var childLocalPosition = m_Manager.GetComponentData<LocalToParent>(child).Value.c3;
-            Assert.AreEqual(expected:0.0f,actual:childLocalPosition.x,delta:0.01f);
-            Assert.AreEqual(expected:0.0f,actual:childLocalPosition.y,delta:0.01f);
-            Assert.AreEqual(expected:1.0f,actual:childLocalPosition.z,delta:0.01f);
+            Assert.That(childLocalPosition.x, Is.EqualTo(0f).Within(k_Tolerance));
+            Assert.That(childLocalPosition.y, Is.EqualTo(0f).Within(k_Tolerance));
+            Assert.That(childLocalPosition.z, Is.EqualTo(1f).Within(k_Tolerance));
         }
 
         [Test]
@@ -201,9 +202,9 @@ namespace Unity.Entities.Tests
             var pi = 3.14159265359f;
             var rotations = new quaternion[]
             {
-                quaternion.eulerYZX(new float3(0.125f * pi, 0.0f, 0.0f)),
-                quaternion.eulerYZX(new float3(0.5f * pi, 0.0f, 0.0f)),
-                quaternion.eulerYZX(new float3(pi, 0.0f, 0.0f)),
+                quaternion.EulerYZX(new float3(0.125f * pi, 0.0f, 0.0f)),
+                quaternion.EulerYZX(new float3(0.5f * pi, 0.0f, 0.0f)),
+                quaternion.EulerYZX(new float3(pi, 0.0f, 0.0f)),
             };
             var translations = new float3[]
             {
@@ -300,6 +301,22 @@ namespace Unity.Entities.Tests
 
             bodyEntities.Dispose();
             attachEntities.Dispose();
+        }
+
+        [Test]
+        public void AddRotationComponent_DefaultValueIsNormalized()
+        {
+            var rotationComponent =
+                new GameObject(TestContext.CurrentContext.Test.Name, typeof(RotationComponent)).GetComponent<RotationComponent>();
+            try
+            {
+                Assert.That(math.length(rotationComponent.Value.Value), Is.EqualTo(1f).Within(k_Tolerance));
+            }
+            finally
+            {
+                if (rotationComponent.gameObject != null)
+                    GameObject.DestroyImmediate(rotationComponent.gameObject);
+            }
         }
     }
 }

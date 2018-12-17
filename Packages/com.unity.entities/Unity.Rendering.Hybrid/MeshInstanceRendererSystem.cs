@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Remoting.Messaging;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -103,9 +102,9 @@ namespace Unity.Rendering
         Matrix4x4[] m_MatricesArray = new Matrix4x4[1023];
         private FrustumPlanes m_Planes;
         
-        EntityArchetypeQuery m_FrozenChunksQuery;
-        EntityArchetypeQuery m_DynamicChunksQuery;
-        
+        ComponentGroup m_FrozenChunksQuery;
+        ComponentGroup m_DynamicChunksQuery;
+
         static unsafe void CopyTo(NativeSlice<VisibleLocalToWorld> transforms, int count, Matrix4x4[] outMatrices, int offset)
         {
             // @TODO: This is using unsafe code because the Unity DrawInstances API takes a Matrix4x4[] instead of NativeArray.
@@ -117,20 +116,28 @@ namespace Unity.Rendering
             }
         }
         
-        protected override void OnCreateManager(int capacity)
+        protected override void OnCreateManager()
         {
-            m_FrozenChunksQuery = new EntityArchetypeQuery
+            m_FrozenChunksQuery = GetComponentGroup(new EntityArchetypeQuery
             {
                 Any = Array.Empty<ComponentType>(),
                 None = Array.Empty<ComponentType>(),
                 All = new ComponentType[] {typeof(LocalToWorld), typeof(MeshInstanceRenderer), typeof(VisibleLocalToWorld), typeof(Frozen)}
-            };
-            m_DynamicChunksQuery = new EntityArchetypeQuery
+            });
+            m_DynamicChunksQuery = GetComponentGroup(new EntityArchetypeQuery
             {
                 Any = Array.Empty<ComponentType>(),
                 None = new ComponentType[] {typeof(Frozen)},
                 All = new ComponentType[] {typeof(LocalToWorld), typeof(MeshInstanceRenderer), typeof(VisibleLocalToWorld)}
-            };
+            });
+            
+            GetComponentGroup(new EntityArchetypeQuery
+            {
+                Any = Array.Empty<ComponentType>(),
+                None = new ComponentType[] { typeof(VisibleLocalToWorld) },
+                All = new ComponentType[] { typeof(MeshInstanceRenderer), typeof(LocalToWorld) }
+            });
+
         }
 
         protected override void OnDestroyManager()
@@ -441,7 +448,6 @@ namespace Unity.Rendering
             }
             
             Profiler.BeginSample("Gather Types");
-            var sharedComponentCount = EntityManager.GetSharedComponentCount();
             var localToWorldType = GetArchetypeChunkComponentType<LocalToWorld>(true);
             var visibleLocalToWorldType = GetArchetypeChunkComponentType<VisibleLocalToWorld>(false);
             var meshInstanceRendererType = GetArchetypeChunkSharedComponentType<MeshInstanceRenderer>();
@@ -535,7 +541,6 @@ namespace Unity.Rendering
             }
             
             Profiler.BeginSample("Gather Types");
-            var sharedComponentCount = EntityManager.GetSharedComponentCount();
             var localToWorldType = GetArchetypeChunkComponentType<LocalToWorld>(true);
             var visibleLocalToWorldType = GetArchetypeChunkComponentType<VisibleLocalToWorld>(false);
             var meshInstanceRendererType = GetArchetypeChunkSharedComponentType<MeshInstanceRenderer>();
@@ -637,9 +642,11 @@ namespace Unity.Rendering
                     {
                         Graphics.DrawMesh(renderer.mesh, m_MatricesArray[i], renderer.material, 0, ActiveCamera, renderer.subMesh, null, renderer.castShadows, renderer.receiveShadows);
                     }
-                    
-                    if (batchCount >= 2)
-                        Debug.LogWarning($"Please enable GPU instancing for better performance ({renderer.material})", renderer.material);
+
+                    //@TODO : temporarily disabled because it spams the console about Resources/unity_builtin_extra
+                    //@TODO : also, it doesn't work in the player because of AssetDatabase
+//                    if (batchCount >= 2)
+//                        Debug.LogWarning($"Please enable GPU instancing for better performance ({renderer.material})\n{AssetDatabase.GetAssetPath(renderer.material)}", renderer.material);
                 }
             }
         }
@@ -671,8 +678,7 @@ namespace Unity.Rendering
             var foundArchetypes = new NativeList<EntityArchetype>(Allocator.TempJob);
 
             Profiler.BeginSample("CreateArchetypeChunkArray");
-            EntityManager.AddMatchingArchetypes(m_FrozenChunksQuery, foundArchetypes);
-            var chunks = EntityManager.CreateArchetypeChunkArray(foundArchetypes, Allocator.TempJob);
+            var chunks = m_FrozenChunksQuery.CreateArchetypeChunkArray(Allocator.TempJob);
             Profiler.EndSample();
             
             m_FrozenChunks = new NativeArray<ArchetypeChunk>(chunks.Length, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
@@ -682,7 +688,7 @@ namespace Unity.Rendering
             {
                 Chunks = chunks,
                 MeshInstanceRendererType = meshInstanceRendererType,
-                ChunkRendererMap = chunkRendererMap
+                ChunkRendererMap = chunkRendererMap.ToConcurrent()
             };
             var mapChunkRenderersJobHandle = mapChunkRenderersJob.Schedule(chunks.Length, 64);
             
@@ -725,15 +731,13 @@ namespace Unity.Rendering
             
             var sharedComponentCount = EntityManager.GetSharedComponentCount();
             var meshInstanceRendererType = GetArchetypeChunkSharedComponentType<MeshInstanceRenderer>();
-            var worldMeshRenderBoundsType = GetArchetypeChunkComponentType<WorldMeshRenderBounds>(true);
             
             // Allocate temp data
             var chunkRendererMap = new NativeMultiHashMap<int, int>(100000, Allocator.TempJob);
             var foundArchetypes = new NativeList<EntityArchetype>(Allocator.TempJob);
 
             Profiler.BeginSample("CreateArchetypeChunkArray");
-            EntityManager.AddMatchingArchetypes(m_DynamicChunksQuery, foundArchetypes);
-            var chunks = EntityManager.CreateArchetypeChunkArray(foundArchetypes, Allocator.TempJob);
+            var chunks = m_DynamicChunksQuery.CreateArchetypeChunkArray(Allocator.TempJob);
             Profiler.EndSample();
             
             m_DynamicChunks = new NativeArray<ArchetypeChunk>(chunks.Length, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
@@ -742,7 +746,7 @@ namespace Unity.Rendering
             {
                 Chunks = chunks,
                 MeshInstanceRendererType = meshInstanceRendererType,
-                ChunkRendererMap = chunkRendererMap
+                ChunkRendererMap = chunkRendererMap.ToConcurrent()
             };
             var mapChunkRenderersJobHandle = mapChunkRenderersJob.Schedule(chunks.Length, 64);
             

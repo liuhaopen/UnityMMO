@@ -1,7 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-
-namespace Unity.Entities
+﻿namespace Unity.Entities
 {
     static public class ChangeVersionUtility
     {

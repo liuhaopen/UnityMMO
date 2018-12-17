@@ -1,9 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 using Unity.Collections;
-using Unity.Entities;
 using Unity.Jobs;
-using Unity.Burst;
 using System.Collections.Generic;
 
 namespace Unity.Entities.Tests
@@ -483,13 +481,13 @@ namespace Unity.Entities.Tests
             Assert.AreEqual(0, count);
         }
 
-        
+
         [Test]
         public void Instantiate()
         {
             var e = m_Manager.CreateEntity();
             m_Manager.AddComponentData(e, new EcsTestData(5));
-            
+
             var cmds = new EntityCommandBuffer(Allocator.TempJob);
             cmds.Instantiate(e);
             cmds.Instantiate(e);
@@ -498,44 +496,44 @@ namespace Unity.Entities.Tests
 
             VerifyEcsTestData(3, 5);
         }
-        
+
         [Test]
         public void InstantiateWithSetComponentDataWorks()
         {
             var e = m_Manager.CreateEntity();
             m_Manager.AddComponentData(e, new EcsTestData(5));
-            
+
             var cmds = new EntityCommandBuffer(Allocator.TempJob);
-            
+
             cmds.Instantiate(e);
             cmds.SetComponent(new EcsTestData(11));
 
             cmds.Instantiate(e);
             cmds.SetComponent(new EcsTestData(11));
-            
+
             cmds.Playback(m_Manager);
             cmds.Dispose();
 
             m_Manager.DestroyEntity(e);
-            
+
             VerifyEcsTestData(2, 11);
         }
-        
+
         [Test]
         public void DestroyEntityTwiceThrows()
         {
             var e = m_Manager.CreateEntity();
             m_Manager.AddComponentData(e, new EcsTestData(5));
-            
+
             var cmds = new EntityCommandBuffer(Allocator.TempJob);
-            
+
             cmds.DestroyEntity(e);
             cmds.DestroyEntity(e);
 
             Assert.Throws<ArgumentException>(() => cmds.Playback(m_Manager) );
             cmds.Dispose();
         }
-        
+
         [Test]
         public void TestShouldPlaybackFalse()
         {
@@ -558,8 +556,8 @@ namespace Unity.Entities.Tests
 
             public void Execute()
             {
-                Buffer.CreateEntity();
-                Buffer.AddComponent(new EcsTestData { value = 1 });
+                Buffer.CreateEntity(0);
+                Buffer.AddComponent(0, new EcsTestData { value = 1 });
             }
         }
 
@@ -568,7 +566,7 @@ namespace Unity.Entities.Tests
         {
             var cmds = new EntityCommandBuffer(Allocator.TempJob);
             cmds.CreateEntity();
-            new TestConcurrentJob { Buffer = cmds }.Schedule().Complete();
+            new TestConcurrentJob { Buffer = cmds.ToConcurrent() }.Schedule().Complete();
             cmds.Playback(m_Manager);
             cmds.Dispose();
 
@@ -585,25 +583,95 @@ namespace Unity.Entities.Tests
 
             public void Execute(int index)
             {
-                Buffer.CreateEntity();
-                Buffer.AddComponent(new EcsTestData { value = index });
+                Buffer.CreateEntity(index);
+                Buffer.AddComponent(index, new EcsTestData { value = index });
             }
         }
 
         [Test]
         public void ConcurrentRecordParallelFor()
         {
+            const int kCreateCount = 10000;
             var cmds = new EntityCommandBuffer(Allocator.TempJob);
             cmds.CreateEntity();
-            new TestConcurrentParallelForJob { Buffer = cmds }.Schedule(10000, 64).Complete();
+            new TestConcurrentParallelForJob { Buffer = cmds.ToConcurrent() }.Schedule(kCreateCount, 64).Complete();
             cmds.Playback(m_Manager);
             cmds.Dispose();
 
             var allEntities = m_Manager.GetAllEntities();
             int count = allEntities.Length;
+            Assert.AreEqual(kCreateCount+1, count);
+            bool[] foundEntity = new bool[kCreateCount];
+            for (int i = 0; i < foundEntity.Length; ++i)
+            {
+                foundEntity[i] = false;
+            }
+            for (int i = 0; i < count; ++i)
+            {
+                if (m_Manager.HasComponent<EcsTestData>(allEntities[i]))
+                {
+                    var data1 = m_Manager.GetComponentData<EcsTestData>(allEntities[i]);
+                    Assert.IsFalse(foundEntity[data1.value]);
+                    foundEntity[data1.value] = true;
+                }
+            }
+            for (int i = 0; i < foundEntity.Length; ++i)
+            {
+                Assert.IsTrue(foundEntity[i]);
+            }
             allEntities.Dispose();
 
-            Assert.AreEqual(10001, count);
+        }
+
+        struct TestConcurrentInstantiateJob : IJobParallelFor
+        {
+            public Entity MasterCopy;
+            public EntityCommandBuffer.Concurrent Buffer;
+
+            public void Execute(int index)
+            {
+                Buffer.Instantiate(index, MasterCopy);
+                Buffer.AddComponent(index, new EcsTestData { value = index });
+            }
+        }
+
+        [Test]
+        public void ConcurrentRecordInstantiate()
+        {
+            const int kInstantiateCount = 10000;
+            Entity master = m_Manager.CreateEntity();
+            m_Manager.AddComponentData(master, new EcsTestData2 {value0 = 42, value1 = 17});
+
+            var cmds = new EntityCommandBuffer(Allocator.TempJob);
+            new TestConcurrentInstantiateJob { Buffer = cmds.ToConcurrent(), MasterCopy = master }.Schedule(kInstantiateCount, 64).Complete();
+            cmds.Playback(m_Manager);
+            cmds.Dispose();
+
+            var allEntities = m_Manager.GetAllEntities();
+            int count = allEntities.Length;
+            Assert.AreEqual(kInstantiateCount+1, count); // +1 for the master entity
+            bool[] foundEntity = new bool[kInstantiateCount];
+            for (int i = 0; i < foundEntity.Length; ++i)
+            {
+                foundEntity[i] = false;
+            }
+            for (int i = 0; i < count; ++i)
+            {
+                var data2 = m_Manager.GetComponentData<EcsTestData2>(allEntities[i]);
+                Assert.AreEqual(data2.value0, 42);
+                Assert.AreEqual(data2.value1, 17);
+                if (m_Manager.HasComponent<EcsTestData>(allEntities[i]))
+                {
+                    var data1 = m_Manager.GetComponentData<EcsTestData>(allEntities[i]);
+                    Assert.IsFalse(foundEntity[data1.value]);
+                    foundEntity[data1.value] = true;
+                }
+            }
+            for (int i = 0; i < foundEntity.Length; ++i)
+            {
+                Assert.IsTrue(foundEntity[i]);
+            }
+            allEntities.Dispose();
         }
 
         [Test]
@@ -715,6 +783,58 @@ namespace Unity.Entities.Tests
             cmds.Dispose();
         }
 
+        [Test]
+        public void NoConcurrentOnMainThread()
+        {
+            var cmds = new EntityCommandBuffer(Allocator.TempJob);
+            var c = cmds.ToConcurrent();
+            Assert.Throws<InvalidOperationException>(() => c.CreateEntity(0));
+            cmds.Dispose();
+        }
+
+        struct DeterminismTestJob : IJobParallelFor
+        {
+            public EntityCommandBuffer.Concurrent Cmds;
+
+            public void Execute(int index)
+            {
+                Cmds.CreateEntity(index);
+                Cmds.AddComponent(index, new EcsTestData { value = index });
+            }
+        }
+
+        [Test]
+        public void DeterminismTest()
+        {
+            var cmds = new EntityCommandBuffer(Allocator.TempJob);
+            cmds.CreateEntity(); // implicitly, sortIndex=Int32.MaxValue on the main thread
+            cmds.AddComponent(new EcsTestData { value = 10000 });
+            new DeterminismTestJob { Cmds = cmds.ToConcurrent() }.Schedule(10000, 64).Complete();
+            cmds.Playback(m_Manager);
+            cmds.Dispose();
+
+            var allEntities = m_Manager.GetAllEntities();
+            int count = allEntities.Length;
+            Assert.AreEqual(10001, count);
+            for (int i = 0; i < count; ++i)
+            {
+                var data = m_Manager.GetComponentData<EcsTestData>(allEntities[i]);
+                Assert.AreEqual(i, data.value);
+            }
+            allEntities.Dispose();
+        }
+
+        [Test]
+        public void NoTempAllocatorInConcurrent()
+        {
+            var cmds = new EntityCommandBuffer(Allocator.Temp);
+#pragma warning disable 0219 // assigned but its value is never used
+            Assert.Throws<InvalidOperationException>(() => { EntityCommandBuffer.Concurrent c = cmds.ToConcurrent(); });
+#pragma warning restore 0219
+            cmds.Dispose();
+        }
+
+
         private void VerifySingleBuffer(int length)
         {
             var allEntities = m_Manager.GetAllEntities();
@@ -740,6 +860,80 @@ namespace Unity.Entities.Tests
             }
             allEntities.Dispose();
         }
-        
+
+        struct BufferCopyJob : IJobParallelFor
+        {
+            public EntityCommandBuffer.Concurrent CommandBuffer;
+            public NativeArray<Entity> Entities;
+
+            public void Execute(int index)
+            {
+                var buffer = CommandBuffer.AddBuffer<EcsIntElement>(index, Entities[index]);
+                var sourceBuffer = new NativeArray<EcsIntElement>(100, Allocator.Persistent);
+
+                for (var i = 0; i < sourceBuffer.Length; ++i)
+                    sourceBuffer[i] = i;
+
+                buffer.CopyFrom(sourceBuffer);
+
+                sourceBuffer.Dispose();
+            }
+        }
+
+        [Test]
+        public void BufferCopyFromDoesNotThrowInJob()
+        {
+            var archetype = m_Manager.CreateArchetype(ComponentType.Create<EcsTestData>());
+            var entities = new NativeArray<Entity>(100, Allocator.Persistent);
+            m_Manager.CreateEntity(archetype, entities);
+
+            EntityCommandBuffer cb = new EntityCommandBuffer(Allocator.Persistent);
+            var handle = new BufferCopyJob
+            {
+                CommandBuffer = cb.ToConcurrent(),
+                Entities = entities
+            }.Schedule(100, 1);
+            handle.Complete();
+            cb.Playback(m_Manager);
+
+            for (var i = 0; i < 100; ++i)
+            {
+                var buffer = m_Manager.GetBuffer<EcsIntElement>(entities[i]);
+                Assert.AreEqual(100, buffer.Length);
+            }
+
+            cb.Dispose();
+            entities.Dispose();
+        }
+
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+        [Test]
+        public void BarrierPlaybackExceptionIsolation()
+        {
+            var barrier = World.GetOrCreateManager<EndFrameBarrier>();
+
+            var buf1 = barrier.CreateCommandBuffer();
+            var buf2 = barrier.CreateCommandBuffer();
+
+            buf1.CreateEntity();
+            buf1.AddComponent(new EcsTestData());
+            buf1.AddComponent(new EcsTestData());
+
+            buf2.CreateEntity();
+            buf2.AddComponent(new EcsTestData());
+            buf2.AddComponent(new EcsTestData());
+
+            // We exp both command buffers to execute, and an exception thrown afterwards
+            // Essentially we want isolation of two systems that might fail independently.
+            Assert.Throws<ArgumentException>(() => { barrier.Update(); });
+            Assert.AreEqual(2, EmptySystem.GetComponentGroup(typeof(EcsTestData)).CalculateLength());
+
+            // On second run, we expect all buffers to be removed...
+            // So no more exceptions thrown.
+            barrier.Update();
+
+            Assert.AreEqual(2, EmptySystem.GetComponentGroup(typeof(EcsTestData)).CalculateLength());
+        }
+#endif
     }
 }

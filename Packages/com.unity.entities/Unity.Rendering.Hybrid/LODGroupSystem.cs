@@ -1,5 +1,6 @@
 ﻿using Unity.Burst;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Jobs;
 using UnityEngine;
@@ -11,16 +12,19 @@ namespace Unity.Rendering
         public Camera ActiveCamera;
 
         [Inject]
+#pragma warning disable 649
         ComponentDataFromEntity<ActiveLODGroupMask> m_ActiveLODGroupMask;
+#pragma warning restore 649
         
         [BurstCompile]
         struct LODGroupJob : IJobProcessComponentData<MeshLODGroupComponent, ActiveLODGroupMask>
         {
             public LODGroupExtensions.LODParams LODParams;
             [ReadOnly]
-            public ComponentDataFromEntity<ActiveLODGroupMask> HLODActiveMask;  
+            [NativeDisableContainerSafetyRestriction]
+            public ComponentDataFromEntity<ActiveLODGroupMask> HLODActiveMask;
             
-            unsafe public void Execute([ReadOnly]ref MeshLODGroupComponent lodGroup, [ReadOnly]ref ActiveLODGroupMask activeMask)
+            unsafe public void Execute([ReadOnly]ref MeshLODGroupComponent lodGroup, ref ActiveLODGroupMask activeMask)
             {
                 if (lodGroup.ParentGroup != Entity.Null)
                 {
@@ -43,7 +47,7 @@ namespace Unity.Rendering
         {
             public LODGroupExtensions.LODParams LODParams;  
             
-            unsafe public void Execute([ReadOnly]ref MeshLODGroupComponent lodGroup, [ReadOnly]ref ActiveLODGroupMask activeMask)
+            unsafe public void Execute([ReadOnly]ref MeshLODGroupComponent lodGroup, ref ActiveLODGroupMask activeMask)
             {
                 activeMask.LODMask = LODGroupExtensions.CalculateCurrentLODMask(lodGroup.LODDistances, lodGroup.WorldReferencePoint, ref LODParams);
             }

@@ -57,9 +57,7 @@ namespace Unity.Entities
 
         private unsafe struct PointerSize
         {
-#pragma warning disable 0169 // "never used" warning
             private void* pter;
-#pragma warning restore 0169
         }
 
         struct FieldData

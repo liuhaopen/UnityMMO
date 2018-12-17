@@ -40,17 +40,17 @@ namespace Unity.Entities
 
             IEnumerable<Type> allTypes;
 
-            foreach (var ass in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 try
                 {
-                    allTypes = ass.GetTypes();
+                    allTypes = assembly.GetTypes();
 
                 }
                 catch (ReflectionTypeLoadException e)
                 {
                     allTypes = e.Types.Where(t => t != null);
-                    Debug.LogWarning("DefaultWorldInitialization failed loading assembly: " + ass.Location);
+                    Debug.LogWarning($"DefaultWorldInitialization failed loading assembly: {(assembly.IsDynamic ? assembly.ToString() : assembly.Location)}");
                 }
 
                 // Create all ComponentSystem

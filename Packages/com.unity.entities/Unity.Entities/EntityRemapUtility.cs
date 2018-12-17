@@ -7,7 +7,7 @@ using EntityOffsetInfo = Unity.Entities.TypeManager.EntityOffsetInfo;
 
 namespace Unity.Entities
 {
-    internal static unsafe class EntityRemapUtility
+    public static unsafe class EntityRemapUtility
     {
         public struct EntityRemapInfo
         {

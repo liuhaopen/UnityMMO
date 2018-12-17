@@ -6,12 +6,10 @@ using UnityEngine.Jobs;
 
 namespace Unity.Transforms
 {
+    [UnityEngine.ExecuteInEditMode]
     [UpdateBefore(typeof(EndFrameTransformSystem))]
     public class CopyTransformToGameObjectSystem : JobComponentSystem
     {
-        [Inject] [ReadOnly] ComponentDataFromEntity<Position> m_Positions;
-        [Inject] [ReadOnly] ComponentDataFromEntity<Rotation> m_Rotations;
-
         [BurstCompile]
         struct CopyTransforms : IJobParallelForTransform
         {
@@ -27,7 +25,7 @@ namespace Unity.Transforms
 
                 if (positions.Exists(entity))
                     transform.position = positions[entity].Value;
-                    
+
                 if (rotations.Exists(entity))
                     transform.rotation = rotations[entity].Value;
             }
@@ -35,7 +33,7 @@ namespace Unity.Transforms
 
         ComponentGroup m_TransformGroup;
 
-        protected override void OnCreateManager(int capacity)
+        protected override void OnCreateManager()
         {
             m_TransformGroup = GetComponentGroup(ComponentType.ReadOnly(typeof(CopyTransformToGameObject)),typeof(UnityEngine.Transform));
         }
@@ -47,14 +45,12 @@ namespace Unity.Transforms
 
             var copyTransformsJob = new CopyTransforms
             {
-                positions = m_Positions,
-                rotations = m_Rotations,
+                positions = GetComponentDataFromEntity<Position>(true),
+                rotations = GetComponentDataFromEntity<Rotation>(true),
                 entities = entities
             };
 
-            var resultDeps = copyTransformsJob.Schedule(transforms,inputDeps);
-
-            return resultDeps;
+            return copyTransformsJob.Schedule(transforms,inputDeps);
         }
     }
 }

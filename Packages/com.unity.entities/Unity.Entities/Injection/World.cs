@@ -7,21 +7,21 @@ namespace Unity.Entities
 {
     public class World : IDisposable
     {
-        private static readonly List<World> allWorlds = new List<World>();
-        private bool m_AllowGetManager = true;
+        static readonly List<World> allWorlds = new List<World>();
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+        bool m_AllowGetManager = true;
+#endif
 
         //@TODO: What about multiple managers of the same type...
-        private Dictionary<Type, ScriptBehaviourManager> m_BehaviourManagerLookup =
+        Dictionary<Type, ScriptBehaviourManager> m_BehaviourManagerLookup =
             new Dictionary<Type, ScriptBehaviourManager>();
 
-        private List<ScriptBehaviourManager> m_BehaviourManagers = new List<ScriptBehaviourManager>();
-
-        private int m_DefaultCapacity = 10;
+        List<ScriptBehaviourManager> m_BehaviourManagers = new List<ScriptBehaviourManager>();
+        int m_SystemIDAllocator = 0;
 
         public World(string name)
         {
             // Debug.LogError("Create World "+ name + " - " + GetHashCode());
-            Debug.Log("create world : "+ new System.Diagnostics.StackTrace().ToString());
             Name = name;
             allWorlds.Add(this);
         }
@@ -64,8 +64,9 @@ namespace Unity.Entities
                     m_BehaviourManagers.Add(behaviourManager);
                     break;
                 }
-
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
             m_AllowGetManager = false;
+#endif
             foreach (var behaviourManager in m_BehaviourManagers)
                 try
                 {
@@ -86,23 +87,13 @@ namespace Unity.Entities
             m_BehaviourManagerLookup = null;
         }
 
-        private int GetCapacityForType(Type type)
-        {
-            return m_DefaultCapacity;
-        }
-
-        public void SetDefaultCapacity(int value)
-        {
-            m_DefaultCapacity = value;
-        }
-
         public static void DisposeAllWorlds()
         {
             while (allWorlds.Count != 0)
                 allWorlds[0].Dispose();
         }
 
-        private ScriptBehaviourManager CreateManagerInternal(Type type, int capacity, object[] constructorArguments)
+        private ScriptBehaviourManager CreateManagerInternal(Type type, object[] constructorArguments)
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             if (!m_AllowGetManager)
@@ -117,9 +108,9 @@ namespace Unity.Entities
                     throw new MissingMethodException(
                         $"Constructing {type} failed because the constructor was private, it must be public.");
             }
-#endif
-
+            
             m_AllowGetManager = true;
+#endif
             ScriptBehaviourManager manager;
             try
             {
@@ -127,7 +118,9 @@ namespace Unity.Entities
             }
             catch
             {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
                 m_AllowGetManager = false;
+#endif
                 throw;
             }
 
@@ -136,7 +129,7 @@ namespace Unity.Entities
 
             try
             {
-                manager.CreateInstance(this, capacity);
+                manager.CreateInstance(this);
             }
             catch
             {
@@ -169,7 +162,7 @@ namespace Unity.Entities
         {
             var manager = GetExistingManagerInternal(type);
 
-            return manager ?? CreateManagerInternal(type, GetCapacityForType(type), null);
+            return manager ?? CreateManagerInternal(type, null);
         }
 
         private void AddTypeLookup(Type type, ScriptBehaviourManager manager)
@@ -207,12 +200,12 @@ namespace Unity.Entities
 
         public ScriptBehaviourManager CreateManager(Type type, params object[] constructorArgumnents)
         {
-            return CreateManagerInternal(type, GetCapacityForType(type), constructorArgumnents);
+            return CreateManagerInternal(type, constructorArgumnents);
         }
 
         public T CreateManager<T>(params object[] constructorArgumnents) where T : ScriptBehaviourManager
         {
-            return (T) CreateManagerInternal(typeof(T), GetCapacityForType(typeof(T)), constructorArgumnents);
+            return (T) CreateManagerInternal(typeof(T), constructorArgumnents);
         }
 
         public T GetOrCreateManager<T>() where T : ScriptBehaviourManager
@@ -239,6 +232,11 @@ namespace Unity.Entities
         {
             RemoveManagerInteral(manager);
             manager.DestroyInstance();
+        }
+
+        internal int AllocateSystemID()
+        {
+            return ++m_SystemIDAllocator;
         }
     }
 }

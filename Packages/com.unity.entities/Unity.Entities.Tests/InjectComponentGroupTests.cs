@@ -1,9 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using Unity.Collections;
-using Unity.Entities;
 using Unity.Jobs;
-using UnityEngine;
 
 namespace Unity.Entities.Tests
 {
@@ -96,7 +94,7 @@ namespace Unity.Entities.Tests
 	        [Inject]
 	        public GroupStruct1 Group1;
 
-	        protected override void OnCreateManager(int capacity)
+	        protected override void OnCreateManager()
 	        {
 	            ComponentGroups[Group1.GroupIndex].SetFilter(new EcsTestSharedComp(123));
 	        }
@@ -225,11 +223,13 @@ namespace Unity.Entities.Tests
 				}
 			}
 
+#pragma warning disable 649
 			[Inject]
 			BufferFromEntity<EcsIntElement> intArrayFromEntity;
 
 		    [Inject]
-			ComponentDataFromEntity<EcsTestData> ecsTestDataFromEntity;
+		    ComponentDataFromEntity<EcsTestData> ecsTestDataFromEntity;
+#pragma warning restore 649
 
 			public Entity entity;
 
@@ -272,7 +272,7 @@ namespace Unity.Entities.Tests
 			[Inject]
 			public Group group;
 
-			protected override void OnCreateManager(int capacity)
+			protected override void OnCreateManager()
 			{
 				Assert.AreEqual(1, group.Data.Length);
 				Assert.AreEqual(42, group.Data[0].value);

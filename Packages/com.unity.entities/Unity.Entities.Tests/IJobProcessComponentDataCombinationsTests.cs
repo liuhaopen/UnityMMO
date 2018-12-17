@@ -100,7 +100,7 @@ namespace Unity.Entities.Tests
 
         void CheckResultsAndDispose(NativeArray<Entity> entities, int processCount, bool withEntity)
         {
-            var archetype = m_Manager.CreateArchetype(typeof(EcsTestData), typeof(EcsTestData2), typeof(EcsTestData3), typeof(EcsTestData4));
+            m_Manager.CreateArchetype(typeof(EcsTestData), typeof(EcsTestData2), typeof(EcsTestData3), typeof(EcsTestData4));
 
             for (int i = 0; i < entities.Length; i++)
             {
@@ -130,8 +130,8 @@ namespace Unity.Entities.Tests
         }
 
         
-        [Theory]
-        public void JobProcessStress_1(ProcessMode mode, [Values(0, 1, 1000)]int entityCount)
+        [Test]
+        public void JobProcessStress_1([Values]ProcessMode mode, [Values(0, 1, 1000)]int entityCount)
         {
             var archetype = m_Manager.CreateArchetype(typeof(EcsTestData));
             var entities = new NativeArray<Entity>(entityCount, Allocator.Temp);
@@ -145,8 +145,8 @@ namespace Unity.Entities.Tests
             entities.Dispose();
         }
         
-        [Theory]
-        public void JobProcessStress_1_WithEntity(ProcessMode mode, [Values(0, 1, 1000)]int entityCount)
+        [Test]
+        public void JobProcessStress_1_WithEntity([Values]ProcessMode mode, [Values(0, 1, 1000)]int entityCount)
         {
             var archetype = m_Manager.CreateArchetype(typeof(EcsTestData));
             var entities = new NativeArray<Entity>(entityCount, Allocator.Temp);
@@ -160,8 +160,8 @@ namespace Unity.Entities.Tests
             entities.Dispose();
         }
         
-        [Theory]
-        public void JobProcessStress_2(ProcessMode mode, [Values(0, 1, 1000)]int entityCount)
+        [Test]
+        public void JobProcessStress_2([Values]ProcessMode mode, [Values(0, 1, 1000)]int entityCount)
         {
             var entities = PrepareData(entityCount);
 
@@ -170,8 +170,8 @@ namespace Unity.Entities.Tests
             CheckResultsAndDispose(entities, 2, false);
         }
 
-        [Theory]
-        public void JobProcessStress_2_WithEntity(ProcessMode mode, [Values(0, 1, 1000)]int entityCount)
+        [Test]
+        public void JobProcessStress_2_WithEntity([Values]ProcessMode mode, [Values(0, 1, 1000)]int entityCount)
         {
             var entities = PrepareData(entityCount);
 
@@ -181,8 +181,8 @@ namespace Unity.Entities.Tests
 
         }
         
-        [Theory]
-        public void JobProcessStress_3(ProcessMode mode, [Values(0, 1, 1000)]int entityCount)
+        [Test]
+        public void JobProcessStress_3([Values]ProcessMode mode, [Values(0, 1, 1000)]int entityCount)
         {
             var entities = PrepareData(entityCount);
 
@@ -191,8 +191,8 @@ namespace Unity.Entities.Tests
             CheckResultsAndDispose(entities, 3, false);
         }
         
-        [Theory]
-        public void JobProcessStress_3_WithEntity(ProcessMode mode, [Values(0, 1, 1000)]int entityCount)
+        [Test]
+        public void JobProcessStress_3_WithEntity([Values]ProcessMode mode, [Values(0, 1, 1000)]int entityCount)
         {
             var entities = PrepareData(entityCount);
 
@@ -201,8 +201,8 @@ namespace Unity.Entities.Tests
             CheckResultsAndDispose(entities, 3, true);
         }
         
-        [Theory]
-        public void JobProcessStress_4(ProcessMode mode, [Values(0, 1, 1000)]int entityCount)
+        [Test]
+        public void JobProcessStress_4([Values]ProcessMode mode, [Values(0, 1, 1000)]int entityCount)
         {
             var entities = PrepareData(entityCount);
 
@@ -211,8 +211,8 @@ namespace Unity.Entities.Tests
             CheckResultsAndDispose(entities, 4, false);
         }
         
-        [Theory]
-        public void JobProcessStress_4_WithEntity(ProcessMode mode, [Values(0, 1, 1000)]int entityCount)
+        [Test]
+        public void JobProcessStress_4_WithEntity([Values]ProcessMode mode, [Values(0, 1, 1000)]int entityCount)
         {
             var entities = PrepareData(entityCount);
 

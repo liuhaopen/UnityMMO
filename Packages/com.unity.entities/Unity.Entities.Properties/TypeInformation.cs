@@ -2,13 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Emit;
-using System.Xml.Serialization;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Properties;
-using Unity.Entities;
-using Unity.Mathematics;
-using UnityEngine;
 
 namespace Unity.Entities.Properties
 {
@@ -268,7 +263,7 @@ namespace Unity.Entities.Properties
         }
 
         private static readonly IStructProperty<StructProxy> ComponentIdProperty = new TypeIdStructProperty(
-            (ref StructProxy c) => c.type.FullName);
+            (ref StructProxy c) => c.type.Name);
 
         private readonly Dictionary<Type, IPropertyBag> _propertyBagCache = new Dictionary<Type, IPropertyBag>();
     }

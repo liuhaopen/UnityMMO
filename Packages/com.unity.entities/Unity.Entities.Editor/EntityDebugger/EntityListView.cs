@@ -1,10 +1,8 @@
 ﻿using System;
 using UnityEditor.IMGUI.Controls;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.Collections;
 using UnityEngine;
-using UnityEngine.Profiling;
 
 namespace Unity.Entities.Editor
 {
@@ -12,35 +10,49 @@ namespace Unity.Entities.Editor
     public delegate void EntitySelectionCallback(Entity selection);
     public delegate World WorldSelectionGetter();
     public delegate ScriptBehaviourManager SystemSelectionGetter();
+    public delegate void ChunkArrayAssignmentCallback(NativeArray<ArchetypeChunk> chunkArray);
     
     public class EntityListView : TreeView, IDisposable {
 
         public EntityListQuery SelectedEntityQuery
         {
-            get => selectedEntityQuery;
+            get { return selectedEntityQuery; }
             set
             {
                 if (value == null || selectedEntityQuery != value)
                 {
                     selectedEntityQuery = value;
+                    chunkFilter = null;
                     Reload();
                 }
             }
         }
+
         private EntityListQuery selectedEntityQuery;
+
+        private ChunkFilter chunkFilter;
+        public void SetFilter(ChunkFilter filter)
+        {
+            chunkFilter = filter;
+            Reload();
+        }
 
         private readonly EntitySelectionCallback setEntitySelection;
         private readonly WorldSelectionGetter getWorldSelection;
         private readonly SystemSelectionGetter getSystemSelection;
+        private readonly ChunkArrayAssignmentCallback setChunkArray;
         
         private readonly EntityArrayListAdapter rows;
+
+        public NativeArray<ArchetypeChunk> ChunkArray => chunkArray;
         private NativeArray<ArchetypeChunk> chunkArray;
 
-        public EntityListView(TreeViewState state, EntityListQuery entityQuery, EntitySelectionCallback entitySelectionCallback, WorldSelectionGetter getWorldSelection, SystemSelectionGetter getSystemSelection) : base(state)
+        public EntityListView(TreeViewState state, EntityListQuery entityQuery, EntitySelectionCallback entitySelectionCallback, WorldSelectionGetter getWorldSelection, SystemSelectionGetter getSystemSelection, ChunkArrayAssignmentCallback setChunkArray) : base(state)
         {
             this.setEntitySelection = entitySelectionCallback;
             this.getWorldSelection = getWorldSelection;
             this.getSystemSelection = getSystemSelection;
+            this.setChunkArray = setChunkArray;
             selectedEntityQuery = entityQuery;
             rows = new EntityArrayListAdapter();
             getNewSelectionOverride = (item, selection, shift) => new List<int>() {item.id};
@@ -50,9 +62,13 @@ namespace Unity.Entities.Editor
         internal bool ShowingSomething => getWorldSelection() != null &&
                                        (selectedEntityQuery != null || !(getSystemSelection() is ComponentSystemBase));
 
-        public void UpdateIfNecessary()
+        private int lastVersion = -1;
+
+        public bool NeedsReload => ShowingSomething && getWorldSelection().GetExistingManager<EntityManager>().Version != lastVersion;
+        
+        public void ReloadIfNecessary()
         {
-            if (ShowingSomething)
+            if (NeedsReload)
                 Reload();
         }
 
@@ -81,12 +97,24 @@ namespace Unity.Entities.Editor
             
             if (chunkArray.IsCreated)
                 chunkArray.Dispose();
-            var query = SelectedEntityQuery?.Query ?? allQuery;
             
             entityManager.CompleteAllJobs();
-            chunkArray = entityManager.CreateArchetypeChunkArray(query, Allocator.Persistent);
 
-            rows.SetSource(chunkArray, entityManager);
+            if (SelectedEntityQuery == null || SelectedEntityQuery.Group == null)
+            {
+                var query = SelectedEntityQuery?.Query ?? allQuery;
+                chunkArray = entityManager.CreateArchetypeChunkArray(query, Allocator.Persistent);
+            }
+            else
+            {
+                chunkArray = SelectedEntityQuery.Group.CreateArchetypeChunkArray(Allocator.Persistent);
+            }
+
+            rows.SetSource(chunkArray, entityManager, chunkFilter);
+            setChunkArray(chunkArray);
+
+            lastVersion = entityManager.Version;
+            
             return rows;
         }
 
@@ -106,11 +134,17 @@ namespace Unity.Entities.Editor
                 base.OnGUI(rect);
         }
 
+        public void OnEntitySelected(Entity entity)
+        {
+            setEntitySelection(entity);
+        }
+
         protected override void SelectionChanged(IList<int> selectedIds)
         {
             if (selectedIds.Count > 0)
             {
-                if (rows.GetById(selectedIds[0], out var selectedEntity))
+                Entity selectedEntity;
+                if (rows.GetById(selectedIds[0], out selectedEntity))
                     setEntitySelection(selectedEntity);
             }
             else
@@ -137,7 +171,9 @@ namespace Unity.Entities.Editor
 
         public void TouchSelection()
         {
-            SetSelection(GetSelection(), TreeViewSelectionOptions.FireSelectionChanged);
+            SetSelection(
+                GetSelection()
+                , TreeViewSelectionOptions.RevealAndFrame);
         }
 
         public void FrameSelection()

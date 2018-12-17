@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Unity.Assertions;
 using Unity.Collections.LowLevel.Unsafe;
 
@@ -37,6 +37,17 @@ namespace Unity.Entities
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             throw new InvalidOperationException("Shouldn't happen");
 #endif
+        }
+
+        public static int GetSizeInChunk(Chunk* chunk, int typeIndex, ref int typeLookupCache)
+        {
+            var archetype = chunk->Archetype;
+            GetIndexInTypeArray(archetype, typeIndex, ref typeLookupCache);
+            var indexInTypeArray = typeLookupCache;
+
+            var sizeOf = archetype->SizeOfs[indexInTypeArray];
+
+            return sizeOf;
         }
 
         public static byte* GetComponentDataWithTypeRO(Chunk* chunk, int index, int typeIndex, ref int typeLookupCache)
@@ -164,19 +175,21 @@ namespace Unity.Entities
             int count)
         {
             var srcArchetype  = srcChunk->Archetype;
-            var dstArchetype  = dstChunk->Archetype;
             var srcBuffer     = srcChunk->Buffer;
             var dstBuffer     = dstChunk->Buffer;
+            var dstArchetype  = dstChunk->Archetype;
             var srcOffsets    = srcArchetype->Offsets;
             var srcSizeOfs    = srcArchetype->SizeOfs;
             var srcTypesCount = srcArchetype->TypesCount;
             var srcTypes      = srcArchetype->Types;
+            var dstTypes      = dstArchetype->Types;
+            var dstOffsets    = dstArchetype->Offsets;
             var dstTypeIndex  = 1;
             // type[0] is always Entity, and will be patched up later, so just skip
             for (var srcTypeIndex = 1; srcTypeIndex != srcTypesCount; srcTypeIndex++)
             {
                 var srcType   = srcTypes[srcTypeIndex];
-                var dstType   = srcTypes[dstTypeIndex];
+                var dstType   = dstTypes[dstTypeIndex];
                 
                 // Type does not exist in destination. Skip it.
                 if (srcType.TypeIndex != dstType.TypeIndex)
@@ -184,9 +197,11 @@ namespace Unity.Entities
                 
                 var srcOffset = srcOffsets[srcTypeIndex];
                 var srcSizeOf = srcSizeOfs[srcTypeIndex];
-                
+
+                var dstOffset = dstOffsets[dstTypeIndex];
+
                 var src = srcBuffer + (srcOffset + srcSizeOf * srcIndex);
-                var dst = dstBuffer + (srcOffset + srcSizeOf * dstBaseIndex);
+                var dst = dstBuffer + (dstOffset + srcSizeOf * dstBaseIndex);
 
                 if (!srcType.IsBuffer)
                 {
@@ -195,14 +210,14 @@ namespace Unity.Entities
                 else
                 {
                     var alignment = 8; // TODO: Need a way to compute proper alignment for arbitrary non-generic types in TypeManager
+                    var elementSize = TypeManager.GetTypeInfo(srcType.TypeIndex).ElementSize;
                     for (int i = 0; i < count; ++i)
                     {
                         BufferHeader* srcHdr = (BufferHeader*) src;
                         BufferHeader* dstHdr = (BufferHeader*) dst;
                         BufferHeader.Initialize(dstHdr, srcType.BufferCapacity);
-                        BufferHeader.Assign(dstHdr, BufferHeader.GetElementPointer(srcHdr), srcHdr->Length, srcSizeOf, alignment);
+                        BufferHeader.Assign(dstHdr, BufferHeader.GetElementPointer(srcHdr), srcHdr->Length, elementSize, alignment);
 
-                        src += srcSizeOf;
                         dst += srcSizeOf;
                     }
                 }

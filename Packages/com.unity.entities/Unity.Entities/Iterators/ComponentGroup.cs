@@ -1,11 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
-using UnityEngine.Profiling;
 
 namespace Unity.Entities
 {
+    //@TODO: Find Better name
+    public class EntityArchetypeQuery
+    {
+        public ComponentType[] Any;
+        public ComponentType[] None;
+        public ComponentType[] All;
+    }
+
+    //@TODO: Rename to ComponentQuery
     public unsafe class ComponentGroup : IDisposable
     {
         readonly ComponentJobSafetyManager m_SafetyManager;
@@ -20,8 +29,7 @@ namespace Unity.Entities
         // TODO: this is temporary, used to cache some state to avoid recomputing the TransformAccessArray. We need to improve this.
         internal IDisposable               m_CachedState;
 
-        internal ComponentGroup(EntityGroupData* groupData, ComponentJobSafetyManager safetyManager,
-            ArchetypeManager typeManager, EntityDataManager* entityDataManager)
+        internal ComponentGroup(EntityGroupData* groupData, ComponentJobSafetyManager safetyManager, ArchetypeManager typeManager, EntityDataManager* entityDataManager)
         {
             m_GroupData = groupData;
             m_EntityDataManager = entityDataManager;
@@ -44,18 +52,50 @@ namespace Unity.Entities
                 return true;
             }
         }
-        
-        public ComponentType[] Types
-        {
-            get
-            {
-                var types = new List<ComponentType>();
-                for (var i = 0; i < m_GroupData->RequiredComponentsCount; ++i)
-                    types.Add(m_GroupData->RequiredComponents[i]);
 
-                return types.ToArray();
+        internal ComponentType[] GetQueryTypes()
+        {
+            var types = new HashSet<ComponentType>();
+
+            for (var i = 0; i < m_GroupData->ArchetypeQueryCount; ++i)
+            {
+                for (var j = 0; j < m_GroupData->ArchetypeQuery[i].AnyCount; ++j)
+                {
+                    types.Add(TypeManager.GetType(m_GroupData->ArchetypeQuery[i].Any[j]));
+                }
+                for (var j = 0; j < m_GroupData->ArchetypeQuery[i].AllCount; ++j)
+                {
+                    types.Add(TypeManager.GetType(m_GroupData->ArchetypeQuery[i].All[j]));
+                }
+                for (var j = 0; j < m_GroupData->ArchetypeQuery[i].NoneCount; ++j)
+                {
+                    types.Add(ComponentType.Subtractive(TypeManager.GetType(m_GroupData->ArchetypeQuery[i].None[j])));
+                }
             }
+
+            var array = new ComponentType[types.Count];
+            var t = 0;
+            foreach (var type in types)
+                array[t++] = type;
+            return array;
         }
+
+        internal ComponentType[] GetReadAndWriteTypes()
+        {
+            var types = new ComponentType[m_GroupData->ReaderTypesCount + m_GroupData->WriterTypesCount];
+            var typeArrayIndex = 0;
+            for (var i = 0; i < m_GroupData->ReaderTypesCount; ++i)
+            {
+                types[typeArrayIndex++] = ComponentType.ReadOnly(TypeManager.GetType(m_GroupData->ReaderTypes[i]));
+            }
+            for (var i = 0; i < m_GroupData->WriterTypesCount; ++i)
+            {
+                types[typeArrayIndex++] = TypeManager.GetType(m_GroupData->WriterTypes[i]);
+            }
+
+            return types;
+        }
+        
         internal ArchetypeManager ArchetypeManager { get; }
 
         public void Dispose()
@@ -70,7 +110,7 @@ namespace Unity.Entities
 
             ResetFilter();
         }
-        
+
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
         internal AtomicSafetyHandle GetSafetyHandle(int indexInComponentGroup)
         {
@@ -111,20 +151,20 @@ namespace Unity.Entities
         {
             outIterator = new ComponentChunkIterator(m_GroupData->FirstMatchingArchetype, m_EntityDataManager->GlobalSystemVersion, ref m_Filter);
         }
-        
+
         internal int GetIndexInComponentGroup(int componentType)
         {
             var componentIndex = 0;
             while (componentIndex < m_GroupData->RequiredComponentsCount && m_GroupData->RequiredComponents[componentIndex].TypeIndex != componentType)
                 ++componentIndex;
-            
+
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             if (componentIndex >= m_GroupData->RequiredComponentsCount)
                 throw new InvalidOperationException( $"Trying to get iterator for {TypeManager.GetType(componentType)} but the required component type was not declared in the EntityGroup.");
 #endif
             return componentIndex;
         }
-        
+
         internal void GetComponentDataArray<T>(ref ComponentChunkIterator iterator, int indexInComponentGroup,
             int length, out ComponentDataArray<T> output) where T : struct, IComponentData
         {
@@ -134,7 +174,7 @@ namespace Unity.Entities
             if (componentType.IsZeroSized)
                 throw new ArgumentException($"GetComponentDataArray<{typeof(T)}> cannot be called on zero-sized IComponentData");
 #endif
-            
+
             iterator.IndexInComponentGroup = indexInComponentGroup;
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             output = new ComponentDataArray<T>(iterator, length, GetSafetyHandle(indexInComponentGroup));
@@ -145,16 +185,14 @@ namespace Unity.Entities
 
         public ComponentDataArray<T> GetComponentDataArray<T>() where T : struct, IComponentData
         {
-            Profiler.BeginSample("GetComponentDataArray");
-            
             var typeIndex = TypeManager.GetTypeIndex<T>();
-            
+
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             var componentType = ComponentType.FromTypeIndex(typeIndex);
             if (componentType.IsZeroSized)
                 throw new ArgumentException($"GetComponentDataArray<{typeof(T)}> cannot be called on zero-sized IComponentData");
 #endif
-            
+
             int length;
             ComponentChunkIterator iterator;
             GetComponentChunkIterator(out length, out iterator);
@@ -162,8 +200,6 @@ namespace Unity.Entities
 
             ComponentDataArray<T> res;
             GetComponentDataArray(ref iterator, indexInComponentGroup, length, out res);
-            
-            Profiler.EndSample();
             return res;
         }
 
@@ -234,6 +270,19 @@ namespace Unity.Entities
 #endif
         }
 
+        public NativeArray<ArchetypeChunk> CreateArchetypeChunkArray(Allocator allocator, out JobHandle jobhandle)
+        {
+            return ComponentChunkIterator.CreateArchetypeChunkArray(m_GroupData->FirstMatchingArchetype, allocator, out jobhandle);
+        }
+
+        public NativeArray<ArchetypeChunk> CreateArchetypeChunkArray(Allocator allocator)
+        {
+            JobHandle job;
+            var res = ComponentChunkIterator.CreateArchetypeChunkArray(m_GroupData->FirstMatchingArchetype, allocator, out job);
+            job.Complete();
+            return res;
+        }
+
         public EntityArray GetEntityArray()
         {
             int length;
@@ -244,41 +293,15 @@ namespace Unity.Entities
             GetEntityArray(ref iterator, length, out res);
             return res;
         }
-        
+
         public bool CompareComponents(ComponentType[] componentTypes)
         {
-            fixed (ComponentType* ptr = componentTypes)
-            {
-                return CompareComponents(ptr, componentTypes.Length);
-            }
+            return EntityGroupManager.CompareComponents(componentTypes, m_GroupData);
         }
 
-        internal bool CompareComponents(ComponentType* componentTypes, int count)
+        public bool CompareQuery(EntityArchetypeQuery[] query)
         {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            for (var k = 0; k < count; ++k)
-                if (componentTypes[k].TypeIndex == TypeManager.GetTypeIndex<Entity>())
-                    throw new ArgumentException(
-                        "ComponentGroup.CompareComponents may not include typeof(Entity), it is implicit");
-#endif
-
-            // ComponentGroups are constructed including the Entity ID
-            var requiredCount = m_GroupData->RequiredComponentsCount;
-            if (count != requiredCount - 1)
-                return false;
-
-            for (var k = 0; k < count; ++k)
-            {
-                int i;
-                for (i = 1; i < requiredCount; ++i)
-                    if (m_GroupData->RequiredComponents[i] == componentTypes[k])
-                        break;
-
-                if (i == requiredCount)
-                    return false;
-            }
-
-            return true;
+            return EntityGroupManager.CompareQuery(query, m_GroupData);
         }
 
         public void ResetFilter()
@@ -402,7 +425,7 @@ namespace Unity.Entities
 
             return version;
         }
-        
+
 
         internal ArchetypeManager GetArchetypeManager()
         {
@@ -412,6 +435,25 @@ namespace Unity.Entities
         internal int CalculateNumberOfChunksWithoutFiltering()
         {
             return ComponentChunkIterator.CalculateNumberOfChunksWithoutFiltering(m_GroupData->FirstMatchingArchetype);
+        }
+
+		//TODO: Remove this once CreateArchetypeChunkArray supports filtering shared components
+        internal NativeList<ArchetypeChunk> GetAllMatchingChunks(Allocator allocator)
+        {
+            var chunks = new NativeList<ArchetypeChunk>(allocator);
+
+            for (var match = m_GroupData->FirstMatchingArchetype; match != null; match = match->Next)
+            {
+                var archeType = match->Archetype;
+                for (var c = (Chunk*) archeType->ChunkList.Begin; c != archeType->ChunkList.End; c = (Chunk*) c->ChunkListNode.Next)
+                {
+                    if (c->MatchesFilter(match, ref m_Filter))
+                    {
+                        chunks.Add(new ArchetypeChunk { m_Chunk = c });
+                    }
+                }
+            }
+            return chunks;
         }
     }
 }

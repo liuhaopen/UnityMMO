@@ -1,7 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
 using Unity.Collections;
-using Unity.Entities;
 
 namespace Unity.Entities.Tests
 {
@@ -85,6 +84,53 @@ namespace Unity.Entities.Tests
             for (int i = 0;i != testDataArray.Length;i++)
                 Assert.AreEqual(testSharedDataArray[i].value, testDataArray[i].value % 5);
 
+            entities.Dispose();
+            creationWorld.Dispose();
+        }
+
+        [Test]
+        public void MoveEntitiesWithComponentGroup()
+        {
+            var creationWorld = new World("CreationWorld");
+            var creationManager = creationWorld.GetOrCreateManager<EntityManager>();
+
+            var archetype = creationManager.CreateArchetype(typeof(EcsTestData), typeof(EcsTestData2), typeof(SharedData1));
+
+            var entities = new NativeArray<Entity>(10000, Allocator.Temp);
+            creationManager.CreateEntity(archetype, entities);
+            for (int i = 0; i != entities.Length; i++)
+            {
+                creationManager.SetComponentData(entities[i], new EcsTestData(i));
+                creationManager.SetSharedComponentData(entities[i], new SharedData1(i % 5));
+            }
+
+            m_Manager.CheckInternalConsistency();
+            creationManager.CheckInternalConsistency();
+
+            var filteredComponentGroup = creationManager.CreateComponentGroup(typeof(EcsTestData), typeof(SharedData1));
+            filteredComponentGroup.SetFilter(new SharedData1(2));
+
+            var entityRemapping = creationManager.CreateEntityRemapArray(Allocator.TempJob);
+            m_Manager.MoveEntitiesFrom(creationManager, filteredComponentGroup, entityRemapping);
+
+            m_Manager.CheckInternalConsistency();
+            creationManager.CheckInternalConsistency();
+
+            var group = m_Manager.CreateComponentGroup(typeof(EcsTestData), typeof(SharedData1));
+            Assert.AreEqual(2000, group.CalculateLength());
+            Assert.AreEqual(8000, creationManager.CreateComponentGroup(typeof(EcsTestData)).CalculateLength());
+
+            // We expect that the shared component data matches the correct entities
+            var testDataArray = group.GetComponentDataArray<EcsTestData>();
+            var testSharedDataArray = group.GetSharedComponentDataArray<SharedData1>();
+            for (int i = 0;i != testDataArray.Length;i++)
+                Assert.AreEqual(testSharedDataArray[i].value, testDataArray[i].value % 5);
+
+            for (int i = 0;i != testDataArray.Length;i++)
+                Assert.AreEqual(testSharedDataArray[i].value, 2);
+
+            entityRemapping.Dispose();
+            filteredComponentGroup.Dispose();
             entities.Dispose();
             creationWorld.Dispose();
         }

@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿using System;
+using Unity.Entities;
 
 namespace Unity.Transforms
 {
@@ -6,7 +7,9 @@ namespace Unity.Transforms
     /// Copy Transform from GameObject associated with Entity to TransformMatrix.
     /// Once only. Component is removed after copy.
     /// </summary>
+    [Serializable]
     public struct CopyInitialTransformFromGameObject : IComponentData { }
 
+    [UnityEngine.DisallowMultipleComponent]
     public class CopyInitialTransformFromGameObjectComponent : ComponentDataWrapper<CopyInitialTransformFromGameObject> { } 
 }

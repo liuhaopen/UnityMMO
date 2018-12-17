@@ -9,23 +9,17 @@ namespace Unity.Entities
 {
     internal struct ProxyComponentData : IComponentData
     {
-        #pragma warning disable 169 // Not really zero-sized component (tag)
         private byte m_Internal;
-        #pragma warning restore 169
     }
 
     internal struct ProxyBufferElementData : IBufferElementData
     {
-        #pragma warning disable 169 // Not really zero-sized component (tag)
         private byte m_Internal;
-        #pragma warning restore 169
     }
 
     internal struct ProxySharedComponentData : ISharedComponentData
     {
-        #pragma warning disable 169 // Not really zero-sized component (tag)
         private byte m_Internal;
-        #pragma warning restore 169
     }
 
     internal class InjectComponentGroupData
@@ -78,7 +72,8 @@ namespace Unity.Entities
 
             if (componentGroupIndexField != null)
             {
-                var pinnedSystemPtr = (byte*)UnsafeUtility.PinGCObjectAndGetAddress(system, out var gchandle);
+                ulong gchandle;
+                var pinnedSystemPtr = (byte*)UnsafeUtility.PinGCObjectAndGetAddress(system, out gchandle);
                 var groupIndexPtr = pinnedSystemPtr + m_GroupFieldOffset + UnsafeUtility.GetFieldOffset(componentGroupIndexField);
 
                 int groupIndex = m_ComponentGroupIndex;

@@ -1,4 +1,3 @@
-using Unity.Entities;
 using Unity.Mathematics;
 
 
@@ -58,6 +57,14 @@ namespace Unity.Entities.Properties.Tests
 
     [System.Serializable]
     public struct BlitComponent : IComponentData
+    {
+        public BlitMe blit;
+        public float flt;
+    }
+
+    [System.Serializable]
+    [InternalBufferCapacity(8)]
+    public struct TestBufferElementData : IBufferElementData
     {
         public BlitMe blit;
         public float flt;

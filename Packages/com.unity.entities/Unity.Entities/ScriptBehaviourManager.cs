@@ -14,17 +14,17 @@ namespace Unity.Entities
     public abstract class ScriptBehaviourManager
     {
 #if UNITY_EDITOR
-        private CustomSampler sampler;
+        private CustomSampler m_Sampler;
 #endif
-        internal void CreateInstance(World world, int capacity)
+        internal void CreateInstance(World world)
         {
-            OnBeforeCreateManagerInternal(world, capacity);
+            OnBeforeCreateManagerInternal(world);
             try
             {
-                OnCreateManager(capacity);
+                OnCreateManager();
 #if UNITY_EDITOR
                 var type = GetType();
-                sampler = CustomSampler.Create($"{world.Name} {type.FullName}");
+                m_Sampler = CustomSampler.Create($"{world.Name} {type.FullName}");
 #endif
             }
             catch
@@ -42,7 +42,7 @@ namespace Unity.Entities
             OnAfterDestroyManagerInternal();
         }
 
-        protected abstract void OnBeforeCreateManagerInternal(World world, int capacity);
+        protected abstract void OnBeforeCreateManagerInternal(World world);
 
         protected abstract void OnBeforeDestroyManagerInternal();
         protected abstract void OnAfterDestroyManagerInternal();
@@ -51,13 +51,8 @@ namespace Unity.Entities
         ///     Called when the ScriptBehaviourManager is created.
         ///     When a new domain is loaded, OnCreate on the necessary manager will be invoked
         ///     before the ScriptBehaviour will receive its first OnCreate() call.
-        ///     capacity can be configured in Edit -> Configure Memory
         /// </summary>
-        /// <param name="capacity">
-        ///     Capacity describes how many objects will register with the manager. This lets you reduce realloc
-        ///     calls while the game is running.
-        /// </param>
-        protected virtual void OnCreateManager(int capacity)
+        protected virtual void OnCreateManager()
         {
         }
 
@@ -77,12 +72,12 @@ namespace Unity.Entities
         public void Update()
         {
 #if UNITY_EDITOR
-            sampler?.Begin();
+            m_Sampler?.Begin();
 #endif
             InternalUpdate();
 
 #if UNITY_EDITOR
-            sampler?.End();
+            m_Sampler?.End();
 #endif
         }
     }

@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using Unity.Jobs;
 using Unity.Collections;
-using Unity.Entities;
 
 namespace Unity.Entities.Tests
 {
@@ -39,8 +38,11 @@ namespace Unity.Entities.Tests
 	    
 	    unsafe struct TestEntity
 	    {
+#pragma warning disable 649
 	        [ReadOnly]
+
 	        public EcsTestData* testData;
+
 	        public EcsTestData2* testData2;
 	    }
 
@@ -51,7 +53,8 @@ namespace Unity.Entities.Tests
 			[ReadOnly]
 			public EcsTestData2* testData2;
 		}
-		
+#pragma warning restore 649	
+	    
 	    [Test]
 	    public void ComponentAccessAfterScheduledJobThrowsEntityArray()
 	    {
@@ -100,9 +103,11 @@ namespace Unity.Entities.Tests
 
 		unsafe struct TestEntitySub2
 		{
-			public EcsTestData* testData;
+#pragma warning disable 649
+		    public EcsTestData* testData;
 			public SubtractiveComponent<EcsTestData2> testData2;
-		}
+#pragma warning restore 649
+	    }
 		
 		[Test]
 		public void ComponentGroupArraySubtractive()

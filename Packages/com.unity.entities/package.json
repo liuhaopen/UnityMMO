@@ -1,13 +1,13 @@
 {
     "name": "com.unity.entities", 
     "unity": "2018.2", 
-    "version": "0.0.12-preview.12", 
+    "version": "0.0.12-preview.21", 
     "dependencies": {
+        "com.unity.collections": "0.0.9-preview.10", 
         "com.unity.properties": "0.2.11-preview", 
-        "com.unity.mathematics": "0.0.12-preview.19", 
-        "com.unity.collections": "0.0.9-preview.4", 
-        "com.unity.burst": "0.2.4-preview.34", 
-        "com.unity.jobs": "0.0.7-preview.3"
+        "com.unity.burst": "0.2.4-preview.37", 
+        "com.unity.jobs": "0.0.7-preview.5", 
+        "com.unity.mathematics": "0.0.12-preview.19"
     }, 
     "keywords": [
         "entities", 

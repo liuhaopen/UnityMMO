@@ -59,7 +59,7 @@ namespace Unity.Entities.Editor.Tests
             ScriptBehaviourManager currentSystem = null;
 
             using (var listView = new EntityListView(new TreeViewState(), null, SetEntitySelection, () => null,
-                () => currentSystem))
+                () => currentSystem, x => {}))
             {
                 currentSystem = World.Active.GetExistingManager<EntityManager>();
                 listView.SelectedEntityQuery = null;
@@ -88,7 +88,7 @@ namespace Unity.Entities.Editor.Tests
             ScriptBehaviourManager currentSystem = null;
 
             using (var listView = new EntityListView(new TreeViewState(), null, SetEntitySelection, () => selectedWorld,
-                () => currentSystem))
+                () => currentSystem, x => {}))
             {
                 currentSystem = World.Active.GetExistingManager<EntityManager>();
                 listView.SelectedEntityQuery = AllQuery;
@@ -140,7 +140,7 @@ namespace Unity.Entities.Editor.Tests
             var stateNames = new List<string>();
             Assert.DoesNotThrow(() =>
             {
-                listView = SystemListView.CreateList(states, stateNames, SetSystemSelection, () => null);
+                listView = SystemListView.CreateList(states, stateNames, SetSystemSelection, () => null, () => true);
                 listView.Reload();
             });
         }
@@ -152,7 +152,8 @@ namespace Unity.Entities.Editor.Tests
                 new TreeViewState(),
                 new MultiColumnHeader(SystemListView.GetHeaderState()),
                 (manager, world) => { },
-                () => World.Active);
+                () => World.Active,
+                () => true);
             var managerItems = listView.GetRows().Where(x => listView.managersById.ContainsKey(x.id)).Select(x => listView.managersById[x.id]);
             Assert.AreEqual(World.Active.BehaviourManagers.Count(), managerItems.Intersect(World.Active.BehaviourManagers).Count());
         }
@@ -164,7 +165,8 @@ namespace Unity.Entities.Editor.Tests
                 new TreeViewState(),
                 new MultiColumnHeader(SystemListView.GetHeaderState()),
                 (manager, world) => { },
-                () => null);
+                () => null,
+                () => true);
             var managerItems = listView.GetRows().Where(x => listView.managersById.ContainsKey(x.id)).Select(x => listView.managersById[x.id]);
             var allManagers = new List<ScriptBehaviourManager>();
             foreach (var world in World.AllWorlds)

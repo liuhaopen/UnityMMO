@@ -43,12 +43,7 @@ namespace Unity.Entities
                 sizeof(ComponentSafetyHandle) * m_JobDependencyCombineBufferCount, 16, Allocator.Persistent);
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            for (var i = 0; i != kMaxTypes; i++)
-            {
-                m_ComponentSafetyHandles[i].SafetyHandle = AtomicSafetyHandle.Create();
-                AtomicSafetyHandle.SetAllowSecondaryVersionWriting(m_ComponentSafetyHandles[i].SafetyHandle, false);
-                m_ComponentSafetyHandles[i].BufferHandle = AtomicSafetyHandle.Create();
-            }
+            CreateComponentSafetyHandles(kMaxTypes);
 #endif
 
             m_HasCleanHandles = true;
@@ -76,6 +71,18 @@ namespace Unity.Entities
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
         public AtomicSafetyHandle ExclusiveTransactionSafety { get; private set; }
+        
+        void CreateComponentSafetyHandles(int count)
+        {
+            for (var i = 0; i != count; i++)
+            {
+                m_ComponentSafetyHandles[i].SafetyHandle = AtomicSafetyHandle.Create();
+                AtomicSafetyHandle.SetAllowSecondaryVersionWriting(m_ComponentSafetyHandles[i].SafetyHandle, false);
+
+                m_ComponentSafetyHandles[i].BufferHandle = AtomicSafetyHandle.Create();
+            }
+        }
+
 #endif
 
         //@TODO: Optimize as one function call to in batch bump version on every single handle...
@@ -108,18 +115,18 @@ namespace Unity.Entities
             for (var i = 0; i != count; i++)
             {
                 AtomicSafetyHandle.Release(m_ComponentSafetyHandles[i].SafetyHandle);
-                m_ComponentSafetyHandles[i].SafetyHandle = AtomicSafetyHandle.Create();
-                AtomicSafetyHandle.SetAllowSecondaryVersionWriting(m_ComponentSafetyHandles[i].SafetyHandle, false);
-
                 AtomicSafetyHandle.Release(m_ComponentSafetyHandles[i].BufferHandle);
-                m_ComponentSafetyHandles[i].BufferHandle = AtomicSafetyHandle.Create();
             }
+
+            CreateComponentSafetyHandles(count);
 #endif
 
             m_HasCleanHandles = true;
 
             Profiler.EndSample();
         }
+
+
 
         public void Dispose()
         {
@@ -354,6 +361,12 @@ namespace Unity.Entities
                 AtomicSafetyHandle.CheckDeallocateAndThrow(m_ComponentSafetyHandles[i].SafetyHandle);
                 AtomicSafetyHandle.CheckDeallocateAndThrow(m_ComponentSafetyHandles[i].BufferHandle);
             }
+
+            for (var i = 0; i != TypeManager.GetTypeCount(); i++)
+            {
+                AtomicSafetyHandle.Release(m_ComponentSafetyHandles[i].SafetyHandle);
+                AtomicSafetyHandle.Release(m_ComponentSafetyHandles[i].BufferHandle);
+            }
 #endif
 
             IsInTransaction = true;
@@ -361,14 +374,6 @@ namespace Unity.Entities
             ExclusiveTransactionSafety = AtomicSafetyHandle.Create();
 #endif
             m_ExclusiveTransactionDependency = GetAllDependencies();
-
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            for (var i = 0; i != TypeManager.GetTypeCount(); i++)
-            {
-                AtomicSafetyHandle.Release(m_ComponentSafetyHandles[i].SafetyHandle);
-                AtomicSafetyHandle.Release(m_ComponentSafetyHandles[i].BufferHandle);
-            }
-#endif
         }
 
         public void EndExclusiveTransaction()
@@ -387,13 +392,7 @@ namespace Unity.Entities
             IsInTransaction = false;
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            for (var i = 0; i != TypeManager.GetTypeCount(); i++)
-            {
-                m_ComponentSafetyHandles[i].SafetyHandle = AtomicSafetyHandle.Create();
-                AtomicSafetyHandle.SetAllowSecondaryVersionWriting(m_ComponentSafetyHandles[i].SafetyHandle, false);
-
-                m_ComponentSafetyHandles[i].BufferHandle = AtomicSafetyHandle.Create();
-            }
+            CreateComponentSafetyHandles(TypeManager.GetTypeCount());
 #endif
         }
 

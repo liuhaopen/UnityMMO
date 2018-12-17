@@ -1,7 +1,9 @@
 ﻿using System;
 using Unity.Assertions;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Jobs;
 
 namespace Unity.Entities
 {
@@ -74,7 +76,7 @@ namespace Unity.Entities
 
         private int m_CurrentArchetypeIndex;
         private int m_CurrentChunkIndex;
-        
+
         private ComponentGroupFilter m_Filter;
 
         private readonly uint m_GlobalSystemVersion;
@@ -135,6 +137,41 @@ namespace Unity.Entities
             return chunkCount;
         }
 
+        [BurstCompile]
+        struct GatherChunksJob : IJob
+        {
+            public NativeArray<ArchetypeChunk> chunks;
+            [NativeDisableUnsafePtrRestriction]
+            public MatchingArchetypes* matchingArchetype;
+            public void Execute()
+            {
+                int index = 0;
+                for (; matchingArchetype != null; matchingArchetype = matchingArchetype->Next)
+                {
+                    Archetype* archetype = matchingArchetype->Archetype;
+
+                    for (var c = (Chunk*) archetype->ChunkList.Begin; c != archetype->ChunkList.End; c = (Chunk*) c->ChunkListNode.Next)
+                    {
+                        chunks[index++] = new ArchetypeChunk {m_Chunk = c};
+                    }
+                }
+            }
+        }
+
+        public static NativeArray<ArchetypeChunk> CreateArchetypeChunkArray(MatchingArchetypes* firstMatchingArchetype, Allocator allocator, out JobHandle jobHandle)
+        {
+            var chunkCount = CalculateNumberOfChunksWithoutFiltering(firstMatchingArchetype);
+
+            var job = new GatherChunksJob
+            {
+                matchingArchetype = firstMatchingArchetype,
+                chunks = new NativeArray<ArchetypeChunk>(chunkCount, allocator)
+            };
+            jobHandle = job.Schedule();
+
+            return job.chunks;
+        }
+        
         public static int CalculateLength(MatchingArchetypes* firstMatchingArchetype, ref ComponentGroupFilter filter)
         {
             // Update the archetype segments
@@ -175,40 +212,6 @@ namespace Unity.Entities
             }
 
             return length;
-        }
-
-        public static void CalculateInitialChunkIterators(MatchingArchetypes* firstMatchingArchetype,
-            int indexInComponentGroup, NativeArray<int> sharedComponentIndex,
-            NativeArray<IntPtr> outFirstArchetype, NativeArray<IntPtr> outFirstChunk, NativeArray<int> outLength)
-        {
-            var lookup = new NativeHashMap<int, int>(sharedComponentIndex.Length, Allocator.Temp);
-            for (var f = 0; f < sharedComponentIndex.Length; ++f) lookup.TryAdd(sharedComponentIndex[f], f);
-            for (var match = firstMatchingArchetype; match != null; match = match->Next)
-            {
-                if (match->Archetype->EntityCount <= 0)
-                    continue;
-
-                var archeType = match->Archetype;
-                for (var c = (Chunk*) archeType->ChunkList.Begin; c != archeType->ChunkList.End; c = (Chunk*) c->ChunkListNode.Next)
-                {
-                    if (c->Count <= 0)
-                        continue;
-
-                    var chunkSharedComponentIndex = c->GetSharedComponentIndex(match, indexInComponentGroup);
-                    int filterIndex;
-                    if (!lookup.TryGetValue(chunkSharedComponentIndex, out filterIndex))
-                        continue;
-
-
-                    outLength[filterIndex] = outLength[filterIndex] + c->Count;
-                    if (outFirstChunk[filterIndex] != IntPtr.Zero)
-                        continue;
-                    outFirstArchetype[filterIndex] = (IntPtr) match;
-                    outFirstChunk[filterIndex] = (IntPtr) c;
-                }
-            }
-
-            lookup.Dispose();
         }
 
         private void MoveToNextMatchingChunk()
@@ -343,6 +346,11 @@ namespace Unity.Entities
         {
             return m_CurrentChunk->MatchesFilter(m_CurrentMatchingArchetype, ref m_Filter);
         }
+
+        public bool RequiresFilter()
+        {
+            return m_Filter.RequiresMatchesFilter;
+        }
         
         public int GetIndexInArchetypeFromCurrentChunk(int indexInComponentGroup)
         {
@@ -377,6 +385,13 @@ namespace Unity.Entities
             Assert.IsTrue(-1 != IndexInComponentGroup);
             MoveToEntityIndex(index);
             UpdateCacheToCurrentChunk(out cache, isWriting, IndexInComponentGroup);
+        }
+        internal ArchetypeChunk GetCurrentChunk()
+        {
+            return new ArchetypeChunk
+            {
+                m_Chunk = m_CurrentChunk
+            };
         }
     }
 }

@@ -39,7 +39,7 @@ public static class LODGroupExtensions
 
         return lodParams;
     }
-    
+
     public static float GetWorldSpaceSize(LODGroup lodGroup)
     {
         return GetWorldSpaceScale(lodGroup.transform) * lodGroup.size;
@@ -53,14 +53,14 @@ public static class LODGroupExtensions
         largestAxis = Mathf.Max(largestAxis, Mathf.Abs(scale.z));
         return largestAxis;
     }
-    
+
     public static int CalculateCurrentLODIndex(float4 lodDistances, float3 worldReferencePoint, ref LODParams lodParams)
     {
         var distanceSqr = CalculateDistanceSqr(worldReferencePoint, ref lodParams);
         var lodIndex = CalculateCurrentLODIndex(lodDistances, distanceSqr);
         return lodIndex;
     }
-    
+
     public static int CalculateCurrentLODMask(float4 lodDistances, float3 worldReferencePoint, ref LODParams lodParams)
     {
         var distanceSqr = CalculateDistanceSqr(worldReferencePoint, ref lodParams);
@@ -79,11 +79,11 @@ public static class LODGroupExtensions
         else if (lodResult.w)
             return 3;
         else
-            
+
             // Can return 0 or 16. Doesn't matter...
             return -1;
     }
-    
+
     static int CalculateCurrentLODMask(float4 lodDistances, float measuredDistanceSqr)
     {
         var lodResult = measuredDistanceSqr < (lodDistances * lodDistances);
@@ -110,7 +110,18 @@ public static class LODGroupExtensions
         }
         else
         {
-            return math.lengthSquared(lodParams.cameraPos - worldReferencePoint) * lodParams.screenRelativeMetric;
+            return math.lengthsq(lodParams.cameraPos - worldReferencePoint) * lodParams.screenRelativeMetric;
         }
+    }
+
+    public static float3 GetWorldPosition(LODGroup group)
+    {
+        return group.GetComponent<Transform>().TransformPoint(group.localReferencePoint);
+    }
+
+    public static float CalculateLODSwitchDistance(float fieldOfView, LODGroup group, int lodIndex)
+    {
+        float halfAngle = math.tan(math.radians(fieldOfView) * 0.5F);
+        return GetWorldSpaceSize(group) / (2 * group.GetLODs()[lodIndex].screenRelativeTransitionHeight * halfAngle);
     }
 }

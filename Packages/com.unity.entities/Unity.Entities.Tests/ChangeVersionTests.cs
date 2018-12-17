@@ -1,5 +1,7 @@
 using NUnit.Framework;
+using Unity.Collections;
 using Unity.Jobs;
+using UnityEngine;
 
 namespace Unity.Entities.Tests
 {
@@ -8,6 +10,7 @@ namespace Unity.Entities.Tests
         [DisableAutoCreation]
         class BumpVersionSystemInJob : ComponentSystem
         {
+#pragma warning disable 649
             struct MyStruct
             {
                 public readonly int Length;
@@ -17,13 +20,14 @@ namespace Unity.Entities.Tests
 
             [Inject]
             MyStruct DataStruct;
+#pragma warning restore 649
 
             struct UpdateData : IJob
             {
                 public int Length;
                 public ComponentDataArray<EcsTestData> Data;
                 public ComponentDataArray<EcsTestData2> Data2;
-                
+
                 public void Execute()
                 {
                     for (int i = 0; i < Length; ++i)
@@ -47,12 +51,13 @@ namespace Unity.Entities.Tests
                 updateDataJobHandle.Complete();
             }
         }
-        
+
         [DisableAutoCreation]
         class BumpVersionSystem : ComponentSystem
         {
             struct MyStruct
             {
+#pragma warning disable 649
                 public readonly int Length;
                 public ComponentDataArray<EcsTestData> Data;
                 public ComponentDataArray<EcsTestData2> Data2;
@@ -60,6 +65,7 @@ namespace Unity.Entities.Tests
 
             [Inject]
             MyStruct DataStruct;
+#pragma warning restore 649
 
             protected override void OnUpdate()
             {
@@ -68,6 +74,63 @@ namespace Unity.Entities.Tests
                     d2.value0 = 10;
                     DataStruct.Data2[i] = d2;
                 }
+            }
+        }
+
+        [DisableAutoCreation]
+        class BumpChunkTypeVersionSystem : ComponentSystem
+        {
+            struct UpdateChunks : IJobParallelFor
+            {
+                public NativeArray<ArchetypeChunk> Chunks;
+                public ArchetypeChunkComponentType<EcsTestData> EcsTestDataType;
+
+                public void Execute(int chunkIndex)
+                {
+                    var chunk = Chunks[chunkIndex];
+                    var ecsTestData = chunk.GetNativeArray(EcsTestDataType);
+                    for (int i = 0; i < chunk.Count; i++)
+                    {
+                        ecsTestData[i] = new EcsTestData {value = ecsTestData[i].value + 1};
+                    }
+                }
+            }
+
+            ComponentGroup m_Group;
+            private bool m_LastAllChanged;
+
+            protected override void OnCreateManager()
+            {
+                m_Group = GetComponentGroup(typeof(EcsTestData));
+                m_LastAllChanged = false;
+            }
+
+            protected override void OnUpdate()
+            {
+                var chunks = m_Group.CreateArchetypeChunkArray(Allocator.TempJob);
+                var ecsTestDataType = GetArchetypeChunkComponentType<EcsTestData>();
+                var updateChunksJob = new UpdateChunks
+                {
+                    Chunks = chunks,
+                    EcsTestDataType = ecsTestDataType
+                };
+                var updateChunksJobHandle = updateChunksJob.Schedule(chunks.Length, 32);
+                updateChunksJobHandle.Complete();
+
+                // LastSystemVersion bumped after update. Check for change
+                // needs to occur inside system update.
+                m_LastAllChanged = true;
+                for (int i = 0; i < chunks.Length; i++)
+                {
+                    m_LastAllChanged &= chunks[i].DidAddOrChange(ecsTestDataType,LastSystemVersion);
+                }
+
+                chunks.Dispose();
+            }
+
+            public bool AllEcsTestDataChunksChanged()
+            {
+                return m_LastAllChanged;
             }
         }
 
@@ -85,7 +148,7 @@ namespace Unity.Entities.Tests
             Assert.AreEqual(10, value0);
 
             Assert.That(m_Manager.GlobalSystemVersion > oldGlobalVersion);
-            
+
             unsafe {
                 // a system ran, the version should match the global
                 var chunk0 = m_Manager.Entities->GetComponentChunk(entity0);
@@ -93,7 +156,7 @@ namespace Unity.Entities.Tests
                 Assert.AreEqual(m_Manager.GlobalSystemVersion, chunk0->ChangeVersion[td2index0]);
             }
         }
-        
+
         [Test]
         public void CHG_IncrementedOnInjection()
         {
@@ -108,13 +171,27 @@ namespace Unity.Entities.Tests
             Assert.AreEqual(10, value0);
 
             Assert.That(m_Manager.GlobalSystemVersion > oldGlobalVersion);
-            
+
             unsafe {
                 // a system ran, the version should match the global
                 var chunk0 = m_Manager.Entities->GetComponentChunk(entity0);
                 var td2index0 = ChunkDataUtility.GetIndexInTypeArray(chunk0->Archetype, TypeManager.GetTypeIndex<EcsTestData2>());
                 Assert.AreEqual(m_Manager.GlobalSystemVersion, chunk0->ChangeVersion[td2index0]);
             }
+        }
+
+        [Test]
+        public void CHG_BumpValueChangesChunkTypeVersion()
+        {
+            m_Manager.CreateEntity(typeof(EcsTestData), typeof(EcsTestData2));
+
+            var bumpChunkTypeVersionSystem = World.CreateManager<BumpChunkTypeVersionSystem>();
+
+            bumpChunkTypeVersionSystem.Update();
+            Assert.AreEqual(true, bumpChunkTypeVersionSystem.AllEcsTestDataChunksChanged());
+
+            bumpChunkTypeVersionSystem.Update();
+            Assert.AreEqual(true, bumpChunkTypeVersionSystem.AllEcsTestDataChunksChanged());
         }
     }
 }

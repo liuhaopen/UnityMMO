@@ -16,6 +16,7 @@ namespace Unity.Transforms
         public float4x4 Value;
     }
 
+    [UnityEngine.DisallowMultipleComponent]
     public class LocalToWorldComponent : ComponentDataWrapper<LocalToWorld>
     {
     }

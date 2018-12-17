@@ -25,7 +25,6 @@ namespace Unity.Entities
 
 		    Node* srcBuckets = src->buckets;
 	        int srcBucketCount = (int)src->hashMask+1;
-	        Node* lastNode = &buckets[hashMask];
 
 	        for (int i = 0; i < srcBucketCount; i++)
 	        {

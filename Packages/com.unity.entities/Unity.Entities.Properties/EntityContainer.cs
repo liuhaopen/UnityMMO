@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Unity.Properties;
 
 namespace Unity.Entities.Properties
@@ -71,27 +70,61 @@ namespace Unity.Entities.Properties
 
                 if (typeof(ISharedComponentData).IsAssignableFrom(propertyType))
                 {
-                    var o = container.m_Manager.GetSharedComponentData(container.m_Entity, typeIndex);
+                    try
+                    {
+                        var o = container.m_Manager.GetSharedComponentData(container.m_Entity, typeIndex);
 
-                    // TODO: skip the StructObjectProxyProperty adapter and have the Accept()
-                    // TODO:    handle Struct & Object proxies
+                        // TODO: skip the StructObjectProxyProperty adapter and have the Accept()
+                        // TODO:    handle Struct & Object proxies
+                        var p = new StructProxy
+                        {
+                            bag = new StructPropertyBag<StructProxy>(
+                                new StructObjectProxyProperty(propertyType, o, primitiveTypes)
+                                ),
+                            data = default(byte*),
+                            type = propertyType
+                        };
+
+                        return p;
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }
+
+                if (typeof(IBufferElementData).IsAssignableFrom(propertyType))
+                {
+                    IPropertyBag bag = TypeInformation.GetOrCreate(propertyType, primitiveTypes);
+
                     var p = new StructProxy
                     {
                         bag = new StructPropertyBag<StructProxy>(
-                            new StructObjectProxyProperty(propertyType, o, primitiveTypes)
-                            ),
-                        data = default(byte*),
+                                new BufferListProxyProperty(
+                                    bag,
+                                    propertyType,
+                                    container.m_Manager.GetBufferLength(container.m_Entity, typeIndex)
+                                    )
+                                ),
+                        data = (byte*) container.m_Manager.GetBufferRawRW(container.m_Entity, typeIndex),
                         type = propertyType
                     };
-
                     return p;
                 }
 
                 {
+                    IPropertyBag bag = TypeInformation.GetOrCreate(propertyType, primitiveTypes);
+
+                    byte* data = null;
+                    if (bag.PropertyCount > 1 || ! TypeManager.GetTypeInfo(typeIndex).IsZeroSized)
+                    {
+                        data = (byte*)container.m_Manager.GetComponentDataRawRW(container.m_Entity, typeIndex);
+                    }
+
                     var p = new StructProxy
                     {
-                        bag = TypeInformation.GetOrCreate(propertyType, primitiveTypes),
-                        data = (byte*)container.m_Manager.GetComponentDataRawRW(container.m_Entity, typeIndex),
+                        bag = bag,
+                        data = data,
                         type = propertyType
                     };
 
@@ -99,7 +132,7 @@ namespace Unity.Entities.Properties
                 }
             }
         }
-
+        
         private static readonly IListStructProperty<EntityContainer> s_ComponentsProperty = new ReadOnlyComponentsProperty(
             "Components");
 

@@ -14,7 +14,12 @@ namespace Unity.Transforms
         public quaternion Value;
     }
 
+    [UnityEngine.DisallowMultipleComponent]
     public class RotationComponent : ComponentDataWrapper<Rotation>
     {
+        protected override void ValidateSerializedData(ref Rotation serializedData)
+        {
+            serializedData.Value = math.normalizesafe(serializedData.Value);
+        }
     }
 }

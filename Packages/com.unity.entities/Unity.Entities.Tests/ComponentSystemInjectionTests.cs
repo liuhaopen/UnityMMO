@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using Unity.Entities;
 
 namespace Unity.Entities.Tests
 {
@@ -17,7 +16,9 @@ namespace Unity.Entities.Tests
         class AttributeInjectionSystem : ComponentSystem
         {
             [Inject] 
+#pragma warning disable 649
             public TestSystem test;
+#pragma warning restore 649
 
             protected override void OnUpdate()
             {

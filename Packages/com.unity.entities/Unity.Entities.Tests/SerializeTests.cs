@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using Unity.Collections;
 using System;
-using Unity.Entities;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities.Serialization;
 
@@ -63,6 +62,13 @@ namespace Unity.Entities.Tests
             public Entity referencedEntity;
         }
 
+        [InternalBufferCapacity(16)]
+        public struct TestBufferElement : IBufferElementData
+        {
+            public Entity entity;
+            public int value;
+        }
+
 
         [Test]
         public void SerializeIntoExistingWorldThrows()
@@ -76,7 +82,7 @@ namespace Unity.Entities.Tests
             var reader = new TestBinaryReader(writer);
 
             Assert.Throws<ArgumentException>(()=>
-                SerializeUtility.DeserializeWorld(m_Manager.BeginExclusiveEntityTransaction(), reader)
+                SerializeUtility.DeserializeWorld(m_Manager.BeginExclusiveEntityTransaction(), reader, 0)
             );
             reader.Dispose();
         }
@@ -116,7 +122,7 @@ namespace Unity.Entities.Tests
             var deserializedWorld = new World("SerializeEntities Test World 3");
             var entityManager = deserializedWorld.GetOrCreateManager<EntityManager>();
 
-            SerializeUtility.DeserializeWorld(entityManager.BeginExclusiveEntityTransaction(), reader);
+            SerializeUtility.DeserializeWorld(entityManager.BeginExclusiveEntityTransaction(), reader, 0);
             entityManager.EndExclusiveEntityTransaction();
 
             try
@@ -188,7 +194,7 @@ namespace Unity.Entities.Tests
 
                 var buf1 = entityManager.GetBuffer<EcsIntElement>(new_e1);
                 Assert.AreEqual(3, buf1.Length);
-                Assert.AreNotEqual((UIntPtr)m_Manager.GetBuffer<EcsIntElement>(e1).GetBasePointer(), (UIntPtr)buf1.GetBasePointer());
+                Assert.AreNotEqual((UIntPtr)m_Manager.GetBuffer<EcsIntElement>(e1).GetUnsafePtr(), (UIntPtr)buf1.GetUnsafePtr());
 
                 for (int i = 0; i < 3; ++i)
                 {
@@ -197,7 +203,7 @@ namespace Unity.Entities.Tests
 
                 var buf3 = entityManager.GetBuffer<EcsIntElement>(new_e3);
                 Assert.AreEqual(10, buf3.Length);
-                Assert.AreNotEqual((UIntPtr)m_Manager.GetBuffer<EcsIntElement>(e3).GetBasePointer(), (UIntPtr)buf3.GetBasePointer());
+                Assert.AreNotEqual((UIntPtr)m_Manager.GetBuffer<EcsIntElement>(e3).GetUnsafePtr(), (UIntPtr)buf3.GetUnsafePtr());
 
                 for (int i = 0; i < 10; ++i)
                 {
@@ -215,6 +221,74 @@ namespace Unity.Entities.Tests
 
                 Assert.AreEqual(3, buf4[2].Dummy);
                 Assert.AreEqual(new_e3, buf4[2].Entity);
+            }
+            finally
+            {
+                deserializedWorld.Dispose();
+                reader.Dispose();
+            }
+        }
+
+        [Test]
+        public unsafe void SerializeEntitiesRemapsEntitiesInBuffers()
+        {
+            var dummyEntity = CreateEntityWithDefaultData(0); //To ensure entity indices are offset
+
+            var e1 = m_Manager.CreateEntity();
+            m_Manager.AddComponentData(e1, new EcsTestData(1));
+            var e2 = m_Manager.CreateEntity();
+            m_Manager.AddComponentData(e2, new EcsTestData2(2));
+
+            m_Manager.AddBuffer<TestBufferElement>(e1);
+            var buffer1 = m_Manager.GetBuffer<TestBufferElement>(e1);
+            for(int i=0;i<1024;++i)
+                buffer1.Add(new TestBufferElement {entity = e2, value = 2});
+
+            m_Manager.AddBuffer<TestBufferElement>(e2);
+            var buffer2 = m_Manager.GetBuffer<TestBufferElement>(e2);
+            for(int i=0;i<8;++i)
+                buffer2.Add(new TestBufferElement {entity = e1, value = 1});
+
+            m_Manager.DestroyEntity(dummyEntity);
+            var writer = new TestBinaryWriter();
+
+            int[] sharedData;
+            SerializeUtility.SerializeWorld(m_Manager, writer, out sharedData);
+            var reader = new TestBinaryReader(writer);
+
+            var deserializedWorld = new World("SerializeEntities Test World 3");
+            var entityManager = deserializedWorld.GetOrCreateManager<EntityManager>();
+
+            SerializeUtility.DeserializeWorld(entityManager.BeginExclusiveEntityTransaction(), reader, 0);
+            entityManager.EndExclusiveEntityTransaction();
+
+            try
+            {
+
+                var group1 = entityManager.CreateComponentGroup(typeof(EcsTestData), typeof(TestBufferElement));
+                var group2 = entityManager.CreateComponentGroup(typeof(EcsTestData2), typeof(TestBufferElement));
+
+                Assert.AreEqual(1, group1.CalculateLength());
+                Assert.AreEqual(1, group2.CalculateLength());
+
+                var new_e1 = group1.GetEntityArray()[0];
+                var new_e2 = group2.GetEntityArray()[0];
+
+                var newBuffer1 = entityManager.GetBuffer<TestBufferElement>(new_e1);
+                Assert.AreEqual(1024, newBuffer1.Length);
+                for (int i = 0; i < 1024; ++i)
+                {
+                    Assert.AreEqual(new_e2, newBuffer1[i].entity);
+                    Assert.AreEqual(2, newBuffer1[i].value);
+                }
+
+                var newBuffer2 = entityManager.GetBuffer<TestBufferElement>(new_e2);
+                Assert.AreEqual(8, newBuffer2.Length);
+                for (int i = 0; i < 8; ++i)
+                {
+                    Assert.AreEqual(new_e1, newBuffer2[i].entity);
+                    Assert.AreEqual(1, newBuffer2[i].value);
+                }
             }
             finally
             {

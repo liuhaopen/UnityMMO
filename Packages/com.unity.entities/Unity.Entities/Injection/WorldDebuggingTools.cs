@@ -31,7 +31,7 @@ namespace Unity.Entities
 
         private static bool Match(ComponentGroup group, NativeArray<ComponentType> entityComponentTypes)
         {
-            foreach (var groupType in group.Types.Skip(1))
+            foreach (var groupType in group.GetQueryTypes().Skip(1))
             {
                 var found = false;
                 foreach (var type in entityComponentTypes)

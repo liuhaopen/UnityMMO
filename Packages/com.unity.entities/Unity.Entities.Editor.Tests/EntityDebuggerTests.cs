@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Linq;
 using NUnit.Framework;
 using Unity.Entities.Tests;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Experimental.LowLevel;
 
 namespace Unity.Entities.Editor.Tests
 {
@@ -19,8 +17,6 @@ namespace Unity.Entities.Editor.Tests
         [DisableAutoCreation]
         class SingleGroupSystem : ComponentSystem
         {
-            
-#pragma warning disable 0169 // "never used" warning
             struct Group
             {
                 private readonly int Length;
@@ -28,7 +24,6 @@ namespace Unity.Entities.Editor.Tests
             }
 
             [Inject] private Group entities;
-#pragma warning restore 0169
             
             protected override void OnUpdate()
             {
@@ -40,7 +35,8 @@ namespace Unity.Entities.Editor.Tests
         {
             var windows = Resources.FindObjectsOfTypeAll<EntityDebugger>();
             foreach (var window in windows)
-                window.Close();
+                if (window != null)
+                    window.Close();
         }
 
         private const string World2Name = "Test World 2";
@@ -84,7 +80,7 @@ namespace Unity.Entities.Editor.Tests
         public void WorldPopup_RestorePreviousSelection()
         {
             World world = null;
-            var popup = new WorldPopup(() => null, x => world = x);
+            var popup = new WorldPopup(() => null, x => world = x, () => true, () => {});
             popup.TryRestorePreviousSelection(false, WorldPopup.kNoWorldName);
             Assert.AreEqual(World.AllWorlds[0], world);
             popup.TryRestorePreviousSelection(false, World2Name);

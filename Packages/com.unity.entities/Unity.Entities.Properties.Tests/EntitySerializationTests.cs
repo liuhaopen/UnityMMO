@@ -1,6 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 
+using UnityEngine;
 using Unity.Mathematics;
 using Unity.Properties.Serialization;
 
@@ -139,6 +140,47 @@ namespace Unity.Entities.Properties.Tests
             var json = JsonSerializer.Serialize(ref container);
 
             Assert.AreEqual(MyEnum.THREE, UnityEngine.JsonUtility.FromJson<TestComponentWrapper<TestEnumComponent>>(json).Components[0].e);
+        }
+
+        [Serializable]
+        public class TestBufferElementDataCollection
+        {
+            public TestBufferElementData[] TestBufferElementData;
+        }
+
+        [Test]
+        public void BufferComponentDataTest()
+        {
+            var entity = m_Manager.CreateEntity(typeof(TestBufferElementData));
+
+            var buffer = m_Manager.GetBuffer<TestBufferElementData>(entity);
+
+            var v1 = new TestBufferElementData();
+
+            v1.blit.x = 123f;
+            v1.blit.y = 456.789;
+            v1.blit.z = -12;
+            v1.flt = 0.01f;
+
+            buffer.Add(v1);
+
+            v1.blit.x = 123f * 2f;
+            buffer.Add(v1);
+
+            v1.blit.x = 123f * 3f;
+            buffer.Add(v1);
+
+            var container = new EntityContainer(m_Manager, entity);
+
+            var json = JsonSerializer.Serialize(ref container);
+
+            for (int i = 0; i < buffer.Length; ++i)
+            {
+                Assert.AreEqual(
+                    123*(i + 1),
+                    JsonUtility.FromJson<TestComponentWrapper<TestBufferElementDataCollection>>(json)
+                        .Components[0].TestBufferElementData[i].blit.x);
+            }
         }
     }
 }

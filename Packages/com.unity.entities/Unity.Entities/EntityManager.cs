@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
 using Unity.Assertions;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
-using UnityEngine;
+using Unity.Mathematics;
 using UnityEngine.Scripting;
 
 [assembly: InternalsVisibleTo("Unity.Entities.Hybrid")]
@@ -15,15 +14,8 @@ using UnityEngine.Scripting;
 
 namespace Unity.Entities
 {
-    //@TODO: There is nothing prevent non-main thread (non-job thread) access of EntityMnaager.
+    //@TODO: There is nothing prevent non-main thread (non-job thread) access of EntityManager.
     //       Static Analysis or runtime checks?
-
-    public class EntityArchetypeQuery
-    {
-        public ComponentType[] Any;
-        public ComponentType[] None;
-        public ComponentType[] All;
-    }
 
     //@TODO: safety?
     public unsafe struct EntityArchetype : IEquatable<EntityArchetype>
@@ -69,6 +61,8 @@ namespace Unity.Entities
         }
 
         public int ChunkCount => Archetype->ChunkCount;
+
+        public int ChunkCapacity => Archetype->ChunkCapacity;
     }
 
     public struct Entity : IEquatable<Entity>
@@ -121,32 +115,32 @@ namespace Unity.Entities
 
         ExclusiveEntityTransaction        m_ExclusiveEntityTransaction;
 
-        ComponentType*                    m_CachedComponentTypeArray;
+        const int                         m_CachedComponentTypeInArchetypeArrayLength = 1024;
         ComponentTypeInArchetype*         m_CachedComponentTypeInArchetypeArray;
 
         internal object m_CachedComponentList;
 
         internal EntityDataManager* Entities
         {
-            get => m_Entities;
-            private set => m_Entities = value;
+            get { return m_Entities; }
+            private set { m_Entities = value; }
         }
 
         internal ArchetypeManager ArchetypeManager
         {
-            get => m_ArchetypeManager;
-            private set => m_ArchetypeManager = value;
+            get { return m_ArchetypeManager; }
+            private set { m_ArchetypeManager = value; }
         }
 
         public int Version => IsCreated ? m_Entities->Version : 0;
 
         public uint GlobalSystemVersion => IsCreated ? Entities->GlobalSystemVersion : 0;
 
-        public bool IsCreated => m_CachedComponentTypeArray != null;
+        public bool IsCreated => m_CachedComponentTypeInArchetypeArray != null;
 
         public int EntityCapacity
         {
-            get => Entities->Capacity;
+            get { return Entities->Capacity; }
             set
             {
                 BeforeStructuralChange();
@@ -158,15 +152,15 @@ namespace Unity.Entities
 
         public JobHandle ExclusiveEntityTransactionDependency
         {
-            get => ComponentJobSafetyManager.ExclusiveTransactionDependency;
-            set => ComponentJobSafetyManager.ExclusiveTransactionDependency = value;
+            get { return ComponentJobSafetyManager.ExclusiveTransactionDependency; }
+            set { ComponentJobSafetyManager.ExclusiveTransactionDependency = value; }
         }
 
         EntityManagerDebug m_Debug;
 
         public EntityManagerDebug Debug => m_Debug ?? (m_Debug = new EntityManagerDebug(this));
 
-        protected override void OnBeforeCreateManagerInternal(World world, int capacity)
+        protected override void OnBeforeCreateManagerInternal(World world)
         {
         }
 
@@ -178,12 +172,12 @@ namespace Unity.Entities
         {
         }
 
-        protected override void OnCreateManager(int capacity)
+        protected override void OnCreateManager()
         {
             TypeManager.Initialize();
 
             Entities = (EntityDataManager*) UnsafeUtility.Malloc(sizeof(EntityDataManager), 64, Allocator.Persistent);
-            Entities->OnCreate(capacity);
+            Entities->OnCreate();
 
             m_SharedComponentManager = new SharedComponentDataManager();
 
@@ -194,10 +188,8 @@ namespace Unity.Entities
             m_ExclusiveEntityTransaction = new ExclusiveEntityTransaction(ArchetypeManager, m_GroupManager,
                 m_SharedComponentManager, Entities);
 
-            m_CachedComponentTypeArray =
-                (ComponentType*) UnsafeUtility.Malloc(sizeof(ComponentType) * 32 * 1024, 16, Allocator.Persistent);
             m_CachedComponentTypeInArchetypeArray =
-                (ComponentTypeInArchetype*) UnsafeUtility.Malloc(sizeof(ComponentTypeInArchetype) * 32 * 1024, 16,
+                (ComponentTypeInArchetype*) UnsafeUtility.Malloc(sizeof(ComponentTypeInArchetype) * m_CachedComponentTypeInArchetypeArrayLength, 16,
                     Allocator.Persistent);
         }
 
@@ -227,9 +219,6 @@ namespace Unity.Entities
 
             m_SharedComponentManager.Dispose();
 
-            UnsafeUtility.Free(m_CachedComponentTypeArray, Allocator.Persistent);
-            m_CachedComponentTypeArray = null;
-
             UnsafeUtility.Free(m_CachedComponentTypeInArchetypeArray, Allocator.Persistent);
             m_CachedComponentTypeInArchetypeArray = null;
         }
@@ -238,34 +227,26 @@ namespace Unity.Entities
         {
         }
 
-        private int PopulatedCachedTypeArray(ComponentType* requiredComponents, int count)
-        {
-            m_CachedComponentTypeArray[0] = ComponentType.Create<Entity>();
-            for (var i = 0; i < count; ++i)
-                SortingUtilities.InsertSorted(m_CachedComponentTypeArray, i + 1, requiredComponents[i]);
-            return count + 1;
-        }
-
         private int PopulatedCachedTypeInArchetypeArray(ComponentType* requiredComponents, int count)
         {
+            #if ENABLE_UNITY_COLLECTIONS_CHECKS
+            if (count + 1 > m_CachedComponentTypeInArchetypeArrayLength)
+                throw new System.ArgumentException($"Archetypes can't hold more than {m_CachedComponentTypeInArchetypeArrayLength}");
+            #endif
+
             m_CachedComponentTypeInArchetypeArray[0] = new ComponentTypeInArchetype(ComponentType.Create<Entity>());
             for (var i = 0; i < count; ++i)
                 SortingUtilities.InsertSorted(m_CachedComponentTypeInArchetypeArray, i + 1, requiredComponents[i]);
             return count + 1;
         }
 
-        internal ComponentGroup CreateComponentGroup(ComponentType* requiredComponents, int count)
+        public ComponentGroup CreateComponentGroup(params ComponentType[] requiredComponents)
         {
-            var typeArrayCount = PopulatedCachedTypeArray(requiredComponents, count);
-            return m_GroupManager.CreateEntityGroup(ArchetypeManager, Entities, m_CachedComponentTypeArray, typeArrayCount);
+            return m_GroupManager.CreateEntityGroup(ArchetypeManager, Entities, requiredComponents);
         }
-
-        internal ComponentGroup CreateComponentGroup(params ComponentType[] requiredComponents)
+        internal ComponentGroup CreateComponentGroup(params EntityArchetypeQuery[] queries)
         {
-            fixed (ComponentType* requiredComponentsPtr = requiredComponents)
-            {
-                return CreateComponentGroup(requiredComponentsPtr, requiredComponents.Length);
-            }
+            return m_GroupManager.CreateEntityGroup(ArchetypeManager, Entities, queries);
         }
 
         internal EntityArchetype CreateArchetype(ComponentType* types, int count)
@@ -403,22 +384,26 @@ namespace Unity.Entities
         {
             BeforeStructuralChange();
             Entities->AssertEntitiesExist(&entity, 1);
-            Entities->AddComponent(entity, type, ArchetypeManager, m_SharedComponentManager, m_GroupManager,
-                m_CachedComponentTypeInArchetypeArray);
+            Entities->AddComponent(entity, type, ArchetypeManager, m_SharedComponentManager, m_GroupManager, m_CachedComponentTypeInArchetypeArray);
+        }
+
+        public void AddComponents(Entity entity, ComponentTypes types)
+        {
+            BeforeStructuralChange();
+            Entities->AssertEntitiesExist(&entity, 1);
+            Entities->AddComponents(entity, types, ArchetypeManager, m_SharedComponentManager, m_GroupManager, m_CachedComponentTypeInArchetypeArray);
         }
 
         public void RemoveComponent(Entity entity, ComponentType type)
         {
             BeforeStructuralChange();
             Entities->AssertEntityHasComponent(entity, type);
-            Entities->RemoveComponent(entity, type, ArchetypeManager, m_SharedComponentManager, m_GroupManager,
-                m_CachedComponentTypeInArchetypeArray);
+            Entities->RemoveComponent(entity, type, ArchetypeManager, m_SharedComponentManager, m_GroupManager, m_CachedComponentTypeInArchetypeArray);
 
             var archetype = Entities->GetArchetype(entity);
             if (archetype->SystemStateCleanupComplete)
             {
-                Entities->TryRemoveEntityId(&entity, 1, ArchetypeManager, m_SharedComponentManager, m_GroupManager,
-                    m_CachedComponentTypeInArchetypeArray);
+                Entities->TryRemoveEntityId(&entity, 1, ArchetypeManager, m_SharedComponentManager, m_GroupManager, m_CachedComponentTypeInArchetypeArray);
             }
         }
 
@@ -429,8 +414,10 @@ namespace Unity.Entities
 
         public void AddComponentData<T>(Entity entity, T componentData) where T : struct, IComponentData
         {
-            AddComponent(entity, ComponentType.Create<T>());
-            SetComponentData(entity, componentData);
+            var type = ComponentType.Create<T>();
+            AddComponent(entity, type);
+            if (!type.IsZeroSized)
+                SetComponentData(entity, componentData);
         }
 
         public void AddBuffer<T>(Entity entity) where T : struct, IBufferElementData
@@ -438,7 +425,7 @@ namespace Unity.Entities
             AddComponent(entity, ComponentType.Create<T>());
         }
 
-        public ComponentDataFromEntity<T> GetComponentDataFromEntity<T>(bool isReadOnly = false)
+        internal ComponentDataFromEntity<T> GetComponentDataFromEntity<T>(bool isReadOnly = false)
             where T : struct, IComponentData
         {
             var typeIndex = TypeManager.GetTypeIndex<T>();
@@ -449,10 +436,6 @@ namespace Unity.Entities
             where T : struct, IComponentData
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            var componentType = ComponentType.FromTypeIndex(typeIndex);
-            if (componentType.IsZeroSized)
-                throw new ArgumentException($"GetComponentDataFromEntity<{typeof(T)}> cannot be called on zero-sized IComponentData");
-            
             return new ComponentDataFromEntity<T>(typeIndex, Entities,
                 ComponentJobSafetyManager.GetSafetyHandle(typeIndex, isReadOnly));
 #else
@@ -460,13 +443,13 @@ namespace Unity.Entities
 #endif
         }
 
-        public BufferFromEntity<T> GetBufferFromEntity<T>(bool isReadOnly = false)
+        internal BufferFromEntity<T> GetBufferFromEntity<T>(bool isReadOnly = false)
             where T : struct, IBufferElementData
         {
             return GetBufferFromEntity<T>(TypeManager.GetTypeIndex<T>(), isReadOnly);
         }
 
-        public BufferFromEntity<T> GetBufferFromEntity<T>(int typeIndex, bool isReadOnly = false)
+        internal BufferFromEntity<T> GetBufferFromEntity<T>(int typeIndex, bool isReadOnly = false)
             where T : struct, IBufferElementData
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
@@ -481,14 +464,14 @@ namespace Unity.Entities
         public T GetComponentData<T>(Entity entity) where T : struct, IComponentData
         {
             var typeIndex = TypeManager.GetTypeIndex<T>();
-            
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            var componentType = ComponentType.FromTypeIndex(typeIndex);
-            if (componentType.IsZeroSized)
-                throw new ArgumentException($"GetComponentData<{typeof(T)}> cannot be called on zero-sized IComponentData");
-#endif
-                
+
             Entities->AssertEntityHasComponent(entity, typeIndex);
+
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            if (ComponentType.FromTypeIndex(typeIndex).IsZeroSized)
+                throw new System.ArgumentException($"GetComponentData<{typeof(T)}> can not be called with a zero sized component.");
+#endif
+
             ComponentJobSafetyManager.CompleteWriteDependency(typeIndex);
 
             var ptr = Entities->GetComponentDataWithTypeRO(entity, typeIndex);
@@ -501,14 +484,13 @@ namespace Unity.Entities
         public void SetComponentData<T>(Entity entity, T componentData) where T : struct, IComponentData
         {
             var typeIndex = TypeManager.GetTypeIndex<T>();
-            
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            var componentType = ComponentType.FromTypeIndex(typeIndex);
-            if (componentType.IsZeroSized)
-                throw new ArgumentException($"GetComponentData<{typeof(T)}> cannot be called on zero-sized IComponentData");
-#endif
-            
+
             Entities->AssertEntityHasComponent(entity, typeIndex);
+
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            if (ComponentType.FromTypeIndex(typeIndex).IsZeroSized)
+                throw new System.ArgumentException($"GetComponentData<{typeof(T)}> can not be called with a zero sized component.");
+#endif
 
             ComponentJobSafetyManager.CompleteReadAndWriteDependency(typeIndex);
 
@@ -617,16 +599,45 @@ namespace Unity.Entities
             BufferHeader* header = (BufferHeader*) Entities->GetComponentDataWithTypeRW(entity, typeIndex, Entities->GlobalSystemVersion);
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            return new DynamicBuffer<T>(header, ComponentJobSafetyManager.GetSafetyHandle(typeIndex, false), ComponentJobSafetyManager.GetBufferSafetyHandle(typeIndex));
+            return new DynamicBuffer<T>(header, ComponentJobSafetyManager.GetSafetyHandle(typeIndex, false), ComponentJobSafetyManager.GetBufferSafetyHandle(typeIndex), false);
 #else
             return new DynamicBuffer<T>(header);
 #endif
         }
 
+        internal void* GetBufferRawRW(Entity entity, int typeIndex)
+        {
+            Entities->AssertEntityHasComponent(entity, typeIndex);
+
+            ComponentJobSafetyManager.CompleteReadAndWriteDependency(typeIndex);
+
+            BufferHeader* header = (BufferHeader*)Entities->GetComponentDataWithTypeRW(entity, typeIndex, Entities->GlobalSystemVersion);
+
+            return BufferHeader.GetElementPointer(header);
+        }
+
+        internal int GetBufferLength(Entity entity, int typeIndex)
+        {
+            Entities->AssertEntityHasComponent(entity, typeIndex);
+
+            ComponentJobSafetyManager.CompleteReadAndWriteDependency(typeIndex);
+
+            BufferHeader* header = (BufferHeader*)Entities->GetComponentDataWithTypeRW(entity, typeIndex, Entities->GlobalSystemVersion);
+
+            return header->Length;
+        }
+
+        internal uint GetChunkVersionHash(Entity entity)
+        {
+            var chunk = Entities->GetComponentChunk(entity);
+            var typeCount = chunk->Archetype->TypesCount;
+            return math.hash((void*)chunk->ChangeVersion, typeCount*UnsafeUtility.SizeOf(typeof(uint)));
+        }
+
         public NativeArray<Entity> GetAllEntities(Allocator allocator = Allocator.Temp)
         {
             BeforeStructuralChange();
-            
+
             var enabledQuery = new EntityArchetypeQuery
             {
                 Any = Array.Empty<ComponentType>(),
@@ -646,11 +657,11 @@ namespace Unity.Entities
                 All = new ComponentType[] {typeof(Prefab)}
             };
             var archetypes = new NativeList<EntityArchetype>(Allocator.TempJob);
-            
+
             AddMatchingArchetypes(enabledQuery, archetypes);
             AddMatchingArchetypes(disabledQuery, archetypes);
             AddMatchingArchetypes(prefabQuery, archetypes);
-            
+
             var chunks = CreateArchetypeChunkArray(archetypes, Allocator.TempJob);
             var count = ArchetypeChunkArray.CalculateEntityCount(chunks);
             var array = new NativeArray<Entity>(count, allocator);
@@ -664,10 +675,10 @@ namespace Unity.Entities
                 array.Slice(offset, entities.Length).CopyFrom(entities);
                 offset += entities.Length;
             }
-            
+
             chunks.Dispose();
             archetypes.Dispose();
-            
+
             return array;
         }
 
@@ -721,6 +732,11 @@ namespace Unity.Entities
 
             ComponentJobSafetyManager.CompleteReadAndWriteDependency(typeIndex);
 
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            if (TypeManager.GetTypeInfo(typeIndex).SizeInChunk != size)
+                throw new System.ArgumentException($"SetComponentDataRaw<{TypeManager.GetType(typeIndex)}> can not be called with a zero sized component and must have same size as sizeof(T).");
+#endif
+
             var ptr = Entities->GetComponentDataWithTypeRW(entity, typeIndex, Entities->GlobalSystemVersion);
             UnsafeUtility.MemCpy(ptr, data, size);
         }
@@ -731,6 +747,12 @@ namespace Unity.Entities
 
             ComponentJobSafetyManager.CompleteReadAndWriteDependency(typeIndex);
 
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            if (TypeManager.GetTypeInfo(typeIndex).IsZeroSized)
+                throw new System.ArgumentException($"GetComponentDataRaw<{TypeManager.GetType(typeIndex)}> can not be called with a zero sized component.");
+#endif
+
+
             var ptr = Entities->GetComponentDataWithTypeRW(entity, typeIndex, Entities->GlobalSystemVersion);
             return ptr;
         }
@@ -740,7 +762,7 @@ namespace Unity.Entities
             Entities->AssertEntityHasComponent(entity, typeIndex);
 
             var sharedComponentIndex = Entities->GetSharedComponentDataIndex(entity, typeIndex);
-            return m_SharedComponentManager.GetSharedComponentDataBoxed(sharedComponentIndex);
+            return m_SharedComponentManager.GetSharedComponentDataBoxed(sharedComponentIndex, typeIndex);
         }
 
         public int GetComponentOrderVersion<T>()
@@ -785,6 +807,19 @@ namespace Unity.Entities
 
         public void MoveEntitiesFrom(EntityManager srcEntities)
         {
+            var entityRemapping = srcEntities.CreateEntityRemapArray(Allocator.TempJob);
+            try
+            {
+                MoveEntitiesFrom(srcEntities, entityRemapping);
+            }
+            finally
+            {
+                entityRemapping.Dispose();
+            }
+        }
+
+        public void MoveEntitiesFrom(EntityManager srcEntities, NativeArray<EntityRemapUtility.EntityRemapInfo> entityRemapping)
+        {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             if (srcEntities == this)
                 throw new ArgumentException("srcEntities must not be the same as this EntityManager.");
@@ -796,9 +831,38 @@ namespace Unity.Entities
             BeforeStructuralChange();
             srcEntities.BeforeStructuralChange();
 
-            ArchetypeManager.MoveChunks(srcEntities, ArchetypeManager, m_GroupManager, Entities, m_SharedComponentManager, m_CachedComponentTypeInArchetypeArray);
+            ArchetypeManager.MoveChunks(srcEntities, ArchetypeManager, m_GroupManager, Entities, m_SharedComponentManager, m_CachedComponentTypeInArchetypeArray, entityRemapping);
 
             //@TODO: Need to incrmeent the component versions based the moved chunks...
+        }
+
+        public NativeArray<EntityRemapUtility.EntityRemapInfo> CreateEntityRemapArray(Allocator allocator)
+        {
+            return new NativeArray<EntityRemapUtility.EntityRemapInfo>(m_Entities->Capacity, allocator);
+        }
+
+        public void MoveEntitiesFrom(EntityManager srcEntities, ComponentGroup filter, NativeArray<EntityRemapUtility.EntityRemapInfo> entityRemapping)
+        {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            if(filter.ArchetypeManager != srcEntities.ArchetypeManager)
+                throw new ArgumentException("EntityManager.MoveEntitiesFrom failed - srcEntities and filter must belong to the same World)");
+#endif
+            var chunks = filter.GetAllMatchingChunks(Allocator.TempJob);
+            MoveEntitiesFrom(srcEntities, chunks, entityRemapping);
+            chunks.Dispose();
+        }
+
+        internal void MoveEntitiesFrom(EntityManager srcEntities, NativeArray<ArchetypeChunk> chunks, NativeArray<EntityRemapUtility.EntityRemapInfo> entityRemapping)
+        {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            if (srcEntities == this)
+                throw new ArgumentException("srcEntities must not be the same as this EntityManager.");
+#endif
+
+            BeforeStructuralChange();
+            srcEntities.BeforeStructuralChange();
+
+            ArchetypeManager.MoveChunks(srcEntities, chunks, ArchetypeManager, m_GroupManager, Entities, m_SharedComponentManager, m_CachedComponentTypeInArchetypeArray, entityRemapping);
         }
 
         public void CheckInternalConsistency()
@@ -927,6 +991,15 @@ namespace Unity.Entities
                         }
                     }
                 }
+            }
+        }
+
+        public void GetAllArchetypes(NativeList<EntityArchetype> allArchetypes)
+        {
+            for (var archetype = ArchetypeManager.m_LastArchetype; archetype != null; archetype = archetype->PrevArchetype)
+            {
+                var entityArchetype = new EntityArchetype() { Archetype = archetype };
+                allArchetypes.Add(entityArchetype);
             }
         }
 

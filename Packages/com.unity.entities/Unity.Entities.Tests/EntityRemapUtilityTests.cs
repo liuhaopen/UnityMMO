@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using Unity.Entities;
 using Unity.Collections;
 
 namespace Unity.Entities.Tests
@@ -84,12 +83,10 @@ namespace Unity.Entities.Tests
         struct TwoEntityStruct
         {
             // The offsets of these fields are accessed through reflection
-#pragma warning disable 0169
             Entity a;
             int b;
             Entity c;
             float d;
-#pragma warning restore 0169
         }
 
         [Test]
@@ -104,10 +101,8 @@ namespace Unity.Entities.Tests
         struct EmbeddedEntityStruct
         {
             // The offsets of these fields are accessed through reflection
-#pragma warning disable 0169
             int a;
             TwoEntityStruct b;
-#pragma warning restore 0169
         }
 
         [Test]

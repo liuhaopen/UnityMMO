@@ -1,5 +1,4 @@
 ﻿using System;
-using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 
 namespace Unity.Entities
@@ -17,8 +16,12 @@ namespace Unity.Entities
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
         private readonly int m_MinIndex;
         private readonly int m_MaxIndex;
-        private readonly AtomicSafetyHandle m_Safety;
+        private readonly AtomicSafetyHandle m_Safety0;
         private readonly AtomicSafetyHandle m_ArrayInvalidationSafety;
+#pragma warning disable 0414 // assigned but its value is never used
+        private int m_SafetyReadOnlyCount;
+        private int m_SafetyReadWriteCount;
+#pragma warning restore 0414
 #endif
         public int Length => m_Length;
 
@@ -37,8 +40,10 @@ namespace Unity.Entities
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             m_MinIndex = 0;
             m_MaxIndex = length - 1;
-            m_Safety = safety;
+            m_Safety0 = safety;
             m_ArrayInvalidationSafety = arrayInvalidationSafety;
+            m_SafetyReadOnlyCount = isReadOnly ? 2 : 0;
+            m_SafetyReadWriteCount = isReadOnly ? 0 : 2;
 #endif
         }
 
@@ -47,10 +52,9 @@ namespace Unity.Entities
             get
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                AtomicSafetyHandle.CheckReadAndThrow(m_Safety);
+                AtomicSafetyHandle.CheckReadAndThrow(m_Safety0);
                 if (index < m_MinIndex || index > m_MaxIndex)
                     FailOutOfRangeError(index);
-                var safety = m_Safety;
 #endif
 
                 if (index < m_Cache.CachedBeginIndex || index >= m_Cache.CachedEndIndex)
@@ -65,7 +69,7 @@ namespace Unity.Entities
                 BufferHeader* header = (BufferHeader*) ((byte*)m_Cache.CachedPtr + index * m_Cache.CachedSizeOf);
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                return new DynamicBuffer<T>(header, m_Safety, m_ArrayInvalidationSafety);
+                return new DynamicBuffer<T>(header, m_Safety0, m_ArrayInvalidationSafety, m_IsReadOnly);
 #else
                 return new DynamicBuffer<T>(header);
 #endif

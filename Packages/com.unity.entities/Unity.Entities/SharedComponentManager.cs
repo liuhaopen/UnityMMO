@@ -195,11 +195,17 @@ namespace Unity.Entities
             return (T) m_SharedComponentData[index];
         }
 
-        public object GetSharedComponentDataBoxed(int index)
+        public object GetSharedComponentDataBoxed(int index, int typeIndex)
         {
             if (index == 0)
-                return Activator.CreateInstance(TypeManager.GetType(m_SharedComponentType[index]));
+                return Activator.CreateInstance(TypeManager.GetType(typeIndex));
 
+            return m_SharedComponentData[index];
+        }
+
+        public object GetSharedComponentDataNonDefaultBoxed(int index)
+        {
+            Assert.AreNotEqual(0, index);
             return m_SharedComponentData[index];
         }
 
@@ -226,12 +232,12 @@ namespace Unity.Entities
         }
 
 
-        public void RemoveReference(int index)
+        public void RemoveReference(int index, int numRefs = 1)
         {
             if (index == 0)
                 return;
 
-            var newCount = --m_SharedComponentRefCount[index];
+            var newCount = m_SharedComponentRefCount[index] -= numRefs;
             Assert.IsTrue(newCount >= 0);
 
             if (newCount != 0)
@@ -383,6 +389,46 @@ namespace Unity.Entities
             srcSharedComponents.m_SharedComponentData.Clear();
             srcSharedComponents.m_SharedComponentData.Add(null);
             srcSharedComponents.m_FreeListIndex = -1;
+
+            return remap;
+        }
+
+        public unsafe NativeArray<int> MoveSharedComponents(SharedComponentDataManager srcSharedComponents,
+            NativeArray<ArchetypeChunk> chunks, Allocator allocator)
+        {
+            var remap = new NativeArray<int>(srcSharedComponents.GetSharedComponentCount(), allocator);
+
+            for (int i = 0; i < chunks.Length; ++i)
+            {
+                var chunk = chunks[i].m_Chunk;
+                var archetype = chunk->Archetype;
+                for (int sharedComponentIndex = 0; sharedComponentIndex < archetype->NumSharedComponents; ++sharedComponentIndex)
+                {
+                    remap[chunk->SharedComponentValueArray[sharedComponentIndex]]++;
+                }
+            }
+
+            remap[0] = 0;
+
+            for (int srcIndex = 1; srcIndex < remap.Length; ++srcIndex)
+            {
+                if (remap[srcIndex] == 0)
+                    continue;
+
+                var srcData = srcSharedComponents.m_SharedComponentData[srcIndex];
+
+                var typeIndex = srcSharedComponents.m_SharedComponentType[srcIndex];
+
+                var typeInfo = TypeManager.GetTypeInfo(typeIndex).FastEqualityTypeInfo;
+                var hashCode = GetHashCodeFast(srcData, typeInfo);
+
+                var dstIndex = InsertSharedComponentAssumeNonDefault(typeIndex, hashCode, srcData, typeInfo);
+
+                m_SharedComponentRefCount[dstIndex] += remap[srcIndex] - 1;
+                srcSharedComponents.RemoveReference(srcIndex, remap[srcIndex]);
+
+                remap[srcIndex] = dstIndex;
+            }
 
             return remap;
         }

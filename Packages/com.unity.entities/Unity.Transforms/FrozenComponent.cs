@@ -1,6 +1,5 @@
 using System;
 using Unity.Entities;
-using Unity.Mathematics;
 
 namespace Unity.Transforms
 {
@@ -15,6 +14,7 @@ namespace Unity.Transforms
     {
     }
 
+    [UnityEngine.DisallowMultipleComponent]
     public class FrozenComponent : ComponentDataWrapper<Frozen>
     {
     }

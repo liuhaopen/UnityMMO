@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Unity.Collections.LowLevel.Unsafe;
-using UnityEngine;
 
 namespace Unity.Entities
 {
@@ -24,7 +23,15 @@ namespace Unity.Entities
         private static volatile int s_Count;
         private static SpinLock s_CreateTypeLock;
         public static int ObjectOffset;
-        internal static readonly Type UnityEngineComponentType = typeof(Component);
+
+        internal static Type UnityEngineComponentType;
+
+        public static void RegisterUnityEngineComponentType(Type type)
+        {
+            if (type == null || !type.IsClass || type.IsInterface || type.FullName != "UnityEngine.Component")
+                throw new ArgumentException($"{type} must be typeof(UnityEngine.Component).");
+            UnityEngineComponentType = type;
+        }
 
         private struct StaticTypeLookup<T>
         {
@@ -77,10 +84,8 @@ namespace Unity.Entities
         // TODO: this creates a dependency on UnityEngine, but makes splitting code in separate assemblies easier. We need to remove it during the biggere refactor.
         private struct ObjectOffsetType
         {
-#pragma warning disable 0169 // "never used" warning
             private void* v0;
             private void* v1;
-#pragma warning restore 0169
         }
 
         public static void Initialize()
@@ -200,6 +205,10 @@ namespace Unity.Entities
             int bufferCapacity = -1;
             var memoryOrdering = CalculateMemoryOrdering(type);
             int elementSize = 0;
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            if (type.IsInterface)
+                throw new ArgumentException($"{type} is an interface. It must be a concrete type.");
+#endif
             if (typeof(IComponentData).IsAssignableFrom(type))
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
@@ -258,12 +267,17 @@ namespace Unity.Entities
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                 if (type.FullName == "Unity.Entities.GameObjectEntity")
                     throw new ArgumentException(
-                        "GameObjectEntity can not be used from EntityManager. The component is ignored when creating entities for a GameObject.");
+                        "GameObjectEntity cannot be used from EntityManager. The component is ignored when creating entities for a GameObject.");
+                if (UnityEngineComponentType == null)
+                    throw new ArgumentException(
+                        $"{type} cannot be used from EntityManager. If it inherits UnityEngine.Component, you must first register {typeof(TypeManager)}.{nameof(UnityEngineComponentType)} or include the Unity.Entities.Hybrid assembly in your build.");
+                if (!UnityEngineComponentType.IsAssignableFrom(type))
+                    throw new ArgumentException($"{type} must inherit {UnityEngineComponentType}.");
 #endif
             }
             else
             {
-                throw new ArgumentException($"'{type}' is not a valid component");
+                throw new ArgumentException($"{type} is not a valid component.");
             }
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS

@@ -3,6 +3,7 @@
     "references": [
         "Unity.Transforms",
         "Unity.Entities",
+        "Unity.Entities.Hybrid",
         "Unity.Entities.Tests",
         "Unity.Collections",
         "Unity.Burst",

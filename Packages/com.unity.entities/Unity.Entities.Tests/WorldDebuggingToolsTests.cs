@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using Unity.Entities.Tests;
 
 namespace Unity.Entities.Tests
 {
@@ -11,15 +10,16 @@ namespace Unity.Entities.Tests
         [DisableAutoCreation]
         class RegularSystem : ComponentSystem
         {
+#pragma warning disable 649
             struct Entities
             {
+
                 public readonly int Length;
                 public ComponentDataArray<EcsTestData> tests;
             }
 
-#pragma warning disable 0169 // "never used" warning
             [Inject] private Entities entities;
-#pragma warning restore 0169
+#pragma warning restore 649
             
             protected override void OnUpdate()
             {
@@ -30,6 +30,7 @@ namespace Unity.Entities.Tests
         [DisableAutoCreation]
         class SubtractiveSystem : ComponentSystem
         {
+#pragma warning disable 649            
             struct Entities
             {
                 public readonly int Length;
@@ -37,9 +38,8 @@ namespace Unity.Entities.Tests
                 public SubtractiveComponent<EcsTestData2> noTest2;
             }
 
-#pragma warning disable 0169 // "never used" warning
             [Inject] private Entities entities;
-#pragma warning restore 0169
+ #pragma warning restore 649
             
             protected override void OnUpdate()
             {
@@ -66,7 +66,7 @@ namespace Unity.Entities.Tests
         [Test]
         public void SystemInclusionList_IgnoresSubtractedComponents()
         {
-            var system = World.Active.GetOrCreateManager<SubtractiveSystem>();
+            World.Active.GetOrCreateManager<SubtractiveSystem>();
             
             var entity = m_Manager.CreateEntity(typeof(EcsTestData), typeof(EcsTestData2));
 

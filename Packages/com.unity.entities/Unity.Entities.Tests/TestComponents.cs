@@ -1,5 +1,3 @@
-using Unity.Entities;
-
 namespace Unity.Entities.Tests
 {
     public struct EcsTestData : IComponentData

@@ -1,7 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace Unity.Entities.Editor
@@ -23,11 +20,6 @@ namespace Unity.Entities.Editor
                 return;
 
             inclusionList.OnGUI(World.Active, gameObjectEntity.Entity);
-        }
-
-        public override bool RequiresConstantRepaint()
-        {
-            return true;
         }
     }
 }

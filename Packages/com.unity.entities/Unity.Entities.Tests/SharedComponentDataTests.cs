@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using Unity.Collections;
-using Unity.Entities;
 
 namespace Unity.Entities.Tests
 {
@@ -34,12 +33,12 @@ namespace Unity.Entities.Tests
             var group1 = m_Manager.CreateComponentGroup(typeof(EcsTestData), typeof(SharedData1));
             var group2 = m_Manager.CreateComponentGroup(typeof(EcsTestData), typeof(SharedData2));
             var group12 = m_Manager.CreateComponentGroup(typeof(EcsTestData), typeof(SharedData2), typeof(SharedData1));
-            
+
             var group1_filter_0 = m_Manager.CreateComponentGroup(typeof(EcsTestData), typeof(SharedData1));
             group1_filter_0.SetFilter(new SharedData1(0));
             var group1_filter_20 = m_Manager.CreateComponentGroup(typeof(EcsTestData), typeof(SharedData1));
             group1_filter_20.SetFilter(new SharedData1(20));
-            
+
             Assert.AreEqual(0, group1.CalculateLength());
             Assert.AreEqual(0, group2.CalculateLength());
             Assert.AreEqual(0, group12.CalculateLength());
@@ -163,7 +162,7 @@ namespace Unity.Entities.Tests
 
             Assert.AreEqual(17, m_Manager.GetSharedComponentData<SharedData1>(e).value);
         }
-        
+
         [Test]
         public void GetSharedComponentDataAfterArchetypeChange()
         {
@@ -208,7 +207,7 @@ namespace Unity.Entities.Tests
             Assert.AreEqual(17, m_Manager.GetSharedComponentData<SharedData1>(e).value);
             Assert.AreEqual(34, m_Manager.GetSharedComponentData<SharedData2>(e).value);
         }
-        
+
         [Test]
         public void RemoveSharedComponent()
         {
@@ -229,10 +228,10 @@ namespace Unity.Entities.Tests
 
             m_Manager.RemoveComponent<SharedData2>(e);
             Assert.IsFalse(m_Manager.HasComponent<SharedData2>(e));
-            
+
             Assert.AreEqual(42, m_Manager.GetComponentData<EcsTestData>(e).value);
         }
-        
+
         [Test]
         public void GetSharedComponentArray()
         {
@@ -269,7 +268,7 @@ namespace Unity.Entities.Tests
 
             group.Dispose();
         }
-        
+
         [Test]
         public void SCG_DoesNotMatchRemovedSharedComponentInComponentGroup()
         {
@@ -278,8 +277,8 @@ namespace Unity.Entities.Tests
 
             var group0 = m_Manager.CreateComponentGroup(typeof(SharedData1));
             var group1 = m_Manager.CreateComponentGroup(typeof(SharedData2));
-            
-            var entity0 = m_Manager.CreateEntity(archetype0);
+
+            m_Manager.CreateEntity(archetype0);
             var entity1 = m_Manager.CreateEntity(archetype1);
 
             Assert.AreEqual(2, group0.CalculateLength());
@@ -293,7 +292,7 @@ namespace Unity.Entities.Tests
             group0.Dispose();
             group1.Dispose();
         }
-        
+
         [Test]
         public void SCG_DoesNotMatchRemovedSharedComponentInChunkQuery()
         {
@@ -313,7 +312,7 @@ namespace Unity.Entities.Tests
                 None = Array.Empty<ComponentType>()
             };
 
-            var entity0 = m_Manager.CreateEntity(archetype0);
+            m_Manager.CreateEntity(archetype0);
             var entity1 = m_Manager.CreateEntity(archetype1);
 
             var preChunks0 = m_Manager.CreateArchetypeChunkArray(query0, Allocator.TempJob);
@@ -323,7 +322,7 @@ namespace Unity.Entities.Tests
             Assert.AreEqual(1, ArchetypeChunkArray.CalculateEntityCount(preChunks1));
 
             m_Manager.RemoveComponent<SharedData2>(entity1);
-            
+
             var postChunks0 = m_Manager.CreateArchetypeChunkArray(query0, Allocator.TempJob);
             var postChunks1 = m_Manager.CreateArchetypeChunkArray(query1, Allocator.TempJob);
 
@@ -336,5 +335,23 @@ namespace Unity.Entities.Tests
             postChunks1.Dispose();
         }
 
+        [Test]
+        public void GetSharedComponentDataWithTypeIndex()
+        {
+            var archetype = m_Manager.CreateArchetype(typeof(SharedData1), typeof(EcsTestData));
+            Entity e = m_Manager.CreateEntity(archetype);
+
+            int typeIndex = TypeManager.GetTypeIndex<SharedData1>();
+
+            object sharedComponentValue = m_Manager.GetSharedComponentData(e, typeIndex);
+            Assert.AreEqual(typeof(SharedData1), sharedComponentValue.GetType());
+            Assert.AreEqual(0, ((SharedData1)sharedComponentValue).value);
+
+            m_Manager.SetSharedComponentData(e, new SharedData1(17));
+
+            sharedComponentValue = m_Manager.GetSharedComponentData(e, typeIndex);
+            Assert.AreEqual(typeof(SharedData1), sharedComponentValue.GetType());
+            Assert.AreEqual(17, ((SharedData1)sharedComponentValue).value);
+        }
     }
 }

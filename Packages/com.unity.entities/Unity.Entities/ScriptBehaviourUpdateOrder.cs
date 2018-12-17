@@ -366,7 +366,7 @@ namespace Unity.Entities
 
                 var waitComponent = new HashSet<int>();
                 foreach (var componentGroup in ((ComponentSystem) system.Manager).ComponentGroups)
-                foreach (var type in componentGroup.Types)
+                foreach (var type in componentGroup.GetQueryTypes())
                     if (type.RequiresJobDependency)
                         waitComponent.Add(type.TypeIndex);
                 foreach (var scheduler in schedulers)
@@ -376,7 +376,7 @@ namespace Unity.Entities
                     // Check if the component groups overlaps
                     var scheduleComponent = new HashSet<int>();
                     foreach (var componentGroup in ((ComponentSystem) scheduler.Manager).ComponentGroups)
-                    foreach (var type in componentGroup.Types)
+                    foreach (var type in componentGroup.GetQueryTypes())
                         if (type.RequiresJobDependency)
                             scheduleComponent.Add(type.TypeIndex);
                     var overlap = false;
