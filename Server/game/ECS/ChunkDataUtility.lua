@@ -192,79 +192,60 @@ function ChunkDataUtility.ReplicateComponents( srcChunk, srcIndex, dstChunk, dst
 end
 
 function ChunkDataUtility.Convert( srcChunk, srcIndex, dstChunk, dstIndex )
-    local srcArch = srcChunk.Archetype;
-    local dstArch = dstChunk.Archetype;
+    local srcArch = srcChunk.Archetype
+    local dstArch = dstChunk.Archetype
 
-    local srcI = 0;
-    local dstI = 0;
-    while (srcI < srcArch.TypesCount && dstI < dstArch.TypesCount)
-    {
-        local src = srcChunk.Buffer + srcArch.Offsets[srcI] + srcIndex * srcArch.SizeOfs[srcI];
-        local dst = dstChunk.Buffer + dstArch.Offsets[dstI] + dstIndex * dstArch.SizeOfs[dstI];
+    local srcI = 0
+    local dstI = 0
+    while (srcI < srcArch.TypesCount and dstI < dstArch.TypesCount) do
+        local src = srcChunk.Buffer + srcArch.Offsets[srcI] + srcIndex * srcArch.SizeOfs[srcI]
+        local dst = dstChunk.Buffer + dstArch.Offsets[dstI] + dstIndex * dstArch.SizeOfs[dstI]
 
-        if (srcArch.Types[srcI] < dstArch.Types[dstI])
-        {
+        if (srcArch.Types[srcI] < dstArch.Types[dstI]) then
             -- Clear any buffers we're not going to keep.
-            if (srcArch.Types[srcI].IsBuffer)
-            {
-                BufferHeader.Destroy((BufferHeader*)src);
-            }
+            if (srcArch.Types[srcI].IsBuffer) then
+                BufferHeader.Destroy((BufferHeader*)src)
+            end
 
-            ++srcI;
-        }
+            srcI = srcI + 1
         else if (srcArch.Types[srcI] > dstArch.Types[dstI])
-        {
             -- Clear components in the destination that aren't copied
-
-            if (dstArch.Types[dstI].IsBuffer)
-            {
-                BufferHeader.Initialize((BufferHeader*)dst, dstArch.Types[dstI].BufferCapacity);
-            }
+            if (dstArch.Types[dstI].IsBuffer) then
+                BufferHeader.Initialize((BufferHeader*)dst, dstArch.Types[dstI].BufferCapacity)
             else
-            {
-                UnsafeUtility.MemClear(dst, dstArch.SizeOfs[dstI]);
-            }
-
-            ++dstI;
-        }
+                UnsafeUtility.MemClear(dst, dstArch.SizeOfs[dstI])
+            end
+            dstI = dstI+1
         else
-        {
-            UnsafeUtility.MemCpy(dst, src, srcArch.SizeOfs[srcI]);
+            UnsafeUtility.MemCpy(dst, src, srcArch.SizeOfs[srcI])
 
             -- Poison source buffer to make sure there is no aliasing.
-            if (srcArch.Types[srcI].IsBuffer)
-            {
-                BufferHeader.Initialize((BufferHeader*)src, srcArch.Types[srcI].BufferCapacity);
-            }
+            if (srcArch.Types[srcI].IsBuffer) then
+                BufferHeader.Initialize((BufferHeader*)src, srcArch.Types[srcI].BufferCapacity)
+            end
 
-            ++srcI;
-            ++dstI;
-        }
-    }
+            srcI = srcI+1
+            dstI = dstI+1
+        end
+    end
 
     -- Handle remaining components in the source that aren't copied
-    for (; srcI < srcArch.TypesCount; ++srcI)
-    {
-        local src = srcChunk.Buffer + srcArch.Offsets[srcI] + srcIndex * srcArch.SizeOfs[srcI];
-        if (srcArch.Types[srcI].IsBuffer)
-        {
-            BufferHeader.Destroy((BufferHeader*)src);
-        }
-    }
+    for srcI=1,srcArch.TypesCount do
+        local src = srcChunk.Buffer + srcArch.Offsets[srcI] + srcIndex * srcArch.SizeOfs[srcI]
+        if (srcArch.Types[srcI].IsBuffer) then
+            BufferHeader.Destroy(src)
+        end
+    end
 
     -- Clear remaining components in the destination that aren't copied
-    for (; dstI < dstArch.TypesCount; ++dstI)
-    {
-        local dst = dstChunk.Buffer + dstArch.Offsets[dstI] + dstIndex * dstArch.SizeOfs[dstI];
-        if (dstArch.Types[dstI].IsBuffer)
-        {
-            BufferHeader.Initialize((BufferHeader*)dst, dstArch.Types[dstI].BufferCapacity);
-        }
+    for dstI=1,dstArch.TypesCount do
+        local dst = dstChunk.Buffer + dstArch.Offsets[dstI] + dstIndex * dstArch.SizeOfs[dstI]
+        if (dstArch.Types[dstI].IsBuffer) then
+            BufferHeader.Initialize(dst, dstArch.Types[dstI].BufferCapacity)
         else
-        {
-            UnsafeUtility.MemClear(dst, dstArch.SizeOfs[dstI]);
-        }
-    }
+            UnsafeUtility.MemClear(dst, dstArch.SizeOfs[dstI])
+        end
+    end
 end
 
 function ChunkDataUtility.PoisonUnusedChunkData( chunk, value )

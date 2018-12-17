@@ -46,20 +46,33 @@ function EntityDataManager:GetComponentDataWithTypeRO( entity, typeIndex )
 end
 
 function EntityDataManager:CreateEntities( archetypeManager, archetype, entities, count )
-	if count == 1 then
-		local entity = {Index=self.entities_free_id, }
-		self.entities_free_id = self.entities_free_id + 1
-		return entity
-	else
-		local entities = {}
-		for i=1,count do
-			local entity = {Index=self.entities_free_id, }
-			table_insert(entities, entity)
-		end
-		self.entities_free_id = self.entities_free_id + count
-		return entities
-	end
-    self:IncrementComponentTypeOrderVersion()
+    -- local sharedComponentDataIndices = stackalloc int[archetype.NumSharedComponents]
+    -- UnsafeUtility.MemClear(sharedComponentDataIndices, archetype.NumSharedComponents*sizeof(int))
+    while count ~= 0 do
+        local chunk = archetypeManager:GetChunkWithEmptySlots(archetype, sharedComponentDataIndices)
+        local allocatedIndex
+        local allocatedCount, allocatedIndex = archetypeManager:AllocateIntoChunk(chunk, count)
+        self:AllocateEntities(archetype, chunk, allocatedIndex, allocatedCount, entities)
+        ChunkDataUtility.InitializeComponents(chunk, allocatedIndex, allocatedCount)
+
+        entities = entities + allocatedCount
+        count = count - allocatedCount
+    end
+    self:IncrementComponentTypeOrderVersion(archetype)
+	-- if count == 1 then
+	-- 	local entity = {Index=self.entities_free_id, }
+	-- 	self.entities_free_id = self.entities_free_id + 1
+	-- 	return entity
+	-- else
+	-- 	local entities = {}
+	-- 	for i=1,count do
+	-- 		local entity = {Index=self.entities_free_id, }
+	-- 		table_insert(entities, entity)
+	-- 	end
+	-- 	self.entities_free_id = self.entities_free_id + count
+	-- 	return entities
+	-- end
+ --    self:IncrementComponentTypeOrderVersion()
 end
 
 function EntityDataManager:IncrementComponentTypeOrderVersion( archetype )
@@ -215,4 +228,39 @@ function EntityDataManager:TryRemoveEntityId( entities, count, archetypeManager,
         end
     end
     entityIndex = entityIndex + batchCount
+end
+
+function EntityDataManager:SetArchetype( typeMan, entity, archetype, sharedComponentDataIndices )
+    local chunk = typeMan:GetChunkWithEmptySlots(archetype, sharedComponentDataIndices)
+    local allocatedCount, chunkIndex = typeMan:AllocateIntoChunk(chunk)
+
+    local oldArchetype = self.m_Entities.Archetype[entity.Index]
+    local oldChunk = self.m_Entities.ChunkData[entity.Index].Chunk
+    local oldChunkIndex = self.m_Entities.ChunkData[entity.Index].IndexInChunk
+    ChunkDataUtility.Convert(oldChunk, oldChunkIndex, chunk, chunkIndex)
+    if chunk.ManagedArrayIndex >= 0 and oldChunk.ManagedArrayIndex >= 0 then
+        ChunkDataUtility.CopyManagedObjects(typeMan, oldChunk, oldChunkIndex, chunk, chunkIndex, 1)
+    end
+
+    self.m_Entities.Archetype[entity.Index] = archetype
+    self.m_Entities.ChunkData[entity.Index].Chunk = chunk
+    self.m_Entities.ChunkData[entity.Index].IndexInChunk = chunkIndex
+
+    local lastIndex = oldChunk.Count - 1
+    if (lastIndex ~= oldChunkIndex) then
+        local lastEntity = ChunkDataUtility.GetComponentDataRO(oldChunk, lastIndex, 0)
+        self.m_Entities.ChunkData[lastEntity.Index].IndexInChunk = oldChunkIndex
+
+        ChunkDataUtility.Copy(oldChunk, lastIndex, oldChunk, oldChunkIndex, 1)
+        if (oldChunk.ManagedArrayIndex >= 0) then
+            ChunkDataUtility.CopyManagedObjects(typeMan, oldChunk, lastIndex, oldChunk, oldChunkIndex, 1)
+        end
+    end
+
+    if (oldChunk.ManagedArrayIndex >= 0) then
+        ChunkDataUtility.ClearManagedObjects(typeMan, oldChunk, lastIndex, 1)
+    end
+    --Entity归新的Archetype了，所以旧的EnityCount要减1
+    oldArchetype.EntityCount = oldArchetype.EntityCount - 1
+    typeMan:SetChunkCount(oldChunk, lastIndex)
 end

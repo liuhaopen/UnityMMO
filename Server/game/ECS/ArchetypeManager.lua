@@ -243,8 +243,13 @@ function ArchetypeManager:ConstructChunk(  )
 	
 end
 
-function ArchetypeManager:AllocateIntoChunk(  )
-	
+function ArchetypeManager:AllocateIntoChunk( chunk, count )
+    count = count or 1
+	local allocatedCount = math.min(chunk.Capacity - chunk.Count, count)
+    local newChunkIndex = chunk.Count
+    SetChunkCount(chunk, chunk.Count + allocatedCount)
+    chunk.Archetype.EntityCount = chunk.Archetype.EntityCount + allocatedCount
+    return allocatedCount, newChunkIndex
 end
 
 function ArchetypeManager:GetChunkWithEmptySlots( archetype, sharedComponentDataIndices )
