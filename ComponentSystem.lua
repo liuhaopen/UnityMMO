@@ -22,15 +22,16 @@ function ComponentSystemBase:ShouldRunSystem(  )
     if self.m_AlwaysUpdateSystem then
         return true
     end
-    -- var length = m_ComponentGroups?.Length ?? 0;
-    -- if (length == 0)
-    --     return true;
+    local length = self.m_ComponentGroups and #self.m_ComponentGroups or 0
+    if length == 0 then
+        return true
+    end
 
-    -- for (int i = 0;i != length;i++)
-    -- {
-    --     if (!m_ComponentGroups[i].IsEmptyIgnoreFilter)
-    --         return true;
-    -- }
+    for i=1,length do
+        if not self.m_ComponentGroups[i].IsEmptyIgnoreFilter then
+            return true
+        end
+    end
 
     return false
 end
@@ -126,10 +127,6 @@ function ComponentSystem:AfterOnUpdate(  )
 	self:AfterUpdateVersioning()
 	-- self.m_DeferredEntities:Playback(self.m_EntityManager)
 	-- self.m_DeferredEntities:Delete()
-end
-
---Cat_Todo : call on entity's component changed
-function ComponentSystem:Notify(  )
 end
 
 return ComponentSystem

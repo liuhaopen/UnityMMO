@@ -240,7 +240,53 @@ function ArchetypeManager:AddExistingChunk( chunk )
 end
 
 function ArchetypeManager:ConstructChunk(  )
-	
+	chunk.Archetype = archetype
+
+    chunk.Count = 0
+    chunk.Capacity = archetype.ChunkCapacity
+    chunk.ChunkListNode = new UnsafeLinkedListNode()
+    chunk.ChunkListWithEmptySlotsNode = new UnsafeLinkedListNode()
+
+    local numSharedComponents = archetype.NumSharedComponents
+    local numTypes = archetype.TypesCount
+    local sharedComponentOffset = Chunk.GetSharedComponentOffset(numSharedComponents)
+    local changeVersionOffset = Chunk.GetChangedComponentOffset(numTypes, numSharedComponents)
+
+    chunk.SharedComponentValueArray = (chunk + sharedComponentOffset)
+    chunk.ChangeVersion = (chunk + changeVersionOffset)
+
+    archetype.ChunkList.Add(chunk.ChunkListNode)
+    archetype.ChunkCount = archetype.ChunkCount+1
+
+    -- Assert.IsTrue(!archetype.ChunkList.IsEmpty)
+    -- Assert.IsTrue(chunk == (Chunk*) archetype.ChunkList.Back)
+
+    if (numSharedComponents == 0) then
+        archetype.ChunkListWithEmptySlots.Add(chunk.ChunkListWithEmptySlotsNode)
+        -- Assert.IsTrue(chunk == GetChunkFromEmptySlotNode(archetype.ChunkListWithEmptySlots.Back))
+        -- Assert.IsTrue(!archetype.ChunkListWithEmptySlots.IsEmpty)
+    else
+        local sharedComponentValueArray = chunk.SharedComponentValueArray
+        UnsafeUtility.MemCpy(sharedComponentValueArray, sharedComponentDataIndices, archetype.NumSharedComponents*sizeof(int))
+
+        for i=1,archetype.NumSharedComponents do
+            local sharedComponentIndex = sharedComponentValueArray[i]
+            m_SharedComponentManager.AddReference(sharedComponentIndex)
+        end
+
+        archetype.FreeChunksBySharedComponents.Add(chunk)
+        -- Assert.IsTrue(archetype.FreeChunksBySharedComponents.GetChunkWithEmptySlots(sharedComponentDataIndices, archetype.NumSharedComponents) ~= nil)
+    end
+
+    if archetype.NumManagedArrays > 0 then
+        chunk.ManagedArrayIndex = AllocateManagedArrayStorage(archetype.NumManagedArrays * chunk.Capacity)
+    else
+        chunk.ManagedArrayIndex = -1
+    end
+
+    for i=1,archetype.TypesCount do
+        chunk.ChangeVersion[i] = 0
+    end
 end
 
 function ArchetypeManager:AllocateIntoChunk( chunk, count )

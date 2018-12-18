@@ -59,20 +59,6 @@ function EntityDataManager:CreateEntities( archetypeManager, archetype, entities
         count = count - allocatedCount
     end
     self:IncrementComponentTypeOrderVersion(archetype)
-	-- if count == 1 then
-	-- 	local entity = {Index=self.entities_free_id, }
-	-- 	self.entities_free_id = self.entities_free_id + 1
-	-- 	return entity
-	-- else
-	-- 	local entities = {}
-	-- 	for i=1,count do
-	-- 		local entity = {Index=self.entities_free_id, }
-	-- 		table_insert(entities, entity)
-	-- 	end
-	-- 	self.entities_free_id = self.entities_free_id + count
-	-- 	return entities
-	-- end
- --    self:IncrementComponentTypeOrderVersion()
 end
 
 function EntityDataManager:IncrementComponentTypeOrderVersion( archetype )
@@ -80,6 +66,10 @@ function EntityDataManager:IncrementComponentTypeOrderVersion( archetype )
 		local typeIndex = archetype.Types[t].TypeIndex
         self.m_ComponentTypeOrderVersion[typeIndex] = self.m_ComponentTypeOrderVersion[typeIndex] + 1
 	end
+end
+
+function EntityDataManager:GetComponentTypeOrderVersion( typeIndex )
+    return m_ComponentTypeOrderVersion[typeIndex]
 end
 
 function EntityDataManager:AddComponent( entity, com_type, archetypeManager, sharedComponentDataManager, groupManager, componentTypeInArchetypeArray )
@@ -263,4 +253,67 @@ function EntityDataManager:SetArchetype( typeMan, entity, archetype, sharedCompo
     --Entity归新的Archetype了，所以旧的EnityCount要减1
     oldArchetype.EntityCount = oldArchetype.EntityCount - 1
     typeMan:SetChunkCount(oldChunk, lastIndex)
+end
+
+function EntityDataManager:AllocateEntities( arch, chunk, baseIndex, count, outputEntities )
+    -- Assert.AreEqual(chunk.Archetype.Offsets[0], 0);
+    -- Assert.AreEqual(chunk.Archetype.SizeOfs[0], sizeof(Entity));
+    local entityInChunkStart = chunk.Buffer + baseIndex
+
+    for var=1,count do
+        local entityIndexInChunk = self.m_Entities.ChunkData[self.m_EntitiesFreeIndex].IndexInChunk
+        if entityIndexInChunk == -1 then
+            self:IncreaseCapacity()
+            entityIndexInChunk = self.m_Entities.ChunkData[self.m_EntitiesFreeIndex].IndexInChunk
+        end
+        
+        local entityVersion = self.m_Entities.Version[self.m_EntitiesFreeIndex]
+
+        outputEntities[i].Index = self.m_EntitiesFreeIndex
+        outputEntities[i].Version = entityVersion
+
+        local entityInChunk = entityInChunkStart + i
+
+        entityInChunk.Index = self.m_EntitiesFreeIndex
+        entityInChunk.Version = entityVersion
+
+        self.m_Entities.ChunkData[self.m_EntitiesFreeIndex].IndexInChunk = baseIndex + i
+        self.m_Entities.Archetype[self.m_EntitiesFreeIndex] = arch
+        self.m_Entities.ChunkData[self.m_EntitiesFreeIndex].Chunk = chunk
+        
+        self.m_EntitiesFreeIndex = entityIndexInChunk
+    end
+end
+
+function EntityDataManager:IncreaseCapacity(  )
+    self:SetCapacity(self.Capacity*2)
+end
+
+function EntityDataManager:GetCapacity( )
+    return self.Capacity
+end
+
+function EntityDataManager:SetCapacity( value )
+    if value <= self.m_EntitiesCapacity then
+        return
+    end
+
+    local newEntities = self:CreateEntityData(value)
+    self:CopyEntityData(newEntities, self.m_Entities, self.m_EntitiesCapacity)
+    FreeEntityData(self.m_Entities)
+    
+    local startNdx = self.m_EntitiesCapacity - 1
+    self.m_Entities = newEntities
+    self.m_EntitiesCapacity = value
+
+    self:InitializeAdditionalCapacity(startNdx)
+    self.Capacity = value
+end
+
+function EntityDataManager:CreateEntityData( newCapacity )
+    local entities = {}
+    entities.Version   = {}
+    entities.Archetype = {}
+    entities.ChunkData = {}
+    return entities
 end
