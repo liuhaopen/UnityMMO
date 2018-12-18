@@ -143,52 +143,47 @@ function ChunkDataUtility.InitializeComponents( dstChunk, dstIndex, count )
 end
 
 function ChunkDataUtility.ReplicateComponents( srcChunk, srcIndex, dstChunk, dstBaseIndex, count )
-    local srcArchetype  = srcChunk.Archetype;
-    local dstArchetype  = dstChunk.Archetype;
-    local srcBuffer     = srcChunk.Buffer;
-    local dstBuffer     = dstChunk.Buffer;
-    local srcOffsets    = srcArchetype.Offsets;
-    local srcSizeOfs    = srcArchetype.SizeOfs;
-    local srcTypesCount = srcArchetype.TypesCount;
-    local srcTypes      = srcArchetype.Types;
-    local dstTypeIndex  = 1;
+    local srcArchetype  = srcChunk.Archetype
+    local dstArchetype  = dstChunk.Archetype
+    local srcBuffer     = srcChunk.Buffer
+    local dstBuffer     = dstChunk.Buffer
+    local srcOffsets    = srcArchetype.Offsets
+    local srcSizeOfs    = srcArchetype.SizeOfs
+    local srcTypesCount = srcArchetype.TypesCount
+    local srcTypes      = srcArchetype.Types
+    local dstTypeIndex  = 1
     -- type[0] is always Entity, and will be patched up later, so just skip
-    for (local srcTypeIndex = 1; srcTypeIndex != srcTypesCount; srcTypeIndex++)
-    {
-        local srcType   = srcTypes[srcTypeIndex];
-        local dstType   = srcTypes[dstTypeIndex];
+    for srcTypeIndex=2,srcTypesCount do
+        local srcType   = srcTypes[srcTypeIndex]
+        local dstType   = srcTypes[dstTypeIndex]
         
         -- Type does not exist in destination. Skip it.
-        if (srcType.TypeIndex != dstType.TypeIndex)
-            continue;
+        if srcType.TypeIndex == dstType.TypeIndex then
         
-        local srcOffset = srcOffsets[srcTypeIndex];
-        local srcSizeOf = srcSizeOfs[srcTypeIndex];
-        
-        local src = srcBuffer + (srcOffset + srcSizeOf * srcIndex);
-        local dst = dstBuffer + (srcOffset + srcSizeOf * dstBaseIndex);
+            local srcOffset = srcOffsets[srcTypeIndex]
+            local srcSizeOf = srcSizeOfs[srcTypeIndex]
+            
+            local src = srcBuffer + (srcOffset + srcSizeOf * srcIndex)
+            local dst = dstBuffer + (srcOffset + srcSizeOf * dstBaseIndex)
 
-        if (!srcType.IsBuffer)
-        {
-            UnsafeUtility.MemCpyReplicate(dst, src, srcSizeOf, count);
-        }
-        else
-        {
-            local alignment = 8; -- TODO: Need a way to compute proper alignment for arbitrary non-generic types in TypeManager
-            for (int i = 0; i < count; ++i)
-            {
-                BufferHeader* srcHdr = (BufferHeader*) src;
-                BufferHeader* dstHdr = (BufferHeader*) dst;
-                BufferHeader.Initialize(dstHdr, srcType.BufferCapacity);
-                BufferHeader.Assign(dstHdr, BufferHeader.GetElementPointer(srcHdr), srcHdr.Length, srcSizeOf, alignment);
+            if not srcType.IsBuffer then
+                UnsafeUtility.MemCpyReplicate(dst, src, srcSizeOf, count)
+            else
+                local alignment = 8 -- TODO: Need a way to compute proper alignment for arbitrary non-generic types in TypeManager
+                for i=1,count do
+                    BufferHeader* srcHdr = src
+                    BufferHeader* dstHdr = dst
+                    BufferHeader.Initialize(dstHdr, srcType.BufferCapacity)
+                    BufferHeader.Assign(dstHdr, BufferHeader.GetElementPointer(srcHdr), srcHdr.Length, srcSizeOf, alignment)
 
-                src += srcSizeOf;
-                dst += srcSizeOf;
-            }
-        }
+                    src = src + srcSizeOf
+                    dst = dst + srcSizeOf
+                end
+            end
 
-        dstTypeIndex++;
-    }
+            dstTypeIndex = dstTypeIndex + 1
+        end
+    end
 end
 
 function ChunkDataUtility.Convert( srcChunk, srcIndex, dstChunk, dstIndex )
