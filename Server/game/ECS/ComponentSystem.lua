@@ -65,7 +65,8 @@ function ComponentSystemBase:AfterUpdateVersioning(  )
 end
 
 function ComponentSystemBase:GetArchetypeChunkComponentType( com_type_name, isReadOnly )
-	
+	self:AddReaderWriter(isReadOnly and ComponentType.ReadOnly(com_type_name) or ComponentType.Create(com_type_name))
+    return EntityManager.GetArchetypeChunkComponentType(isReadOnly)
 end
 
 function ComponentSystemBase:GetComponentGroup( componentTypes )

@@ -239,7 +239,7 @@ function ArchetypeManager:AddExistingChunk( chunk )
     end
 end
 
-function ArchetypeManager:ConstructChunk(  )
+function ArchetypeManager:ConstructChunk( archetype, chunk, sharedComponentDataIndices )
 	chunk.Archetype = archetype
 
     chunk.Count = 0
@@ -332,7 +332,7 @@ function ArchetypeManager:GetChunkWithEmptySlots( archetype, sharedComponentData
 
     local newChunk
     -- Try empty chunk pool
-    if m_EmptyChunkPool.IsEmpty then
+    if not self.m_EmptyChunkPool or self.m_EmptyChunkPool.IsEmpty then
         -- Allocate new chunk
         newChunk = UnsafeUtility.Malloc(Chunk.kChunkSize, 64, Allocator.Persistent)
     else
