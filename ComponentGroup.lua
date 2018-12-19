@@ -30,7 +30,12 @@ function ComponentGroup:GetSharedComponentDataArray( shared_com_type )
 end
 
 function ComponentGroup:GetEntityArray(  )
-	
+    local length, iterator
+    self:GetComponentChunkIterator(length, iterator)
+
+    local res
+    self:GetEntityArray(iterator, length, res)
+    return res
 end
 
 function ComponentGroup:ResetFilter(  )

@@ -137,6 +137,10 @@ function EntityManager:DestroyEntity( entity )
 	
 end
 
+function EntityManager:GetArchetypeChunkComponentType( comp_type_name, isReadOnly )
+    return ArchetypeChunkComponentType.New(comp_type_name, isReadOnly, self.GlobalSystemVersion)
+end
+
 local EntityArchetypeQuery = {
 	Any = {}, None = {}, All = {}, 
 }
