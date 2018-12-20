@@ -28,9 +28,9 @@ namespace U3DExtends
             {
                 string item_name = item.name;
                 Transform root_trans = item.transform.parent;
-                while (root_trans != null && root_trans.GetComponent<Canvas>() == null)
+                while (root_trans != null && root_trans.GetComponent<LayoutInfo>() == null)
                 {
-                    if (root_trans.parent != null && root_trans.parent.GetComponent<Canvas>() == null)
+                    if (root_trans.parent != null && root_trans.parent.GetComponent<LayoutInfo>() == null)
                         item_name = root_trans.name + "/" + item_name;
                     else
                         break;
