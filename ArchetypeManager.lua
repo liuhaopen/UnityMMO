@@ -2,15 +2,14 @@ ArchetypeManager = BaseClass()
 ECS.ArchetypeManager = ArchetypeManager
 
 
-function ArchetypeManager:Constructor(  )
-	
+function ArchetypeManager:Constructor( sharedComponentManager )
+	self.m_SharedComponentManager = sharedComponentManager
+    self.m_TypeLookup = {}
+    self.m_EmptyChunkPool = {}
+    ECS.UnsafeLinkedListNode.InitializeList(self.m_EmptyChunkPool)
 end
 
 local GetHash = function ( componentTypeInArchetype )
-	
-end
-
-local AssertArchetypeComponents = function ( types )
 	
 end
 
@@ -19,9 +18,7 @@ local GetOrCreateArchetypeInternal = function ( types, count, groupManager )
     if type ~= nil then
         return type
     end
-
-    AssertArchetypeComponents(types)
-
+    -- AssertArchetypeComponents(types)
     type = {
     	TypesCount = count, 
     	Types = {},

@@ -7,8 +7,8 @@ ECS.MatchingArchetypes = MatchingArchetypes
 local EntityGroupManager = BaseClass()
 ECS.EntityGroupManager = EntityGroupManager
 
-function EntityGroupManager:Constructor(  )
-	
+function EntityGroupManager:Constructor( safetyManager )
+    self.m_JobSafetyManager = safetyManager
 end
 
 function EntityGroupManager:CreateEntityGroup( typeMgr, entityDataMgr, requiredTypes, requiredCount )
@@ -16,5 +16,8 @@ function EntityGroupManager:CreateEntityGroup( typeMgr, entityDataMgr, requiredT
 end
 
 function EntityGroupManager:CreateEntityGroup( typeMan, entityDataManager, requiredTypes )
-	
+	local requiredComponentPtr
+    local requiredComponentCount
+    self:CreateRequiredComponents(requiredComponents, requiredComponentPtr, requiredComponentCount)
+    return self:CreateEntityGroup(typeMan, entityDataManager, self:CreateQuery(requiredComponents), 1, requiredComponentPtr, requiredComponentCount)
 end
