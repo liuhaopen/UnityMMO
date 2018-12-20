@@ -721,14 +721,12 @@ namespace Unity.Entities
         public void SetArchetype(ArchetypeManager typeMan, Entity entity, Archetype* archetype,
             int* sharedComponentDataIndices)
         {
-            //取或创建一个Chunk
             var chunk = typeMan.GetChunkWithEmptySlots(archetype, sharedComponentDataIndices);
             var chunkIndex = typeMan.AllocateIntoChunk(chunk);
 
             var oldArchetype = m_Entities.Archetype[entity.Index];
             var oldChunk = m_Entities.ChunkData[entity.Index].Chunk;
             var oldChunkIndex = m_Entities.ChunkData[entity.Index].IndexInChunk;
-            //Enity本身也是保存在Chunk里的，尽管只有两个字段（Index和Version）,在这里把它从旧的Chunk里复制到新的Chunk上，当然了，为了保持entity的线性存储，还要做不少操作，详细等下再说。
             ChunkDataUtility.Convert(oldChunk, oldChunkIndex, chunk, chunkIndex);
             if (chunk->ManagedArrayIndex >= 0 && oldChunk->ManagedArrayIndex >= 0)
                 ChunkDataUtility.CopyManagedObjects(typeMan, oldChunk, oldChunkIndex, chunk, chunkIndex, 1);
@@ -738,9 +736,9 @@ namespace Unity.Entities
             m_Entities.ChunkData[entity.Index].IndexInChunk = chunkIndex;
 
             var lastIndex = oldChunk->Count - 1;
+            // No need to replace with ourselves
             if (lastIndex != oldChunkIndex)
             {
-                //如果该entity a不在旧chunk的末尾，那就把旧chunk末尾的entity b放到entity a的位置去。
                 var lastEntity = (Entity*) ChunkDataUtility.GetComponentDataRO(oldChunk, lastIndex, 0);
                 m_Entities.ChunkData[lastEntity->Index].IndexInChunk = oldChunkIndex;
 
@@ -751,7 +749,7 @@ namespace Unity.Entities
 
             if (oldChunk->ManagedArrayIndex >= 0)
                 ChunkDataUtility.ClearManagedObjects(typeMan, oldChunk, lastIndex, 1);
-            //Entity归新的Archetype了，所以旧的EnityCount要减1
+
             --oldArchetype->EntityCount;
             typeMan.SetChunkCount(oldChunk, lastIndex);
         }
@@ -844,30 +842,41 @@ namespace Unity.Entities
         {
             var componentType = new ComponentTypeInArchetype(type);
             var archetype = GetArchetype(entity);
-            {
-                //componentTypeInArchetypeArray是EntityManager传进来的，是其预先分配好的缓存空间，专业的临时工，减少频繁申请临时内存。
-                //下面这两个while就是把新增的type插到原有的archetype的type们中间，是的，每个componenttype都可以排序的，谁先谁后不是重点，可以排序就行了，具体看ComponentTypeInArchetype重写的操作符。
-                var t = 0;
-                while (t < archetype->TypesCount && archetype->Types[t] < componentType)
-                {
-                    componentTypeInArchetypeArray[t] = archetype->Types[t];
-                    ++t;
-                }
 
-                var indexInTypeArray = t;
-                componentTypeInArchetypeArray[t] = componentType;
-                while (t < archetype->TypesCount)
-                {
-                    componentTypeInArchetypeArray[t + 1] = archetype->Types[t];
-                    ++t;
-                }
+            var t = 0;
+            while (t < archetype->TypesCount && archetype->Types[t] < componentType)
+            {
+                componentTypeInArchetypeArray[t] = archetype->Types[t];
+                ++t;
             }
-            //按照这些types取得一个Archetype，没有的话就创建一个
+
+            var indexInTypeArray = t;
+            componentTypeInArchetypeArray[t] = componentType;
+            while (t < archetype->TypesCount)
+            {
+                componentTypeInArchetypeArray[t + 1] = archetype->Types[t];
+                ++t;
+            }
+
             var newType = archetypeManager.GetOrCreateArchetype(componentTypeInArchetypeArray,
                 archetype->TypesCount + 1, groupManager);
-            //处理一下SharedComponent，为了简化教程这里先略去
-            //把Entity,Archetype,Chunk关联上
+
+            int* sharedComponentDataIndices = GetComponentChunk(entity)->SharedComponentValueArray;
+            if ((newType->NumSharedComponents > 0) && (newType->NumSharedComponents != archetype->NumSharedComponents))
+            {
+                var oldSharedComponentDataIndices = sharedComponentDataIndices;
+                int* stackAlloced = stackalloc int[newType->NumSharedComponents];
+                sharedComponentDataIndices = stackAlloced;
+
+                int indexOfNewSharedComponent = newType->SharedComponentOffset[indexInTypeArray];
+                UnsafeUtility.MemCpy(sharedComponentDataIndices, oldSharedComponentDataIndices, indexOfNewSharedComponent*sizeof(int));
+                sharedComponentDataIndices[indexOfNewSharedComponent] = 0;
+                UnsafeUtility.MemCpy(sharedComponentDataIndices + indexOfNewSharedComponent + 1, oldSharedComponentDataIndices + indexOfNewSharedComponent,
+                    (archetype->NumSharedComponents-indexOfNewSharedComponent)*sizeof(int));
+            }
+
             SetArchetype(archetypeManager, entity, newType, sharedComponentDataIndices);
+            IncrementComponentOrderVersion(newType, GetComponentChunk(entity), sharedComponentDataManager);
         }
 
         public void TryRemoveEntityId(Entity* entities, int count, ArchetypeManager archetypeManager,
