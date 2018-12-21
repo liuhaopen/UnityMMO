@@ -37,12 +37,12 @@ function EntityDataManager:HasComponent( entity, com_type_name )
 		return false
 	end
 	local archetype = self.m_Entities[entity.Index].Archetype
-    -- return ChunkDataUtility.GetIndexInTypeArray(archetype, type.TypeIndex) ~= -1;
+    return ChunkDataUtility.GetIndexInTypeArray(archetype, type.TypeIndex) ~= -1;
 end
 
 function EntityDataManager:GetComponentDataWithTypeRO( entity, typeIndex )
-	-- local entityData = self.m_Entities[entity.Index]
-    -- return ChunkDataUtility.GetComponentDataWithTypeRO(entityData.Chunk, entityData.IndexInChunk, typeIndex)
+	local entityData = self.m_Entities[entity.Index]
+    return ChunkDataUtility.GetComponentDataWithTypeRO(entityData.Chunk, entityData.IndexInChunk, typeIndex)
 end
 
 function EntityDataManager:CreateEntities( archetypeManager, archetype, entities, count )

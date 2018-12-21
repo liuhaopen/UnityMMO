@@ -42,74 +42,73 @@ function ChunkDataUtility.GetComponentDataWithTypeRO( chunk, index, typeIndex, t
 end
 
 function ChunkDataUtility.GetComponentDataWithTypeRW( chunk, index, typeIndex, globalSystemVersion, typeLookupCache )
-    local archetype = chunk.Archetype;
-    GetIndexInTypeArray(archetype, typeIndex, ref typeLookupCache);
-    local indexInTypeArray = typeLookupCache;
+    local archetype = chunk.Archetype
+    GetIndexInTypeArray(archetype, typeIndex, typeLookupCache)
+    local indexInTypeArray = typeLookupCache
 
-    local offset = archetype.Offsets[indexInTypeArray];
-    local sizeOf = archetype.SizeOfs[indexInTypeArray];
+    local offset = archetype.Offsets[indexInTypeArray]
+    local sizeOf = archetype.SizeOfs[indexInTypeArray]
 
-    chunk.ChangeVersion[indexInTypeArray] = globalSystemVersion;
+    chunk.ChangeVersion[indexInTypeArray] = globalSystemVersion
 
-    return chunk.Buffer + (offset + sizeOf * index);
+    return chunk.Buffer + (offset + sizeOf * index)
 end
 
 function ChunkDataUtility.GetComponentDataWithTypeRO( chunk, index, typeIndex )
-    local indexInTypeArray = GetIndexInTypeArray(chunk.Archetype, typeIndex);
+    local indexInTypeArray = GetIndexInTypeArray(chunk.Archetype, typeIndex)
 
-    local offset = chunk.Archetype.Offsets[indexInTypeArray];
-    local sizeOf = chunk.Archetype.SizeOfs[indexInTypeArray];
+    local offset = chunk.Archetype.Offsets[indexInTypeArray]
+    local sizeOf = chunk.Archetype.SizeOfs[indexInTypeArray]
 
-    return chunk.Buffer + (offset + sizeOf * index);
+    return chunk.Buffer + (offset + sizeOf * index)
 end
 
 function ChunkDataUtility.GetComponentDataWithTypeRW( chunk, index, typeIndex, globalSystemVersion )
-    local indexInTypeArray = GetIndexInTypeArray(chunk.Archetype, typeIndex);
+    local indexInTypeArray = GetIndexInTypeArray(chunk.Archetype, typeIndex)
 
-    local offset = chunk.Archetype.Offsets[indexInTypeArray];
-    local sizeOf = chunk.Archetype.SizeOfs[indexInTypeArray];
+    local offset = chunk.Archetype.Offsets[indexInTypeArray]
+    local sizeOf = chunk.Archetype.SizeOfs[indexInTypeArray]
 
-    chunk.ChangeVersion[indexInTypeArray] = globalSystemVersion;
+    chunk.ChangeVersion[indexInTypeArray] = globalSystemVersion
 
-    return chunk.Buffer + (offset + sizeOf * index);
+    return chunk.Buffer + (offset + sizeOf * index)
 end
 
 function ChunkDataUtility.GetComponentDataRO( chunk, index, indexInTypeArray )
-    local offset = chunk.Archetype.Offsets[indexInTypeArray];
-    local sizeOf = chunk.Archetype.SizeOfs[indexInTypeArray];
+    local offset = chunk.Archetype.Offsets[indexInTypeArray]
+    local sizeOf = chunk.Archetype.SizeOfs[indexInTypeArray]
 
-    return chunk.Buffer + (offset + sizeOf * index);
+    return chunk.Buffer + (offset + sizeOf * index)
 end
 
 function ChunkDataUtility.GetComponentDataRW( chunk, index, indexInTypeArray, globalSystemVersion )
-    local offset = chunk.Archetype.Offsets[indexInTypeArray];
-    local sizeOf = chunk.Archetype.SizeOfs[indexInTypeArray];
+    local offset = chunk.Archetype.Offsets[indexInTypeArray]
+    local sizeOf = chunk.Archetype.SizeOfs[indexInTypeArray]
 
-    chunk.ChangeVersion[indexInTypeArray] = globalSystemVersion;
+    chunk.ChangeVersion[indexInTypeArray] = globalSystemVersion
 
-    return chunk.Buffer + (offset + sizeOf * index);
+    return chunk.Buffer + (offset + sizeOf * index)
 end
 
 function ChunkDataUtility.Copy( srcChunk, srcIndex, dstChunk, dstIndex, count )
-    Assert.IsTrue(srcChunk.Archetype == dstChunk.Archetype);
+    Assert.IsTrue(srcChunk.Archetype == dstChunk.Archetype)
 
-    local arch = srcChunk.Archetype;
-    local srcBuffer = srcChunk.Buffer;
-    local dstBuffer = dstChunk.Buffer;
-    local offsets = arch.Offsets;
-    local sizeOfs = arch.SizeOfs;
-    local typesCount = arch.TypesCount;
+    local arch = srcChunk.Archetype
+    local srcBuffer = srcChunk.Buffer
+    local dstBuffer = dstChunk.Buffer
+    local offsets = arch.Offsets
+    local sizeOfs = arch.SizeOfs
+    local typesCount = arch.TypesCount
 
-    for (local t = 0; t < typesCount; t++)
-    {
-        local offset = offsets[t];
-        local sizeOf = sizeOfs[t];
-        local src = srcBuffer + (offset + sizeOf * srcIndex);
-        local dst = dstBuffer + (offset + sizeOf * dstIndex);
+    for t=1,typesCount do
+        local offset = offsets[t]
+        local sizeOf = sizeOfs[t]
+        local src = srcBuffer + (offset + sizeOf * srcIndex)
+        local dst = dstBuffer + (offset + sizeOf * dstIndex)
 
-        dstChunk.ChangeVersion[t] = srcChunk.ChangeVersion[t];
-        UnsafeUtility.MemCpy(dst, src, sizeOf * count);
-    }
+        dstChunk.ChangeVersion[t] = srcChunk.ChangeVersion[t]
+        UnsafeUtility.MemCpy(dst, src, sizeOf * count)
+    end
 end
 
 function ChunkDataUtility.InitializeComponents( dstChunk, dstIndex, count )
