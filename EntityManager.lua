@@ -1,6 +1,3 @@
-ECS.Entity = {
-	Index=0, Version=0
-}
 EntityManager = BaseClass(ECS.ScriptBehaviourManager)
 ECS.EntityManager = EntityManager
 local table_insert = table.insert
@@ -27,7 +24,7 @@ function EntityManager:CreateEntityByArcheType( archetype, num )
 	return CreateEntities(archetype, num or 1)
 end
 
-function EntityManager:CreateEntityByComponents( com_types )
+function EntityManager:CreateEntityByComponents( com_types, num )
 	return CreateEntities(self:CreateArchetype(com_types), num or 1)
 end
 
@@ -49,7 +46,6 @@ end
 
 function EntityManager:Exists( entity )
 	local index = entity.Index
-    -- self:ValidateEntity(entity)
     local versionMatches = self.m_Entities[index].Version == entity.Version
     local hasChunk = self.m_Entities[index].Chunk ~= nil
     return versionMatches and hasChunk;
@@ -76,7 +72,6 @@ end
 
 function EntityManager:AddComponent( entity, com_type )
 	self:BeforeStructuralChange()
-    -- self.Entities:AssertEntitiesExist(&entity, 1);
     self.Entities:AddComponent(entity, com_type, self.ArchetypeManager, self.m_SharedComponentManager, self.m_GroupManager,
         self.m_CachedComponentTypeInArchetypeArray)
 end
@@ -93,19 +88,17 @@ function EntityManager:RemoveComponent( entity, com_type )
     end
 end
 
-function EntityManager:AddComponentData( entity, com_type_name, com_data )
+function EntityManager:AddComponentData( entity, com_type_name, componentData )
 	self:AddComponent(entity, com_type_name)
-    self:SetComponentData(entity, com_type_name, com_data)
+    self:SetComponentData(entity, com_type_name, componentData)
 end
 
-function EntityManager:SetComponentData( entity, com_type_name, com_data )
+function EntityManager:SetComponentData( entity, com_type_name, componentData )
 	local typeIndex = TypeManager.GetTypeIndex(com_type_name)
     self.Entities:AssertEntityHasComponent(entity, typeIndex)
-
     -- ComponentJobSafetyManager.CompleteReadAndWriteDependency(typeIndex)
-
     local ptr = self.Entities:GetComponentDataWithTypeRW(entity, typeIndex, self.Entities.GlobalSystemVersion)
-    -- UnsafeUtility.CopyStructureToPtr(ref componentData, ptr)
+    UnsafeUtility.CopyStructureToPtr(componentData, ptr)
 end
 
 function EntityManager:GetComponentData( entity, com_type_name )
