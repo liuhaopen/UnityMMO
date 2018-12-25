@@ -9,9 +9,7 @@ end
 
 function ComponentGroup:GetComponentDataArray( com_type )
     local typeIndex = TypeManager.GetTypeIndex(com_type)
-	local length
-    local iterator
-    self:GetComponentChunkIterator(length, iterator)
+    local iterator, length = self:GetComponentChunkIterator()
     local indexInComponentGroup = self:GetIndexInComponentGroup(typeIndex)
 
     local res = {}
@@ -20,9 +18,7 @@ function ComponentGroup:GetComponentDataArray( com_type )
 end
 
 function ComponentGroup:GetSharedComponentDataArray( shared_com_type )
-	local length
-    local iterator
-    self:GetComponentChunkIterator(length, iterator)
+    local iterator, length = self:GetComponentChunkIterator()
     local indexInComponentGroup = self:GetIndexInComponentGroup(TypeManager.GetTypeIndex(shared_com_type))
     local res = {}
     self:GetSharedComponentDataArray(iterator, indexInComponentGroup, length, res)
@@ -30,12 +26,16 @@ function ComponentGroup:GetSharedComponentDataArray( shared_com_type )
 end
 
 function ComponentGroup:GetEntityArray(  )
-    local length, iterator
-    self:GetComponentChunkIterator(length, iterator)
-
+    local iterator, length = self:GetComponentChunkIterator()
     local res
     self:GetEntityArray(iterator, length, res)
     return res
+end
+
+function ComponentGroup:GetComponentChunkIterator(  )
+    local length = ComponentChunkIterator.CalculateLength(self.m_GroupData.FirstMatchingArchetype, self.m_Filter)
+    local iterator = ECS.ComponentChunkIterator.New(self.m_GroupData.FirstMatchingArchetype, self.m_EntityDataManager.GlobalSystemVersion, self.m_Filter)
+    return iterator, length
 end
 
 function ComponentGroup:ResetFilter(  )

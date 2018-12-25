@@ -1,5 +1,23 @@
 #include "lua.h"
 
+const int kChunkSize = 16 * 1024 - 256;
+const int kMaximumEntitiesPerChunk = kChunkSize / 8;
+struct Chunk
+{
+    Chunk* ChunkListNode;
+    Chunk* ChunkListWithEmptySlotsNode;
+    int* Archetype;
+    int* SharedComponentValueArray;
+    int Count;
+    int Capacity;
+    int ManagedArrayIndex;
+    int Padding0;
+    int* ChangeVersion;
+    int* Padding2;
+    int* Buffer;
+}Chunk;
+
+
 static int newchunk(lua_State *L) {
     int size = luaL_checkint(L, 1);
     Chunk *a = (Chunk*)lua_newuserdata(L, size);
