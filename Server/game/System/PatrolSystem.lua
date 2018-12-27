@@ -6,11 +6,11 @@ PatrolSystem.UpdateInGroup = {"GroupSystem"}
 
 function PatrolSystem:Constructor(  )
 	local data = {
-		position = "ECS.Position:Array",--当前坐标
-		born_pos = "UMMO.BornPosition:Array:ReadOnly",--出生点
-		speed = "UMMO.MoveSpeed:Array:ReadOnly",--速度
-		radius = "UMMO.PatrolRadius:Array:ReadOnly",--巡逻半径
-		direction = "UMMO.Direction:Array",--方向
+		position = "ComponentDataArray:ECS.Position",--当前坐标
+		born_pos = "ComponentDataArray:UMMO.BornPosition:ReadOnly",--出生点
+		speed = "ComponentDataArray:UMMO.MoveSpeed:ReadOnly",--速度
+		radius = "ComponentDataArray:UMMO.PatrolRadius:ReadOnly",--巡逻半径
+		direction = "ComponentDataArray:UMMO.Direction",--方向
 		length   = "Length",
 	}
 	self.group = {}

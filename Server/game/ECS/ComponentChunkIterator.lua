@@ -63,3 +63,32 @@ function ComponentChunkIterator:MoveToEntityIndexAndUpdateCache( index, cache, i
 	self:MoveToEntityIndex(index)
     self:UpdateCacheToCurrentChunk(cache, isWriting, IndexInComponentGroup)
 end
+
+function ComponentChunkIterator.CalculateLength( firstMatchingArchetype, filter )
+    local length = 0
+    if not filter.RequiresMatchesFilter then
+        local match = firstMatchingArchetype
+        while match~=nil do
+            length = length + match.Archetype.EntityCount
+            match = match.Next
+        end
+    else
+        local match = firstMatchingArchetype
+        while match~=nil do
+            length = length + match.Archetype.EntityCount
+            if match.Archetype.EntityCount > 0 then
+                local archeType = match.Archetype
+                local c = archeType.ChunkList.Begin
+                while c ~= archeType.ChunkList.End do
+                    if c:MatchesFilter(match, filter) then
+                        length = length + c.Count
+                    end
+                    c = c.ChunkListNode.Next
+                end
+            end
+            match = match.Next
+        end
+    end
+
+    return length;
+end
