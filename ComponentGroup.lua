@@ -1,10 +1,12 @@
 local ComponentGroup = BaseClass()
 ECS.ComponentGroup = ComponentGroup
 
-function ComponentGroup:Constructor(  )
-	self.m_GroupData = nil
-	self.m_EntityDataManager = nil
+function ComponentGroup:Constructor( groupData, safetyManager, typeManager, entityDataManager )
+	self.m_GroupData = groupData
+	self.m_EntityDataManager = entityDataManager
 	self.m_Filter = nil
+    self.ArchetypeManager = typeManager
+    self.EntityDataManager = entityDataManager
 end
 
 function ComponentGroup:GetComponentDataArray( com_type )
@@ -33,7 +35,7 @@ function ComponentGroup:GetEntityArray(  )
 end
 
 function ComponentGroup:GetComponentChunkIterator(  )
-    local length = ComponentChunkIterator.CalculateLength(self.m_GroupData.FirstMatchingArchetype, self.m_Filter)
+    local length = ECS.ComponentChunkIterator.CalculateLength(self.m_GroupData.FirstMatchingArchetype, self.m_Filter)
     local iterator = ECS.ComponentChunkIterator.New(self.m_GroupData.FirstMatchingArchetype, self.m_EntityDataManager.GlobalSystemVersion, self.m_Filter)
     return iterator, length
 end

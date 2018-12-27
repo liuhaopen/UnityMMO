@@ -6,9 +6,9 @@ TestSystem.UpdateInGroup = {"GroupSystem"}
 TestSystem.AlwaysUpdateSystem = true
 function TestSystem:Constructor(  )
 	local data = {
-		position = "ECS.Position:Array:ReadOnly",
-		rotation = "ECS.Rotation:Subtractive",
-		othersys = "ECS.TestSystem2:ScriptMgr",
+		position = "ComponentDataArray:ECS.Position:ReadOnly",
+		rotation = "Subtractive:ECS.Rotation",
+		othersys = "ScriptMgr:ECS.TestSystem2",
 		entities = "EntityArray",
 		length   = "Length",
 	}
