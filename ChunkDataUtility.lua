@@ -112,33 +112,28 @@ function ChunkDataUtility.Copy( srcChunk, srcIndex, dstChunk, dstIndex, count )
 end
 
 function ChunkDataUtility.InitializeComponents( dstChunk, dstIndex, count )
-    local arch = dstChunk.Archetype;
+    local arch = dstChunk.Archetype
 
-    local offsets = arch.Offsets;
-    local sizeOfs = arch.SizeOfs;
-    local dstBuffer = dstChunk.Buffer;
-    local typesCount = arch.TypesCount;
-    local types = arch.Types;
+    local offsets = arch.Offsets
+    local sizeOfs = arch.SizeOfs
+    local dstBuffer = dstChunk.Buffer
+    local typesCount = arch.TypesCount
+    local types = arch.Types
 
-    for (local t = 1; t != typesCount; t++)
-    {
-        local offset = offsets[t];
-        local sizeOf = sizeOfs[t];
-        local dst = dstBuffer + (offset + sizeOf * dstIndex);
+    for t=2,typesCount do
+        local offset = offsets[t]
+        local sizeOf = sizeOfs[t]
+        local dst = dstBuffer + (offset + sizeOf * dstIndex)
 
-        if (types[t].IsBuffer)
-        {
-            for (local i = 0; i < count; ++i)
-            {
-                BufferHeader.Initialize((BufferHeader*)dst, types[t].BufferCapacity);
-                dst += sizeOf;
-            }
-        }
+        if types[t].IsBuffer then
+            for i=1,count do
+                BufferHeader.Initialize(dst, types[t].BufferCapacity)
+                dst = dst + sizeOf
+            end
         else
-        {
-            UnsafeUtility.MemClear(dst, sizeOf * count);
-        }
-    }
+            UnsafeUtility.MemClear(dst, sizeOf * count)
+        end
+    end
 end
 
 function ChunkDataUtility.ReplicateComponents( srcChunk, srcIndex, dstChunk, dstBaseIndex, count )
@@ -170,8 +165,8 @@ function ChunkDataUtility.ReplicateComponents( srcChunk, srcIndex, dstChunk, dst
             else
                 local alignment = 8 -- TODO: Need a way to compute proper alignment for arbitrary non-generic types in TypeManager
                 for i=1,count do
-                    BufferHeader* srcHdr = src
-                    BufferHeader* dstHdr = dst
+                    local srcHdr = src
+                    local dstHdr = dst
                     BufferHeader.Initialize(dstHdr, srcType.BufferCapacity)
                     BufferHeader.Assign(dstHdr, BufferHeader.GetElementPointer(srcHdr), srcHdr.Length, srcSizeOf, alignment)
 
@@ -198,26 +193,24 @@ function ChunkDataUtility.Convert( srcChunk, srcIndex, dstChunk, dstIndex )
         if (srcArch.Types[srcI] < dstArch.Types[dstI]) then
             -- Clear any buffers we're not going to keep.
             if (srcArch.Types[srcI].IsBuffer) then
-                BufferHeader.Destroy((BufferHeader*)src)
+                BufferHeader.Destroy(src)
             end
 
             srcI = srcI + 1
-        else if (srcArch.Types[srcI] > dstArch.Types[dstI])
+        elseif (srcArch.Types[srcI] > dstArch.Types[dstI]) then
             -- Clear components in the destination that aren't copied
-            if (dstArch.Types[dstI].IsBuffer) then
-                BufferHeader.Initialize((BufferHeader*)dst, dstArch.Types[dstI].BufferCapacity)
+            if dstArch.Types[dstI].IsBuffer then
+                BufferHeader.Initialize(dst, dstArch.Types[dstI].BufferCapacity)
             else
                 UnsafeUtility.MemClear(dst, dstArch.SizeOfs[dstI])
             end
             dstI = dstI+1
         else
             UnsafeUtility.MemCpy(dst, src, srcArch.SizeOfs[srcI])
-
             -- Poison source buffer to make sure there is no aliasing.
             if (srcArch.Types[srcI].IsBuffer) then
-                BufferHeader.Initialize((BufferHeader*)src, srcArch.Types[srcI].BufferCapacity)
+                BufferHeader.Initialize(src, srcArch.Types[srcI].BufferCapacity)
             end
-
             srcI = srcI+1
             dstI = dstI+1
         end

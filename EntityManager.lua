@@ -115,11 +115,19 @@ function EntityManager:GetAllEntities(  )
 end
 
 function EntityManager:GetComponentTypes( entity )
-	
+	-- self.Entities.AssertEntitiesExist(&entity, 1);
+    local archetype = self.Entities:GetArchetype(entity)
+    local components = {}
+    for i=2, archetype.TypesCount do
+        components[i - 1] = archetype.Types[i].ToComponentType()
+    end
+    return components
 end
 
 function EntityManager:GetComponentCount( entity )
-	
+	-- Entities.AssertEntitiesExist(&entity, 1);
+    local archetype = self.Entities:GetArchetype(entity)
+    return archetype.TypesCount - 1
 end
 
 function EntityManager:CreateComponentGroup( requiredComponents )
