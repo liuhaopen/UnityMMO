@@ -13,10 +13,9 @@ function ComponentGroup:GetComponentDataArray( com_type )
     local typeIndex = TypeManager.GetTypeIndex(com_type)
     local iterator, length = self:GetComponentChunkIterator()
     local indexInComponentGroup = self:GetIndexInComponentGroup(typeIndex)
-
     local res = {}
     self:GetComponentDataArray(iterator, indexInComponentGroup, length, res)
-    return res;
+    return res
 end
 
 function ComponentGroup:GetSharedComponentDataArray( shared_com_type )
@@ -24,7 +23,7 @@ function ComponentGroup:GetSharedComponentDataArray( shared_com_type )
     local indexInComponentGroup = self:GetIndexInComponentGroup(TypeManager.GetTypeIndex(shared_com_type))
     local res = {}
     self:GetSharedComponentDataArray(iterator, indexInComponentGroup, length, res)
-    return res;
+    return res
 end
 
 function ComponentGroup:GetEntityArray(  )
@@ -41,7 +40,15 @@ function ComponentGroup:GetComponentChunkIterator(  )
 end
 
 function ComponentGroup:ResetFilter(  )
-	
+	if self.m_Filter.Type == ECS.FilterType.SharedComponent then
+        local filteredCount = self.m_Filter.Shared.Count
+        local sm = self.ArchetypeManager.GetSharedComponentDataManager()
+        local sharedComponentIndexPtr = self.m_Filter.Shared.SharedComponentIndex
+        for var=1,filteredCount do
+            sm:RemoveReference(sharedComponentIndexPtr[i])
+        end
+    end
+    self.m_Filter.Type = FilterType.None
 end
 
 function ComponentGroup:SetFilter(  )
