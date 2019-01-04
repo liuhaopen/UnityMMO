@@ -40,8 +40,9 @@ local use_case = function (  )
 	local entity_mgr = ECS.World.Active:GetOrCreateManager(ECS.EntityManager)
 
 	local entity = entity_mgr:CreateEntity()
-	entity_mgr:AddComponentData(entity, "ECS.Position", {x=0, y=1, z=2})
-	local pos = entity_mgr:GetComponentData(entity, "ECS.Position")
+	entity_mgr:AddComponentData(entity, ECS.Position, {x=0, y=1, z=2})
+	local pos = entity_mgr:GetComponentData(entity, ECS.Position)
 	pos.x = 3
 	print('Cat:TestSystem.lua[46] pos.x, pos.y, pos.z', pos.x, pos.y, pos.z)
+	entity_mgr:SetComponentData(entity, ECS.Position, pos)
 end

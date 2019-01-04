@@ -29,18 +29,14 @@ function EntityManager:CreateEntityByComponents( com_types, num )
 end
 
 function EntityManager:CreateArchetype( com_types )
-	-- local cachedComponentCount = PopulatedCachedTypeInArchetypeArray(com_types);
     local entityArchetype = {}
     entityArchetype.Archetype =
-        ArchetypeManager.GetExistingArchetype(self.m_CachedComponentTypeInArchetypeArray)
+        self.ArchetypeManager:GetExistingArchetype(com_types)
     if entityArchetype.Archetype ~= nil then
         return entityArchetype
     end
-
-    self:BeforeStructuralChange()
-
-    entityArchetype.Archetype = ArchetypeManager.GetOrCreateArchetype(self.m_CachedComponentTypeInArchetypeArray,
-        cachedComponentCount, self.m_GroupManager)
+    -- self:BeforeStructuralChange()
+    entityArchetype.Archetype = self.ArchetypeManager:GetOrCreateArchetype(com_types, self.m_GroupManager)
     return entityArchetype
 end
 
