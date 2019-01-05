@@ -1,13 +1,13 @@
 local ScriptBehaviourManager = BaseClass()
 ECS.ScriptBehaviourManager = ScriptBehaviourManager
 
-function ScriptBehaviourManager:CreateInstance( world, capacity )
+function ScriptBehaviourManager:CreateInstance( world )
 	if self.OnBeforeCreateManagerInternal then
-		self:OnBeforeCreateManagerInternal(world, capacity)
+		self:OnBeforeCreateManagerInternal(world)
 	end
 
 	if self.OnCreateManager then
-		self:OnCreateManager(capacity)
+		self:OnCreateManager()
 	end
 end
 

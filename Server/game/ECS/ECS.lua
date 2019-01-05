@@ -1,11 +1,11 @@
 ECS = ECS or {}
 
-require "Common.BaseClass"
-require "game.ECS.ScriptBehaviourManager"
-require "game.ECS.World"
-require "game.ECS.EntityManager"
-require "game.ECS.ComponentSystem"
-require "game.ECS.ScriptBehaviourUpdateOrder"
+require "BaseClass"
+require "ScriptBehaviourManager"
+require "World"
+require "EntityManager"
+require "ComponentSystem"
+require "ScriptBehaviourUpdateOrder"
 
 function ECS:InitWorld( worldName )
 	self.system_list = {}
