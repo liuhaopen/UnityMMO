@@ -17,8 +17,8 @@ function TestSystem:Constructor(  )
 
 end
 
-function TestSystem:OnCreateManager( capacity )
-	ECS.ComponentSystem.OnCreateManager(self, capacity)
+function TestSystem:OnCreateManager( )
+	ECS.ComponentSystem.OnCreateManager(self)
     self.group_with_filter = self:GetComponentGroup({"ECS.Position:ReadOnly", "ECS.CodeLOD"})
 end
 

@@ -1,4 +1,4 @@
-EntityManager = BaseClass(ECS.ScriptBehaviourManager)
+local EntityManager = BaseClass(ECS.ScriptBehaviourManager)
 ECS.EntityManager = EntityManager
 local table_insert = table.insert
 function EntityManager:Constructor(  )
