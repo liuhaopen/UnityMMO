@@ -3,9 +3,17 @@ ECS = ECS or {}
 require "BaseClass"
 require "ScriptBehaviourManager"
 require "World"
+require "Entity"
 require "EntityManager"
+require "EntityDataManager"
 require "ComponentSystem"
 require "ScriptBehaviourUpdateOrder"
+require "TypeManager"
+require "SharedComponentDataManager"
+require "ArchetypeManager"
+require "EntityGroupManager"
+require "ComponentType"
+require "ComponentTypeInArchetype"
 
 function ECS:InitWorld( worldName )
 	self.system_list = {}

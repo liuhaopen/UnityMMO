@@ -22,3 +22,5 @@ function TestComponentSystem:TestCreate(  )
     -- lu.assertTrue(system.Created)
 end
 
+function TestComponentSystem:TestCreate2(  )
+end

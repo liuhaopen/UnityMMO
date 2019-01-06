@@ -12,21 +12,47 @@ TypeManager.s_Types = {}
 TypeManager.s_Count = 0
 TypeManager.StaticTypeLookup = {}
 function TypeManager.Initialize(  )
-	
+	-- self.ObjectOffset = UnsafeUtility.SizeOf<ObjectOffsetType>();
+    -- self.s_CreateTypeLock = new SpinLock()
+    TypeManager.s_Types = {}
+    TypeManager.s_Count = 0
+
+	TypeManager.s_Types[TypeManager.s_Count] = {
+		Type=nil, SizeInChunk=0, Category=TypeManager.TypeCategory.ComponentData,
+		-- FastEqualityTypeInfo = FastEquality.TypeInfo.Null,
+		EntityOffsets = nil, MemoryOrdering=0, BufferCapacity=-1, ElementSize = 0
+	}
+    TypeManager.s_Count = TypeManager.s_Count + 1
+    TypeManager.s_Types[TypeManager.s_Count] = {
+		Type="ECS.Entity", SizeInChunk=ECS.Entity.Size, Category=TypeManager.TypeCategory.EntityData,
+		-- FastEqualityTypeInfo = FastEquality.CreateTypeInfo(typeof(Entity)),
+		-- EntityOffsets = EntityRemapUtility.CalculateEntityOffsets(typeof(Entity)), 
+		MemoryOrdering=0, BufferCapacity=-1, ElementSize = ECS.Entity.Size
+	}
+    TypeManager.s_Count = TypeManager.s_Count + 1
 end
 
-function TypeManager.RegisterType( type, name )
-	if not TypeManager.s_Types[name] then
-		TypeManager.s_Count = TypeManager.s_Count + 1
+function TypeManager.RegisterType( name, type_desc )
+	if TypeManager.s_Types[name] then
+		return
 	end
+	TypeManager.s_Count = TypeManager.s_Count + 1
 	local type_info = {
-		Type = type,
+		Name = name,
+		Type = type_desc,
+		TypeIndex = TypeManager.s_Count,
 	}
 	TypeManager.s_Types[name] = type_info
 end
 
 local CreateTypeIndexThreadSafe = function ( type_name )
-	
+	TypeManager.s_Count = TypeManager.s_Count + 1
+	local type_info = {
+		Name = type_name,
+		Type = type,
+		TypeIndex = TypeManager.s_Count,
+	}
+	TypeManager.s_Types[name] = type_info
 end
 
 function TypeManager.GetTypeIndexByName( type_name )
@@ -39,3 +65,28 @@ function TypeManager.GetTypeIndexByName( type_name )
 	TypeManager.StaticTypeLookup[type_name] = index
 	return index
 end
+
+function TypeManager.GetTypeInfoByIndex( typeIndex )
+	return TypeManager.s_Types[typeIndex]
+end
+
+function TypeManager.GetTypeInfoByName( typeName )
+	return TypeManager.s_Types[TypeManager.GetTypeIndexByName(typeName)]
+end
+
+return TypeManager
+
+-- local TypeInfo = BaseClass()
+-- ECS.TypeInfo = TypeInfo
+-- function TypeManager:Constructor( type, size, category, typeInfo, entityOffsets, memoryOrdering, bufferCapacity, elementSize )
+-- 	self.Type = type
+--     self.SizeInChunk = size
+--     self.Category = category
+--     self.FastEqualityTypeInfo = typeInfo
+--     self.EntityOffsets = entityOffsets
+--     self.MemoryOrdering = memoryOrdering
+--     self.BufferCapacity = bufferCapacity
+--     self.ElementSize = elementSize
+--     -- self.IsSystemStateSharedComponent = typeof(ISystemStateSharedComponentData).IsAssignableFrom(type)
+--     -- self.IsSystemStateComponent = typeof(ISystemStateComponentData).IsAssignableFrom(type)
+-- end

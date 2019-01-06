@@ -28,7 +28,19 @@ function EntityManager:CreateEntityByComponents( com_types, num )
 	return CreateEntities(self:CreateArchetype(com_types), num or 1)
 end
 
-function EntityManager:CreateArchetype( com_types )
+function EntityManager:PopulatedCachedTypeInArchetypeArray( requiredComponents, count )
+    self.m_CachedComponentTypeInArchetypeArray = {}
+    self.m_CachedComponentTypeInArchetypeArray[1] = ECS.ComponentTypeInArchetype.New(ECS.ComponentType.Create("ECS.Entity"))
+    for i=1,count do
+        ECS.SortingUtilities.InsertSorted(self.m_CachedComponentTypeInArchetypeArray, i + 1, ECS.ComponentTypeInArchetype.New(ECS.ComponentType.Create(requiredComponents[i])))
+    end
+    return count + 1
+end
+
+--e.g. CreateArchetype({"ECS.Position", "OtherCompTypeName"})
+function EntityManager:CreateArchetype( types )
+    local cachedComponentCount = self:PopulatedCachedTypeInArchetypeArray(types, count)
+
     local entityArchetype = {}
     entityArchetype.Archetype =
         self.ArchetypeManager:GetExistingArchetype(com_types)
@@ -36,7 +48,7 @@ function EntityManager:CreateArchetype( com_types )
         return entityArchetype
     end
     -- self:BeforeStructuralChange()
-    entityArchetype.Archetype = self.ArchetypeManager:GetOrCreateArchetype(com_types, self.m_GroupManager)
+    entityArchetype.Archetype = self.ArchetypeManager:GetOrCreateArchetype(com_types, #com_types, self.m_GroupManager)
     return entityArchetype
 end
 
