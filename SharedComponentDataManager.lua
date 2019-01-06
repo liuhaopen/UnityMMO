@@ -18,3 +18,5 @@ function SharedComponentDataManager:GetAllUniqueSharedComponents( com_type, shar
         end
     end
 end	
+
+return SharedComponentDataManager

@@ -1,5 +1,6 @@
-package.path = package.path ..';..\\?.lua;..\\..\\?.lua';
+package.path = package.path ..';..\\?.lua;..\\..\\?.lua;Tests\\?.lua';
 require "ECS"
+lu = require('Tests.luaunit')
 --将 szFullString 对象拆分为一个子字符串表
 function Split(szFullString, szSeparator, start_pos)
 	local nFindStartIndex = start_pos or 1
@@ -19,7 +20,7 @@ function Split(szFullString, szSeparator, start_pos)
 end
 
 -- local s = io.popen("ls ./")--for linux
-local s = io.popen("dir /b")--for windows
+local s = io.popen("dir /b Tests")--for windows
 local fileNames = s:read("*all")
 fileNames = Split(fileNames, "\n")
 for k,v in pairs(fileNames or {}) do
@@ -34,5 +35,4 @@ for k,v in pairs(fileNames or {}) do
 	end
 end
 
-local lu = require('luaunit')
 os.exit( lu.LuaUnit.run() )

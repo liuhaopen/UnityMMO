@@ -1,4 +1,4 @@
-EntityDataManager = BaseClass()
+local EntityDataManager = BaseClass()
 ECS.EntityDataManager = EntityDataManager
 
 local EntityData = {
@@ -7,11 +7,12 @@ local EntityData = {
 	Chunk = nil,
 	IndexInChunk = 0
 }
-function EntityDataManager:Constructor( capacity )
+function EntityDataManager:Constructor( )
 	self.m_Entities = {}
-	self.m_EntitiesCapacity = capacity
+	self.m_EntitiesCapacity = 10
 	self.m_EntitiesFreeIndex = 0
-    self.GlobalSystemVersion = ECS.ChangeVersionUtility.InitialGlobalSystemVersion
+    -- self.GlobalSystemVersion = ECS.ChangeVersionUtility.InitialGlobalSystemVersion
+    self.GlobalSystemVersion = 1
 
 	self:InitializeAdditionalCapacity(1)
 	-- const int componentTypeOrderVersionSize = sizeof(int) * TypeManager.MaximumTypesCount;
@@ -317,3 +318,5 @@ function EntityDataManager:CreateEntityData( newCapacity )
     entities.ChunkData = {}
     return entities
 end
+
+return EntityDataManager

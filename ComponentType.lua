@@ -14,14 +14,18 @@ function ComponentType:Constructor(  )
 end
 
 function ComponentType.Create( type_name )
-	return ComponentType.FromTypeIndex(TypeManager.GetTypeIndexByName(type_name))
+	return ComponentType.FromTypeIndex(ECS.TypeManager.GetTypeIndexByName(type_name))
 end
 
 function ComponentType.FromTypeIndex( typeIndex )
-	local ct = TypeManager.GetTypeInfo(typeIndex)
+	local ct = ECS.TypeManager.GetTypeInfoByIndex(typeIndex)
     local type = {}
     type.TypeIndex = typeIndex
-    type.AccessModeType = AccessMode.ReadWrite
+    type.AccessModeType = ComponentType.AccessMode.ReadWrite
     type.BufferCapacity = ct.BufferCapacity
     return type
 end
+
+-- local meta_tbl = getmetatable(ComponentType)
+
+return ComponentType
