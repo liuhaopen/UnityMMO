@@ -24,3 +24,15 @@ function EntityGroupManager:CreateEntityGroup( typeMan, entityDataManager, requi
     self:CreateRequiredComponents(requiredComponents, requiredComponentPtr, requiredComponentCount)
     return self:CreateEntityGroup(typeMan, entityDataManager, self:CreateQuery(requiredComponents), 1, requiredComponentPtr, requiredComponentCount)
 end
+
+function EntityGroupManager:AddArchetypeIfMatching( type )
+	local grp = self.m_LastGroupData
+	while (grp ~= nil) do
+		self:AddArchetypeIfMatchingWithGroupData(type, grp)
+		grp = grp.PrevGroup
+	end
+end
+
+function EntityGroupManager:AddArchetypeIfMatchingWithGroupData( type, group )
+	
+end
