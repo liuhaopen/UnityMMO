@@ -14,6 +14,9 @@ require "ArchetypeManager"
 require "EntityGroupManager"
 require "ComponentType"
 require "ComponentTypeInArchetype"
+require "SortingUtilities"
+require "Chunk"
+require "UnsafeLinkedListNode"
 
 function ECS:InitWorld( worldName )
 	self.system_list = {}

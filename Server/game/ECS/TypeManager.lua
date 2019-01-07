@@ -29,11 +29,12 @@ function TypeManager.Initialize(  )
 		-- EntityOffsets = EntityRemapUtility.CalculateEntityOffsets(typeof(Entity)), 
 		MemoryOrdering=0, BufferCapacity=-1, ElementSize = ECS.Entity.Size
 	}
+	TypeManager.StaticTypeLookup["ECS.Entity"] = TypeManager.s_Count
     TypeManager.s_Count = TypeManager.s_Count + 1
 end
 
 function TypeManager.RegisterType( name, type_desc )
-	if TypeManager.s_Types[name] then
+	if TypeManager.StaticTypeLookup[name] then
 		return
 	end
 	TypeManager.s_Count = TypeManager.s_Count + 1
@@ -41,8 +42,11 @@ function TypeManager.RegisterType( name, type_desc )
 		Name = name,
 		Type = type_desc,
 		TypeIndex = TypeManager.s_Count,
+		BufferCapacity = -1,
+		SizeInChunk = 4 --Cat_Todo : size in chunk
 	}
 	TypeManager.s_Types[name] = type_info
+	TypeManager.StaticTypeLookup[name] = TypeManager.s_Count
 end
 
 local CreateTypeIndexThreadSafe = function ( type_name )
@@ -51,19 +55,22 @@ local CreateTypeIndexThreadSafe = function ( type_name )
 		Name = type_name,
 		Type = type,
 		TypeIndex = TypeManager.s_Count,
+		BufferCapacity = -1,
 	}
-	TypeManager.s_Types[name] = type_info
+	TypeManager.s_Types[TypeManager.s_Count] = type_info
+	return TypeManager.s_Count
 end
 
 function TypeManager.GetTypeIndexByName( type_name )
 	assert(type_name and type_name ~= "", "wrong type name!")
 	local index = TypeManager.StaticTypeLookup[type_name]
+	assert(index, "had no register type : "..type_name)
 	if index then
 		return index
 	end
-	index = CreateTypeIndexThreadSafe(type_name)
-	TypeManager.StaticTypeLookup[type_name] = index
-	return index
+	-- index = CreateTypeIndexThreadSafe(type_name)
+	-- TypeManager.StaticTypeLookup[type_name] = index
+	-- return index
 end
 
 function TypeManager.GetTypeInfoByIndex( typeIndex )
