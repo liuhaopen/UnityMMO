@@ -63,8 +63,8 @@ Assets/AssetBundleRes/font
 Assets/AssetBundleRes/font.meta
 Assets/AssetBundleRes/sound
 Assets/AssetBundleRes/sound.meta
-Server/game/ECS/LuaChunk.exp
-Server/game/ECS/LuaChunk.iobj
-Server/game/ECS/LuaChunk.ipdb
-Server/game/ECS/LuaChunk.lib
 Server/game/ECS/ucrtbased.dll
+Server/game/ECS/ECSCore.exp
+Server/game/ECS/ECSCore.iobj
+Server/game/ECS/ECSCore.ipdb
+Server/game/ECS/ECSCore.lib

@@ -18,7 +18,6 @@ function ComponentType.Create( type_name )
 end
 
 function ComponentType.FromTypeIndex( typeIndex )
-	print('Cat:ComponentType.lua[21] typeIndex', typeIndex)
 	local ct = ECS.TypeManager.GetTypeInfoByIndex(typeIndex)
     local type = {}
     type.TypeIndex = typeIndex
