@@ -33,6 +33,17 @@ function TypeManager.Initialize(  )
     TypeManager.s_Count = TypeManager.s_Count + 1
 end
 
+local CalculateFieldInfo = function ( type_desc )
+	local field_names = {}
+	for k,v in pairs(type_desc) do
+		table.insert(field_names, tostring(k))
+	end
+	table.sort(field_names)
+	local field_offset = {}
+
+	return field_offset
+end
+
 function TypeManager.RegisterType( name, type_desc )
 	if TypeManager.StaticTypeLookup[name] then
 		return
