@@ -49,6 +49,7 @@ end
 function EntityDataManager:CreateEntities( archetypeManager, archetype, entities, count )
     -- local sharedComponentDataIndices = stackalloc int[archetype.NumSharedComponents]
     -- UnsafeUtility.MemClear(sharedComponentDataIndices, archetype.NumSharedComponents*sizeof(int))
+    local sharedComponentDataIndices = {}
     while count ~= 0 do
         local chunk = archetypeManager:GetChunkWithEmptySlots(archetype, sharedComponentDataIndices)
         local allocatedIndex

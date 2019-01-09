@@ -17,6 +17,9 @@ require "ComponentTypeInArchetype"
 require "SortingUtilities"
 require "Chunk"
 require "UnsafeLinkedListNode"
+require "CoreHelper"
+require "ECSCore"
+ECS.CoreHelper.Init()
 
 function ECS:InitWorld( worldName )
 	self.system_list = {}

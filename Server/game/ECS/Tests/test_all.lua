@@ -19,6 +19,33 @@ function Split(szFullString, szSeparator, start_pos)
 	return nSplitArray
 end
 
+function PrintTable( tbl, level, return_counter )
+	if tbl == nil or type(tbl) ~= "table" then
+		return
+	end
+	return_counter = return_counter or 50 --剩下多少层就返回,防止无限打印
+	if return_counter <= 0 then
+		return 
+	end
+	return_counter = return_counter - 1
+	level = level or 1
+
+	local indent_str = ""
+	for i = 1, level do
+		indent_str = indent_str.."	"
+	end
+	print(indent_str .. "{")
+	for k,v in pairs(tbl) do
+
+		local item_str = string.format("%s%s = %s", indent_str .. "	",tostring(k), tostring(v))
+		print(item_str)
+		if type(v) == "table" then
+			PrintTable(v, level + 1, return_counter)
+		end
+	end
+	print(indent_str .. "}")
+	
+end
 -- local s = io.popen("ls ./")--for linux
 local s = io.popen("dir /b Tests")--for windows
 local fileNames = s:read("*all")
