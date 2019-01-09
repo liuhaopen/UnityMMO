@@ -1,11 +1,11 @@
 local lu = require('luaunit')
 
-local EcsTestData = {value="number"}
-ECS.TypeManager.RegisterType("EcsTestData", EcsTestData)
-
 TestEntityManager = BaseClass(require("TestBaseClass"))
 
 function TestEntityManager:TestIncreaseEntityCapacity(  )
+	local EcsTestData = {value="number"}
+	ECS.TypeManager.RegisterType("EcsTestData", EcsTestData)
+
 	local archetype = self.m_Manager:CreateArchetype({"EcsTestData"})
     local count = 1024
     local array = {}
