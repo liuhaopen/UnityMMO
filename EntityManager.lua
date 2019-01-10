@@ -17,11 +17,16 @@ function EntityManager:OnCreateManager( capacity )
 end
 
 local CreateEntities = function ( self, archetype, num )
-    return self.Entities:CreateEntities(self.ArchetypeManager, archetype.Archetype)
+    return self.Entities:CreateEntities(self.ArchetypeManager, archetype.Archetype, num)
 end
 
-function EntityManager:CreateEntityByArcheType( archetype, num )
-	return CreateEntities(self, archetype, num or 1)
+function EntityManager:CreateEntityByArcheType( archetype )
+    local entities = CreateEntities(self, archetype, num or 1)
+	return entities and entities[1]
+end
+
+function EntityManager:CreateEntitiesByArcheType( archetype, num )
+    return CreateEntities(self, archetype, num or 1)
 end
 
 function EntityManager:CreateEntityByComponents( com_types, num )
@@ -96,26 +101,25 @@ function EntityManager:RemoveComponent( entity, com_type )
     end
 end
 
-function EntityManager:AddComponentData( entity, com_type_name, componentData )
-	self:AddComponent(entity, com_type_name)
-    self:SetComponentData(entity, com_type_name, componentData)
+function EntityManager:AddComponentData( entity, componentTypeName, componentData )
+	self:AddComponent(entity, componentTypeName)
+    self:SetComponentData(entity, componentTypeName, componentData)
 end
 
-function EntityManager:SetComponentData( entity, com_type_name, componentData )
-	local typeIndex = TypeManager.GetTypeIndex(com_type_name)
-    self.Entities:AssertEntityHasComponent(entity, typeIndex)
+function EntityManager:SetComponentData( entity, componentTypeName, componentData )
+	local typeIndex = ECS.TypeManager.GetTypeIndexByName(componentTypeName)
+    -- self.Entities:AssertEntityHasComponent(entity, typeIndex)
     -- ComponentJobSafetyManager.CompleteReadAndWriteDependency(typeIndex)
     local ptr = self.Entities:GetComponentDataWithTypeRW(entity, typeIndex, self.Entities.GlobalSystemVersion)
-    UnsafeUtility.CopyStructureToPtr(componentData, ptr)
+    ECS.ChunkDataUtility.WriteComponentInChunk(ptr, componentTypeName, componentData)
+    -- UnsafeUtility.CopyStructureToPtr(componentData, ptr)
 end
 
-function EntityManager:GetComponentData( entity, com_type_name )
-    local typeIndex = ECS.TypeManager.GetTypeIndex(com_type_name)
-    self.Entities:AssertEntityHasComponent(entity, typeIndex)
-    -- ComponentJobSafetyManager.CompleteWriteDependency(typeIndex);
-
-    local value = self.Entities:GetComponentDataWithTypeRO(entity, typeIndex)
-    return value
+function EntityManager:GetComponentData( entity, componentTypeName )
+    local typeIndex = ECS.TypeManager.GetTypeIndexByName(componentTypeName)
+    local ptr = self.Entities:GetComponentDataWithTypeRO(entity, typeIndex)
+    local data = ECS.ChunkDataUtility.ReadComponentFromChunk(ptr, componentTypeName)
+    return data
 end
 
 function EntityManager:GetAllEntities(  )

@@ -63,25 +63,22 @@ CalculateFieldInfo = function ( type_desc )
 		table.insert(field_names, k)
 	end
 	table.sort(field_names)
-
+	--Cat_Todo : 考虑字节对齐，否则读取性能不好
 	local sum_size = 0
-	-- local offset = 0
 	local field_info_list = {}
 	for i,v in ipairs(field_names) do
-		local field_type_info = type_desc[v]
-		local field_type = type(field_type_info)
-		if field_type == "string" then
-			local field_size = ECS.CoreHelper.GetNativeTypeSize(field_type_info)
-			table.insert(field_info_list, {FieldName=v, FieldSize=field_size, Offset=sum_size})
+		local field_type = type_desc[v]
+		local field_desc_type = type(field_type)
+		if field_desc_type == "string" then
+			local field_size = ECS.CoreHelper.GetNativeTypeSize(field_type)
+			table.insert(field_info_list, {FieldName=v, FieldType=field_type, FieldSize=field_size, Offset=sum_size})
 			sum_size = sum_size + field_size
-			-- offset = offset + field_size
-		elseif field_type == "table" then
-			local out_field_info_list, out_field_size = CalculateFieldInfo(field_type_info)
-			table.insert(field_info_list, {FieldName=v, FieldSize=out_field_size, Offset=sum_size, ChildFieldList=out_field_info_list})
+		elseif field_desc_type == "table" then
+			local out_field_info_list, out_field_size = CalculateFieldInfo(field_type)
+			table.insert(field_info_list, {FieldName=v, FieldType="table", FieldSize=out_field_size, Offset=sum_size, ChildFieldList=out_field_info_list})
 			sum_size = sum_size + out_field_size
-			-- offset = offset + out_field_size
 		else
-			assert(false, "wrong type : "..field_type)
+			assert(false, "wrong type : "..field_desc_type)
 		end
 	end
 	return field_info_list, sum_size
@@ -93,17 +90,6 @@ CalculateMemoryOrdering = function ( type_name )
 	end
 	return 1
 end
--- local CreateTypeIndexThreadSafe = function ( type_name )
--- 	TypeManager.s_Count = TypeManager.s_Count + 1
--- 	local type_info = {
--- 		Name = type_name,
--- 		Type = type,
--- 		TypeIndex = TypeManager.s_Count,
--- 		BufferCapacity = -1,
--- 	}
--- 	TypeManager.s_Types[TypeManager.s_Count] = type_info
--- 	return TypeManager.s_Count
--- end
 
 function TypeManager.GetTypeIndexByName( type_name )
 	assert(type_name and type_name ~= "", "wrong type name!")
@@ -112,9 +98,6 @@ function TypeManager.GetTypeIndexByName( type_name )
 	if index then
 		return index
 	end
-	-- index = CreateTypeIndexThreadSafe(type_name)
-	-- TypeManager.StaticTypeLookup[type_name] = index
-	-- return index
 end
 
 function TypeManager.GetTypeInfoByIndex( typeIndex )
@@ -127,18 +110,3 @@ function TypeManager.GetTypeInfoByName( typeName )
 end
 
 return TypeManager
-
--- local TypeInfo = BaseClass()
--- ECS.TypeInfo = TypeInfo
--- function TypeManager:Constructor( type, size, category, typeInfo, entityOffsets, memoryOrdering, bufferCapacity, elementSize )
--- 	self.Type = type
---     self.SizeInChunk = size
---     self.Category = category
---     self.FastEqualityTypeInfo = typeInfo
---     self.EntityOffsets = entityOffsets
---     self.MemoryOrdering = memoryOrdering
---     self.BufferCapacity = bufferCapacity
---     self.ElementSize = elementSize
---     -- self.IsSystemStateSharedComponent = typeof(ISystemStateSharedComponentData).IsAssignableFrom(type)
---     -- self.IsSystemStateComponent = typeof(ISystemStateComponentData).IsAssignableFrom(type)
--- end

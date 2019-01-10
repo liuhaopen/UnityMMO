@@ -69,7 +69,7 @@ end
 function ArchetypeManager:CreateArchetypeInternal( types, count, groupManager )
     local type = {}
     type.TypesCount = count
-    type.Types = {}
+    type.Types = types--should be deepcopy
     type.EntityCount = 0
     type.ChunkCount = 0
 
@@ -125,7 +125,7 @@ function ArchetypeManager:CreateArchetypeInternal( types, count, groupManager )
         bytesPerInstance = bytesPerInstance + sizeOf
     end
 
-    type.ChunkCapacity = chunkDataSize / bytesPerInstance
+    type.ChunkCapacity = math.floor(chunkDataSize / bytesPerInstance)
 
     local memoryOrderings = {}
     for i=1,count do
@@ -245,6 +245,7 @@ function ArchetypeManager:ConstructChunk( archetype, chunk, sharedComponentDataI
     chunk.Capacity = archetype.ChunkCapacity
     chunk.ChunkListNode = ECS.UnsafeLinkedListNode.New()
     chunk.ChunkListWithEmptySlotsNode = ECS.UnsafeLinkedListNode.New()
+    chunk.ChunkListWithEmptySlotsNode:SetChunk(chunk)
 
     local numSharedComponents = archetype.NumSharedComponents
     local numTypes = archetype.TypesCount
@@ -333,13 +334,13 @@ function ArchetypeManager:SetChunkCount( chunk, newCount )
 end
 
 function ArchetypeManager:GetChunkFromEmptySlotNode( node )
-    return node
+    return node and node:GetChunk()
 end
 
 function ArchetypeManager:GetChunkWithEmptySlots( archetype, sharedComponentDataIndices )
 	if archetype.NumSharedComponents == 0 then
         if not archetype.ChunkListWithEmptySlots:IsEmpty() then
-            local chunk = self:GetChunkFromEmptySlotNode(archetype.ChunkListWithEmptySlots.Begin)
+            local chunk = self:GetChunkFromEmptySlotNode(archetype.ChunkListWithEmptySlots:Begin())
             -- Assert.AreNotEqual(chunk.Count, chunk.Capacity)
             return chunk
         end
@@ -362,7 +363,7 @@ function ArchetypeManager:GetChunkWithEmptySlots( archetype, sharedComponentData
         end
 
         if archetype.NumSharedComponents == 0 then
-            local chunk = self:GetChunkFromEmptySlotNode(archetype.ChunkListWithEmptySlots.Begin)
+            local chunk = self:GetChunkFromEmptySlotNode(archetype.ChunkListWithEmptySlots:Begin())
             -- Assert.AreNotEqual(chunk.Count, chunk.Capacity)
             return chunk
         end
@@ -374,7 +375,7 @@ function ArchetypeManager:GetChunkWithEmptySlots( archetype, sharedComponentData
         -- Allocate new chunk
         newChunk = ECS.Chunk.New()
     else
-        newChunk = self.m_EmptyChunkPool.Begin
+        newChunk = self.m_EmptyChunkPool:Begin()
         newChunk.ChunkListNode.Remove()
     end
 
