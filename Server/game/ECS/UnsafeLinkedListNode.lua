@@ -9,8 +9,20 @@ function UnsafeLinkedListNode.InitializeList( list )
     list.Next = list
 end
 
+function UnsafeLinkedListNode:Begin(  )
+    return self.Next
+end
+
 function UnsafeLinkedListNode:IsEmpty(  )
 	return self == self.Next
+end
+
+function UnsafeLinkedListNode:GetChunk( )
+    return self.chunk
+end
+
+function UnsafeLinkedListNode:SetChunk( value )
+    self.chunk = value
 end
 
 function UnsafeLinkedListNode:Add( node )
@@ -22,10 +34,10 @@ function UnsafeLinkedListNode:Remove(  )
         return
     end
 
-    Prev.Next = Next
-    Next.Prev = Prev
-    Prev = nil
-    Next = nil
+    self.Prev.Next = self.Next
+    self.Next.Prev = self.Prev
+    self.Prev = nil
+    self.Next = nil
 end
 
 function UnsafeLinkedListNode.InsertBefore( pos, node )

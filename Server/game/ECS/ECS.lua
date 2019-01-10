@@ -1,6 +1,9 @@
 ECS = ECS or {}
 
+require "ECSCore"
 require "BaseClass"
+require "CoreHelper"
+ECS.CoreHelper.Init()
 require "ScriptBehaviourManager"
 require "World"
 require "Entity"
@@ -17,9 +20,8 @@ require "ComponentTypeInArchetype"
 require "SortingUtilities"
 require "Chunk"
 require "UnsafeLinkedListNode"
-require "CoreHelper"
-require "ECSCore"
-ECS.CoreHelper.Init()
+require "ChunkDataUtility"
+
 
 function ECS:InitWorld( worldName )
 	self.system_list = {}

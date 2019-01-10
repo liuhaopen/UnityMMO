@@ -13,7 +13,7 @@ function ChunkDataUtility.GetIndexInTypeArray( archetype, typeIndex )
     return -1
 end
 
-function ChunkDataUtility.GetIndexInTypeArray( archetype, typeIndex, typeLookupCache )
+function ChunkDataUtility.GetIndexInTypeArrayWithCache( archetype, typeIndex, typeLookupCache )
     local types = archetype.Types
     local typeCount = archetype.TypesCount
 
@@ -30,9 +30,9 @@ function ChunkDataUtility.GetIndexInTypeArray( archetype, typeIndex, typeLookupC
     return typeLookupCache
 end
 
-function ChunkDataUtility.GetComponentDataWithTypeRO( chunk, index, typeIndex, typeLookupCache )
+function ChunkDataUtility.GetComponentDataWithTypeROWithCache( chunk, index, typeIndex, typeLookupCache )
     local archetype = chunk.Archetype
-    self:GetIndexInTypeArray(archetype, typeIndex, typeLookupCache)
+    ChunkDataUtility.GetIndexInTypeArrayWithCache(archetype, typeIndex, typeLookupCache)
     local indexInTypeArray = typeLookupCache
 
     local offset = archetype.Offsets[indexInTypeArray]
@@ -43,7 +43,7 @@ end
 
 function ChunkDataUtility.GetComponentDataWithTypeRW( chunk, index, typeIndex, globalSystemVersion, typeLookupCache )
     local archetype = chunk.Archetype
-    GetIndexInTypeArray(archetype, typeIndex, typeLookupCache)
+    ChunkDataUtility.GetIndexInTypeArrayWithCache(archetype, typeIndex, typeLookupCache)
     local indexInTypeArray = typeLookupCache
 
     local offset = archetype.Offsets[indexInTypeArray]
@@ -55,7 +55,7 @@ function ChunkDataUtility.GetComponentDataWithTypeRW( chunk, index, typeIndex, g
 end
 
 function ChunkDataUtility.GetComponentDataWithTypeRO( chunk, index, typeIndex )
-    local indexInTypeArray = GetIndexInTypeArray(chunk.Archetype, typeIndex)
+    local indexInTypeArray = ChunkDataUtility.GetIndexInTypeArray(chunk.Archetype, typeIndex)
 
     local offset = chunk.Archetype.Offsets[indexInTypeArray]
     local sizeOf = chunk.Archetype.SizeOfs[indexInTypeArray]
@@ -64,14 +64,36 @@ function ChunkDataUtility.GetComponentDataWithTypeRO( chunk, index, typeIndex )
 end
 
 function ChunkDataUtility.GetComponentDataWithTypeRW( chunk, index, typeIndex, globalSystemVersion )
-    local indexInTypeArray = GetIndexInTypeArray(chunk.Archetype, typeIndex)
-
+    local indexInTypeArray = ChunkDataUtility.GetIndexInTypeArray(chunk.Archetype, typeIndex)
     local offset = chunk.Archetype.Offsets[indexInTypeArray]
     local sizeOf = chunk.Archetype.SizeOfs[indexInTypeArray]
-
-    chunk.ChangeVersion[indexInTypeArray] = globalSystemVersion
-
+    -- chunk.ChangeVersion[indexInTypeArray] = globalSystemVersion
     return chunk.Buffer + (offset + sizeOf * index)
+end
+
+function ChunkDataUtility.ReadComponentFromChunk( chunk_ptr, componentTypeName, out_data )
+    local typeInfo = ECS.TypeManager.GetTypeInfoByName(componentTypeName)
+    assert(typeInfo~=nil, "cannot find type info with : "..componentTypeName)
+    out_data = out_data or {} 
+    for k,v in pairs(typeInfo.FieldInfoList) do
+        local field_val = ECSCore.ReadNumber(chunk_ptr, v.Offset)
+        out_data[v.FieldName] = field_val
+    end
+    return out_data
+end
+
+function ChunkDataUtility.WriteComponentInChunk( chunk_ptr, componentTypeName, componentData )
+    local typeInfo = ECS.TypeManager.GetTypeInfoByName(componentTypeName)
+    assert(typeInfo~=nil, "cannot find type info with : "..componentTypeName)
+    for k,v in pairs(typeInfo.FieldInfoList) do
+        local new_field_value = componentData[v.FieldName]
+        if v.FieldType ~= "table" then
+            ECS.CoreHelper.WriteFieldValueInChunk(chunk_ptr, v.Offset, new_field_value, v.FieldType)
+        -- else
+            -- ChunkDataUtility.WriteComponentInChunk(chunk_ptr+v.Offset, new_field_value)
+        end
+    end
+    -- ECSCore.WriteNumber(chunk_ptr, 0, 456.789)
 end
 
 function ChunkDataUtility.GetComponentDataRO( chunk, index, indexInTypeArray )
@@ -131,7 +153,7 @@ function ChunkDataUtility.InitializeComponents( dstChunk, dstIndex, count )
                 dst = dst + sizeOf
             end
         else
-            UnsafeUtility.MemClear(dst, sizeOf * count)
+            -- UnsafeUtility.MemClear(dst, sizeOf * count)
         end
     end
 end
@@ -235,63 +257,63 @@ function ChunkDataUtility.Convert( srcChunk, srcIndex, dstChunk, dstIndex )
     end
 end
 
-function ChunkDataUtility.PoisonUnusedChunkData( chunk, value )
-    local arch = chunk.Archetype;
-    local bufferSize = Chunk.GetChunkBufferSize(arch.TypesCount, arch.NumSharedComponents);
-    local buffer = chunk.Buffer;
-    local count = chunk.Count;
+-- function ChunkDataUtility.PoisonUnusedChunkData( chunk, value )
+--     local arch = chunk.Archetype;
+--     local bufferSize = Chunk.GetChunkBufferSize(arch.TypesCount, arch.NumSharedComponents);
+--     local buffer = chunk.Buffer;
+--     local count = chunk.Count;
 
-    for (int i = 0; i<arch.TypesCount-1; ++i)
-    {
-        local index = arch.TypeMemoryOrder[i];
-        local nextIndex = arch.TypeMemoryOrder[i + 1];
-        local startOffset = arch.Offsets[index] + count * arch.SizeOfs[index];
-        local endOffset = arch.Offsets[nextIndex];
-        UnsafeUtilityEx.MemSet(buffer + startOffset, value, endOffset - startOffset);
-    }
-    local lastIndex = arch.TypeMemoryOrder[arch.TypesCount - 1];
-    local lastStartOffset = arch.Offsets[lastIndex] + count * arch.SizeOfs[lastIndex];
-    UnsafeUtilityEx.MemSet(buffer + lastStartOffset, value, bufferSize - lastStartOffset);
-end
+--     for (int i = 0; i<arch.TypesCount-1; ++i)
+--     {
+--         local index = arch.TypeMemoryOrder[i];
+--         local nextIndex = arch.TypeMemoryOrder[i + 1];
+--         local startOffset = arch.Offsets[index] + count * arch.SizeOfs[index];
+--         local endOffset = arch.Offsets[nextIndex];
+--         UnsafeUtilityEx.MemSet(buffer + startOffset, value, endOffset - startOffset);
+--     }
+--     local lastIndex = arch.TypeMemoryOrder[arch.TypesCount - 1];
+--     local lastStartOffset = arch.Offsets[lastIndex] + count * arch.SizeOfs[lastIndex];
+--     UnsafeUtilityEx.MemSet(buffer + lastStartOffset, value, bufferSize - lastStartOffset);
+-- end
 
-function ChunkDataUtility.CopyManagedObjects( typeMan, srcChunk, srcStartIndex, dstChunk, dstStartIndex, count )
-    local srcArch = srcChunk.Archetype;
-    local dstArch = dstChunk.Archetype;
+-- function ChunkDataUtility.CopyManagedObjects( typeMan, srcChunk, srcStartIndex, dstChunk, dstStartIndex, count )
+--     local srcArch = srcChunk.Archetype;
+--     local dstArch = dstChunk.Archetype;
 
-    local srcI = 0;
-    local dstI = 0;
-    while (srcI < srcArch.TypesCount && dstI < dstArch.TypesCount)
-        if (srcArch.Types[srcI] < dstArch.Types[dstI])
-        {
-            ++srcI;
-        }
-        else if (srcArch.Types[srcI] > dstArch.Types[dstI])
-        {
-            ++dstI;
-        }
-        else
-        {
-            if (srcArch.ManagedArrayOffset[srcI] >= 0)
-                for (local i = 0; i < count; ++i)
-                {
-                    local obj = typeMan.GetManagedObject(srcChunk, srcI, srcStartIndex + i);
-                    typeMan.SetManagedObject(dstChunk, dstI, dstStartIndex + i, obj);
-                }
+--     local srcI = 0;
+--     local dstI = 0;
+--     while (srcI < srcArch.TypesCount && dstI < dstArch.TypesCount)
+--         if (srcArch.Types[srcI] < dstArch.Types[dstI])
+--         {
+--             ++srcI;
+--         }
+--         else if (srcArch.Types[srcI] > dstArch.Types[dstI])
+--         {
+--             ++dstI;
+--         }
+--         else
+--         {
+--             if (srcArch.ManagedArrayOffset[srcI] >= 0)
+--                 for (local i = 0; i < count; ++i)
+--                 {
+--                     local obj = typeMan.GetManagedObject(srcChunk, srcI, srcStartIndex + i);
+--                     typeMan.SetManagedObject(dstChunk, dstI, dstStartIndex + i, obj);
+--                 }
 
-            ++srcI;
-            ++dstI;
-        }
-end
+--             ++srcI;
+--             ++dstI;
+--         }
+-- end
 
-function ChunkDataUtility.ClearManagedObjects( typeMan, chunk, index, count )
-    local arch = chunk.Archetype;
+-- function ChunkDataUtility.ClearManagedObjects( typeMan, chunk, index, count )
+--     local arch = chunk.Archetype;
 
-    for (local type = 0; type < arch.TypesCount; ++type)
-    {
-        if (arch.ManagedArrayOffset[type] < 0)
-            continue;
+--     for (local type = 0; type < arch.TypesCount; ++type) do
+--         if (arch.ManagedArrayOffset[type] < 0)
+--             continue;
 
-        for (local i = 0; i < count; ++i)
-            typeMan.SetManagedObject(chunk, type, index + i, null);
-    }
-end
+--         for (local i = 0; i < count; ++i)
+--             typeMan.SetManagedObject(chunk, type, index + i, null);
+--         end
+--     end
+-- end

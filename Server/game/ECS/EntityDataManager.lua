@@ -8,13 +8,14 @@ local EntityData = {
 	IndexInChunk = 0
 }
 function EntityDataManager:Constructor( )
-	self.m_Entities = {}
 	self.m_EntitiesCapacity = 10
-	self.m_EntitiesFreeIndex = 0
+    self.m_Entities = self:CreateEntityData(self.m_EntitiesCapacity)
+	self.m_EntitiesFreeIndex = 1
     -- self.GlobalSystemVersion = ECS.ChangeVersionUtility.InitialGlobalSystemVersion
     self.GlobalSystemVersion = 1
 
 	self:InitializeAdditionalCapacity(1)
+    self.m_ComponentTypeOrderVersion = {}
 	-- const int componentTypeOrderVersionSize = sizeof(int) * TypeManager.MaximumTypesCount;
  --    m_ComponentTypeOrderVersion = (int*) UnsafeUtility.Malloc(componentTypeOrderVersionSize,
  --        UnsafeUtility.AlignOf<int>(), Allocator.Persistent);
@@ -23,14 +24,14 @@ end
 
 function EntityDataManager:InitializeAdditionalCapacity( start )
 	for i=start,self.m_EntitiesCapacity do
-		self.m_Entities[i] = {}
-		self.m_Entities[i].IndexInChunk = i
-        self.m_Entities[i].Version = 1
-        self.m_Entities[i].Chunk = nil
-        self.m_Entities[i].Archetype = nil
+        self.m_Entities.ChunkData[i] = {}
+		self.m_Entities.ChunkData[i].IndexInChunk = i+1
+        self.m_Entities.Version[i] = 1
+        self.m_Entities.ChunkData[i].Chunk = nil
+        -- self.m_Entities[i].Archetype = nil
 	end
     --Last entity indexInChunk identifies that we ran out of space...
-    self.m_Entities[self.m_EntitiesCapacity].IndexInChunk = -1;
+    self.m_Entities.ChunkData[self.m_EntitiesCapacity].IndexInChunk = -1;
 end
 
 function EntityDataManager:HasComponent( entity, com_type_name )
@@ -42,36 +43,47 @@ function EntityDataManager:HasComponent( entity, com_type_name )
 end
 
 function EntityDataManager:GetComponentDataWithTypeRO( entity, typeIndex )
-	local entityData = self.m_Entities[entity.Index]
-    return ChunkDataUtility.GetComponentDataWithTypeRO(entityData.Chunk, entityData.IndexInChunk, typeIndex)
+	local entityChunk = self.m_Entities.ChunkData[entity.Index].Chunk
+    local entityIndexInChunk = self.m_Entities.ChunkData[entity.Index].IndexInChunk
+    return ECS.ChunkDataUtility.GetComponentDataWithTypeRO(entityChunk, entityIndexInChunk, typeIndex)
 end
 
-function EntityDataManager:CreateEntities( archetypeManager, archetype, entities, count )
+function EntityDataManager:CreateEntities( archetypeManager, archetype, count )
     -- local sharedComponentDataIndices = stackalloc int[archetype.NumSharedComponents]
     -- UnsafeUtility.MemClear(sharedComponentDataIndices, archetype.NumSharedComponents*sizeof(int))
+    local entities = {}
     local sharedComponentDataIndices = {}
+    local num = 0
     while count ~= 0 do
         local chunk = archetypeManager:GetChunkWithEmptySlots(archetype, sharedComponentDataIndices)
         local allocatedIndex
         local allocatedCount, allocatedIndex = archetypeManager:AllocateIntoChunk(chunk, count)
-        self:AllocateEntities(archetype, chunk, allocatedIndex, allocatedCount, entities)
-        ChunkDataUtility.InitializeComponents(chunk, allocatedIndex, allocatedCount)
-
-        entities = entities + allocatedCount
+        num = num + allocatedCount
+        local tmp_entities = {}
+        self:AllocateEntities(archetype, chunk, allocatedIndex, allocatedCount, tmp_entities)
+        ECS.ChunkDataUtility.InitializeComponents(chunk, allocatedIndex, allocatedCount)
+        for i,v in ipairs(tmp_entities) do
+            table.insert(entities, v)
+        end
+        -- entities = entities + allocatedCount
         count = count - allocatedCount
     end
     self:IncrementComponentTypeOrderVersion(archetype)
+    return entities
 end
 
 function EntityDataManager:IncrementComponentTypeOrderVersion( archetype )
 	for t=1,archetype.TypesCount do
 		local typeIndex = archetype.Types[t].TypeIndex
+        if not self.m_ComponentTypeOrderVersion[typeIndex] then
+            self.m_ComponentTypeOrderVersion[typeIndex] = 0
+        end
         self.m_ComponentTypeOrderVersion[typeIndex] = self.m_ComponentTypeOrderVersion[typeIndex] + 1
 	end
 end
 
 function EntityDataManager:GetComponentTypeOrderVersion( typeIndex )
-    return m_ComponentTypeOrderVersion[typeIndex]
+    return self.m_ComponentTypeOrderVersion[typeIndex]
 end
 
 function EntityDataManager:AddComponent( entity, com_type, archetypeManager, sharedComponentDataManager, groupManager, componentTypeInArchetypeArray )
@@ -262,7 +274,7 @@ function EntityDataManager:AllocateEntities( arch, chunk, baseIndex, count, outp
     -- Assert.AreEqual(chunk.Archetype.SizeOfs[0], sizeof(Entity));
     local entityInChunkStart = chunk.Buffer + baseIndex
 
-    for var=1,count do
+    for i=1,count do
         local entityIndexInChunk = self.m_Entities.ChunkData[self.m_EntitiesFreeIndex].IndexInChunk
         if entityIndexInChunk == -1 then
             self:IncreaseCapacity()
@@ -270,14 +282,15 @@ function EntityDataManager:AllocateEntities( arch, chunk, baseIndex, count, outp
         end
         
         local entityVersion = self.m_Entities.Version[self.m_EntitiesFreeIndex]
-
+        outputEntities[i] = {}
         outputEntities[i].Index = self.m_EntitiesFreeIndex
         outputEntities[i].Version = entityVersion
 
-        local entityInChunk = entityInChunkStart + i
-
-        entityInChunk.Index = self.m_EntitiesFreeIndex
-        entityInChunk.Version = entityVersion
+        ECSCore.WriteNumber(entityInChunkStart, i+0, self.m_EntitiesFreeIndex)
+        ECSCore.WriteNumber(entityInChunkStart, i+ECS.CoreHelper.GetIntegerSize(), entityVersion)
+        -- local entityInChunk = entityInChunkStart + i
+        -- entityInChunk.Index = self.m_EntitiesFreeIndex
+        -- entityInChunk.Version = entityVersion
 
         self.m_Entities.ChunkData[self.m_EntitiesFreeIndex].IndexInChunk = baseIndex + i
         self.m_Entities.Archetype[self.m_EntitiesFreeIndex] = arch
@@ -288,11 +301,23 @@ function EntityDataManager:AllocateEntities( arch, chunk, baseIndex, count, outp
 end
 
 function EntityDataManager:IncreaseCapacity(  )
-    self:SetCapacity(self.Capacity*2)
+    self:SetCapacity(self.m_EntitiesCapacity*2)
 end
 
 function EntityDataManager:GetCapacity( )
-    return self.Capacity
+    return self.m_EntitiesCapacity
+end
+
+local CopyEntityData = function ( dstEntityData, srcEntityData, copySize )
+    if not srcEntityData or #srcEntityData <= 0 then return end
+    
+    for i,v in ipairs(srcEntityData) do
+        for ii,vv in ipairs(dstEntityData) do
+            vv.Version = v.Version
+            vv.Archetype = v.Archetype
+            vv.ChunkData = v.ChunkData
+        end
+    end
 end
 
 function EntityDataManager:SetCapacity( value )
@@ -301,8 +326,8 @@ function EntityDataManager:SetCapacity( value )
     end
 
     local newEntities = self:CreateEntityData(value)
-    self:CopyEntityData(newEntities, self.m_Entities, self.m_EntitiesCapacity)
-    FreeEntityData(self.m_Entities)
+    CopyEntityData(newEntities, self.m_Entities, self.m_EntitiesCapacity)
+    self.m_Entities = {}
     
     local startNdx = self.m_EntitiesCapacity - 1
     self.m_Entities = newEntities
@@ -320,4 +345,11 @@ function EntityDataManager:CreateEntityData( newCapacity )
     return entities
 end
 
+function EntityDataManager:GetComponentDataWithTypeRW( entity, typeIndex, globalVersion )
+    local entityChunk = self.m_Entities.ChunkData[entity.Index].Chunk
+    local entityIndexInChunk = self.m_Entities.ChunkData[entity.Index].IndexInChunk
+    return ECS.ChunkDataUtility.GetComponentDataWithTypeRW(entityChunk, entityIndexInChunk, typeIndex,
+        globalVersion);
+end
+            
 return EntityDataManager

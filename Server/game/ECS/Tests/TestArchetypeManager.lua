@@ -11,5 +11,6 @@ function TestArchetypeManager:TestIncreaseEntityCapacity(  )
     lu.assertEquals(archetype.NumSharedComponents, 0)
     lu.assertEquals(archetype.TypesCount, 2)
     lu.assertEquals(archetype.EntityCount, 0)
-    lu.assertEquals(archetype.TypesCount, 2)
+    lu.assertEquals(#archetype.Types, 2)
+
 end
