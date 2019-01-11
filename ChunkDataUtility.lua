@@ -257,24 +257,23 @@ function ChunkDataUtility.Convert( srcChunk, srcIndex, dstChunk, dstIndex )
     end
 end
 
--- function ChunkDataUtility.PoisonUnusedChunkData( chunk, value )
---     local arch = chunk.Archetype;
---     local bufferSize = Chunk.GetChunkBufferSize(arch.TypesCount, arch.NumSharedComponents);
---     local buffer = chunk.Buffer;
---     local count = chunk.Count;
+function ChunkDataUtility.PoisonUnusedChunkData( chunk, value )
+    local arch = chunk.Archetype
+    local bufferSize = Chunk.GetChunkBufferSize(arch.TypesCount, arch.NumSharedComponents)
+    local buffer = chunk.Buffer
+    local count = chunk.Count
 
---     for (int i = 0; i<arch.TypesCount-1; ++i)
---     {
---         local index = arch.TypeMemoryOrder[i];
---         local nextIndex = arch.TypeMemoryOrder[i + 1];
---         local startOffset = arch.Offsets[index] + count * arch.SizeOfs[index];
---         local endOffset = arch.Offsets[nextIndex];
---         UnsafeUtilityEx.MemSet(buffer + startOffset, value, endOffset - startOffset);
---     }
---     local lastIndex = arch.TypeMemoryOrder[arch.TypesCount - 1];
---     local lastStartOffset = arch.Offsets[lastIndex] + count * arch.SizeOfs[lastIndex];
---     UnsafeUtilityEx.MemSet(buffer + lastStartOffset, value, bufferSize - lastStartOffset);
--- end
+    for i=1,arch.TypesCount-1 do
+        local index = arch.TypeMemoryOrder[i]
+        local nextIndex = arch.TypeMemoryOrder[i + 1]
+        local startOffset = arch.Offsets[index] + count * arch.SizeOfs[index]
+        local endOffset = arch.Offsets[nextIndex]
+        UnsafeUtilityEx.MemSet(buffer + startOffset, value, endOffset - startOffset)
+    end
+    local lastIndex = arch.TypeMemoryOrder[arch.TypesCount - 1]
+    local lastStartOffset = arch.Offsets[lastIndex] + count * arch.SizeOfs[lastIndex]
+    UnsafeUtilityEx.MemSet(buffer + lastStartOffset, value, bufferSize - lastStartOffset)
+end
 
 -- function ChunkDataUtility.CopyManagedObjects( typeMan, srcChunk, srcStartIndex, dstChunk, dstStartIndex, count )
 --     local srcArch = srcChunk.Archetype;

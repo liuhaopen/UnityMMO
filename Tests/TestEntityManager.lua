@@ -31,6 +31,19 @@ function TestEntityManager:TestEntityGSetComponent(  )
     lu.assertEquals(comp_data2.z, 6)
 end
 
+function TestEntityManager:TestEntityAddComponent(  )
+    local test_compponent_name = "EcsTestData"
+    local test_compponent_name_two = "EcsTestDataTwo"
+    local EcsTestData = {x="number", y="number", z="number"}
+    ECS.TypeManager.RegisterType(test_compponent_name, EcsTestData)
+    ECS.TypeManager.RegisterType(test_compponent_name_two, {value="number"})
+
+    local archetype = self.m_Manager:CreateArchetype({test_compponent_name})
+    local entity = self.m_Manager:CreateEntityByArcheType(archetype)
+    lu.assertNotNil(entity)
+    self.m_Manager:AddComponent(entity, test_compponent_name_two)
+end
+
 function TestEntityManager:TestIncreaseEntityCapacity(  )
 	local EcsTestData = {value="number"}
 	ECS.TypeManager.RegisterType("EcsTestData", EcsTestData)
