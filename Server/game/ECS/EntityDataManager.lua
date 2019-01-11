@@ -86,8 +86,12 @@ function EntityDataManager:GetComponentTypeOrderVersion( typeIndex )
     return self.m_ComponentTypeOrderVersion[typeIndex]
 end
 
-function EntityDataManager:AddComponent( entity, com_type, archetypeManager, sharedComponentDataManager, groupManager, componentTypeInArchetypeArray )
-    local componentType = ECS.ComponentTypeInArchetype.New(type)
+function EntityDataManager:GetArchetype( entity )
+    return self.m_Entities.Archetype[entity.Index]
+end
+
+function EntityDataManager:AddComponent( entity, comp_type_name, archetypeManager, sharedComponentDataManager, groupManager, componentTypeInArchetypeArray )
+    local componentType = ECS.ComponentTypeInArchetype.Create(ECS.ComponentType.Create(comp_type_name))
 	local archetype = self:GetArchetype(entity)
 
     local t = 1
@@ -241,7 +245,7 @@ function EntityDataManager:SetArchetype( typeMan, entity, archetype, sharedCompo
     local oldArchetype = self.m_Entities.Archetype[entity.Index]
     local oldChunk = self.m_Entities.ChunkData[entity.Index].Chunk
     local oldChunkIndex = self.m_Entities.ChunkData[entity.Index].IndexInChunk
-    ChunkDataUtility.Convert(oldChunk, oldChunkIndex, chunk, chunkIndex)
+    ECS.ChunkDataUtility.Convert(oldChunk, oldChunkIndex, chunk, chunkIndex)
     if chunk.ManagedArrayIndex >= 0 and oldChunk.ManagedArrayIndex >= 0 then
         ChunkDataUtility.CopyManagedObjects(typeMan, oldChunk, oldChunkIndex, chunk, chunkIndex, 1)
     end
