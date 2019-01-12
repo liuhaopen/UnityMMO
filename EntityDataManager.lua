@@ -65,7 +65,6 @@ function EntityDataManager:CreateEntities( archetypeManager, archetype, count )
         for i,v in ipairs(tmp_entities) do
             table.insert(entities, v)
         end
-        -- entities = entities + allocatedCount
         count = count - allocatedCount
     end
     self:IncrementComponentTypeOrderVersion(archetype)
@@ -274,8 +273,6 @@ function EntityDataManager:SetArchetype( typeMan, entity, archetype, sharedCompo
 end
 
 function EntityDataManager:AllocateEntities( arch, chunk, baseIndex, count, outputEntities )
-    -- Assert.AreEqual(chunk.Archetype.Offsets[0], 0);
-    -- Assert.AreEqual(chunk.Archetype.SizeOfs[0], sizeof(Entity));
     local entityInChunkStart = chunk.Buffer + baseIndex
 
     for i=1,count do

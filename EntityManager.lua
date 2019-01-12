@@ -147,19 +147,18 @@ function EntityManager:CreateComponentGroup( requiredComponents )
 end
 
 function EntityManager:DestroyEntity( entity )
-	
 end
 
 function EntityManager:GetArchetypeChunkComponentType( comp_type_name, isReadOnly )
     return ArchetypeChunkComponentType.New(comp_type_name, isReadOnly, self.GlobalSystemVersion)
 end
 
-local EntityArchetypeQuery = {
-	Any = {}, None = {}, All = {}, 
-}
+-- local EntityArchetypeQuery = {
+-- 	Any = {}, None = {}, All = {}, 
+-- }
 
-local EntityArchetype = {
+-- local EntityArchetype = {
 	
-}
+-- }
 
 return EntityManager

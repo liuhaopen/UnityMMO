@@ -275,34 +275,29 @@ function ChunkDataUtility.PoisonUnusedChunkData( chunk, value )
     UnsafeUtilityEx.MemSet(buffer + lastStartOffset, value, bufferSize - lastStartOffset)
 end
 
--- function ChunkDataUtility.CopyManagedObjects( typeMan, srcChunk, srcStartIndex, dstChunk, dstStartIndex, count )
---     local srcArch = srcChunk.Archetype;
---     local dstArch = dstChunk.Archetype;
+function ChunkDataUtility.CopyManagedObjects( typeMan, srcChunk, srcStartIndex, dstChunk, dstStartIndex, count )
+    local srcArch = srcChunk.Archetype
+    local dstArch = dstChunk.Archetype
 
---     local srcI = 0;
---     local dstI = 0;
---     while (srcI < srcArch.TypesCount && dstI < dstArch.TypesCount)
---         if (srcArch.Types[srcI] < dstArch.Types[dstI])
---         {
---             ++srcI;
---         }
---         else if (srcArch.Types[srcI] > dstArch.Types[dstI])
---         {
---             ++dstI;
---         }
---         else
---         {
---             if (srcArch.ManagedArrayOffset[srcI] >= 0)
---                 for (local i = 0; i < count; ++i)
---                 {
---                     local obj = typeMan.GetManagedObject(srcChunk, srcI, srcStartIndex + i);
---                     typeMan.SetManagedObject(dstChunk, dstI, dstStartIndex + i, obj);
---                 }
-
---             ++srcI;
---             ++dstI;
---         }
--- end
+    local srcI = 0;
+    local dstI = 0;
+    while (srcI < srcArch.TypesCount and dstI < dstArch.TypesCount) do
+        if (srcArch.Types[srcI] < dstArch.Types[dstI]) then
+            srcI = srcI + 1
+        else if (srcArch.Types[srcI] > dstArch.Types[dstI]) then
+            dstI = dstI + 1
+        else
+            if (srcArch.ManagedArrayOffset[srcI] >= 0) then
+                for i=1,count do
+                    local obj = typeMan.GetManagedObject(srcChunk, srcI, srcStartIndex + i)
+                    typeMan.SetManagedObject(dstChunk, dstI, dstStartIndex + i, obj)
+                end
+            end
+            srcI = srcI + 1
+            dstI = dstI + 1
+        end
+    end
+end
 
 -- function ChunkDataUtility.ClearManagedObjects( typeMan, chunk, index, count )
 --     local arch = chunk.Archetype;
