@@ -14,7 +14,6 @@ function TestSystem:Constructor(  )
 	}
 	self.group = {}
 	self:Inject(self.group, data)
-
 end
 
 function TestSystem:OnCreateManager( )
@@ -24,9 +23,11 @@ end
 
 function TestSystem:OnUpdate(  )
 	for i=1,self.group.length do
-		-- self.group.position[i].x = self.group.position[i].x+1
+		local pos = self.group.position:get(i)
 		self.group.position:get(i, "x")
-		self.group.position:set(i, "x", 0.25)
+		self.group.position:set(i, "x", pos.x+10)
+		pos.x = 10
+		self.group.position:set(i, pos)
 	end
 	
 	self.group_with_filter:SetFilter(ECS.CodeLOD.New(1))

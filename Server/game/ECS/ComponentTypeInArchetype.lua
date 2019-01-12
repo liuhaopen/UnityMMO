@@ -36,6 +36,4 @@ function ComponentTypeInArchetype.InitMetaTable( arche )
 	setmetatable(arche, meta_tbl)
 end
 
-
-
 return ComponentTypeInArchetype

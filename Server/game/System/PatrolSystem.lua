@@ -21,14 +21,16 @@ end
 function PatrolSystem:OnUpdate(  )
 	local deltaTime = Time.deltaTime
 	for i=1,self.group.length do
-		-- local last_pos = self.group.position:get(i)
-		local last_pos_x = self.group.position:get(i, "x")
-		local last_pos_y = self.group.position:get(i, "y")
-		local last_pos_z = self.group.position:get(i, "z")
-		local last_dir_x = self.group.direction:get(i, "x")
-		local last_dir_y = self.group.direction:get(i, "y")
-		local last_dir_z = self.group.direction:get(i, "z")
-		local speed = self.group.speed:get(i, "speed")
+		local last_pos = self.group.position:get(i)
+		self.group.position:set(i, last_pos)
+
+		local last_pos_x = self.group.position:get_field(i, "x")
+		local last_pos_y = self.group.position:get_field(i, "y")
+		local last_pos_z = self.group.position:get_field(i, "z")
+		local last_dir_x = self.group.direction:get_field(i, "x")
+		local last_dir_y = self.group.direction:get_field(i, "y")
+		local last_dir_z = self.group.direction:get_field(i, "z")
+		local speed = self.group.speed:get_field(i, "speed")
 		local new_pos_x = last_pos_x+last_dir_x*speed*deltaTime
 		local new_pos_y = last_pos_y+last_dir_y*speed*deltaTime
 		local new_pos_z = last_pos_z+last_dir_z*speed*deltaTime
