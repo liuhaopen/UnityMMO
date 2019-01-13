@@ -39,7 +39,7 @@ function TypeManager.BuildComponentType( name, type_desc )
 		Type = type_desc,
 		TypeIndex = TypeManager.s_Count,
 		BufferCapacity = -1,
-		SizeInChunk = size, --Cat_Todo : size in chunk
+		SizeInChunk = size,
 		FieldInfoList = field_info_list,
 		MemoryOrdering = memoryOrdering,
 	}

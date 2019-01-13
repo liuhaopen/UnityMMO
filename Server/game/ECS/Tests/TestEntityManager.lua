@@ -42,6 +42,11 @@ function TestEntityManager:TestEntityAddComponent(  )
     local entity = self.m_Manager:CreateEntityByArcheType(archetype)
     lu.assertNotNil(entity)
     self.m_Manager:AddComponent(entity, test_compponent_name_two)
+    local comp_data = self.m_Manager:GetComponentData(entity, test_compponent_name_two)
+    lu.assertEquals(comp_data.value, 0)
+    self.m_Manager:SetComponentData(entity, test_compponent_name_two, {value=321})
+    comp_data = self.m_Manager:GetComponentData(entity, test_compponent_name_two)
+    lu.assertEquals(comp_data.value, 321)
 end
 
 function TestEntityManager:TestIncreaseEntityCapacity(  )

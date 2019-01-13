@@ -56,7 +56,11 @@ end
 
 function ChunkDataUtility.GetComponentDataWithTypeRO( chunk, index, typeIndex )
     local indexInTypeArray = ChunkDataUtility.GetIndexInTypeArray(chunk.Archetype, typeIndex)
-
+    if indexInTypeArray == -1 then
+        print("Cat:ChunkDataUtility [start:60] chunk.Archetype:", chunk.Archetype, typeIndex)
+        PrintTable(chunk.Archetype)
+        print("Cat:ChunkDataUtility [end]")
+    end
     local offset = chunk.Archetype.Offsets[indexInTypeArray]
     local sizeOf = chunk.Archetype.SizeOfs[indexInTypeArray]
 
@@ -206,29 +210,28 @@ function ChunkDataUtility.Convert( srcChunk, srcIndex, dstChunk, dstIndex )
     local srcArch = srcChunk.Archetype
     local dstArch = dstChunk.Archetype
 
-    local srcI = 0
-    local dstI = 0
+    local srcI = 1
+    local dstI = 1
     while (srcI < srcArch.TypesCount and dstI < dstArch.TypesCount) do
-        local src = srcChunk.Buffer + srcArch.Offsets[srcI] + srcIndex * srcArch.SizeOfs[srcI]
-        local dst = dstChunk.Buffer + dstArch.Offsets[dstI] + dstIndex * dstArch.SizeOfs[dstI]
+        local src = srcChunk.Buffer + (srcArch.Offsets[srcI] + srcIndex * srcArch.SizeOfs[srcI])
+        local dst = dstChunk.Buffer + (dstArch.Offsets[dstI] + dstIndex * dstArch.SizeOfs[dstI])
 
         if (srcArch.Types[srcI] < dstArch.Types[dstI]) then
             -- Clear any buffers we're not going to keep.
             if (srcArch.Types[srcI].IsBuffer) then
                 BufferHeader.Destroy(src)
             end
-
             srcI = srcI + 1
         elseif (srcArch.Types[srcI] > dstArch.Types[dstI]) then
             -- Clear components in the destination that aren't copied
             if dstArch.Types[dstI].IsBuffer then
                 BufferHeader.Initialize(dst, dstArch.Types[dstI].BufferCapacity)
             else
-                UnsafeUtility.MemClear(dst, dstArch.SizeOfs[dstI])
+                ECSCore.MemClear(dst, dstArch.SizeOfs[dstI])
             end
             dstI = dstI+1
         else
-            UnsafeUtility.MemCpy(dst, src, srcArch.SizeOfs[srcI])
+            ECSCore.MemCpy(dst, src, srcArch.SizeOfs[srcI])
             -- Poison source buffer to make sure there is no aliasing.
             if (srcArch.Types[srcI].IsBuffer) then
                 BufferHeader.Initialize(src, srcArch.Types[srcI].BufferCapacity)
@@ -240,7 +243,7 @@ function ChunkDataUtility.Convert( srcChunk, srcIndex, dstChunk, dstIndex )
 
     -- Handle remaining components in the source that aren't copied
     for srcI=1,srcArch.TypesCount do
-        local src = srcChunk.Buffer + srcArch.Offsets[srcI] + srcIndex * srcArch.SizeOfs[srcI]
+        local src = srcChunk.Buffer + (srcArch.Offsets[srcI] + srcIndex * srcArch.SizeOfs[srcI])
         if (srcArch.Types[srcI].IsBuffer) then
             BufferHeader.Destroy(src)
         end
@@ -248,11 +251,11 @@ function ChunkDataUtility.Convert( srcChunk, srcIndex, dstChunk, dstIndex )
 
     -- Clear remaining components in the destination that aren't copied
     for dstI=1,dstArch.TypesCount do
-        local dst = dstChunk.Buffer + dstArch.Offsets[dstI] + dstIndex * dstArch.SizeOfs[dstI]
+        local dst = dstChunk.Buffer + (dstArch.Offsets[dstI] + dstIndex * dstArch.SizeOfs[dstI])
         if (dstArch.Types[dstI].IsBuffer) then
             BufferHeader.Initialize(dst, dstArch.Types[dstI].BufferCapacity)
         else
-            UnsafeUtility.MemClear(dst, dstArch.SizeOfs[dstI])
+            ECSCore.MemClear(dst, dstArch.SizeOfs[dstI])
         end
     end
 end
@@ -279,12 +282,12 @@ function ChunkDataUtility.CopyManagedObjects( typeMan, srcChunk, srcStartIndex, 
     local srcArch = srcChunk.Archetype
     local dstArch = dstChunk.Archetype
 
-    local srcI = 0;
-    local dstI = 0;
+    local srcI = 0
+    local dstI = 0
     while (srcI < srcArch.TypesCount and dstI < dstArch.TypesCount) do
         if (srcArch.Types[srcI] < dstArch.Types[dstI]) then
             srcI = srcI + 1
-        else if (srcArch.Types[srcI] > dstArch.Types[dstI]) then
+        elseif (srcArch.Types[srcI] > dstArch.Types[dstI]) then
             dstI = dstI + 1
         else
             if (srcArch.ManagedArrayOffset[srcI] >= 0) then
@@ -299,15 +302,14 @@ function ChunkDataUtility.CopyManagedObjects( typeMan, srcChunk, srcStartIndex, 
     end
 end
 
--- function ChunkDataUtility.ClearManagedObjects( typeMan, chunk, index, count )
---     local arch = chunk.Archetype;
+function ChunkDataUtility.ClearManagedObjects( typeMan, chunk, index, count )
+    local arch = chunk.Archetype
 
---     for (local type = 0; type < arch.TypesCount; ++type) do
---         if (arch.ManagedArrayOffset[type] < 0)
---             continue;
-
---         for (local i = 0; i < count; ++i)
---             typeMan.SetManagedObject(chunk, type, index + i, null);
---         end
---     end
--- end
+    for type=1,arch.TypesCount do
+        if (arch.ManagedArrayOffset[type] >= 0) then
+            for i=1,count do
+                typeMan.SetManagedObject(chunk, type, index + i, null)
+            end
+        end
+    end
+end

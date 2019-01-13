@@ -149,6 +149,14 @@ function EntityDataManager:AddComponent( entity, comp_type_name, archetypeManage
     self:IncrementComponentOrderVersion(newType, self:GetComponentChunk(entity), sharedComponentDataManager)
 end
 
+function EntityDataManager:IncrementComponentOrderVersion(  )
+    
+end
+
+function EntityDataManager:GetComponentChunk( entity )
+    return self.m_Entities.ChunkData[entity.Index].Chunk
+end
+
 function EntityDataManager:TryRemoveEntityId( entities, count, archetypeManager, sharedComponentDataManager, groupManager, componentTypeInArchetypeArray )
     local entityIndex = 0;
     while (entityIndex ~= count) do
@@ -157,10 +165,10 @@ function EntityDataManager:TryRemoveEntityId( entities, count, archetypeManager,
         local manager = self
         local chunk = EntityChunkBatch(manager, entities + entityIndex, count - entityIndex, indexInChunk,
             batchCount);
-        local archetype = GetArchetype(entities[entityIndex]);
+        local archetype = GetArchetype(entities[entityIndex])
         if (not archetype.SystemStateCleanupNeeded) then
-            DeallocateDataEntitiesInChunk(manager, entities + entityIndex, chunk, indexInChunk, batchCount);
-            IncrementComponentOrderVersion(chunk.Archetype, chunk, sharedComponentDataManager);
+            DeallocateDataEntitiesInChunk(manager, entities + entityIndex, chunk, indexInChunk, batchCount)
+            self:IncrementComponentOrderVersion(chunk.Archetype, chunk, sharedComponentDataManager)
 
             if (chunk.ManagedArrayIndex >= 0) then
                 -- We can just chop-off the end, no need to copy anything
