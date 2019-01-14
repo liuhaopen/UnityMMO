@@ -56,11 +56,6 @@ end
 
 function ChunkDataUtility.GetComponentDataWithTypeRO( chunk, index, typeIndex )
     local indexInTypeArray = ChunkDataUtility.GetIndexInTypeArray(chunk.Archetype, typeIndex)
-    if indexInTypeArray == -1 then
-        print("Cat:ChunkDataUtility [start:60] chunk.Archetype:", chunk.Archetype, typeIndex)
-        PrintTable(chunk.Archetype)
-        print("Cat:ChunkDataUtility [end]")
-    end
     local offset = chunk.Archetype.Offsets[indexInTypeArray]
     local sizeOf = chunk.Archetype.SizeOfs[indexInTypeArray]
 
@@ -80,7 +75,7 @@ function ChunkDataUtility.ReadComponentFromChunk( chunk_ptr, componentTypeName, 
     assert(typeInfo~=nil, "cannot find type info with : "..componentTypeName)
     out_data = out_data or {} 
     for k,v in pairs(typeInfo.FieldInfoList) do
-        local field_val = ECSCore.ReadNumber(chunk_ptr, v.Offset)
+        local field_val = ECS.CoreHelper.ReadFieldValueInChunk(chunk_ptr, v.Offset, v.FieldType)
         out_data[v.FieldName] = field_val
     end
     return out_data
@@ -97,7 +92,6 @@ function ChunkDataUtility.WriteComponentInChunk( chunk_ptr, componentTypeName, c
             -- ChunkDataUtility.WriteComponentInChunk(chunk_ptr+v.Offset, new_field_value)
         end
     end
-    -- ECSCore.WriteNumber(chunk_ptr, 0, 456.789)
 end
 
 function ChunkDataUtility.GetComponentDataRO( chunk, index, indexInTypeArray )
@@ -157,7 +151,7 @@ function ChunkDataUtility.InitializeComponents( dstChunk, dstIndex, count )
                 dst = dst + sizeOf
             end
         else
-            -- UnsafeUtility.MemClear(dst, sizeOf * count)
+            ECSCore.MemClear(dst, sizeOf * count)
         end
     end
 end
@@ -212,7 +206,7 @@ function ChunkDataUtility.Convert( srcChunk, srcIndex, dstChunk, dstIndex )
 
     local srcI = 1
     local dstI = 1
-    while (srcI < srcArch.TypesCount and dstI < dstArch.TypesCount) do
+    while (srcI <= srcArch.TypesCount and dstI <= dstArch.TypesCount) do
         local src = srcChunk.Buffer + (srcArch.Offsets[srcI] + srcIndex * srcArch.SizeOfs[srcI])
         local dst = dstChunk.Buffer + (dstArch.Offsets[dstI] + dstIndex * dstArch.SizeOfs[dstI])
 

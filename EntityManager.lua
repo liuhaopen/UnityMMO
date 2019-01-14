@@ -16,6 +16,10 @@ function EntityManager:OnCreateManager( capacity )
 	self.m_CachedComponentTypeInArchetypeArray = {}
 end
 
+function EntityManager:GetArchetypeManager(  )
+    return self.ArchetypeManager
+end
+
 local CreateEntities = function ( self, archetype, num )
     return self.Entities:CreateEntities(self.ArchetypeManager, archetype.Archetype, num)
 end
@@ -35,7 +39,7 @@ end
 
 function EntityManager:PopulatedCachedTypeInArchetypeArray( requiredComponents, count )
     self.m_CachedComponentTypeInArchetypeArray = {}
-    self.m_CachedComponentTypeInArchetypeArray[1] = ECS.ComponentTypeInArchetype.Create(ECS.ComponentType.Create("ECS.Entity"))
+    self.m_CachedComponentTypeInArchetypeArray[1] = ECS.ComponentTypeInArchetype.Create(ECS.ComponentType.Create(ECS.Entity.Name))
     for i=1,count do
         ECS.SortingUtilities.InsertSorted(self.m_CachedComponentTypeInArchetypeArray, i + 1, ECS.ComponentTypeInArchetype.Create(ECS.ComponentType.Create(requiredComponents[i])))
     end
@@ -117,6 +121,7 @@ end
 
 function EntityManager:GetComponentData( entity, componentTypeName )
     local typeIndex = ECS.TypeManager.GetTypeIndexByName(componentTypeName)
+    self.Entities:AssertEntityHasComponent(entity, typeIndex)
     local ptr = self.Entities:GetComponentDataWithTypeRO(entity, typeIndex)
     local data = ECS.ChunkDataUtility.ReadComponentFromChunk(ptr, componentTypeName)
     return data

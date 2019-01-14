@@ -28,7 +28,7 @@ function TypeManager.Initialize(  )
 	}
     TypeManager.s_Count = TypeManager.s_Count + 1
 
-    TypeManager.RegisterType("ECS.Entity", {Index="integer", Version="integer"})
+    TypeManager.RegisterType(ECS.Entity.Name, {Index="integer", Version="integer"})
 end
 
 function TypeManager.BuildComponentType( name, type_desc )
@@ -54,6 +54,7 @@ function TypeManager.RegisterType( name, type_desc )
 	TypeManager.s_Types[TypeManager.s_Count] = type_info
 	TypeManager.StaticTypeLookup[name] = TypeManager.s_Count
 	TypeManager.s_Count = TypeManager.s_Count + 1
+	return type_info
 end
 
 CalculateFieldInfo = function ( type_desc )
@@ -63,7 +64,7 @@ CalculateFieldInfo = function ( type_desc )
 		table.insert(field_names, k)
 	end
 	table.sort(field_names)
-	--Cat_Todo : 考虑字节对齐，否则读取性能不好
+	--Cat_Todo : 考虑字节对齐，提高读取性能
 	local sum_size = 0
 	local field_info_list = {}
 	for i,v in ipairs(field_names) do
@@ -85,7 +86,7 @@ CalculateFieldInfo = function ( type_desc )
 end
 
 CalculateMemoryOrdering = function ( type_name )
-	if type_name == "ECS.Entity" then
+	if type_name == ECS.Entity.Name then
 		return 0
 	end
 	return 1
@@ -107,6 +108,11 @@ end
 function TypeManager.GetTypeInfoByName( typeName )
 	local index = TypeManager.GetTypeIndexByName(typeName)
 	return TypeManager.s_Types[index]
+end
+
+function TypeManager.GetTypeNameByIndex( typeIndex )
+	local info = TypeManager.s_Types[typeIndex]
+	return info and info.Name or "UnkownTypeName"
 end
 
 return TypeManager
