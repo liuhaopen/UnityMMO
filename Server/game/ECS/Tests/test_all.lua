@@ -57,7 +57,7 @@ for k,v in pairs(fileNames or {}) do
     	local is_lua_file = string.find(v, ".lua", -4, true)
     	if dot_index ~= nil and is_lua_file then
 	    	local name_without_ex = string.sub(v, 1, dot_index-1)
-	    	-- print('Cat:test_all.lua[31] name_without_ex', name_without_ex)
+	    	print('test_all.lua init test file name : ', name_without_ex)
 			require(name_without_ex)
 		end
 	end

@@ -17,11 +17,12 @@ end
 local GetTypesStr = function ( types )
     local names = {}
     for k,v in pairs(types) do
-        table.insert(names, v.Name)
+        table.insert(names, ECS.TypeManager.GetTypeNameByIndex(v.TypeIndex))
     end
     table.sort(names)
-    return table.concat(names)
+    return table.concat(names, ":")
 end
+ArchetypeManager.GetTypesStr = GetTypesStr
 
 function ArchetypeManager:GetOrCreateArchetypeInternal( types, count, groupManager )
 	local type = self:GetExistingArchetype(types)
@@ -45,24 +46,24 @@ end
 
 function ArchetypeManager:GetOrCreateArchetype( types, count, groupManager )
     local srcArchetype = self:GetOrCreateArchetypeInternal(types, count, groupManager)
-    local removedTypes = 0
+    -- local removedTypes = 0
     -- local prefabTypeIndex = ECS.TypeManager.GetTypeIndexByName("Prefab")
-    for t=1,srcArchetype.TypesCount do
-        local type = srcArchetype.Types[t]
-        -- local skip = type.IsSystemStateComponent or type.IsSystemStateSharedComponent or (type.TypeIndex == prefabTypeIndex)
-        -- if skip then
-        --     removedTypes = removedTypes + 1
-        -- else
-            types[t - removedTypes] = srcArchetype.Types[t]
-        -- end
-    end
+    -- for t=1,srcArchetype.TypesCount do
+    --     local type = srcArchetype.Types[t]
+    --     -- local skip = type.IsSystemStateComponent or type.IsSystemStateSharedComponent or (type.TypeIndex == prefabTypeIndex)
+    --     -- if skip then
+    --     --     removedTypes = removedTypes + 1
+    --     -- else
+    --         types[t - removedTypes] = srcArchetype.Types[t]
+    --     -- end
+    -- end
 
-    srcArchetype.InstantiableArchetype = srcArchetype
-    if removedTypes > 0 then
-        local instantiableArchetype = self:GetOrCreateArchetypeInternal(types, count-removedTypes, groupManager)
-        srcArchetype.InstantiableArchetype = instantiableArchetype
-        instantiableArchetype.InstantiableArchetype = instantiableArchetype
-    end
+    -- srcArchetype.InstantiableArchetype = srcArchetype
+    -- if removedTypes > 0 then
+    --     local instantiableArchetype = self:GetOrCreateArchetypeInternal(types, count-removedTypes, groupManager)
+    --     srcArchetype.InstantiableArchetype = instantiableArchetype
+    --     instantiableArchetype.InstantiableArchetype = instantiableArchetype
+    -- end
     return srcArchetype
 end
 
