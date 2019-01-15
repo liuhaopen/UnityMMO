@@ -4,6 +4,13 @@ ECS.Chunk.kChunkSize = 16 * 1024
 
 function Chunk:Constructor(  )
 	self.Buffer = ECSCore.CreateChunk(ECS.Chunk.kChunkSize)
+	self.Count = 0--当前Entity的数量
+	self.Capacity = 0--能存放Entity的容量
+	self.SharedComponentValueArray = {}
+	self.Archetype = nil
+	self.ChunkListNode = nil
+	self.ChunkListWithEmptySlotsNode = nil
+	
 end
 
 function Chunk.GetChunkBufferSize( numComponents, numSharedComponents )

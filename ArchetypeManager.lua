@@ -14,10 +14,10 @@ end
 --     return hash
 -- end
 
-local GetTypesStr = function ( types )
+local GetTypesStr = function ( types, count )
     local names = {}
-    for k,v in pairs(types) do
-        table.insert(names, ECS.TypeManager.GetTypeNameByIndex(v.TypeIndex))
+    for i=1,count do
+        table.insert(names, ECS.TypeManager.GetTypeNameByIndex(types[i].TypeIndex))
     end
     table.sort(names)
     return table.concat(names, ":")
@@ -25,23 +25,13 @@ end
 ArchetypeManager.GetTypesStr = GetTypesStr
 
 function ArchetypeManager:GetOrCreateArchetypeInternal( types, count, groupManager )
-	local type = self:GetExistingArchetype(types)
+	local type = self:GetExistingArchetype(types, count)
     return type~=nil and type or self:CreateArchetypeInternal(types, count, groupManager)
 end           
 
-function ArchetypeManager:GetExistingArchetype( types )
-    local type_str = GetTypesStr(types)
+function ArchetypeManager:GetExistingArchetype( types, count )
+    local type_str = GetTypesStr(types, count)
     return self.m_TypeLookup[type_str]
-    -- if not self.m_TypeLookup[type_str] then
-    --     return nil
-    -- end
-    -- repeat
-    --     local type = typePtr
-    --     if (ComponentTypeInArchetype.CompareArray(type.Types, type.TypesCount, types, #types)) then
-    --         return type
-    --     end
-    -- until (not (self.m_TypeLookup:TryGetNextValue(typePtr, it)))
-    -- return nil
 end
 
 function ArchetypeManager:GetOrCreateArchetype( types, count, groupManager )
@@ -212,13 +202,13 @@ function ArchetypeManager:CreateArchetypeInternal( types, count, groupManager )
     -- type.FreeChunksBySharedComponents.Init(8)
 
     -- m_TypeLookup.Add(GetHash(types, count), type)
-    local type_str = GetTypesStr(types)
+    local type_str = GetTypesStr(types, count)
     self.m_TypeLookup[type_str] = type
 
     -- type.SystemStateCleanupComplete = ArchetypeSystemStateCleanupComplete(type)
     -- type.SystemStateCleanupNeeded = ArchetypeSystemStateCleanupNeeded(type)
 
-    groupManager.AddArchetypeIfMatching(type)
+    groupManager:AddArchetypeIfMatching(type)
     return type
 end
 
@@ -291,7 +281,7 @@ end
 function ArchetypeManager:AllocateIntoChunk( chunk, count )
     count = count or 1
 	local allocatedCount = math.min(chunk.Capacity - chunk.Count, count)
-    local newChunkIndex = chunk.Count
+    local newChunkIndex = chunk.Count+1
     self:SetChunkCount(chunk, chunk.Count + allocatedCount)
     chunk.Archetype.EntityCount = chunk.Archetype.EntityCount + allocatedCount
     return allocatedCount, newChunkIndex

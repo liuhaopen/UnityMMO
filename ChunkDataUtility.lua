@@ -9,7 +9,6 @@ function ChunkDataUtility.GetIndexInTypeArray( archetype, typeIndex )
             return i
         end
     end
-
     return -1
 end
 
@@ -38,7 +37,7 @@ function ChunkDataUtility.GetComponentDataWithTypeROWithCache( chunk, index, typ
     local offset = archetype.Offsets[indexInTypeArray]
     local sizeOf = archetype.SizeOfs[indexInTypeArray]
 
-    return chunk.Buffer + (offset + sizeOf * index)
+    return chunk.Buffer + (offset + sizeOf * (index-1))
 end
 
 function ChunkDataUtility.GetComponentDataWithTypeRW( chunk, index, typeIndex, globalSystemVersion, typeLookupCache )
@@ -51,15 +50,14 @@ function ChunkDataUtility.GetComponentDataWithTypeRW( chunk, index, typeIndex, g
 
     chunk.ChangeVersion[indexInTypeArray] = globalSystemVersion
 
-    return chunk.Buffer + (offset + sizeOf * index)
+    return chunk.Buffer + (offset + sizeOf * (index-1))
 end
 
 function ChunkDataUtility.GetComponentDataWithTypeRO( chunk, index, typeIndex )
     local indexInTypeArray = ChunkDataUtility.GetIndexInTypeArray(chunk.Archetype, typeIndex)
     local offset = chunk.Archetype.Offsets[indexInTypeArray]
     local sizeOf = chunk.Archetype.SizeOfs[indexInTypeArray]
-
-    return chunk.Buffer + (offset + sizeOf * index)
+    return chunk.Buffer + (offset + sizeOf * (index-1))
 end
 
 function ChunkDataUtility.GetComponentDataWithTypeRW( chunk, index, typeIndex, globalSystemVersion )
@@ -67,7 +65,7 @@ function ChunkDataUtility.GetComponentDataWithTypeRW( chunk, index, typeIndex, g
     local offset = chunk.Archetype.Offsets[indexInTypeArray]
     local sizeOf = chunk.Archetype.SizeOfs[indexInTypeArray]
     -- chunk.ChangeVersion[indexInTypeArray] = globalSystemVersion
-    return chunk.Buffer + (offset + sizeOf * index)
+    return chunk.Buffer + (offset + sizeOf * (index-1))
 end
 
 function ChunkDataUtility.ReadComponentFromChunk( chunk_ptr, componentTypeName, out_data )
@@ -97,8 +95,8 @@ end
 function ChunkDataUtility.GetComponentDataRO( chunk, index, indexInTypeArray )
     local offset = chunk.Archetype.Offsets[indexInTypeArray]
     local sizeOf = chunk.Archetype.SizeOfs[indexInTypeArray]
-
-    return chunk.Buffer + (offset + sizeOf * index)
+    print('Cat:ChunkDataUtility.lua[100] index, indexInTypeArray, offset, sizeOf', index, indexInTypeArray, offset, sizeOf)
+    return chunk.Buffer + (offset + sizeOf * (index-1))
 end
 
 function ChunkDataUtility.GetComponentDataRW( chunk, index, indexInTypeArray, globalSystemVersion )
@@ -107,7 +105,7 @@ function ChunkDataUtility.GetComponentDataRW( chunk, index, indexInTypeArray, gl
 
     chunk.ChangeVersion[indexInTypeArray] = globalSystemVersion
 
-    return chunk.Buffer + (offset + sizeOf * index)
+    return chunk.Buffer + (offset + sizeOf * (index-1))
 end
 
 function ChunkDataUtility.Copy( srcChunk, srcIndex, dstChunk, dstIndex, count )
@@ -143,16 +141,16 @@ function ChunkDataUtility.InitializeComponents( dstChunk, dstIndex, count )
     for t=2,typesCount do
         local offset = offsets[t]
         local sizeOf = sizeOfs[t]
-        local dst = dstBuffer + (offset + sizeOf * dstIndex)
+        local dst = dstBuffer + (offset + sizeOf * (dstIndex-1))
 
-        if types[t].IsBuffer then
-            for i=1,count do
-                BufferHeader.Initialize(dst, types[t].BufferCapacity)
-                dst = dst + sizeOf
-            end
-        else
+        -- if types[t].IsBuffer then
+        --     for i=1,count do
+        --         BufferHeader.Initialize(dst, types[t].BufferCapacity)
+        --         dst = dst + sizeOf
+        --     end
+        -- else
             ECSCore.MemClear(dst, sizeOf * count)
-        end
+        -- end
     end
 end
 
@@ -223,33 +221,33 @@ function ChunkDataUtility.Convert( srcChunk, srcIndex, dstChunk, dstIndex )
             else
                 ECSCore.MemClear(dst, dstArch.SizeOfs[dstI])
             end
-            dstI = dstI+1
+            dstI = dstI + 1
         else
             ECSCore.MemCpy(dst, src, srcArch.SizeOfs[srcI])
             -- Poison source buffer to make sure there is no aliasing.
             if (srcArch.Types[srcI].IsBuffer) then
                 BufferHeader.Initialize(src, srcArch.Types[srcI].BufferCapacity)
             end
-            srcI = srcI+1
-            dstI = dstI+1
+            srcI = srcI + 1
+            dstI = dstI + 1
         end
     end
 
     -- Handle remaining components in the source that aren't copied
-    for srcI=1,srcArch.TypesCount do
-        local src = srcChunk.Buffer + (srcArch.Offsets[srcI] + srcIndex * srcArch.SizeOfs[srcI])
-        if (srcArch.Types[srcI].IsBuffer) then
+    for i=srcI,srcArch.TypesCount do
+        local src = srcChunk.Buffer + (srcArch.Offsets[i] + srcIndex * srcArch.SizeOfs[i])
+        if (srcArch.Types[i].IsBuffer) then
             BufferHeader.Destroy(src)
         end
     end
 
     -- Clear remaining components in the destination that aren't copied
-    for dstI=1,dstArch.TypesCount do
-        local dst = dstChunk.Buffer + (dstArch.Offsets[dstI] + dstIndex * dstArch.SizeOfs[dstI])
-        if (dstArch.Types[dstI].IsBuffer) then
-            BufferHeader.Initialize(dst, dstArch.Types[dstI].BufferCapacity)
+    for i=dstI,dstArch.TypesCount do
+        local dst = dstChunk.Buffer + (dstArch.Offsets[i] + dstIndex * dstArch.SizeOfs[i])
+        if (dstArch.Types[i].IsBuffer) then
+            BufferHeader.Initialize(dst, dstArch.Types[i].BufferCapacity)
         else
-            ECSCore.MemClear(dst, dstArch.SizeOfs[dstI])
+            ECSCore.MemClear(dst, dstArch.SizeOfs[i])
         end
     end
 end
