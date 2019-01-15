@@ -20,6 +20,14 @@ function EntityManager:GetArchetypeManager(  )
     return self.ArchetypeManager
 end
 
+function EntityManager:GetEntityDataManager(  )
+    return self.Entities
+end
+
+function EntityManager:GetGroupManager(  )
+    return self.m_GroupManager
+end
+
 local CreateEntities = function ( self, archetype, num )
     return self.Entities:CreateEntities(self.ArchetypeManager, archetype.Archetype, num)
 end
@@ -62,19 +70,11 @@ function EntityManager:CreateArchetype( types )
 end
 
 function EntityManager:Exists( entity )
-	local index = entity.Index
-    local versionMatches = self.m_Entities[index].Version == entity.Version
-    local hasChunk = self.m_Entities[index].Chunk ~= nil
-    return versionMatches and hasChunk;
+    return self.Entities:Exists(entity)
 end
 
-function EntityManager:HasComponent( entity, com_type )
-	if not self:Exists(entity) then
-        return false
-    end
-
-    local archetype = self.m_Entities[entity.Index].Archetype
-    return ChunkDataUtility.GetIndexInTypeArray(archetype, type) ~= -1;
+function EntityManager:HasComponent( entity, comp_type_name )
+    return self.Entities:HasComponent(entity, comp_type_name)
 end
 
 function EntityManager:Instantiate( srcEntity )
@@ -95,8 +95,8 @@ end
 
 function EntityManager:RemoveComponent( entity, comp_type_name )
 	-- self:BeforeStructuralChange()
-    self.Entities:AssertEntityHasComponent(entity, type)
-    self.Entities:RemoveComponent(entity, type, self.ArchetypeManager, self.m_SharedComponentManager, self.m_GroupManager,
+    self.Entities:AssertEntityHasComponent(entity, comp_type_name)
+    self.Entities:RemoveComponent(entity, comp_type_name, self.ArchetypeManager, self.m_SharedComponentManager, self.m_GroupManager,
                 self.m_CachedComponentTypeInArchetypeArray)
 
     local archetype = self.Entities:GetArchetype(entity)
@@ -148,7 +148,7 @@ function EntityManager:GetComponentCount( entity )
 end
 
 function EntityManager:CreateComponentGroup( requiredComponents )
-    return self.m_GroupManager:CreateEntityGroup(self.ArchetypeManager, self.Entities, requiredComponents)
+    return self.m_GroupManager:CreateEntityGroupByNames(self.ArchetypeManager, self.Entities, requiredComponents)
 end
 
 function EntityManager:DestroyEntity( entity )
