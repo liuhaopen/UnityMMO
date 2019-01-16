@@ -36,8 +36,8 @@ function ComponentSystemBase:ShouldRunSystem(  )
     return false
 end
 
-function ComponentSystemBase:Inject( inject_target_tl, inject_info )
-	table.insert(self.inject_info_list, {inject_target_tl, inject_info})
+function ComponentSystemBase:Inject( inject_field_name, inject_info )
+	table.insert(self.inject_info_list, {inject_field_name, inject_info})
 end
 
 function ComponentSystemBase:GetInjectInfoList(  )
@@ -46,13 +46,13 @@ end
 
 function ComponentSystemBase:OnBeforeCreateManagerInternal( world, capacity )
 	self.m_World = world
-    self.m_EntityManager = world:GetOrCreateManager(ECS.EntityManager)
+    self.m_EntityManager = world:GetOrCreateManager(ECS.EntityManager.Name)
     self.m_AlwaysUpdateSystem = self.AlwaysUpdateSystem
 
     self.m_ComponentGroups = ECS.ComponentGroup.New()
     -- self.m_CachedComponentGroupArrays = new ComponentGroupArrayStaticCache[0]
 
-    ComponentSystemInjection.Inject(self, world, self.m_EntityManager, self.m_InjectedComponentGroups, self.m_InjectFromEntityData)
+    ECS.ComponentSystemInjection.Inject(self, world, self.m_EntityManager, self.m_InjectedComponentGroups, self.m_InjectFromEntityData)
 
     self:UpdateInjectedComponentGroups()
 end
@@ -62,6 +62,10 @@ end
 
 function ComponentSystemBase:AfterUpdateVersioning(  )
 	
+end
+
+function ComponentSystemBase:OnStartRunning(  )
+    
 end
 
 function ComponentSystemBase:GetArchetypeChunkComponentType( com_type_name, isReadOnly )
@@ -76,7 +80,7 @@ function ComponentSystemBase:GetComponentGroup( componentTypes )
 		end
 	end
 	local group = self.m_EntityManager:CreateComponentGroup(componentTypes)
-    group:SetFilterChangedRequiredVersion(self.m_LastSystemVersion)
+    -- group:SetFilterChangedRequiredVersion(self.m_LastSystemVersion)
     table.insert(self.m_ComponentGroups, group)
     -- for (int i = 0;i != count;i++)
     --     AddReaderWriter(componentTypes[i])
@@ -91,8 +95,10 @@ function ComponentSystemBase:UpdateInjectedComponentGroups(  )
         group:UpdateInjection(pinnedSystemPtr)
 	end
 	-- self.m_InjectFromEntityData:UpdateInjection(pinnedSystemPtr, self.m_EntityManager);
-end                
+end      
 
+function ComponentSystemBase:CompleteDependencyInternal(  )
+end
 
 local ComponentSystem = BaseClass(ECS.ComponentSystemBase)
 ECS.ComponentSystem = ComponentSystem

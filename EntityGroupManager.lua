@@ -209,5 +209,21 @@ function EntityGroupManager:TestMatchingArchetypeAny( archetype, anyTypes, anyCo
     end
     return false
 end
-           
-       
+
+function EntityGroupManager.CompareComponents( componentTypes, groupData )
+	if groupData.RequiredComponents == nil then
+        return false
+    end
+    -- ComponentGroups are constructed including the Entity ID
+    if #componentTypes + 1 ~= groupData.RequiredComponentsCount then
+        return false
+    end
+    for i=1,#componentTypes do
+        if groupData.RequiredComponents[i + 1] ~= ECS.ComponentType.Create(componentTypes[i]) then
+            return false
+        end
+    end
+    return true
+end
+
+return EntityGroupManager
