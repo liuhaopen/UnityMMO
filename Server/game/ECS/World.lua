@@ -10,6 +10,8 @@ function World:Constructor( name )
 
 	self.IsCreated = true
 	table.insert(ECS.World.allWorlds, self)
+
+
 end
 
 function World:GetBehaviourManagers(  )
@@ -26,10 +28,11 @@ end
 
 function World:CreateManager( script_behaviour_mgr_type )
 	assert(script_behaviour_mgr_type, "nil mgr type : "..(script_behaviour_mgr_type or "nilstr"))
-	local mgr_class = require(script_behaviour_mgr_type)
-	assert(mgr_class, script_behaviour_mgr_type.." file had not return a class")
+	-- local mgr_class = require(script_behaviour_mgr_type)
+	local mgr_class = ECS.TypeManager.GetScriptMgr(script_behaviour_mgr_type)
+	assert(mgr_class, script_behaviour_mgr_type.." file had not register by TypeManager!")
 	local mgr = mgr_class.New()
-	mgr:CreateInstance()
+	mgr:CreateInstance(self)
 	table.insert(self.behaviour_mgrs, mgr)
 	self.behaviour_mgrs_lookup[script_behaviour_mgr_type] = mgr
 	return mgr
@@ -39,7 +42,12 @@ function World:GetExistingManager( script_behaviour_mgr_type )
 	return self.behaviour_mgrs_lookup[script_behaviour_mgr_type]
 end
 
-function World:DestroyManager(  )
+function World:DestroyManager( manager_name )
+	if not self.behaviour_mgrs_lookup[manager_name] then
+		assert(self.behaviour_mgrs_lookup[manager_name], manager_name.." manager does not exist in the world")
+	end
+    -- Version = Version + 1
+    self.behaviour_mgrs_lookup[manager_name]:DestroyInstance()
 end
 
 return World

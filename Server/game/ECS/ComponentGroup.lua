@@ -4,7 +4,7 @@ ECS.ComponentGroup = ComponentGroup
 function ComponentGroup:Constructor( groupData, safetyManager, typeManager, entityDataManager )
 	self.m_GroupData = groupData
 	self.m_EntityDataManager = entityDataManager
-	self.m_Filter = nil
+	self.m_Filter = {Type=ECS.FilterType.None, RequiredChangeVersion=0}
     self.ArchetypeManager = typeManager
     self.EntityDataManager = entityDataManager
 end
@@ -16,6 +16,17 @@ function ComponentGroup:GetComponentDataArray( com_type )
     local res = {}
     self:GetComponentDataArray(iterator, indexInComponentGroup, length, res)
     return res
+end
+
+function ComponentGroup:GetIndexInComponentGroup( componentType )
+    local componentIndex = 1
+    while componentIndex <= self.m_GroupData.RequiredComponentsCount and self.m_GroupData.RequiredComponents[componentIndex].TypeIndex ~= componentType do
+        componentIndex = componentIndex + 1
+    end
+    return componentIndex
+end
+
+function ComponentGroup:GetComponentDataArrayByIterator( iterator, indexInComponentGroup, length )
 end
 
 function ComponentGroup:GetSharedComponentDataArray( shared_com_type )
@@ -53,6 +64,10 @@ end
 
 function ComponentGroup:SetFilter(  )
 	
+end
+
+function ComponentGroup:CompareComponents( componentTypes )
+    return ECS.EntityGroupManager.CompareComponents(componentTypes, self.m_GroupData)
 end
 
 return ComponentGroup

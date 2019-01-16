@@ -6,14 +6,14 @@ local function Split(szFullString, szSeparator, start_pos)
 	local nSplitIndex = 1
 	local nSplitArray = {}
 	while true do
-	   local nFindLastIndex = string.find(szFullString, szSeparator, nFindStartIndex)
-	   if not nFindLastIndex then
-	    nSplitArray[nSplitIndex] = string.sub(szFullString, nFindStartIndex, string.len(szFullString))
-	    break
-	   end
-	   table.insert(nSplitArray, string.sub(szFullString, nFindStartIndex, nFindLastIndex - 1))
-	   nFindStartIndex = nFindLastIndex + string.len(szSeparator)
-	   nSplitIndex = nSplitIndex + 1
+	    local nFindLastIndex = string.find(szFullString, szSeparator, nFindStartIndex)
+	    if not nFindLastIndex then
+	    	nSplitArray[nSplitIndex] = string.sub(szFullString, nFindStartIndex, string.len(szFullString))
+	    	break
+	   	end
+	    table.insert(nSplitArray, string.sub(szFullString, nFindStartIndex, nFindLastIndex - 1))
+	    nFindStartIndex = nFindLastIndex + string.len(szSeparator)
+	    nSplitIndex = nSplitIndex + 1
 	end
 	return nSplitArray
 end
@@ -33,30 +33,28 @@ function ComponentSystemInjection.Inject( componentSystem, world, entityManager,
             outInjectGroups, outInjectFromEntityData )
 	local inject_info_list = componentSystem:GetInjectInfoList()
 	for i,v in ipairs(inject_info_list) do
-		local inject_target_tl = v[1]
+		local inject_field_name = v[1]
 		local inject_info = v[2]
-		for component_name,inject_component_info in pairs(inject_info) do
-			local info_parts = Split(inject_component_info)
-			if #info_parts > 0 then
-				if IsFindInStrList(info_parts, "ScriptMgr") then
-					self:InjectConstructorDependencies(componentSystem, world, info_parts)
-				else
-					if InjectFromEntityData.SupportsInjections(info_parts) then
-						--Cat_Todo : inject from entity data
-						InjectFromEntityData.CreateInjection(info_parts, entityManager, injectFromEntity,
-                            injectFromFixedArray)
-					else
-						local group = InjectComponentGroupData.CreateInjection(info_parts, componentSystem)
+		
+		-- for component_name,inject_component_info in pairs(inject_info) do
+			-- local info_parts = Split(inject_component_info, ":")
+			-- if #info_parts > 0 then
+			-- 	if IsFindInStrList(info_parts, "ScriptMgr") then
+			-- 		self:InjectConstructorDependencies(componentSystem, world, info_parts, inject_field_name)
+			-- 	else
+			-- 		if ECS.InjectFromEntityData.SupportsInjections(info_parts) then
+			-- 			ECS.InjectFromEntityData.CreateInjection(info_parts, entityManager, injectFromEntity,
+   --                          injectFromFixedArray)
+			-- 		else
+						local group = ECS.InjectComponentGroupData.CreateInjection(inject_field_name, inject_info, componentSystem)
 						table.insert(outInjectGroups, group)
-					end
-				end
-			end
-		end
+					-- end
+				-- end
+			-- end
+		-- end
 	end
-	--生成ComponentSystem.OnUpdate的环境table，只有Inject的才可以访问
-
 end
 
---Cat_Todo : inject ScriptMgr class
-function ComponentSystemInjection:InjectConstructorDependencies( manager, world, field )
+function ComponentSystemInjection:InjectConstructorDependencies( manager, world, field_info, inject_field_name )
+	manager[inject_field_name] = world:GetOrCreateManager(field_info[2])	
 end

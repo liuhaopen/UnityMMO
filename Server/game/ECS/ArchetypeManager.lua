@@ -235,6 +235,7 @@ function ArchetypeManager:ConstructChunk( archetype, chunk, sharedComponentDataI
     chunk.Count = 0
     chunk.Capacity = archetype.ChunkCapacity
     chunk.ChunkListNode = ECS.UnsafeLinkedListNode.New()
+    chunk.ChunkListNode:SetChunk(chunk)
     chunk.ChunkListWithEmptySlotsNode = ECS.UnsafeLinkedListNode.New()
     chunk.ChunkListWithEmptySlotsNode:SetChunk(chunk)
 

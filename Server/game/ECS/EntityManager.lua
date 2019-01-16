@@ -1,5 +1,8 @@
 local EntityManager = BaseClass(ECS.ScriptBehaviourManager)
 ECS.EntityManager = EntityManager
+ECS.EntityManager.Name = "ECS.EntityManager"
+ECS.TypeManager.RegisterScriptMgr(ECS.EntityManager.Name, EntityManager)
+
 local table_insert = table.insert
 function EntityManager:Constructor(  )
 	self.entities_free_id = 0

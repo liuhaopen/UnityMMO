@@ -9,17 +9,22 @@ TypeManager.TypeCategory = {
 	Class = 5,
 }
 TypeManager.s_Types = {}
+TypeManager.s_Systems = {}
 TypeManager.s_Count = 0
 TypeManager.StaticTypeLookup = {}
 
 local CalculateFieldInfo, CalculateMemoryOrdering
 
 function TypeManager.Initialize(  )
+	if TypeManager.s_Count>0 then
+		return
+	end
 	-- self.ObjectOffset = UnsafeUtility.SizeOf<ObjectOffsetType>();
     -- self.s_CreateTypeLock = new SpinLock()
-    TypeManager.s_Types = {}
-    TypeManager.StaticTypeLookup = {}
-    TypeManager.s_Count = 0
+    -- TypeManager.s_Systems = {}
+    -- TypeManager.s_Types = {}
+    -- TypeManager.StaticTypeLookup = {}
+    -- TypeManager.s_Count = 0
 
 	TypeManager.s_Types[TypeManager.s_Count] = {
 		Type=nil, SizeInChunk=0, Category=TypeManager.TypeCategory.ComponentData,
@@ -48,7 +53,7 @@ end
 
 function TypeManager.RegisterType( name, type_desc )
 	if TypeManager.StaticTypeLookup[name] then
-		return
+		return TypeManager.s_Types[TypeManager.StaticTypeLookup[name]]
 	end
 	local type_info = TypeManager.BuildComponentType(name, type_desc)
 	TypeManager.s_Types[TypeManager.s_Count] = type_info
@@ -113,6 +118,15 @@ end
 function TypeManager.GetTypeNameByIndex( typeIndex )
 	local info = TypeManager.s_Types[typeIndex]
 	return info and info.Name or "UnkownTypeName"
+end
+
+function TypeManager.RegisterScriptMgr( name, system )
+	assert(TypeManager.s_Systems[name]==nil, "had register system :"..name)
+	TypeManager.s_Systems[name] = system
+end
+
+function TypeManager.GetScriptMgr( name )
+	return TypeManager.s_Systems[name]
 end
 
 return TypeManager

@@ -68,15 +68,22 @@ function ChunkDataUtility.GetComponentDataWithTypeRW( chunk, index, typeIndex, g
     return chunk.Buffer + (offset + sizeOf * (index-1))
 end
 
-function ChunkDataUtility.ReadComponentFromChunk( chunk_ptr, componentTypeName, out_data )
+function ChunkDataUtility.ReadComponentFromChunk( chunk_ptr, componentTypeName, out_data, offset )
     local typeInfo = ECS.TypeManager.GetTypeInfoByName(componentTypeName)
     assert(typeInfo~=nil, "cannot find type info with : "..componentTypeName)
     out_data = out_data or {} 
+    offset = offset or 0
     for k,v in pairs(typeInfo.FieldInfoList) do
-        local field_val = ECS.CoreHelper.ReadFieldValueInChunk(chunk_ptr, v.Offset, v.FieldType)
+        local field_val = ECS.CoreHelper.ReadFieldValueInChunk(chunk_ptr, offset+v.Offset, v.FieldType)
         out_data[v.FieldName] = field_val
     end
     return out_data
+end
+
+function ChunkDataUtility.ReadComponentFromArray( chunk_ptr, index, componentTypeName, out_data )
+    local typeInfo = ECS.TypeManager.GetTypeInfoByName(componentTypeName)
+    assert(typeInfo~=nil, "cannot find type info with : "..componentTypeName)
+    return ChunkDataUtility.ReadComponentFromChunk(chunk_ptr, componentTypeName, out_data, (index-1)*typeInfo.SizeInChunk)
 end
 
 function ChunkDataUtility.WriteComponentInChunk( chunk_ptr, componentTypeName, componentData )

@@ -11,7 +11,7 @@ function TestTypeManager:TestEntityTypeInfo(  )
 end
 
 function TestTypeManager:TestTypeInfo(  )
-	local test_comp_name = "TestComponent"
+	local test_comp_name = "TestComponentForTestTypeInfo"
 	local type_info = ECS.TypeManager.RegisterType(test_comp_name, {n="number", i="integer", b="boolean"})
 	lu.assertNotNil(type_info)
 	local type_index = ECS.TypeManager.GetTypeIndexByName(test_comp_name)
