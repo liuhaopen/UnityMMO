@@ -1,12 +1,11 @@
 ECS = ECS or {}
 
-require "ECSCore"
+ECSCore = require "ECSCore"
 require "BaseClass"
 require "CoreHelper"
-ECS.CoreHelper.Init()
 require "TypeManager"
 require "ScriptBehaviourManager"
-require "World"
+require "ECS.World"
 require "Entity"
 require "EntityManager"
 require "EntityDataManager"
@@ -28,30 +27,27 @@ require "InjectComponentGroupData"
 require "ComponentChunkIterator"
 require "ComponentDataArray"
 
-
-function ECS:InitWorld( worldName )
-	self.system_list = {}
-
+local system_list = nil
+local function InitWorld( worldName )
 	local world = ECS.World.New(worldName)
 	ECS.World.Active = world
 
 	--register all systems
-	for k,v in pairs(self.system_list) do
-		world:GetOrCreateManager(v)
+	local systems = ECS.TypeManager.GetScriptMgrMap()
+	for k,v in pairs(systems) do
+		world:GetOrCreateManager(k)
 	end
 
-	ECS.ScriptBehaviourUpdateOrder.UpdatePlayerLoop(world)
+	system_list = ECS.ScriptBehaviourUpdateOrder.SortSystemList(systems)
 end
 
-function ECS:RegisterSystem( system_type )
-	table.insert(self.system_list, system_type)
-end
-
-function ECS:Update(  )
-	--Cat_Todo : 按照UpdateBefore,After等标签把system们先排好序
-	local systems = ECS.World.Active:GetBehaviourManagers()
-	for k,v in pairs(systems) do
+local function Update(  )
+	if not system_list then return end
+	
+	for k,v in ipairs(system_list) do
 		v:Update()
 	end
 end
 
+ECS.InitWorld = InitWorld
+ECS.Update = Update

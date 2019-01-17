@@ -57,5 +57,6 @@ function CoreHelper.ReadFieldValueInChunk( chunk_ptr, offset, field_type )
     return value
 end
 
+ECS.CoreHelper.Init()
 
 return CoreHelper

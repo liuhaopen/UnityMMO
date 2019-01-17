@@ -129,4 +129,8 @@ function TypeManager.GetScriptMgr( name )
 	return TypeManager.s_Systems[name]
 end
 
+function TypeManager.GetScriptMgrMap( )
+	return TypeManager.s_Systems
+end
+
 return TypeManager
