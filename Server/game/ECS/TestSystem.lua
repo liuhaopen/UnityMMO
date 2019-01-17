@@ -1,5 +1,5 @@
 local TestSystem = BaseClass(ECS.ComponentSystem)
-ECS:RegisterSystem(TestSystem, "TestSystem")
+ECS.TypeManager.RegisterScriptMgr(TestSystem, "TestSystem")
 TestSystem.UpdateAfter = {"LastSystem"}
 TestSystem.UpdateBefore = {"FirstSystem"}
 TestSystem.UpdateInGroup = {"GroupSystem"}

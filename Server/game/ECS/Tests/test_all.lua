@@ -1,4 +1,4 @@
-package.path = package.path ..';..\\?.lua;..\\..\\?.lua;Tests\\?.lua';
+package.path = package.path ..';../?.lua;../../?.lua;Tests/?.lua';
 require "ECS"
 lu = require('Tests.luaunit')
 --将 szFullString 对象拆分为一个子字符串表
@@ -47,8 +47,8 @@ function PrintTable( tbl, level, return_counter )
 	print(indent_str .. "}")
 	
 end
--- local s = io.popen("ls ./")--for linux
-local s = io.popen("dir /b Tests")--for windows
+local s = io.popen("ls ./Tests")--for linux
+-- local s = io.popen("dir /b Tests")--for windows
 local fileNames = s:read("*all")
 fileNames = Split(fileNames, "\n")
 for k,v in pairs(fileNames or {}) do
