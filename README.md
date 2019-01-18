@@ -1,5 +1,7 @@
 # LuaECS
 Unity ECS框架Entities的Lua实现，特点是保证组件信息尽量存放在连续内存中，从而提高缓存命中率，所以我用Lua实现时，组件信息都平坦地保存在名为Chunk的userdata里，引用时根据偏移算出指针地址进行读写。  
+对实现细节有兴趣的可以看我对UnityECS的框架源码分析：https://blog.csdn.net/yudianxia/column/info/31641   
+Lua版本的话基本上和Unity实现是一样的。  
 
 # 用例
 ```  
@@ -37,7 +39,7 @@ end
 lua ./Tests/test_all.lua -v  
 
 # Todo
-)增加ShardComponent
-)增加EntityArray
-)命名规则改成lua风格
-)支持多线程？
+)增加ShardComponent  
+)增加EntityArray  
+)命名规则改成lua风格  
+)支持多线程？  
