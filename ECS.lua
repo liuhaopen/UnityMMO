@@ -51,3 +51,5 @@ end
 
 ECS.InitWorld = InitWorld
 ECS.Update = Update
+
+return ECS
