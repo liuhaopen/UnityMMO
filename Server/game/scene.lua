@@ -1,6 +1,8 @@
 local skynet = require "skynet"
 require "Common.Util.util"
-require "game.ECS.ECS"
+require "ECS.ECS"
+require "common.helper"
+RequireAllLuaFileInFolder("./game/System")
 
 local NORET = {}
 local CMD = {}
@@ -53,25 +55,30 @@ local init_npc = function (  )
 	for k,v in pairs(this.scene_cfg.npc_list) do
 		local npc = {}
 		npc.id = v.npc_id
-		npc.uid = new_scene_uid(SceneObjectType.Role)
+		npc.uid = new_scene_uid(SceneObjectType.NPC)
 		npc.pos_x = v.pos_x
 		npc.pos_y = v.pos_y
 		npc.pos_z = v.pos_z
+		-- local npc_entity = this.entity_mgr:CreateEntityByArcheType(this.npc_archetype)
 		table.insert(this.npc_list, npc)
 	end
 end
 
 local init_monster = function (  )
-	
+	if not this.scene_cfg or not this.scene_cfg.monster_list then return end
+	for k,v in pairs(this.scene_cfg.monster_list) do
+		local monster = this.entity_mgr:CreateEntityByArcheType(this.monster_archetype)
+		this.entity_mgr:SetComponentData(monster, "UMO.Position", {x=v.pos_x, y=v.pos_y, z=v.pos_z})
+		this.entity_mgr:SetComponentData(monster, "UMO.UID", {value=new_scene_uid(SceneObjectType.Monster)})
+		this.entity_mgr:SetComponentData(monster, "UMO.TypeID", {value=v.monster_id})
+	end
 end
 
 function CMD.init(scene_id)
 	ECS.InitWorld("scene_world")
 	this.entity_mgr = ECS.World.Active:GetOrCreateManager(ECS.EntityManager.Name)
-	-- this.npc_archetype = this.entity_mgr:CreateArchetype({ECS.Position, ECS.Rotation})
-	-- this.entity_mgr:CreateEntity(this.npc_archetype)
-
-	print('Cat:scene.lua[init] scene_id', scene_id)
+	this.monster_archetype = this.entity_mgr:CreateArchetype({"UMO.Position", "UMO.UID", "UMO.TypeID"})
+	this.npc_archetype = this.entity_mgr:CreateArchetype({"UMO.Position", "UMO.UID", "UMO.TypeID"})
 	this.scene_cfg = require("Config.scene.config_scene_"..scene_id)
 	init_npc()
 	init_monster()
@@ -83,7 +90,6 @@ function CMD.init(scene_id)
 			local curTime = os.time()
 			Time.deltaTime = curTime-lastUpdateTime
 			lastUpdateTime = curTime
-
 			ECS.Update()
 			skynet.sleep(10)
 		end

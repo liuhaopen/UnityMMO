@@ -16,9 +16,6 @@ TypeManager.StaticTypeLookup = {}
 local CalculateFieldInfo, CalculateMemoryOrdering
 
 function TypeManager.Initialize(  )
-	if TypeManager.s_Count>0 then
-		return
-	end
 	-- self.ObjectOffset = UnsafeUtility.SizeOf<ObjectOffsetType>();
     -- self.s_CreateTypeLock = new SpinLock()
     -- TypeManager.s_Systems = {}
@@ -26,13 +23,12 @@ function TypeManager.Initialize(  )
     -- TypeManager.StaticTypeLookup = {}
     -- TypeManager.s_Count = 0
 
-	TypeManager.s_Types[TypeManager.s_Count] = {
-		Type=nil, SizeInChunk=0, Category=TypeManager.TypeCategory.ComponentData,
-		-- FastEqualityTypeInfo = FastEquality.TypeInfo.Null,
-		EntityOffsets = nil, MemoryOrdering=0, BufferCapacity=-1, ElementSize = 0
-	}
-    TypeManager.s_Count = TypeManager.s_Count + 1
-
+ --    TypeManager.s_Count = TypeManager.s_Count + 1
+	-- TypeManager.s_Types[TypeManager.s_Count] = {
+	-- 	Type=nil, SizeInChunk=0, Category=TypeManager.TypeCategory.ComponentData,
+	-- 	-- FastEqualityTypeInfo = FastEquality.TypeInfo.Null,
+	-- 	EntityOffsets = nil, MemoryOrdering=0, BufferCapacity=-1, ElementSize = 0
+	-- }
     TypeManager.RegisterType(ECS.Entity.Name, {Index="integer", Version="integer"})
 end
 

@@ -1,41 +1,44 @@
 local PatrolSystem = BaseClass(ECS.ComponentSystem)
-ECS.Systems:Register(PatrolSystem, "UMMO.PatrolSystem")
-PatrolSystem.UpdateAfter = {"LastSystem"}
-PatrolSystem.UpdateBefore = {"FirstSystem"}
-PatrolSystem.UpdateInGroup = {"GroupSystem"}
+ECS.TypeManager.RegisterScriptMgr("UMO.PatrolSystem", PatrolSystem)
 
 function PatrolSystem:Constructor(  )
 	local data = {
-		position = "ComponentDataArray:ECS.Position",--当前坐标
-		born_pos = "ComponentDataArray:UMMO.BornPosition:ReadOnly",--出生点
-		speed = "ComponentDataArray:UMMO.MoveSpeed:ReadOnly",--速度
-		radius = "ComponentDataArray:UMMO.PatrolRadius:ReadOnly",--巡逻半径
-		direction = "ComponentDataArray:UMMO.Direction",--方向
+		position = "Array:UMO.Position",--当前坐标
+		-- born_pos = "Array:UMO.BornPosition:ReadOnly",--出生点
+		-- speed = "Array:UMO.MoveSpeed:ReadOnly",--速度
+		-- radius = "Array:UMO.PatrolRadius:ReadOnly",--巡逻半径
+		-- direction = "Array:UMO.Direction",--方向
 		length   = "Length",
 	}
-	self.group = {}
-	self:Inject(self.group, data)
+	-- self.group = {}
+	self:Inject("m_data", data)
 end
 
 --Cat_Todo : 使用RecastNavigation读取地形信息，不然发给前端的y坐标肯定对不上地图的
 function PatrolSystem:OnUpdate(  )
-	local deltaTime = Time.deltaTime
-	for i=1,self.group.length do
-		local last_pos = self.group.position:get(i)
-		self.group.position:set(i, last_pos)
+	-- local deltaTime = Time.deltaTime
+	print('Cat:PatrolSystem.lua[23] self.m_data.length', self.m_data.length)
+	for i=1,self.m_data.length do
+		local last_pos = self.m_data.position[i]
+		print("Cat:PatrolSystem [start:23] last_pos:", last_pos)
+		PrintTable(last_pos)
+		print("Cat:PatrolSystem [end]")
+		-- self.m_data.position:set(i, last_pos)
 
-		local last_pos_x = self.group.position:get_field(i, "x")
-		local last_pos_y = self.group.position:get_field(i, "y")
-		local last_pos_z = self.group.position:get_field(i, "z")
-		local last_dir_x = self.group.direction:get_field(i, "x")
-		local last_dir_y = self.group.direction:get_field(i, "y")
-		local last_dir_z = self.group.direction:get_field(i, "z")
-		local speed = self.group.speed:get_field(i, "speed")
-		local new_pos_x = last_pos_x+last_dir_x*speed*deltaTime
-		local new_pos_y = last_pos_y+last_dir_y*speed*deltaTime
-		local new_pos_z = last_pos_z+last_dir_z*speed*deltaTime
-		self.group.position:set(i, "x", new_pos_x)
-		self.group.position:set(i, "y", new_pos_y)
-		self.group.position:set(i, "z", new_pos_z)
+		-- local last_pos_x = self.m_data.position:get_field(i, "x")
+		-- local last_pos_y = self.m_data.position:get_field(i, "y")
+		-- local last_pos_z = self.m_data.position:get_field(i, "z")
+		-- local last_dir_x = self.m_data.direction:get_field(i, "x")
+		-- local last_dir_y = self.m_data.direction:get_field(i, "y")
+		-- local last_dir_z = self.m_data.direction:get_field(i, "z")
+		-- local speed = self.m_data.speed:get_field(i, "speed")
+		-- local new_pos_x = last_pos_x+last_dir_x*speed*deltaTime
+		-- local new_pos_y = last_pos_y+last_dir_y*speed*deltaTime
+		-- local new_pos_z = last_pos_z+last_dir_z*speed*deltaTime
+		-- self.m_data.position:set(i, "x", new_pos_x)
+		-- self.m_data.position:set(i, "y", new_pos_y)
+		-- self.m_data.position:set(i, "z", new_pos_z)
 	end
 end
+
+return PatrolSystem

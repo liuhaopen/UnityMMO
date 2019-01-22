@@ -8,8 +8,8 @@ standalone = "0.0.0.0:2013"
 start = "main"
 luaservice = root.."service/?.lua;"..root.."skynet/service/?.lua;"..root.."game/?.lua;"
 lualoader = root .. "skynet/lualib/loader.lua"
-lua_path = root .. "../Lua/?.lua;"..root .. "lualib/?.lua;" .. root .. "skynet/lualib/?.lua;" .. root .. "skynet/lualib/?/init.lua;" .. root.."?.lua;"..root.."game/?.lua;"..root.."../Lua/Common/?.lua;"..root.."game/ECS/?.lua;"
-lua_cpath = root .. "skynet/luaclib/?.so;" .. root.."game/ECS/?.so"
+lua_path = root .. "../Lua/?.lua;"..root .. "lualib/?.lua;" .. root .. "skynet/lualib/?.lua;" .. root .. "skynet/lualib/?/init.lua;" .. root.."?.lua;"..root.."game/?.lua;"..root.."game/System/?.lua;"..root.."../Lua/Common/?.lua;"..root.."lualib/ECS/?.lua;"
+lua_cpath = root .. "skynet/luaclib/?.so;" .. root.."lualib/ECS/?.so"
 cpath = root .. "/cservice/?.so;"..root.."/skynet/cservice/?.so"
 
 if $DAEMON then
