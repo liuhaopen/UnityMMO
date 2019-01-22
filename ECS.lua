@@ -27,18 +27,20 @@ require "InjectComponentGroupData"
 require "ComponentChunkIterator"
 require "ComponentDataArray"
 
-local system_list = nil
+local system_list = {}
 local function InitWorld( worldName )
 	local world = ECS.World.New(worldName)
 	ECS.World.Active = world
 
+	world:GetOrCreateManager(ECS.EntityManager.Name)
+
 	--register all systems
 	local systems = ECS.TypeManager.GetScriptMgrMap()
 	for k,v in pairs(systems) do
-		world:GetOrCreateManager(k)
+		local sys = world:GetOrCreateManager(k)
+		table.insert(system_list, sys)
 	end
-
-	system_list = ECS.ScriptBehaviourUpdateOrder.SortSystemList(systems)
+	-- system_list = ECS.ScriptBehaviourUpdateOrder.SortSystemList(systems)
 end
 
 local function Update(  )
