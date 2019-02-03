@@ -43,6 +43,7 @@ lua ./Tests/test_all.lua -v
 )System根据UpdateBefore，After等排序  
 )整理目录结构  
 )补全测试用例  
+)增加字符串和引用类型  
 )增加ShardComponent  
 )增加EntityArray  
 )命名规则改成lua风格  
