@@ -158,6 +158,9 @@ public class Packager {
         HandleUIBundles();
 
         BuildPipeline.BuildAssetBundles(streamPath, maps.ToArray(), BuildAssetBundleOptions.None, target);
+
+        BuildNavMeshBundles(streamPath, target);
+
         BuildFileIndex(streamPath);
 
         if (Directory.Exists(tempLuaDir)) Directory.Delete(tempLuaDir, true);
@@ -260,6 +263,25 @@ public class Packager {
         }
     }
 
+    public static void BuildNavMeshBundles(string streamPath, BuildTarget target)
+    {
+        string path = "Assets/AssetBundleRes/scene/navmesh";
+        string[] file_paths = Directory.GetFiles(path);
+        // List<string> levels = new List<string>();
+        foreach(string file_path in file_paths)
+        {
+            string ext = Path.GetExtension(file_path);
+            if (ext.Equals(".unity"))
+            {
+                string navmesh_scene_name = Path.GetFileNameWithoutExtension(file_path);
+                // levels.Add(file_path);
+                string[] levels = new string[]{file_path};
+                Debug.Log("file : "+file_path+" save : "+streamPath+"/"+navmesh_scene_name);
+                BuildPipeline.BuildPlayer(levels, streamPath+"/"+navmesh_scene_name, target, BuildOptions.BuildAdditionalStreamedScenes);
+            }
+        }
+    }
+
     public static void HandleSceneBundles()
     {
         string path = "Assets/AssetBundleRes/scene/";
@@ -268,7 +290,10 @@ public class Packager {
             return;
         for (int i = 0; i < dirs.Length; i++)
         {
-            string asset_name = "scene_" + Path.GetFileName(dirs[i]);
+            string folder_name = Path.GetFileName(dirs[i]);
+            if (folder_name == "navmesh")
+                continue;
+            string asset_name = "scene_" + folder_name;
             List<string> file_list = new List<string>();//文件列表
             paths.Clear(); files.Clear(); Recursive(dirs[i], false);
             UnityEngine.Debug.Log("scene asset_name : "+asset_name+" filenum:"+files.Count.ToString());

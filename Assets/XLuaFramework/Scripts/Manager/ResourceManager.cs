@@ -72,6 +72,20 @@ public class AssetBundleInfo {
             LoadAsset<UnityEngine.GameObject>(file_path, null, func);
         }
 
+        public void LoadNavMesh(string file_name, LuaFunction func = null)
+        {
+            string url = m_BaseDownloadingURL + "/" + file_name;
+            WWW bundle = new WWW(url);
+            if (bundle.error == null)
+            {
+                AssetBundle ab = bundle.assetBundle; //将场景通过AssetBundle方式加载到内存中  
+            }
+            else
+            {
+                Debug.LogError(bundle.error);
+            }
+        }
+
         public void LoadPrefabGameObject(string file_path, LuaFunction func = null) {
             this.LoadAsset<GameObject>(file_path, delegate(UnityEngine.Object[] objs) {
                 if (objs.Length == 0) return;
