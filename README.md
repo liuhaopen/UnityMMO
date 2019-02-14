@@ -81,3 +81,4 @@
 2）为了保证组件信息尽量存放在连续内存中，从而提高缓存命中率，组件信息都平坦地保存在名为Chunk的userdata里，引用时根据偏移算出指针地址进行读写。  
 19.01.23：初步完成了可运行的lua版本ecs框架了（因为公司游戏上线忙死了所以基本上没什么时间弄），开始做后端的NPC和怪物逻辑吧，边做功能边给lua ecs补特性吧。后端的寻路就用recastnavigation库吧，要先导出接口给lua，其次是unity-navmesh导出的数据不能直接用的，所以还要写个脚本把unity生成的navmesh导出成recast支持的格式  
 19.02.03：前端的寻路资源流程确定为大世界的navmesh分块打包（需要划分到不同的scene把所有节点删光，这样就只有navmesh数据了），然后运行时可以Additive模式加载该Scene，当然导出navmesh前还需要拉几个OffMeshLink，这样加载多个scene时会就自动把多个navmesh关联起来。  
+19.02.13：终于把unity的navmesh导出成recastnavigation可以使用的数据了，主要思路是利用unity的NavMesh.CalculateTriangulation方法返回的三角形数据转化为recast里的rcPolyMesh对象然后再参照RecastDemo那样创建出dtNavMesh对象，详细见[Navigator](https://github.com/liuhaopen/Navigator "Navigator")  
