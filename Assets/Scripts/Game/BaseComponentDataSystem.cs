@@ -485,39 +485,39 @@ public abstract class DeinitializeComponentSystem<T> : BaseComponentSystem
 }
 
 
-// [DisableAutoCreation]
-// [AlwaysUpdateSystem]
-// public abstract class DeinitializeComponentDataSystem<T> : BaseComponentSystem
-// 	where T : struct, IComponentData
-// {
-// 	ComponentGroup OutgoingGroup;
-// 	string name;
+[DisableAutoCreation]
+[AlwaysUpdateSystem]
+public abstract class DeinitializeComponentDataSystem<T> : BaseComponentSystem
+	where T : struct, IComponentData
+{
+	ComponentGroup OutgoingGroup;
+	string name;
 
-// 	public DeinitializeComponentDataSystem(GameWorld world) : base(world) {}
+	public DeinitializeComponentDataSystem(GameWorld world) : base(world) {}
 
-// 	protected override void OnCreateManager()
-// 	{
-// 		base.OnCreateManager();
-// 		name = GetType().Name;
-// 		OutgoingGroup = GetComponentGroup(typeof(T), typeof(DespawningEntity));
-// 	}
+	protected override void OnCreateManager()
+	{
+		base.OnCreateManager();
+		name = GetType().Name;
+		OutgoingGroup = GetComponentGroup(typeof(T), typeof(DespawningEntity));
+	}
     
-// 	protected override void OnUpdate()
-// 	{
-// 		Profiler.BeginSample(name);
+	protected override void OnUpdate()
+	{
+		Profiler.BeginSample(name);
 
-// 		var outgoingComponentArray = OutgoingGroup.GetComponentDataArray<T>();
-// 		var outgoingEntityArray = OutgoingGroup.GetEntityArray();
-// 		for (var i = 0; i < outgoingComponentArray.Length; i++)
-// 		{
-// 			Deinitialize(outgoingEntityArray[i], outgoingComponentArray[i]);
-// 		}
+		var outgoingComponentArray = OutgoingGroup.GetComponentDataArray<T>();
+		var outgoingEntityArray = OutgoingGroup.GetEntityArray();
+		for (var i = 0; i < outgoingComponentArray.Length; i++)
+		{
+			Deinitialize(outgoingEntityArray[i], outgoingComponentArray[i]);
+		}
 		
-// 		Profiler.EndSample();
-// 	}
+		Profiler.EndSample();
+	}
 
-// 	protected abstract void Deinitialize(Entity entity, T component);
-// }
+	protected abstract void Deinitialize(Entity entity, T component);
+}
 
 [DisableAutoCreation]
 [AlwaysUpdateSystem]
@@ -559,32 +559,32 @@ public abstract class InitializeComponentGroupSystem<T,S> : BaseComponentSystem
 
 
 
-// [DisableAutoCreation]
-// [AlwaysUpdateSystem]
-// public abstract class DeinitializeComponentGroupSystem<T> : BaseComponentSystem
-// 	where T : MonoBehaviour
-// {
-// 	ComponentGroup OutgoingGroup;
-// 	string name;
+[DisableAutoCreation]
+[AlwaysUpdateSystem]
+public abstract class DeinitializeComponentGroupSystem<T> : BaseComponentSystem
+	where T : MonoBehaviour
+{
+	ComponentGroup OutgoingGroup;
+	string name;
 
-// 	public DeinitializeComponentGroupSystem(GameWorld world) : base(world) {}
+	public DeinitializeComponentGroupSystem(GameWorld world) : base(world) {}
 
-// 	protected override void OnCreateManager()
-// 	{
-// 		base.OnCreateManager();
-// 		name = GetType().Name;
-// 		OutgoingGroup = GetComponentGroup(typeof(T), typeof(DespawningEntity));
-// 	}
+	protected override void OnCreateManager()
+	{
+		base.OnCreateManager();
+		name = GetType().Name;
+		OutgoingGroup = GetComponentGroup(typeof(T), typeof(DespawningEntity));
+	}
     
-// 	protected override void OnUpdate()
-// 	{
-// 		Profiler.BeginSample(name);
+	protected override void OnUpdate()
+	{
+		Profiler.BeginSample(name);
 
-// 		if (OutgoingGroup.CalculateLength() > 0)
-// 			Deinitialize(ref OutgoingGroup);
+		if (OutgoingGroup.CalculateLength() > 0)
+			Deinitialize(ref OutgoingGroup);
 		
-// 		Profiler.EndSample();
-// 	}
+		Profiler.EndSample();
+	}
 
-// 	protected abstract void Deinitialize(ref ComponentGroup group);
-// }
+	protected abstract void Deinitialize(ref ComponentGroup group);
+}

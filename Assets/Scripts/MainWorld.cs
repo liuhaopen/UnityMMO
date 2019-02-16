@@ -15,13 +15,6 @@ public class MainWorld : MonoBehaviour
         Initialize();
     }
 
-    // public static MainWorld GetInstance()
-    // {
-    //     if (instance == null)
-    //         instance = new MainWorld();
-    //     return instance;
-    // }
-
     public void Initialize() {
         SceneMgr.Instance.InitArcheType();
         SynchFromNet.Instance.Init();
