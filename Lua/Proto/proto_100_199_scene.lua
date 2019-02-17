@@ -24,6 +24,13 @@ return [[
 	career 1 : integer
 	name 2 : string
 }
+.scene_role_look_info {
+	body 0 : integer
+	hair 1 : integer
+	weapon 2 : integer
+	wing 3 : integer
+	horse 4 : integer
+}
 .scene_monster_info {
 	monster_id 0 : integer
 	monster_type_id 1 : integer
@@ -66,12 +73,12 @@ scene_change_aoi_radius 103 {
 	}
 }
 
-scene_get_role_detail 104 {
+scene_get_role_look_info 104 {
 	request {
 		uid 0 : integer
 	}
 	response {
-		role_info 0 : scene_role_info
+		role_look_info 0 : scene_role_look_info
 	}
 }
 

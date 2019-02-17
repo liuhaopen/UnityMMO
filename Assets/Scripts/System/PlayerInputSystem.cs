@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace UnityMMO
 {
+    [DisableAutoCreation]
     public class PlayerInputSystem : ComponentSystem
     {
         struct PlayerData

@@ -112,6 +112,8 @@ namespace XLuaFramework {
                         JumpToState(State.Playing);
                     }
                     break;
+                case State.Playing:
+                    break;
             }
         }
     }

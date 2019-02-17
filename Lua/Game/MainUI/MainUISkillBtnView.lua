@@ -6,7 +6,7 @@ function MainUISkillBtnView:DefaultVar( )
 		prefab_path = "Assets/AssetBundleRes/ui/mainui/MainUISkillBtnView.prefab",
 		canvas_name = "Normal",
 		components = {
-				{UI.HideOtherView},
+				-- {UI.HideOtherView},
 				{UI.DelayDestroy, {delay_time=5}},
 			},
 		},
