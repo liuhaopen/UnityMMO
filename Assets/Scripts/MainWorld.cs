@@ -10,6 +10,7 @@ namespace UnityMMO{
         private MainWorld(){}
         public static MainWorld Instance = null;
         GameWorld m_GameWorld;
+        SystemCollection m_Systems;
 
         private void Awake() {
             Instance = this;
@@ -18,22 +19,38 @@ namespace UnityMMO{
 
         public void Initialize() {
             m_GameWorld = new GameWorld("ClientWorld");
-            SceneMgr.Instance.InitArcheType();
+            SceneMgr.Instance.Init(m_GameWorld);
             SynchFromNet.Instance.Init();
 
+            InitializeSystems();
+        }
 
+        public void InitializeSystems() {
+            m_Systems = new SystemCollection();
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<PlayerInputSystem>());
+            
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooks>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooksNetRequest>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooksSpawnRequests>(m_GameWorld));
         }
 
         public void StartGame() {
-            //目前只有一个场景（本来就想做成无限大世界的）
-            SceneMgr.Instance.LoadScene(1001);
-            //开始从后端请求场景信息，一旦开启就会在收到回复时再次请求
-            SynchFromNet.Instance.ReqSceneObjInfoChange();
-
+            if (GameVariable.IsSingleMode)
+            {
+                //目前只有一个场景（本来就想做成无限大世界的）
+                SceneMgr.Instance.AddMainRole(1);
+                SceneMgr.Instance.LoadScene(1001);
+            }
+            else
+            {
+                //开始从后端请求场景信息，一旦开启就会在收到回复时再次请求
+                SynchFromNet.Instance.ReqSceneObjInfoChange();
+            }
         }
 
         private void Update() {
-            
+            // Debug.Log("main world update");
+            m_Systems.Update();
         }
         
         // void TestLoadMultipleNavMeshInRunTime()

@@ -24,12 +24,13 @@ return [[
 	career 1 : integer
 	name 2 : string
 }
-.scene_role_look_info {
-	body 0 : integer
-	hair 1 : integer
-	weapon 2 : integer
-	wing 3 : integer
-	horse 4 : integer
+.scene_role_looks_info {
+	career 0 : integer
+	body 1 : integer
+	hair 2 : integer
+	weapon 3 : integer
+	wing 4 : integer
+	horse 5 : integer
 }
 .scene_monster_info {
 	monster_id 0 : integer
@@ -78,7 +79,8 @@ scene_get_role_look_info 104 {
 		uid 0 : integer
 	}
 	response {
-		role_look_info 0 : scene_role_look_info
+		result 0 : integer
+		role_looks_info 1 : scene_role_looks_info
 	}
 }
 

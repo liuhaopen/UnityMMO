@@ -10,6 +10,10 @@ namespace UnityMMO
         public float2 Move;
     }
 
+    public struct MainRoleTag : IComponentData
+    {
+    }
+
     public struct MoveSpeed : IComponentData
     {
         public float speed;
@@ -53,8 +57,6 @@ namespace UnityMMO
     }
     // Pure marker types
     public struct Enemy : IComponentData { }
-    public struct EnemyShot : IComponentData { }
-    public struct PlayerShot : IComponentData { }
 
     public struct EnemyShootState : IComponentData
     {

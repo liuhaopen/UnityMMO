@@ -6,6 +6,7 @@ namespace UnityMMO
     [LuaCallCSharp]
     public class GameVariable
     {
+        public static bool IsSingleMode = false;
         public static bool IsNeedSynchSceneInfo = false;
     }
 }

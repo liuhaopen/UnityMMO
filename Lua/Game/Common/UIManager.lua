@@ -83,7 +83,10 @@ function UIMgr:Show( view )
 			self:PushOpenedView(view)
 		end
 		view.transform.localScale = Vector3.one
-        view.transform.localPosition = Vector3.zero
+        view.transform.anchoredPosition = Vector3.zero
+        local localPos = view.transform.localPosition
+        localPos.z = 0
+        view.transform.localPosition = localPos
 		if view.UIConfig.components then
 			for i,v in ipairs(view.UIConfig.components) do
 				self:AddUIComponent(view, v[1], v[2])

@@ -17,14 +17,14 @@ end
 --Cat_Todo : 使用RecastNavigation读取地形信息，不然发给前端的y坐标肯定对不上地图的
 function PatrolSystem:OnUpdate(  )
 	-- local deltaTime = Time.deltaTime
-	print('Cat:PatrolSystem.lua[23] self.m_data.length', self.m_data.length)
+	-- print('Cat:PatrolSystem.lua[23] self.m_data.length', self.m_data.length)
 	for i=1,self.m_data.length do
 		local last_pos = self.m_data.position[i]
-		print("Cat:PatrolSystem [start:23] last_pos:", last_pos)
-		PrintTable(last_pos)
-		print("Cat:PatrolSystem [end]")
+		-- print("Cat:PatrolSystem [start:23] last_pos:", last_pos)
+		-- PrintTable(last_pos)
+		-- print("Cat:PatrolSystem [end]")
+		
 		-- self.m_data.position:set(i, last_pos)
-
 		-- local last_pos_x = self.m_data.position:get_field(i, "x")
 		-- local last_pos_y = self.m_data.position:get_field(i, "y")
 		-- local last_pos_z = self.m_data.position:get_field(i, "z")

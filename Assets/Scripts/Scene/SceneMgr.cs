@@ -17,9 +17,10 @@ namespace UnityMMO
 public class SceneMgr : MonoBehaviour
 {
 	public static SceneMgr Instance;
+    GameWorld m_GameWorld;
     public Transform container;
-	EntityManager entityManager;
-    public EntityArchetype RoleArchetype;
+	// EntityManager entityManager;
+    // public EntityArchetype RoleArchetype;
     public EntityArchetype MonsterArchetype;
     public EntityArchetype NPCArchetype;
     Dictionary<long, Entity> entityDic;
@@ -28,13 +29,19 @@ public class SceneMgr : MonoBehaviour
     private SceneObjectLoadController m_Controller;
     const string SceneInfoPath = "Assets/AssetBundleRes/scene/";
 
-    public EntityManager EntityManager { get => entityManager; set => entityManager = value; }
+    // GameObject mainRolePrefab;
+    // GameObject rolePrefab;
+
+    Dictionary<string, GameObject> prefabDic;
+
+    public EntityManager EntityManager { get => m_GameWorld.GetEntityManager();}
 
     public void Awake()
 	{
 		Instance = this; // worst singleton ever but it works
-		EntityManager = World.Active.GetExistingManager<EntityManager>();
+		// EntityManager = World.Active.GetExistingManager<EntityManager>();
         entityDic = new Dictionary<long, Entity>();
+        prefabDic = new Dictionary<string, GameObject>();
 	}
 
     void Update()
@@ -43,16 +50,36 @@ public class SceneMgr : MonoBehaviour
             m_Controller.RefreshDetector(detector);
     }
 
-	public void InitArcheType()
+	public void Init(GameWorld world)
 	{
-        // World.Active.GetOrCreateManager<PlayerMoveSystem>().Enabled = false;
-		RoleArchetype = EntityManager.CreateArchetype(
-                typeof(Position),typeof(TargetPosition),
-                typeof(MoveSpeed));
+        m_GameWorld = world;
+
+        LoadPrefab("Assets/AssetBundleRes/role/prefab/MainRole.prefab", "MainRole");
+        LoadPrefab("Assets/AssetBundleRes/role/prefab/Role.prefab", "Role");
+
+		// RoleArchetype = EntityManager.CreateArchetype(
+        //         typeof(Position),typeof(TargetPosition),
+        //         typeof(MoveSpeed));
 
         NPCArchetype = EntityManager.CreateArchetype(
                 typeof(Position));
 	}
+
+    void LoadPrefab(string path, string storePrefabName)
+    {
+        XLuaFramework.ResourceManager.GetInstance().LoadAsset<GameObject>(path, delegate(UnityEngine.Object[] objs) {
+            if (objs.Length > 0 && (objs[0] as GameObject)!=null)
+            {
+                GameObject prefab = objs[0] as GameObject;
+                if (prefab != null) 
+                {
+                    this.prefabDic[storePrefabName] = prefab;
+                    return;
+                }
+            }
+            Debug.LogError("cannot find prefab in "+path);
+        });
+    }
 
 	public void OnDestroy()
 	{
@@ -142,7 +169,12 @@ public class SceneMgr : MonoBehaviour
 
     public Entity AddMainRole(long uid)
 	{
-		Entity role = AddRole(uid);
+        GameObjectEntity roleGameOE = m_GameWorld.Spawn<GameObjectEntity>(prefabDic["MainRole"]);
+        roleGameOE.name = "MainRole_"+uid;
+        Entity role = roleGameOE.Entity;
+        InitRole(role, uid);
+		// Entity role = AddRole(uid);
+        EntityManager.AddComponent(role, ComponentType.Create<MainRoleTag>());
         EntityManager.AddComponent(role, ComponentType.Create<PlayerInput>());
         EntityManager.AddComponent(role, ComponentType.Create<SynchPosFlag>());
         entityDic.Add(uid, role);
@@ -152,20 +184,30 @@ public class SceneMgr : MonoBehaviour
 
     public Entity AddRole(long uid)
 	{
-		Entity role = EntityManager.CreateEntity(RoleArchetype);
-        EntityManager.SetComponentData(role, new Position {Value = new int3(0, 0, 0)});
-        EntityManager.SetComponentData(role, new MoveSpeed {speed = 12});
-        EntityManager.SetComponentData(role, new TargetPosition {Value = new int3(0, 0, 0)});
-        EntityManager.AddSharedComponentData(role, GetLookFromPrototype("Prototype/MainRoleRenderPrototype"));
+        GameObjectEntity roleGameOE = m_GameWorld.Spawn<GameObjectEntity>(prefabDic["Role"]);
+        roleGameOE.name = "Role_"+uid;
+        Entity role = roleGameOE.Entity;
+        InitRole(role, uid);
+        // EntityManager.AddSharedComponentData(role, GetLookFromPrototype("Prototype/MainRoleRenderPrototype"));
         entityDic.Add(uid, role);
         return role;
 	}
+
+    private void InitRole(Entity role, long uid)
+    {
+        EntityManager.AddComponentData(role, new Position {Value = new int3(0, 0, 0)});
+        EntityManager.AddComponentData(role, new MoveSpeed {speed = 12});
+        EntityManager.AddComponentData(role, new TargetPosition {Value = new int3(0, 0, 0)});
+        
+        RoleState roleState = EntityManager.GetComponentObject<RoleState>(role);
+        roleState.roleUid = uid;
+    }
 
     public Entity AddNPC(long uid)
 	{
 		Entity entity = EntityManager.CreateEntity(NPCArchetype);
         EntityManager.SetComponentData(entity, new Position {Value = new int3(0, 0, 0)});
-        EntityManager.AddSharedComponentData(entity, GetLookFromPrototype("Prototype/NPCRenderPrototype"));
+        // EntityManager.AddSharedComponentData(entity, GetLookFromPrototype("Prototype/NPCRenderPrototype"));
         entityDic.Add(uid, entity);
         return entity;
 	}
@@ -174,8 +216,8 @@ public class SceneMgr : MonoBehaviour
     {
         if (type == SceneObjectType.Role)
             return AddRole(uid);
-        else if (type == SceneObjectType.NPC)
-            return AddNPC(uid);
+        // else if (type == SceneObjectType.NPC)
+            // return AddNPC(uid);
         return Entity.Null;
     }
 
@@ -183,7 +225,7 @@ public class SceneMgr : MonoBehaviour
     {
         Entity entity = GetSceneObject(uid);
         if (entity!=Entity.Null)
-            entityManager.DestroyEntity(entity);
+            EntityManager.DestroyEntity(entity);
     }
 
     public Entity GetSceneObject(long uid)

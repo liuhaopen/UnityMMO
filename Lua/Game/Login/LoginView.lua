@@ -10,9 +10,9 @@ function LoginView:DefaultVar( )
 end
 
 function LoginView:OnLoad(  )
-	local names = {"login", "account"}
+	local names = {"login", "account", "single_mode:obj",}
 	UI.GetChildren(self, self.transform, names)
-	self.login_btn = self.login.gameObject
+	self.login_btn_obj = self.login.gameObject
     self.account_txt = self.account:GetComponent("InputField")
     -- local x, y, z = self.transform.localPosition.xyz
     self.transform.sizeDelta = Vector2.New(0, 0)
@@ -21,20 +21,29 @@ function LoginView:OnLoad(  )
 end
 
 function LoginView:AddEvents(  )
-	local on_click = function (  )
-        local account = tonumber(self.account_txt.text)
-        print('Cat:LoginView.lua[26] account, ', account, self.account_txt.text)
-        if not account then
-            account = 123
-        end
-        local login_info = {
-            account = account,
-            password = "password",
-        }
-        GlobalEventSystem:Fire(LoginConst.Event.StartLogin, login_info)
-        CookieWrapper:GetInstance():SaveCookie(CookieLevelType.Common, CookieTimeType.TYPE_ALWAYS, CookieKey.LastLoginInfo, login_info)
+	
+	local on_click = function ( click_obj )
+		if click_obj == self.login_btn_obj then
+	        local account = tonumber(self.account_txt.text)
+	        print('Cat:LoginView.lua[26] account, ', account, self.account_txt.text)
+	        if not account then
+	            account = 123
+	        end
+	        local login_info = {
+	            account = account,
+	            password = "password",
+	        }
+	        GlobalEventSystem:Fire(LoginConst.Event.StartLogin, login_info)
+	        CookieWrapper:GetInstance():SaveCookie(CookieLevelType.Common, CookieTimeType.TYPE_ALWAYS, CookieKey.LastLoginInfo, login_info)
+		elseif click_obj == self.single_mode_obj then
+            UIMgr:CloseAllView()
+			GameVariable.IsSingleMode = true
+        	GlobalEventSystem:Fire(MainUIConst.Event.InitMainUIViews)
+        	CS.XLuaManager.Instance:OnLoginOk()
+		end
 	end
-	UIHelper.BindClickEvent(self.login_btn, on_click)
+	UIHelper.BindClickEvent(self.login_btn_obj, on_click)
+	UIHelper.BindClickEvent(self.single_mode_obj, on_click)
 end
 
 function LoginView:UpdateView(  )

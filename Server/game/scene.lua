@@ -153,13 +153,29 @@ function CMD.role_leave_scene(role_id)
 	this.role_list[role_id] = nil
 end
 
+function CMD.scene_get_role_look_info( user_info, req_data )
+	print('Cat:scene.lua[scene_get_role_look_info] user_info, req_data', user_info, user_info.cur_role_id)
+	return {
+			result = 0,
+			role_looks_info = {
+				career = 2,
+				body = 0,
+				hair = 0,
+				weapon = 0,
+				wing = 0,
+				horse = 0,
+			}
+		}
+end
+
 function CMD.scene_get_main_role_info( user_info, req_data )
 	print('Cat:scene.lua[scene_get_main_role_info] user_info, req_data', user_info, user_info.cur_role_id)
 	return {
 		role_info={
 			scene_uid=this.role_list[user_info.cur_role_id].scene_uid,
 			role_id=user_info.cur_role_id,
-			career=2,name="haha"
+			career=2,name="haha",
+			scene_id = 1001,
 			}
 		}
 end

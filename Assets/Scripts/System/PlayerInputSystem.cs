@@ -6,37 +6,39 @@ namespace UnityMMO
     [DisableAutoCreation]
     public class PlayerInputSystem : ComponentSystem
     {
-        struct PlayerData
+        // struct PlayerData
+        // {
+        //     public readonly int Length;
+        //     public ComponentDataArray<PlayerInput> Input;
+        // }
+        // [Inject] private PlayerData m_Players;
+        public PlayerInputSystem()
         {
-            public readonly int Length;
 
-            public ComponentDataArray<PlayerInput> Input;
         }
+        ComponentGroup group;
 
-        [Inject] private PlayerData m_Players;
+        protected override void OnCreateManager()
+        {
+            Debug.Log("on create player input system");
+            base.OnCreateManager();
+            group = GetComponentGroup(typeof(PlayerInput));
+        }
 
         protected override void OnUpdate()
         {
+            // Debug.Log("on OnUpdate player input system");
             float dt = Time.deltaTime;
-
-            for (int i = 0; i < m_Players.Length; ++i)
+            var inputDataArray = group.GetComponentDataArray<PlayerInput>();
+            for (int i = 0; i < inputDataArray.Length; ++i)
             {
-                UpdatePlayerInput(i, dt);
+                PlayerInput pi;
+
+                pi.Move.x = Input.GetAxis("Horizontal");
+                pi.Move.y = Input.GetAxis("Vertical");
+                inputDataArray[i] = pi;
             }
         }
-
-        private void UpdatePlayerInput(int i, float dt)
-        {
-            PlayerInput pi;
-
-            pi.Move.x = Input.GetAxis("Horizontal");
-            pi.Move.y = Input.GetAxis("Vertical");
-            // pi.Shoot.x = Input.GetAxis("ShootX");
-            // pi.Shoot.y = Input.GetAxis("ShootY");
-
-            // pi.FireCooldown = Mathf.Max(0.0f, m_Players.Input[i].FireCooldown - dt);
-
-            m_Players.Input[i] = pi;
-        }
+      
     }
 }

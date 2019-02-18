@@ -37,7 +37,6 @@ function LoginController:InitEvents(  )
                 local view = require("Game/Login/LoginCreateRoleView").New()
                 UIMgr:Show(view)
             end
-            GlobalEventSystem:Fire(MainUIConst.Event.InitMainUIViews)
         end
         NetDispatcher:SendMessage("account_get_role_list", nil, on_ack)
     end
@@ -66,7 +65,7 @@ function LoginController:InitEvents(  )
 end
 
 function LoginController:ReqMainRole(  )
-    local on_ack_main_role = function ( ack_role_data )
+    local on_ack_main_role = function ( ack_data )
         --请求场景信息
         -- local on_ack_scene_info = function ( ack_scene_data )
         --     --加载场景
@@ -74,13 +73,16 @@ function LoginController:ReqMainRole(  )
         -- end
         -- NetDispatcher:SendMessage("scene_get_cur_scene_info", nil, on_ack_scene_info)
         --加载其它系统的controller
-        print("Cat:LoginController [start:76] ack_role_data:", ack_role_data)
-        PrintTable(ack_role_data)
+        print("Cat:LoginController [start:76] ack_data:", ack_data)
+        PrintTable(ack_data)
         print("Cat:LoginController [end]")
         GlobalEventSystem:Fire(MainUIConst.Event.InitMainUIViews)
 
-        -- SceneMgr.Instance:GetSceneObj(ack_role_data.scene_uid)
-        SceneMgr.Instance:AddMainRole(ack_role_data.scene_uid)
+        -- SceneMgr.Instance:GetSceneObj(ack_data.scene_uid)
+        SceneMgr.Instance:AddMainRole(ack_data.role_info.scene_uid)
+        print('Cat:LoginController.lua[83] type(ack_data.scene_id)', type(ack_data.role_info.scene_id))
+        SceneMgr.Instance:LoadScene(ack_data.role_info.scene_id)
+        
         GameVariable.IsNeedSynchSceneInfo = true
     end
     NetDispatcher:SendMessage("scene_get_main_role_info", nil, on_ack_main_role)

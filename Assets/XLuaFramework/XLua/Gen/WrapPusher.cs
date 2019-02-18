@@ -34,9 +34,9 @@ namespace XLua
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.Ray>(translator.PushUnityEngineRay, translator.Get, translator.UpdateUnityEngineRay);
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.Bounds>(translator.PushUnityEngineBounds, translator.Get, translator.UpdateUnityEngineBounds);
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.Ray2D>(translator.PushUnityEngineRay2D, translator.Get, translator.UpdateUnityEngineRay2D);
+				translator.RegisterPushAndGetAndUpdate<XLuaFramework.NetPackageType>(translator.PushXLuaFrameworkNetPackageType, translator.Get, translator.UpdateXLuaFrameworkNetPackageType);
 				translator.RegisterPushAndGetAndUpdate<UnityMMO.SceneInfoKey>(translator.PushUnityMMOSceneInfoKey, translator.Get, translator.UpdateUnityMMOSceneInfoKey);
 				translator.RegisterPushAndGetAndUpdate<UnityMMO.SceneObjectType>(translator.PushUnityMMOSceneObjectType, translator.Get, translator.UpdateUnityMMOSceneObjectType);
-				translator.RegisterPushAndGetAndUpdate<XLuaFramework.NetPackageType>(translator.PushXLuaFrameworkNetPackageType, translator.Get, translator.UpdateXLuaFrameworkNetPackageType);
 			
 			}
         }
@@ -573,6 +573,90 @@ namespace XLua
             }
         }
         
+        int XLuaFrameworkNetPackageType_TypeID = -1;
+		int XLuaFrameworkNetPackageType_EnumRef = -1;
+        
+        public void PushXLuaFrameworkNetPackageType(RealStatePtr L, XLuaFramework.NetPackageType val)
+        {
+            if (XLuaFrameworkNetPackageType_TypeID == -1)
+            {
+			    bool is_first;
+                XLuaFrameworkNetPackageType_TypeID = getTypeId(L, typeof(XLuaFramework.NetPackageType), out is_first);
+				
+				if (XLuaFrameworkNetPackageType_EnumRef == -1)
+				{
+				    Utils.LoadCSTable(L, typeof(XLuaFramework.NetPackageType));
+				    XLuaFrameworkNetPackageType_EnumRef = LuaAPI.luaL_ref(L, LuaIndexes.LUA_REGISTRYINDEX);
+				}
+				
+            }
+			
+			if (LuaAPI.xlua_tryget_cachedud(L, (int)val, XLuaFrameworkNetPackageType_EnumRef) == 1)
+            {
+			    return;
+			}
+			
+            IntPtr buff = LuaAPI.xlua_pushstruct(L, 4, XLuaFrameworkNetPackageType_TypeID);
+            if (!CopyByValue.Pack(buff, 0, (int)val))
+            {
+                throw new Exception("pack fail fail for XLuaFramework.NetPackageType ,value="+val);
+            }
+			
+			LuaAPI.lua_getref(L, XLuaFrameworkNetPackageType_EnumRef);
+			LuaAPI.lua_pushvalue(L, -2);
+			LuaAPI.xlua_rawseti(L, -2, (int)val);
+			LuaAPI.lua_pop(L, 1);
+			
+        }
+		
+        public void Get(RealStatePtr L, int index, out XLuaFramework.NetPackageType val)
+        {
+		    LuaTypes type = LuaAPI.lua_type(L, index);
+            if (type == LuaTypes.LUA_TUSERDATA )
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != XLuaFrameworkNetPackageType_TypeID)
+				{
+				    throw new Exception("invalid userdata for XLuaFramework.NetPackageType");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+				int e;
+                if (!CopyByValue.UnPack(buff, 0, out e))
+                {
+                    throw new Exception("unpack fail for XLuaFramework.NetPackageType");
+                }
+				val = (XLuaFramework.NetPackageType)e;
+                
+            }
+            else
+            {
+                val = (XLuaFramework.NetPackageType)objectCasters.GetCaster(typeof(XLuaFramework.NetPackageType))(L, index, null);
+            }
+        }
+		
+        public void UpdateXLuaFrameworkNetPackageType(RealStatePtr L, int index, XLuaFramework.NetPackageType val)
+        {
+		    
+            if (LuaAPI.lua_type(L, index) == LuaTypes.LUA_TUSERDATA)
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != XLuaFrameworkNetPackageType_TypeID)
+				{
+				    throw new Exception("invalid userdata for XLuaFramework.NetPackageType");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+                if (!CopyByValue.Pack(buff, 0,  (int)val))
+                {
+                    throw new Exception("pack fail for XLuaFramework.NetPackageType ,value="+val);
+                }
+            }
+			
+            else
+            {
+                throw new Exception("try to update a data with lua type:" + LuaAPI.lua_type(L, index));
+            }
+        }
+        
         int UnityMMOSceneInfoKey_TypeID = -1;
 		int UnityMMOSceneInfoKey_EnumRef = -1;
         
@@ -741,90 +825,6 @@ namespace XLua
             }
         }
         
-        int XLuaFrameworkNetPackageType_TypeID = -1;
-		int XLuaFrameworkNetPackageType_EnumRef = -1;
-        
-        public void PushXLuaFrameworkNetPackageType(RealStatePtr L, XLuaFramework.NetPackageType val)
-        {
-            if (XLuaFrameworkNetPackageType_TypeID == -1)
-            {
-			    bool is_first;
-                XLuaFrameworkNetPackageType_TypeID = getTypeId(L, typeof(XLuaFramework.NetPackageType), out is_first);
-				
-				if (XLuaFrameworkNetPackageType_EnumRef == -1)
-				{
-				    Utils.LoadCSTable(L, typeof(XLuaFramework.NetPackageType));
-				    XLuaFrameworkNetPackageType_EnumRef = LuaAPI.luaL_ref(L, LuaIndexes.LUA_REGISTRYINDEX);
-				}
-				
-            }
-			
-			if (LuaAPI.xlua_tryget_cachedud(L, (int)val, XLuaFrameworkNetPackageType_EnumRef) == 1)
-            {
-			    return;
-			}
-			
-            IntPtr buff = LuaAPI.xlua_pushstruct(L, 4, XLuaFrameworkNetPackageType_TypeID);
-            if (!CopyByValue.Pack(buff, 0, (int)val))
-            {
-                throw new Exception("pack fail fail for XLuaFramework.NetPackageType ,value="+val);
-            }
-			
-			LuaAPI.lua_getref(L, XLuaFrameworkNetPackageType_EnumRef);
-			LuaAPI.lua_pushvalue(L, -2);
-			LuaAPI.xlua_rawseti(L, -2, (int)val);
-			LuaAPI.lua_pop(L, 1);
-			
-        }
-		
-        public void Get(RealStatePtr L, int index, out XLuaFramework.NetPackageType val)
-        {
-		    LuaTypes type = LuaAPI.lua_type(L, index);
-            if (type == LuaTypes.LUA_TUSERDATA )
-            {
-			    if (LuaAPI.xlua_gettypeid(L, index) != XLuaFrameworkNetPackageType_TypeID)
-				{
-				    throw new Exception("invalid userdata for XLuaFramework.NetPackageType");
-				}
-				
-                IntPtr buff = LuaAPI.lua_touserdata(L, index);
-				int e;
-                if (!CopyByValue.UnPack(buff, 0, out e))
-                {
-                    throw new Exception("unpack fail for XLuaFramework.NetPackageType");
-                }
-				val = (XLuaFramework.NetPackageType)e;
-                
-            }
-            else
-            {
-                val = (XLuaFramework.NetPackageType)objectCasters.GetCaster(typeof(XLuaFramework.NetPackageType))(L, index, null);
-            }
-        }
-		
-        public void UpdateXLuaFrameworkNetPackageType(RealStatePtr L, int index, XLuaFramework.NetPackageType val)
-        {
-		    
-            if (LuaAPI.lua_type(L, index) == LuaTypes.LUA_TUSERDATA)
-            {
-			    if (LuaAPI.xlua_gettypeid(L, index) != XLuaFrameworkNetPackageType_TypeID)
-				{
-				    throw new Exception("invalid userdata for XLuaFramework.NetPackageType");
-				}
-				
-                IntPtr buff = LuaAPI.lua_touserdata(L, index);
-                if (!CopyByValue.Pack(buff, 0,  (int)val))
-                {
-                    throw new Exception("pack fail for XLuaFramework.NetPackageType ,value="+val);
-                }
-            }
-			
-            else
-            {
-                throw new Exception("try to update a data with lua type:" + LuaAPI.lua_type(L, index));
-            }
-        }
-        
         
 		// table cast optimze
 		
@@ -884,6 +884,12 @@ namespace XLua
 				translator.PushUnityEngineRay2D(L, array[index]);
 				return true;
 			}
+			else if (type == typeof(XLuaFramework.NetPackageType[]))
+			{
+			    XLuaFramework.NetPackageType[] array = obj as XLuaFramework.NetPackageType[];
+				translator.PushXLuaFrameworkNetPackageType(L, array[index]);
+				return true;
+			}
 			else if (type == typeof(UnityMMO.SceneInfoKey[]))
 			{
 			    UnityMMO.SceneInfoKey[] array = obj as UnityMMO.SceneInfoKey[];
@@ -894,12 +900,6 @@ namespace XLua
 			{
 			    UnityMMO.SceneObjectType[] array = obj as UnityMMO.SceneObjectType[];
 				translator.PushUnityMMOSceneObjectType(L, array[index]);
-				return true;
-			}
-			else if (type == typeof(XLuaFramework.NetPackageType[]))
-			{
-			    XLuaFramework.NetPackageType[] array = obj as XLuaFramework.NetPackageType[];
-				translator.PushXLuaFrameworkNetPackageType(L, array[index]);
 				return true;
 			}
             return false;
@@ -956,6 +956,12 @@ namespace XLua
 				translator.Get(L, obj_idx, out array[array_idx]);
 				return true;
 			}
+			else if (type == typeof(XLuaFramework.NetPackageType[]))
+			{
+			    XLuaFramework.NetPackageType[] array = obj as XLuaFramework.NetPackageType[];
+				translator.Get(L, obj_idx, out array[array_idx]);
+				return true;
+			}
 			else if (type == typeof(UnityMMO.SceneInfoKey[]))
 			{
 			    UnityMMO.SceneInfoKey[] array = obj as UnityMMO.SceneInfoKey[];
@@ -965,12 +971,6 @@ namespace XLua
 			else if (type == typeof(UnityMMO.SceneObjectType[]))
 			{
 			    UnityMMO.SceneObjectType[] array = obj as UnityMMO.SceneObjectType[];
-				translator.Get(L, obj_idx, out array[array_idx]);
-				return true;
-			}
-			else if (type == typeof(XLuaFramework.NetPackageType[]))
-			{
-			    XLuaFramework.NetPackageType[] array = obj as XLuaFramework.NetPackageType[];
 				translator.Get(L, obj_idx, out array[array_idx]);
 				return true;
 			}

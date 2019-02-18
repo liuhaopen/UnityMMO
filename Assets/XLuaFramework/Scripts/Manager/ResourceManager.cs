@@ -138,13 +138,13 @@ public class AssetBundleInfo {
 #if UNITY_EDITOR
             if (AppConfig.DebugMode)
             {
-                T sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(file_path);
-                if (sprite != null)
+                T res = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(file_path);
+                if (res != null)
                 {
                     if (func != null)
                     {
                         List<T> list = new List<T>();
-                        list.Add(sprite);
+                        list.Add(res);
                         object[] args = new object[] { list.ToArray() };
                         func.Call(args);
                         func.Dispose();
@@ -153,7 +153,7 @@ public class AssetBundleInfo {
                     else if (action != null)
                     {
                         List<UObject> list = new List<UObject>();
-                        list.Add(sprite);
+                        list.Add(res);
                         UObject[] args = list.ToArray();
                         action(args);
                     }
