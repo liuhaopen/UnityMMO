@@ -8,10 +8,12 @@ local NORET = {}
 local CMD = {}
 local this = {
 	--the scene object includes the role monster npc
+	cur_scene_id = 0,
 	scene_uid = 0,
 	role_list = {},
 	npc_list = {},
 	monster_list = {},
+	object_list = {},
 	entity_mgr = false,
 }
 local SceneObjectType={
@@ -80,6 +82,7 @@ function CMD.init(scene_id)
 	this.monster_archetype = this.entity_mgr:CreateArchetype({"UMO.Position", "UMO.UID", "UMO.TypeID"})
 	this.npc_archetype = this.entity_mgr:CreateArchetype({"UMO.Position", "UMO.UID", "UMO.TypeID"})
 	this.scene_cfg = require("Config.scene.config_scene_"..scene_id)
+	this.cur_scene_id = scene_id
 	init_npc()
 	init_monster()
 
@@ -112,6 +115,45 @@ function CMD.init(scene_id)
 	end)
 end
 
+local get_base_info_by_roleid = function ( role_id )
+	local gameDBServer = skynet.localname(".GameDBServer")
+	local is_ok, role_info = skynet.call(gameDBServer, "lua", "select_by_key", "RoleBaseInfo", "role_id", role_id)
+	if is_ok and role_info and role_info[1] then
+		return role_info[1]
+	end
+	return nil
+end
+
+local get_looks_info_by_roleid = function ( role_id )
+	local gameDBServer = skynet.localname(".GameDBServer")
+	local is_ok, looks_info = skynet.call(gameDBServer, "lua", "select_by_key", "RoleLooksInfo", "role_id", role_id)
+	if is_ok and looks_info and looks_info[1] then
+		return looks_info[1]
+	end
+	return nil
+end
+
+local init_pos_info = function ( base_info )
+	if not base_info then return end
+	local is_need_reset_pos = false
+	if not base_info.scene_id or this.cur_scene_id ~= base_info.scene_id or not base_info.pos_x then
+		is_need_reset_pos = true
+	end
+	print('Cat:scene.lua[133] is_need_reset_pos', is_need_reset_pos)
+	if is_need_reset_pos then
+		local born_list = this.scene_cfg.born_list
+		local door_num = born_list and #born_list or 0
+		print('Cat:scene.lua[136] door_num', door_num)
+		if door_num > 0 then
+			local random_index = math.random(1, door_num)
+			local born_info = born_list[random_index]
+			base_info.pos_x = born_info.pos_x
+			base_info.pos_y = born_info.pos_y
+			base_info.pos_z = born_info.pos_z
+		end
+	end
+end
+
 function CMD.role_enter_scene(role_id)
 	print('Cat:scene.lua[role_enter_scene] role_id', role_id)
 	do 
@@ -122,7 +164,11 @@ function CMD.role_enter_scene(role_id)
 	end
 	if not this.role_list[role_id] then
 		local scene_uid = new_scene_uid(SceneObjectType.Role)
-		this.role_list[role_id] = {scene_uid=scene_uid}
+		local base_info = get_base_info_by_roleid(role_id)
+		local looks_info = get_looks_info_by_roleid(role_id)
+		init_pos_info(base_info)
+		this.role_list[role_id] = {scene_uid=scene_uid, base_info=base_info, looks_info=looks_info}
+		this.object_list[scene_uid] = this.role_list[role_id]
 		--tell the new guy who are here
 		for k,v in pairs(this.role_list) do
 			if v.scene_uid ~= scene_uid then
@@ -155,10 +201,13 @@ end
 
 function CMD.scene_get_role_look_info( user_info, req_data )
 	print('Cat:scene.lua[scene_get_role_look_info] user_info, req_data', user_info, user_info.cur_role_id)
-	return {
+	local role_info = this.object_list[req_data.uid]
+	local looks_info
+	if role_info then
+		looks_info = {
 			result = 0,
 			role_looks_info = {
-				career = 2,
+				career = role_info.base_info.career or 1,
 				body = 0,
 				hair = 0,
 				weapon = 0,
@@ -166,18 +215,50 @@ function CMD.scene_get_role_look_info( user_info, req_data )
 				horse = 0,
 			}
 		}
+	else
+		looks_info = {result=1}
+	end
+	return looks_info
 end
 
 function CMD.scene_get_main_role_info( user_info, req_data )
 	print('Cat:scene.lua[scene_get_main_role_info] user_info, req_data', user_info, user_info.cur_role_id)
-	return {
-		role_info={
-			scene_uid=this.role_list[user_info.cur_role_id].scene_uid,
-			role_id=user_info.cur_role_id,
-			career=2,name="haha",
-			scene_id = 1001,
+	local role_info = this.role_list[user_info.cur_role_id]
+	print('Cat:scene.lua[scene_get_main_role_info] role_info', role_info)
+	role_info = role_info and role_info.base_info or nil
+	print('Cat:scene.lua[scene_get_main_role_info2] role_info', role_info)
+	if role_info then
+		local result =  {
+			role_info={
+				scene_uid=this.role_list[user_info.cur_role_id].scene_uid,
+				role_id=user_info.cur_role_id,
+				career=role_info.career,
+				name=role_info.name,
+				scene_id = this.cur_scene_id,
+				pos_x = role_info.pos_x,
+				pos_y = role_info.pos_y,
+				pos_z = role_info.pos_z,
 			}
 		}
+		print("Cat:scene [start:233] result:", result)
+		PrintTable(result)
+		print("Cat:scene [end]")
+		return result
+	else
+		--cannot find main role?
+		return {
+			role_info={
+				scene_uid=this.role_list[user_info.cur_role_id].scene_uid,
+				role_id=user_info.cur_role_id,
+				career=2,
+				name="unknow_role_name",
+				scene_id = this.cur_scene_id,
+				pos_x = 0,
+				pos_y = 0,
+				pos_z = 0,
+			}
+		}
+	end
 end
 
 function CMD.scene_walk( user_info, req_data )

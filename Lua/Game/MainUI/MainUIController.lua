@@ -13,8 +13,8 @@ function MainUIController:InitMainUIViews(  )
     -- local view = require("Game/MainUI/MainUIJoystickView").New()
     -- UIMgr:Show(view)
 
-    local view = require("Game/MainUI/MainUISkillBtnView").New()
-    UIMgr:Show(view)
+    -- local view = require("Game/MainUI/MainUISkillBtnView").New()
+    -- UIMgr:Show(view)
 end
 
 return MainUIController

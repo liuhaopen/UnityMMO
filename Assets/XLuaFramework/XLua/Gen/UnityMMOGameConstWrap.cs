@@ -32,12 +32,11 @@ namespace XLua.CSObjectWrap
 			Utils.EndObjectRegister(type, L, translator, null, null,
 			    null, null, null);
 
-		    Utils.BeginClassRegister(type, L, __CreateInstance, 7, 0, 0);
+		    Utils.BeginClassRegister(type, L, __CreateInstance, 6, 0, 0);
 			Utils.RegisterFunc(L, Utils.CLS_IDX, "GetRoleCareerResPath", _m_GetRoleCareerResPath_xlua_st_);
             
 			
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "RealToLogic", UnityMMO.GameConst.RealToLogic);
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "LogicToReal", UnityMMO.GameConst.LogicToReal);
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "MinLuaNetSessionID", UnityMMO.GameConst.MinLuaNetSessionID);
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "MaxLuaNetSessionID", UnityMMO.GameConst.MaxLuaNetSessionID);
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "NetResultOk", UnityMMO.GameConst.NetResultOk);

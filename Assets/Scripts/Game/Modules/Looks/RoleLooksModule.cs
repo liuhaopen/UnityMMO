@@ -98,6 +98,7 @@ public class HandleRoleLooksNetRequest : BaseComponentSystem
                     if (hasRoleState)
                     {
                         RoleState roleState = m_world.GetEntityManager().GetComponentObject<RoleState>(owner); 
+                        Debug.Log("roleState.position : "+roleState.position.ToString());
                         RoleLooksSpawnRequest.Create(m_world.GetEntityManager(), (int)rsp.role_looks_info.career, roleState.position, Quaternion.identity, owner, (int)rsp.role_looks_info.body, (int)rsp.role_looks_info.hair);
                     }
                 }
@@ -190,8 +191,6 @@ public class HandleRoleLooksSpawnRequests : BaseComponentSystem
         {
             var request = spawnRequests[i];
             var playerState = EntityManager.GetComponentObject<RoleState>(request.ownerEntity);
-            // var character = SpawnRoleLooks(m_world, playerState, request.position, request.rotation, request.career, request.body, request.hair);
-            // playerState.controlledEntity = character.gameObject.GetComponent<GameObjectEntity>().Entity; 
             int career = request.career;
             int body = request.body;
             int hair = request.hair;
@@ -206,7 +205,10 @@ public class HandleRoleLooksSpawnRequests : BaseComponentSystem
                 {
                     GameObject bodyObj = objs[0] as GameObject;
                     GameObjectEntity bodyOE = m_world.Spawn<GameObjectEntity>(bodyObj);
-                    playerState.controlledEntity = bodyOE.Entity;
+                    bodyOE.transform.SetParent(UnityMMO.RoleMgr.GetInstance().RoleContainer);
+                    bodyOE.transform.localPosition = request.position;
+                    bodyOE.GetComponent<Rigidbody>().isKinematic = true;
+                    playerState.looksEntity = bodyOE.Entity;
                     LoadHair(hairPath, bodyOE.transform.Find("head"));
                 }
                 else

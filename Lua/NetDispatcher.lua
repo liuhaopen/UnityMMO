@@ -89,7 +89,6 @@ function NetDispatcher:SendMessage( req_name, req_arg, response_call_back )
     -- if self.session >= self.max_lua_net_session_id then
     --     self.session = self.min_lua_net_session_id
     -- end
-    print('Cat:NetDispatcher.lua[93] self.session', self.session)
     local code, tag = self.sproto_c2s:request_encode(req_name, req_arg)
     print_net('Cat:NetDispatcher.lua[129] tag', tag)
     print_net('Cat:NetDispatcher.lua[117] code', code)

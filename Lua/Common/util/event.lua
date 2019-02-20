@@ -52,7 +52,6 @@ function _event:CreateListener(func, obj)
 end
 
 function _event:AddListener(handle)	
-	print("event AddListener", handle)
 	assert(handle)
 
 	if self.lock then		

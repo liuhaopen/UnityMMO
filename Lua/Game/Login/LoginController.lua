@@ -66,22 +66,15 @@ end
 
 function LoginController:ReqMainRole(  )
     local on_ack_main_role = function ( ack_data )
-        --请求场景信息
-        -- local on_ack_scene_info = function ( ack_scene_data )
-        --     --加载场景
-        --     --关闭加载界面
-        -- end
-        -- NetDispatcher:SendMessage("scene_get_cur_scene_info", nil, on_ack_scene_info)
         --加载其它系统的controller
         print("Cat:LoginController [start:76] ack_data:", ack_data)
         PrintTable(ack_data)
         print("Cat:LoginController [end]")
         GlobalEventSystem:Fire(MainUIConst.Event.InitMainUIViews)
-
-        -- SceneMgr.Instance:GetSceneObj(ack_data.scene_uid)
-        SceneMgr.Instance:AddMainRole(ack_data.role_info.scene_uid)
-        print('Cat:LoginController.lua[83] type(ack_data.scene_id)', type(ack_data.role_info.scene_id))
-        SceneMgr.Instance:LoadScene(ack_data.role_info.scene_id)
+        local role_info = ack_data.role_info
+        local pos = Vector3.New(role_info.pos_x/GameConst.RealToLogic, role_info.pos_y/GameConst.RealToLogic, role_info.pos_z/GameConst.RealToLogic)
+        SceneMgr.Instance:AddMainRole(role_info.scene_uid, pos)
+        SceneMgr.Instance:LoadScene(role_info.scene_id)
         
         GameVariable.IsNeedSynchSceneInfo = true
     end

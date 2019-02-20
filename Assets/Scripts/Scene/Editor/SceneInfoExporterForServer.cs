@@ -48,10 +48,10 @@ public class SceneInfoExporterForServer : Editor
         monster.pos_z = 3.123456f;
         export_info.monster_list.Add(monster);
 
-        export_info.test_dic = new Dictionary<int, string>();
-        export_info.test_dic.Add(1, "one");
-        export_info.test_dic.Add(3, "three");
-        export_info.test_dic.Add(6, "haha");
+        // export_info.test_dic = new Dictionary<int, string>();
+        // export_info.test_dic.Add(1, "one");
+        // export_info.test_dic.Add(3, "three");
+        // export_info.test_dic.Add(6, "haha");
         
         string content = LuaUtility.ToLua(export_info);
         Debug.Log("SceneInfoExporterForServer:Export content : "+content);

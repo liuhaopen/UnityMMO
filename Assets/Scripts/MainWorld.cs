@@ -32,13 +32,17 @@ namespace UnityMMO{
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooks>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooksNetRequest>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooksSpawnRequests>(m_GameWorld));
+
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateRoleTransformFromLooks>(m_GameWorld));
+
+            
         }
 
         public void StartGame() {
             if (GameVariable.IsSingleMode)
             {
                 //目前只有一个场景（本来就想做成无限大世界的）
-                SceneMgr.Instance.AddMainRole(1);
+                SceneMgr.Instance.AddMainRole(1, Vector3.zero);
                 SceneMgr.Instance.LoadScene(1001);
             }
             else
