@@ -51,10 +51,13 @@ scene_get_main_role_info 100 {
 
 scene_walk 101 {
 	request {
-		pos_x 0 : integer
-		pos_y 1 : integer
-		pos_z 2 : integer
-		time  3 : integer
+		start_x 0 : integer
+		start_y 1 : integer
+		start_z 2 : integer
+		end_x 3 : integer
+		end_y 4 : integer
+		end_z 5 : integer
+		time  6 : integer
 	}
 	response {
 	}

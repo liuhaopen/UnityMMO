@@ -14,7 +14,7 @@ namespace UnityMMO
         {
             public readonly int Length;
             public ComponentDataArray<Position> Position;
-            public ComponentDataArray<SynchPosFlag> SynchoFlag;
+            public ComponentDataArray<PosSynchInfo> SynchoFlag;
             
         }
 

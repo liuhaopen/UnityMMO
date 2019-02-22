@@ -34,6 +34,7 @@ namespace UnityMMO{
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooksSpawnRequests>(m_GameWorld));
 
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateRoleTransformFromLooks>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<TargetPosSystem>(m_GameWorld));
 
             
         }

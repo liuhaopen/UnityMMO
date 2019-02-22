@@ -48,26 +48,6 @@ namespace UnityMMO
                 position.z += dt * playerInput[index].Move.y * sppeds[index].speed;
                 // Debug.Log("player move system update position :"+position.ToString());
 
-                // if (playerInput.Fire)    
-                // {
-                //     heading = math.normalize(playerInput.Shoot);
-
-                    // playerInput.FireCooldown = settings.playerFireCoolDown;
-
-                    // PostUpdateCommands.CreateEntity(TwoStickBootstrap.ShotSpawnArchetype);
-                    // PostUpdateCommands.SetComponent(new ShotSpawnData
-                    // {
-                    //     Shot = new Shot
-                    //     {
-                    //         TimeToLive = settings.bulletTimeToLive,
-                    //         Energy = settings.playerShotEnergy,
-                    //     },
-                    //     Position = new Position2D{ Value = position },
-                    //     Heading = new Heading2D{ Value = heading },
-                    //     Faction = Factions.kPlayer,
-                    // });
-                // }
-
                 positions[index] = new Position {Value = position};
                 // m_Data.Heading[index] = new Heading2D {Value = heading};
                 // m_Data.Input[index] = playerInput;

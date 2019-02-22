@@ -8,6 +8,7 @@ using SprotoType;
 namespace UnityMMO
 {
     //synch entities property to server
+    [DisableAutoCreation]
     public class SynchSystem : ComponentSystem
     {
         float lastSynchTime = 0;
@@ -15,7 +16,7 @@ namespace UnityMMO
         {
             public readonly int Length;
             public ComponentDataArray<Position> Position;
-            public ComponentDataArray<SynchPosFlag> SynchoFlag;
+            public ComponentDataArray<PosSynchInfo> SynchoFlag;
             
         }
 

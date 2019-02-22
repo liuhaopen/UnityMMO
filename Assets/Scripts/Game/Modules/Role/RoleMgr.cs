@@ -66,7 +66,9 @@ public class RoleMgr
 		// Entity role = AddRole(uid);
         EntityManager.AddComponent(role, ComponentType.Create<MainRoleTag>());
         EntityManager.AddComponent(role, ComponentType.Create<PlayerInput>());
-        EntityManager.AddComponent(role, ComponentType.Create<SynchPosFlag>());
+        EntityManager.AddComponent(role, ComponentType.Create<PosSynchInfo>());
+        EntityManager.AddComponent(role, ComponentType.Create<UserCommand>());
+        
         entityDic.Add(uid, role);
         mainRoleGOE = roleGameOE;
 
@@ -94,7 +96,7 @@ public class RoleMgr
     {
         EntityManager.AddComponentData(role, new Position {Value = new float3(pos.x, pos.y, pos.z)});
         EntityManager.AddComponentData(role, new MoveSpeed {speed = 12});
-        EntityManager.AddComponentData(role, new TargetPosition {Value = new float3(0, 0, 0)});
+        EntityManager.AddComponentData(role, new TargetPosition {Value = new float3(pos.x, pos.y, pos.z)});
         
         RoleState roleState = EntityManager.GetComponentObject<RoleState>(role);
         roleState.position = pos;

@@ -24,8 +24,10 @@ namespace UnityMMO
         public float3 Value;
     }
 
-    public struct SynchPosFlag : IComponentData
+    public struct PosSynchInfo : IComponentData
     {
+        public float3 StartPos;
+        public float3 EndPos;
     }
 
     public struct Shot : IComponentData

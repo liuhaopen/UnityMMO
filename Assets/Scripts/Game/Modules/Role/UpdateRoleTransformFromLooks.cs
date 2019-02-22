@@ -5,13 +5,13 @@ using UnityEngine;
 [DisableAutoCreation]
 public class UpdateRoleTransformFromLooks : BaseComponentSystem<RoleState>
 {
-    private ComponentGroup Group;
+    // private ComponentGroup Group;
     
     public UpdateRoleTransformFromLooks(GameWorld world) : base(world) {}
 
     protected override void Update(Entity entity, RoleState roleState)
     {
-        if (roleState.looksEntity == Entity.Null)
+        if (roleState.looksEntity == Entity.Null || !EntityManager.HasComponent<UnityMMO.MainRoleTag>(entity))
             return;
 
         var looksTrans = EntityManager.GetComponentObject<Transform>(roleState.looksEntity);

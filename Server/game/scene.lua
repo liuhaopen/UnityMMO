@@ -224,9 +224,7 @@ end
 function CMD.scene_get_main_role_info( user_info, req_data )
 	print('Cat:scene.lua[scene_get_main_role_info] user_info, req_data', user_info, user_info.cur_role_id)
 	local role_info = this.role_list[user_info.cur_role_id]
-	print('Cat:scene.lua[scene_get_main_role_info] role_info', role_info)
 	role_info = role_info and role_info.base_info or nil
-	print('Cat:scene.lua[scene_get_main_role_info2] role_info', role_info)
 	if role_info then
 		local result =  {
 			role_info={
@@ -240,9 +238,6 @@ function CMD.scene_get_main_role_info( user_info, req_data )
 				pos_z = role_info.pos_z,
 			}
 		}
-		print("Cat:scene [start:233] result:", result)
-		PrintTable(result)
-		print("Cat:scene [end]")
 		return result
 	else
 		--cannot find main role?

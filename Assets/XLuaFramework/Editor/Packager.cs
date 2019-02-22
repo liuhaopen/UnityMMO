@@ -154,7 +154,10 @@ public class Packager {
 
 
         HandleSceneBundles();
-        HandleRoleBundles();
+        // HandleRoleBundles();
+        HandleNormalBundles("role");
+        HandleNormalBundles("npc");
+        HandleNormalBundles("monster");
         HandleUIBundles();
 
         BuildPipeline.BuildAssetBundles(streamPath, maps.ToArray(), BuildAssetBundleOptions.None, target);
@@ -276,8 +279,26 @@ public class Packager {
                 string navmesh_scene_name = Path.GetFileNameWithoutExtension(file_path);
                 // levels.Add(file_path);
                 string[] levels = new string[]{file_path};
-                Debug.Log("file : "+file_path+" save : "+streamPath+"/"+navmesh_scene_name);
-                BuildPipeline.BuildPlayer(levels, streamPath+"/"+navmesh_scene_name, target, BuildOptions.BuildAdditionalStreamedScenes);
+                Debug.Log("file : "+file_path+" save : "+streamPath+"/"+navmesh_scene_name+" target:"+target.ToString());
+
+                BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
+                buildPlayerOptions.scenes = new string[]{file_path};
+                buildPlayerOptions.locationPathName = streamPath+"/"+navmesh_scene_name;
+                buildPlayerOptions.target = target;
+                buildPlayerOptions.options = BuildOptions.None;
+
+                UnityEditor.Build.Reporting.BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);
+                UnityEditor.Build.Reporting.BuildSummary summary = report.summary;
+                if (summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
+                {
+                    Debug.Log("Build navmesh succeeded: " + summary.totalSize + " bytes");
+                }
+
+                if (summary.result == UnityEditor.Build.Reporting.BuildResult.Failed)
+                {
+                    Debug.Log("Build navmesh failed : "+file_path);
+                }
+                // BuildPipeline.BuildPlayer(levels, streamPath+"/"+navmesh_scene_name, target, BuildOptions.BuildAdditionalStreamedScenes);
             }
         }
     }
@@ -327,6 +348,28 @@ public class Packager {
             List<string> file_list = new List<string>();//文件列表
             paths.Clear(); files.Clear(); Recursive(dirs[i], false);
             UnityEngine.Debug.Log("role asset_name : "+asset_name+" filenum:"+files.Count.ToString());
+            if (files.Count > 0)
+            {
+                AssetBundleBuild build = new AssetBundleBuild();
+                build.assetBundleName = asset_name;
+                build.assetNames = files.ToArray();
+                maps.Add(build);
+            }
+        }
+    }
+
+    public static void HandleNormalBundles(string prefix)
+    {
+        string path = "Assets/AssetBundleRes/"+prefix+"/";
+        string[] dirs = Directory.GetDirectories(path);
+        if (dirs.Length == 0)
+            return;
+        for (int i = 0; i < dirs.Length; i++)
+        {
+            string asset_name = prefix+"_" + Path.GetFileName(dirs[i]);
+            List<string> file_list = new List<string>();//文件列表
+            paths.Clear(); files.Clear(); Recursive(dirs[i], false);
+            UnityEngine.Debug.Log(prefix+" asset_name : "+asset_name+" filenum:"+files.Count.ToString());
             if (files.Count > 0)
             {
                 AssetBundleBuild build = new AssetBundleBuild();
