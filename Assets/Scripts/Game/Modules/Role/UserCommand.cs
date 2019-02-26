@@ -8,11 +8,11 @@ public struct UserCommand : Unity.Entities.IComponentData
     public float moveMagnitude;
     public float lookYaw;
     public float lookPitch;
-    public bool jump;
-    public bool sprint;//冲刺
+    public int jump;
+    public int sprint;//冲刺
     public int skill;//使用的技能索引，普攻也是技能来的
 
-    public static readonly UserCommand defaultCommand = new UserCommand(0); 
+    // public static readonly UserCommand defaultCommand = new UserCommand(0); 
 
     private UserCommand(int i)    
     {
@@ -20,15 +20,15 @@ public struct UserCommand : Unity.Entities.IComponentData
         moveMagnitude = 0;
         lookYaw = 0;
         lookPitch = 90;
-        jump = false;
-        sprint = false;
+        jump = 0;
+        sprint = 0;
         skill = 0;
     }
     
     public void ClearCommand()  
     {
-        jump = false;
-        sprint = false;
+        jump = 0;
+        sprint = 0;
         skill = 0;
     }
     

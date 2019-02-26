@@ -16,7 +16,7 @@ namespace UnityMMO
 
     public struct MoveSpeed : IComponentData
     {
-        public float speed;
+        public float Value;
     }
     
     public struct TargetPosition : IComponentData

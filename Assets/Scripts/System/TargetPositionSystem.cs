@@ -32,7 +32,7 @@ namespace UnityMMO
             for (int index = 0; index < m_Data.Length; ++index)
             {
                 float3 forward_dir = m_Data.TargetPos[index].Value - m_Data.Position[index].Value;
-                float3 new_pos = forward_dir*(m_Data.MoveSpeed[index].speed*deltaTime);
+                float3 new_pos = forward_dir*(m_Data.MoveSpeed[index].Value*deltaTime);
                 em.SetComponent(new Position{Value=new_pos});
             }         
         }

@@ -845,7 +845,28 @@ namespace XLua
 #endif
 		}
         
-		public string __Gen_Delegate_Imp36(int p0)
+		public string __Gen_Delegate_Imp36()
+		{
+#if THREAD_SAFE || HOTFIX_ENABLE
+            lock (luaEnv.luaEnvLock)
+            {
+#endif
+                RealStatePtr L = luaEnv.rawL;
+                int errFunc = LuaAPI.pcall_prepare(L, errorFuncRef, luaReference);
+                
+                
+                PCall(L, 0, 1, errFunc);
+                
+                
+                string __gen_ret = LuaAPI.lua_tostring(L, errFunc + 1);
+                LuaAPI.lua_settop(L, errFunc - 1);
+                return  __gen_ret;
+#if THREAD_SAFE || HOTFIX_ENABLE
+            }
+#endif
+		}
+        
+		public string __Gen_Delegate_Imp37(int p0)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -867,7 +888,7 @@ namespace XLua
 #endif
 		}
         
-		public Unity.Entities.EntityManager __Gen_Delegate_Imp37(object p0)
+		public Unity.Entities.EntityManager __Gen_Delegate_Imp38(object p0)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -889,7 +910,7 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp38(object p0, int p1, float p2, float p3, float p4)
+		public void __Gen_Delegate_Imp39(object p0, int p1, float p2, float p3, float p4)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -915,7 +936,7 @@ namespace XLua
 #endif
 		}
         
-		public Unity.Entities.Entity __Gen_Delegate_Imp39(object p0, long p1, UnityEngine.Vector3 p2)
+		public Unity.Entities.Entity __Gen_Delegate_Imp40(object p0, long p1, UnityEngine.Vector3 p2)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -939,7 +960,7 @@ namespace XLua
 #endif
 		}
         
-		public Unity.Entities.Entity __Gen_Delegate_Imp40(object p0, long p1)
+		public Unity.Entities.Entity __Gen_Delegate_Imp41(object p0, long p1)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -962,7 +983,7 @@ namespace XLua
 #endif
 		}
         
-		public Unity.Entities.Entity __Gen_Delegate_Imp41(object p0, long p1, UnityMMO.SceneObjectType p2)
+		public Unity.Entities.Entity __Gen_Delegate_Imp42(object p0, long p1, UnityMMO.SceneObjectType p2)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -986,7 +1007,7 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp42(object p0, long p1)
+		public void __Gen_Delegate_Imp43(object p0, long p1)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)

@@ -236,6 +236,9 @@ function CMD.scene_get_main_role_info( user_info, req_data )
 				pos_x = role_info.pos_x,
 				pos_y = role_info.pos_y,
 				pos_z = role_info.pos_z,
+				base_info = {
+					level = 0,
+				},
 			}
 		}
 		return result
@@ -251,6 +254,9 @@ function CMD.scene_get_main_role_info( user_info, req_data )
 				pos_x = 0,
 				pos_y = 0,
 				pos_z = 0,
+				base_info = {
+					level = 0,
+				},
 			}
 		}
 	end

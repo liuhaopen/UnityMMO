@@ -9,6 +9,7 @@ return [[
 	pos_x 5 : integer
 	pos_y 6 : integer
 	pos_z 7 : integer
+	base_info 8 : scene_role_base_info
 }
 .info_item {
 	key 0 : integer
@@ -19,10 +20,8 @@ return [[
 	scene_obj_uid 0 : integer
 	info_list 1 : *info_item
 }
-.scene_role_info {
-	role_id 0 : integer
-	career 1 : integer
-	name 2 : string
+.scene_role_base_info {
+	level 0 : integer
 }
 .scene_role_looks_info {
 	career 0 : integer

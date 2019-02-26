@@ -50,3 +50,12 @@ function Trim(str)
 	str = string.gsub(str, "^[ \t\n\r]+", "")
     return string.gsub(str, "[ \t\n\r]+$", "")
 end
+
+function Round(number)
+	local intNum = math.floor(number)
+	if number >= (intNum + 0.5) then
+		return intNum + 1
+	else
+		return intNum
+	end
+end

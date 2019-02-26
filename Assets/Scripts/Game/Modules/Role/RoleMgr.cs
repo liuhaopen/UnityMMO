@@ -95,7 +95,7 @@ public class RoleMgr
     private void InitRole(Entity role, long uid, Vector3 pos)
     {
         EntityManager.AddComponentData(role, new Position {Value = new float3(pos.x, pos.y, pos.z)});
-        EntityManager.AddComponentData(role, new MoveSpeed {speed = 12});
+        EntityManager.AddComponentData(role, new MoveSpeed {Value = 12});
         EntityManager.AddComponentData(role, new TargetPosition {Value = new float3(pos.x, pos.y, pos.z)});
         
         RoleState roleState = EntityManager.GetComponentObject<RoleState>(role);

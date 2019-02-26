@@ -285,7 +285,7 @@ public class Packager {
                 buildPlayerOptions.scenes = new string[]{file_path};
                 buildPlayerOptions.locationPathName = streamPath+"/"+navmesh_scene_name;
                 buildPlayerOptions.target = target;
-                buildPlayerOptions.options = BuildOptions.None;
+                buildPlayerOptions.options = BuildOptions.BuildAdditionalStreamedScenes;
 
                 UnityEditor.Build.Reporting.BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);
                 UnityEditor.Build.Reporting.BuildSummary summary = report.summary;

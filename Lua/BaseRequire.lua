@@ -9,6 +9,7 @@ GameObject = CS.UnityEngine.GameObject
 GameConst = CS.UnityMMO.GameConst
 GameVariable = CS.UnityMMO.GameVariable
 SceneMgr = CS.UnityMMO.SceneMgr
+TextAnchor = CS.UnityEngine.TextAnchor
 
 Mathf		= require "Common.UnityEngine.Mathf"
 Vector2		= require "Common.UnityEngine.Vector2"
@@ -49,3 +50,7 @@ require("Common.Util.Functor")
 
 
 require("Tools.CookieWrapper")
+
+
+require("Game.Common.GameResPath")
+

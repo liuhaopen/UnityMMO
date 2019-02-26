@@ -44,8 +44,8 @@ namespace UnityMMO
                 // var playerInput = m_Data.Input[index];
 
                 // position += dt * playerInput.Move * m_Data.Speed[index].Speed;
-                position.x += dt * playerInput[index].Move.x * sppeds[index].speed;
-                position.z += dt * playerInput[index].Move.y * sppeds[index].speed;
+                position.x += dt * playerInput[index].Move.x * sppeds[index].Value;
+                position.z += dt * playerInput[index].Move.y * sppeds[index].Value;
                 // Debug.Log("player move system update position :"+position.ToString());
 
                 positions[index] = new Position {Value = position};

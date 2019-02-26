@@ -57,7 +57,7 @@ local find = string.find
 local gsub = string.gsub
 local Split = Split
 UI.G_ComponentMapForGetChildren = {
-	img = "Image", txt = "Text", tog = "Toggle",
+	img = "Image", txt = "Text", tog = "Toggle", imgex = "ImageExtend", outline = "Outline", raw = "RawImage", scroll = "ScrollRect", input = "InputField",
 }
 function UI.GetChildren( self, parent, names )
 	assert(parent, "UIHelper:GetChildren() cannot find transform!")
@@ -77,10 +77,48 @@ function UI.GetChildren( self, parent, names )
 			if name_parts[j] == "obj" then
 				self[short_name.."_"..name_parts[j]] = self[short_name].gameObject
 			elseif UI.G_ComponentMapForGetChildren[name_parts[j]] then
-				self[short_name.."_"..name_parts[j]] = self[short_name]:GetComponent(UI.G_ComponentMapForGetChildren[name_parts[j]])
+				local component = self[short_name]:GetComponent(UI.G_ComponentMapForGetChildren[name_parts[j]])
+				if component==nil then
+					print("cannot find component "..name_parts[j].." in child "..short_name)
+				end
+				self[short_name.."_"..name_parts[j]] = component
 			else
 				assert(false, "cannot find this component short name : "..name_parts[j])
 			end
 		end
 	end
+end
+
+--返回对齐方式字符串
+function UI.AlignTypeToStr( alignment )
+	local vert_align = "Upper"
+	if alignment == TextAnchor.UpperLeft
+	or alignment == TextAnchor.UpperCenter
+	or alignment == TextAnchor.UpperRight then
+		vert_align = "Upper"
+	elseif alignment == TextAnchor.MiddleLeft
+		or alignment == TextAnchor.MiddleCenter
+		or alignment == TextAnchor.MiddleRight then
+		vert_align = "Middle"
+	elseif alignment == TextAnchor.LowerLeft
+		or alignment == TextAnchor.LowerCenter
+		or alignment == TextAnchor.LowerRight then
+		vert_align = "Lower"
+	end
+
+	local hori_align = "Left"
+	if alignment == TextAnchor.UpperLeft
+	or alignment == TextAnchor.MiddleLeft
+	or alignment == TextAnchor.LowerLeft then
+		hori_align = "Left"
+	elseif alignment == TextAnchor.UpperCenter
+		or alignment == TextAnchor.MiddleCenter
+		or alignment == TextAnchor.LowerCenter then
+		hori_align = "Center"
+	elseif alignment == TextAnchor.UpperRight
+		or alignment == TextAnchor.MiddleRight
+		or alignment == TextAnchor.LowerRight then
+		hori_align = "Right"
+	end
+	return hori_align, vert_align
 end

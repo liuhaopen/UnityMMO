@@ -2,6 +2,7 @@ require "Game/Common/UIHelper"
 require "Game/Common/UIManager"
 require "Game/Common/UIWidgetPool"
 require "Game/Common/UIComponent"
+require("Game.Common.ItemListCreator")
 require("Game/Common/Message")
 
 --管理器--

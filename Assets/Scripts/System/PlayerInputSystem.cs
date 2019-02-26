@@ -14,7 +14,7 @@ namespace UnityMMO
         protected override void OnCreateManager()
         {
             base.OnCreateManager();
-            group = GetComponentGroup(typeof(UserCommand), typeof(TargetPosition));
+            group = GetComponentGroup(typeof(UserCommand), typeof(TargetPosition), typeof(MoveSpeed));
         }
 
         protected override void OnUpdate()
@@ -22,10 +22,14 @@ namespace UnityMMO
             // Debug.Log("on OnUpdate player input system");
             float dt = Time.deltaTime;
             var userCommandArray = group.GetComponentDataArray<UserCommand>();
+            var targetPosArray = group.GetComponentDataArray<TargetPosition>();
+            var moveSpeedArray = group.GetComponentDataArray<MoveSpeed>();
             if (userCommandArray.Length==0)
                 return;
             var userCommand = userCommandArray[0];
             SampleInput(ref userCommand, dt);
+
+           
             // for (int i = 0; i < inputDataArray.Length; ++i)
             // {
             //     PlayerInput pi;
@@ -51,16 +55,11 @@ namespace UnityMMO
             command.moveYaw = angle;
             command.moveMagnitude = magnitude;
 
-            // float invertY = Game.configInvertY.IntValue > 0 ? -1.0f : 1.0f;
             float invertY = 1.0f;
 
             Vector2 deltaMousePos = new Vector2(0, 0);
             if(deltaTime > 0.0f)
                 deltaMousePos += new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y") * invertY);
-            // deltaMousePos += deltaTime * (new Vector2(Input.GetAxisRaw("RightStickX") * s_JoystickLookSensitivity.x, - invertY * Input.GetAxisRaw("RightStickY") * s_JoystickLookSensitivity.y));
-            // deltaMousePos += deltaTime * (new Vector2(
-                // ((Input.GetKey(KeyCode.Keypad4) ? -1.0f : 0.0f) + (Input.GetKey(KeyCode.Keypad6) ? 1.0f : 0.0f)) * s_JoystickLookSensitivity.x,
-                // - invertY * Input.GetAxisRaw("RightStickY") * s_JoystickLookSensitivity.y));
 
             const float configMouseSensitivity = 1.5f;
             command.lookYaw += deltaMousePos.x * configMouseSensitivity;
@@ -70,8 +69,8 @@ namespace UnityMMO
             command.lookPitch += deltaMousePos.y * configMouseSensitivity;
             command.lookPitch = Mathf.Clamp(command.lookPitch, 0, 180);
 
-            command.jump = command.jump || Input.GetKeyDown(KeyCode.Space); 
-            command.sprint = command.sprint || Input.GetKey(KeyCode.LeftShift);
+            command.jump = (command.jump!=0 || Input.GetKeyDown(KeyCode.Space))?1:0; 
+            command.sprint = (command.sprint!=0 || Input.GetKey(KeyCode.LeftShift))?1:0;
             // command.skill = 
         }
       

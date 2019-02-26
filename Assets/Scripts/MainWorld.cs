@@ -51,6 +51,7 @@ namespace UnityMMO{
                 //开始从后端请求场景信息，一旦开启就会在收到回复时再次请求
                 SynchFromNet.Instance.ReqSceneObjInfoChange();
             }
+            TestLoadMultipleNavMeshInRunTime();
         }
 
         private void Update() {
@@ -58,13 +59,13 @@ namespace UnityMMO{
             m_Systems.Update();
         }
         
-        // void TestLoadMultipleNavMeshInRunTime()
-        // {
-        //     XLuaFramework.ResourceManager.GetInstance().LoadNavMesh("Test1");
-        //     XLuaFramework.ResourceManager.GetInstance().LoadNavMesh("Test2");
-        //     AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("Test1", UnityEngine.SceneManagement.LoadSceneMode.Additive);
-        //     AsyncOperation asy2 = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("Test2", UnityEngine.SceneManagement.LoadSceneMode.Additive); 
-        // }
+        void TestLoadMultipleNavMeshInRunTime()
+        {
+            XLuaFramework.ResourceManager.GetInstance().LoadNavMesh("Test1");
+            XLuaFramework.ResourceManager.GetInstance().LoadNavMesh("Test2");
+            AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("Test1", UnityEngine.SceneManagement.LoadSceneMode.Additive);
+            AsyncOperation asy2 = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("Test2", UnityEngine.SceneManagement.LoadSceneMode.Additive); 
+        }
 
     }
 
