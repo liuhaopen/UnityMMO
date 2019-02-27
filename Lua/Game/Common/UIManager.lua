@@ -105,6 +105,15 @@ function UIMgr:Show( view )
 	ResMgr:LoadPrefabGameObject(view.UIConfig.prefab_path, on_load_succeed)
 end
 
+function UIMgr:RemoveAllComponents( view )
+	if view._components_for_uimgr_ then
+		for i,v in ipairs(view._components_for_uimgr_) do
+			v:OnClose()
+		end
+		view._components_for_uimgr_ = nil
+	end
+end
+
 --Cat_Todo : 如果传入的view不是最前的界面要怎么处理?应该在组件里处理就行了:UI.HideOtherView
 function UIMgr:Close( view )
 	assert(view, "cannot close a nil view")
@@ -114,12 +123,7 @@ function UIMgr:Close( view )
 	if view.OnClose then
 		view:OnClose()
 	end
-	if view._components_for_uimgr_ then
-		for i,v in ipairs(view._components_for_uimgr_) do
-			v:OnClose()
-		end
-		view._components_for_uimgr_ = nil
-	end
+	self:RemoveAllComponents(view)
 	if not view.is_destroyed then
 		GameObject.Destroy(view.gameObject)
 	end

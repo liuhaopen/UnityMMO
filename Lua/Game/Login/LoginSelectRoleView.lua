@@ -1,6 +1,7 @@
 local LoginSelectRoleView = BaseClass()
 
 function LoginSelectRoleView:DefaultVar( )
+    require("Game/Login/LoginSceneBgView"):SetActive(true)
 	return { 
 	UIConfig = {
 		prefab_path = "Assets/AssetBundleRes/ui/login/LoginSelectRoleView.prefab",
@@ -28,6 +29,7 @@ function LoginSelectRoleView:AddEvents(  )
 	local on_click = function ( click_btn )
         if click_btn == self.start_obj then
             GlobalEventSystem:Fire(LoginConst.Event.SelectRoleEnterGame, self.select_role_id)
+			CookieWrapper:GetInstance():SaveCookie(CookieLevelType.Common, CookieTimeType.TYPE_ALWAYS, CookieKey.LastSelectRoleID, self.select_role_id)
 		end
 	end
 	UIHelper.BindClickEvent(self.start_obj, on_click)
@@ -41,6 +43,13 @@ function LoginSelectRoleView:UpdateView()
     	return
     end
     self.role_item_com = self.role_item_com or UIMgr:AddUIComponent(self, UI.ItemListCreator)
+    --最少要显示3个
+	local min_role_num = 3
+	if #self.data < min_role_num then
+		for i=1,min_role_num - #self.data do
+			table.insert(self.data, false)
+		end
+	end
     local info = {
 		data_list = self.data, 
 		item_con = self.item_con, 
@@ -49,33 +58,30 @@ function LoginSelectRoleView:UpdateView()
 		space_y = 15,
 		scroll_view = self.item_scroll,
 		child_names = {
-			"head_bg:img:obj","name_bg:img:obj","role_lv:txt:outline","role_name:txt:outline","role_head:raw:obj",
+			"head_bg:img:obj","name_bg:img:obj","role_lv:txt","role_name:txt","role_head:raw:obj",
 		},
 		on_update_item = function(item, i, v)
-			self:UpdateItem(item, i, v)
+			self:UpdateRoleHeadItems(item, i, v)
 		end,
 	}
 	self.role_item_com:UpdateItems(info)
- --    for i=1,3 do
-	-- 	local role_info = role_list[i]
-	-- 	local item = {
-	-- 		UIConfig = {
-	-- 			prefab_path = "Assets/AssetBundleRes/ui/login/LoginSelectRoleItem.prefab",
-	-- 		},
-	-- 		OnLoad = function(item)
-	-- 			local names = {
-	-- 				"head_bg:img:obj","name_bg:img:obj","role_lv:txt:outline","role_name:txt:outline","role_head:raw:obj",
-	-- 			}
-	-- 			UI.GetChildren(item, item.transform, names)
-	-- 			UIHelper.SetParent(item.transform, self.item_con)
 
-	-- 			print('Cat:LoginSelectRoleView.lua[53] role_info, i', role_info, i)
-	-- 			self:UpdateRoleHeadItems(item, i, role_info)
-	-- 		end
-	-- 	}
-	-- 	UIMgr:Show(item)
-	-- end
-	self.select_role_id = role_list[1].role_id
+	local best_role_id = nil
+	local last_role_id = CookieWrapper.Instance:GetCookie(CookieLevelType.Common, CookieKey.LastSelectRoleID)
+	if last_role_id then
+		for i,v in ipairs(self.data) do
+			if v and v.role_id == last_role_id then
+				best_role_id = v.role_id
+				break
+			end
+		end
+	end
+	if #self.data > 0 and not best_role_id then
+		best_role_id = self.data[1].role_id
+	end
+	if best_role_id then
+		self:SetCurSelectRoleID(best_role_id)
+	end
 end
 
 function LoginSelectRoleView:UpdateRoleHeadItems( item, index, v )
@@ -102,10 +108,10 @@ function LoginSelectRoleView:UpdateRoleHeadItems( item, index, v )
 			local is_cur_select = self.select_role_id == item.data.role_id
 			UIHelper.SetImage(item.name_bg_img, is_cur_select and "login/login_role_name_bg_sel.png" or "login/login_role_name_bg_nor.png", true)
 			UIHelper.SetImage(item.head_bg_img, is_cur_select and "login/login_role_item_bg_sel.png" or "login/login_role_item_bg_nor.png", true)
-			self.outline_color_sel = self.outline_color_sel or Color(143/255, 40/255, 75/255, 1)
-			self.outline_color_nor = self.outline_color_nor or Color(84/255, 31/255, 49/255, 1)
-			item.role_name_outline.effectColor = is_cur_select and self.outline_color_sel or self.outline_color_nor
-			item.role_lv_outline.effectColor = is_cur_select and self.outline_color_sel or self.outline_color_nor
+			-- self.outline_color_sel = self.outline_color_sel or Color(143/255, 40/255, 75/255, 1)
+			-- self.outline_color_nor = self.outline_color_nor or Color(84/255, 31/255, 49/255, 1)
+			-- item.role_name_outline.effectColor = is_cur_select and self.outline_color_sel or self.outline_color_nor
+			-- item.role_lv_outline.effectColor = is_cur_select and self.outline_color_sel or self.outline_color_nor
 		end
 	end
 	if item.data then
@@ -162,12 +168,15 @@ function LoginSelectRoleView:SetCurSelectRoleID( role_id )
 		end
 	end)
 	
-	self.select_role_career = self.select_role_info.career.."@"..self.select_role_info.sex
-	lua_resM:setImageSprite(self, self.role_tip_img, "account_asset", "login_role_tip_"..self.select_role_info.sex, true)
-	self.select_role_login_day = self.select_role_info.login_day
-	self.select_role_Create_time  = self.select_role_info.create_role_time
-
+	self.select_role_career = self.select_role_info.career
+	UIHelper.SetImage(self.role_tip_img, "login/login_role_tip_"..self.select_role_career..".png", true)
+	-- self.select_role_login_day = self.select_role_info.login_day
+	-- self.select_role_Create_time  = self.select_role_info.create_role_time
 	self:SetPlayModelInfo(self.select_role_info)
+end
+
+function LoginSelectRoleView:OnClose(  )
+    require("Game/Login/LoginSceneBgView"):SetActive(false)
 end
 
 return LoginSelectRoleView

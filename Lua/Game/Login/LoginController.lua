@@ -28,8 +28,7 @@ function LoginController:InitEvents(  )
             print("Cat:LoginController [end]")
             local role_list = ack_data.role_list
             LoginModel:GetInstance():SetRoleList(role_list)
-            local sceneBGView = require("Game/Login/LoginSceneBgView")
-            sceneBGView:SetActive(true)
+            
             if role_list and #role_list > 0 then
                 --已有角色就先进入选择角色界面
                 local view = require("Game/Login/LoginSelectRoleView").New()

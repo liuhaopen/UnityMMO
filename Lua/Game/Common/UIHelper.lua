@@ -5,7 +5,6 @@ local LuaClickListener = LuaClickListener
 local LuaDragListener = LuaDragListener
 local WordManager = WordManager
 
---最终还是决定用个叫UI的变量包着
 UI = {}
 --下列接口会尝试多种设置的，如果你已经知道你的节点是什么类型的就别用下列接口了
 function UI.SetVisible( obj, is_show )
@@ -57,7 +56,7 @@ local find = string.find
 local gsub = string.gsub
 local Split = Split
 UI.G_ComponentMapForGetChildren = {
-	img = "Image", txt = "Text", tog = "Toggle", imgex = "ImageExtend", outline = "Outline", raw = "RawImage", scroll = "ScrollRect", input = "InputField",
+	img = "Image", txtnav = "Text", tog = "Toggle", imgex = "ImageExtend", outline = "Outline", raw = "RawImage", scroll = "ScrollRect", input = "InputField", txt = "TextMeshProUGUI",
 }
 function UI.GetChildren( self, parent, names )
 	assert(parent, "UIHelper:GetChildren() cannot find transform!")
@@ -121,4 +120,217 @@ function UI.AlignTypeToStr( alignment )
 		hori_align = "Right"
 	end
 	return hori_align, vert_align
+end
+
+function UI.SetPositionXYZ( transform, x, y, z )
+	if transform then
+		transform.position = Vector3.New(x, y, z)
+	end
+end
+
+function UI.SetPositionXY( transform, x, y )
+	UI.SetPositionXYZ(transform, x, y, 0)
+end
+
+function UI.SetPositionX( transform, value )
+	if transform then
+		local curPos = transform.position
+		UI.SetPositionXYZ(transform, value, curPos.y, curPos.z)
+	end
+end
+
+function UI.SetPositionY( transform, value )
+	if transform then
+		local curPos = transform.position
+		UI.SetPositionXYZ(transform, curPos.x, value, curPos.z)
+	end
+end
+
+function UI.SetPositionZ( transform, value )
+	if transform then
+		local curPos = transform.position
+		UI.SetPositionXYZ(transform, curPos.x, curPos.y, value)
+	end
+end
+
+function UI.SetPosition(transform, pos)
+	UI.SetPositionXYZ(transform, pos.x, pos.y, pos.z)
+end
+
+function UI.SetLocalPositionXYZ( transform, x, y, z )
+	if transform then
+		transform.localPosition = Vector3.New(x, y, z)
+	end
+end
+
+function UI.SetLocalPositionXY( transform, x, y )
+	UI.SetLocalPositionXYZ(transform, x, y, 0)
+end
+
+function UI.SetLocalPositionX( transform, value )
+	if transform then
+		local curPos = transform.localPosition
+		UI.SetLocalPositionXYZ(transform, value, curPos.y, curPos.z)
+	end
+end
+
+function UI.SetLocalPositionY( transform, value )
+	if transform then
+		local curPos = transform.localPosition
+		UI.SetLocalPositionXYZ(transform, curPos.x, value, curPos.z)
+	end
+end
+
+function UI.SetLocalPositionZ( transform, value )
+	if transform then
+		local curPos = transform.localPosition
+		UI.SetLocalPositionXYZ(transform, curPos.x, curPos.y, value)
+	end
+end
+
+function UI.SetLocalPosition(transform, pos)
+	UI.SetLocalPositionXYZ(transform, pos.x, pos.y, pos.z)
+end
+
+function UI.GetLocalPositionX(transform)
+	if transform then
+		local pos = transform.localPosition
+		return pos.x
+	end
+	return 0
+end
+
+function UI.GetLocalPositionY(transform)
+	if transform then
+		local pos = transform.localPosition
+		return pos.y
+	end
+	return 0
+end
+
+function UI.GetLocalPositionZ(transform)
+	if transform then
+		local pos = transform.localPosition
+		return pos.z
+	end
+	return 0
+end
+
+function UI.GetLocalPositionXY(transform)
+	if transform then
+		local pos = transform.localPosition
+		return pos.x, pos.y
+	end
+	return 0, 0
+end
+
+function UI.GetLocalPositionXYZ(transform)
+	if transform then
+		local pos = transform.localPosition
+		return pos.x, pos.y, pos.z
+	end
+	return 0, 0, 0
+end
+
+function UI.SetAnchoredPositionXY( transform, x, y )
+	if transform then
+		transform.anchoredPosition = Vector2.New(x, y)
+	end
+end
+
+function UI.SetAnchoredPositionX( transform, value )
+	if transform then
+		local curPos = transform.anchoredPosition
+		UI.SetLocalPositionXY(transform, value, curPos.y, curPos.z)
+	end
+end
+
+function UI.SetAnchoredPositionY( transform, value )
+	if transform then
+		local curPos = transform.anchoredPosition
+		UI.SetAnchoredPositionXY(transform, curPos.x, value, curPos.z)
+	end
+end
+
+function UI.SetAnchoredPosition(transform, pos)
+	UI.SetAnchoredPositionXY(transform, pos.x, pos.y, pos.z)
+end
+
+function UI.GetAnchoredPositionX(transform)
+	if transform then
+		local pos = transform.anchoredPosition
+		return pos.x
+	end
+	return 0
+end
+
+function UI.GetAnchoredPositionY(transform)
+	if transform then
+		local pos = transform.anchoredPosition
+		return pos.y
+	end
+	return 0
+end
+
+function UI.GetAnchoredPositionXY(transform)
+	if transform then
+		local pos = transform.anchoredPosition
+		return pos.x, pos.y
+	end
+	return 0, 0
+end
+
+function UI.SetSizeDeltaXY(transform, x, y)
+	if transform then
+        transform.sizeDelta = Vector2.New(x, y)
+	end
+end
+
+function UI.SetSizeDelta(transform, size)
+	if transform and size then
+        transform.sizeDelta = Vector2.New(size.x, size.y)
+	end
+end
+
+function UI.SetSizeDeltaX(transform, value)
+	if transform then
+        transform.sizeDelta = Vector2.New(value, transform.sizeDelta.y)
+	end
+end
+
+function UI.SetSizeDeltaY(transform, value)
+	if transform then
+        transform.sizeDelta = Vector2.New(transform.sizeDelta.x, value)
+	end
+end
+
+function UI.GetSizeDeltaXY(transform)
+	if transform then
+		local size = transform.sizeDelta
+		return size.x, size.y
+	end
+	return 0, 0
+end
+
+function UI.GetSizeDelta(transform)
+	if transform then
+		return transform.sizeDelta
+	end
+	return Vector2.zero
+end
+
+function UI.GetSizeDeltaX(transform)
+	if transform then
+		local size = transform.sizeDelta
+		return size.x
+	end
+	return 0
+end
+
+function UI.GetSizeDeltaY(transform)
+	if transform then
+		local size = transform.sizeDelta
+		return size.y
+	end
+	return 0
 end

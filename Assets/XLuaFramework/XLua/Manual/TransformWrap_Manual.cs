@@ -15,8 +15,7 @@ using UnityEngine;
 namespace XLua.CSObjectWrap
 {
     using Utils = XLua.Utils;
-    [Hotfix]
-    [LuaCallCSharp]
+
     public static class TransformWrap_Manual
     {
         public static void __Register(RealStatePtr L)

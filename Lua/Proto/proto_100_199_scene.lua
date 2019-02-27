@@ -22,6 +22,7 @@ return [[
 }
 .scene_role_base_info {
 	level 0 : integer
+	career 1 : integer
 }
 .scene_role_looks_info {
 	career 0 : integer

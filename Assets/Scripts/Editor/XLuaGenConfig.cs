@@ -10,6 +10,9 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using XLua;
+using TMPro;
+using UnityEngine.UI;
+using static XLuaManager;
 //using System.Reflection;
 //using System.Linq;
 
@@ -48,6 +51,21 @@ public static class XLuaGenConfig
                 typeof(Mathf),
                 typeof(System.Collections.Generic.List<int>),
                 typeof(Action<string>),
+                typeof(UnityEngine.UI.InputField),
+                typeof(TextAnchor),
+                typeof(RaycastHit),
+                typeof(Touch),
+                typeof(TouchPhase),
+                typeof(LayerMask),
+                typeof(Plane),
+                typeof(RectTransform),
+                typeof(TextMesh),
+                typeof(MaskableGraphic),
+                typeof(ScrollRect),
+                typeof(Image),
+                typeof(Animator),
+                typeof(LuaUpdaterExporter),
+                typeof(CircleRawImage),
                 typeof(UnityEngine.Debug)
             };
 
@@ -55,6 +73,14 @@ public static class XLuaGenConfig
     public static List<Type> LuaCallCSharpEntities = new List<Type>() {
                 typeof(Unity.Entities.World),
                 typeof(Unity.Entities.EntityManager)
+    };
+            
+
+    [LuaCallCSharp]
+    public static List<Type> LuaCallCSharpTextMeshPro = new List<Type>() {
+                typeof(TextMeshProUGUI),
+                typeof(TMP_Text),
+                
     };
 
     //C#静态调用Lua的配置（包括事件的原型），仅可以配delegate，interface

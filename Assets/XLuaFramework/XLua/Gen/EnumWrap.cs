@@ -202,4 +202,172 @@ namespace XLua.CSObjectWrap
 		}
 	}
     
+    public class UnityEngineTextAnchorWrap
+    {
+		public static void __Register(RealStatePtr L)
+        {
+		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+		    Utils.BeginObjectRegister(typeof(UnityEngine.TextAnchor), L, translator, 0, 0, 0, 0);
+			Utils.EndObjectRegister(typeof(UnityEngine.TextAnchor), L, translator, null, null, null, null, null);
+			
+			Utils.BeginClassRegister(typeof(UnityEngine.TextAnchor), L, null, 10, 0, 0);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "UpperLeft", UnityEngine.TextAnchor.UpperLeft);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "UpperCenter", UnityEngine.TextAnchor.UpperCenter);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "UpperRight", UnityEngine.TextAnchor.UpperRight);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "MiddleLeft", UnityEngine.TextAnchor.MiddleLeft);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "MiddleCenter", UnityEngine.TextAnchor.MiddleCenter);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "MiddleRight", UnityEngine.TextAnchor.MiddleRight);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "LowerLeft", UnityEngine.TextAnchor.LowerLeft);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "LowerCenter", UnityEngine.TextAnchor.LowerCenter);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "LowerRight", UnityEngine.TextAnchor.LowerRight);
+            
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
+            
+            Utils.EndClassRegister(typeof(UnityEngine.TextAnchor), L, translator);
+        }
+		
+		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int __CastFrom(RealStatePtr L)
+		{
+			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
+            if (lua_type == LuaTypes.LUA_TNUMBER)
+            {
+                translator.PushUnityEngineTextAnchor(L, (UnityEngine.TextAnchor)LuaAPI.xlua_tointeger(L, 1));
+            }
+			
+            else if(lua_type == LuaTypes.LUA_TSTRING)
+            {
+			    if (LuaAPI.xlua_is_eq_str(L, 1, "UpperLeft"))
+                {
+                    translator.PushUnityEngineTextAnchor(L, UnityEngine.TextAnchor.UpperLeft);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "UpperCenter"))
+                {
+                    translator.PushUnityEngineTextAnchor(L, UnityEngine.TextAnchor.UpperCenter);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "UpperRight"))
+                {
+                    translator.PushUnityEngineTextAnchor(L, UnityEngine.TextAnchor.UpperRight);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "MiddleLeft"))
+                {
+                    translator.PushUnityEngineTextAnchor(L, UnityEngine.TextAnchor.MiddleLeft);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "MiddleCenter"))
+                {
+                    translator.PushUnityEngineTextAnchor(L, UnityEngine.TextAnchor.MiddleCenter);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "MiddleRight"))
+                {
+                    translator.PushUnityEngineTextAnchor(L, UnityEngine.TextAnchor.MiddleRight);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "LowerLeft"))
+                {
+                    translator.PushUnityEngineTextAnchor(L, UnityEngine.TextAnchor.LowerLeft);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "LowerCenter"))
+                {
+                    translator.PushUnityEngineTextAnchor(L, UnityEngine.TextAnchor.LowerCenter);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "LowerRight"))
+                {
+                    translator.PushUnityEngineTextAnchor(L, UnityEngine.TextAnchor.LowerRight);
+                }
+				else
+                {
+                    return LuaAPI.luaL_error(L, "invalid string for UnityEngine.TextAnchor!");
+                }
+            }
+			
+            else
+            {
+                return LuaAPI.luaL_error(L, "invalid lua type for UnityEngine.TextAnchor! Expect number or string, got + " + lua_type);
+            }
+
+            return 1;
+		}
+	}
+    
+    public class UnityEngineTouchPhaseWrap
+    {
+		public static void __Register(RealStatePtr L)
+        {
+		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+		    Utils.BeginObjectRegister(typeof(UnityEngine.TouchPhase), L, translator, 0, 0, 0, 0);
+			Utils.EndObjectRegister(typeof(UnityEngine.TouchPhase), L, translator, null, null, null, null, null);
+			
+			Utils.BeginClassRegister(typeof(UnityEngine.TouchPhase), L, null, 6, 0, 0);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Began", UnityEngine.TouchPhase.Began);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Moved", UnityEngine.TouchPhase.Moved);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Stationary", UnityEngine.TouchPhase.Stationary);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Ended", UnityEngine.TouchPhase.Ended);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Canceled", UnityEngine.TouchPhase.Canceled);
+            
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
+            
+            Utils.EndClassRegister(typeof(UnityEngine.TouchPhase), L, translator);
+        }
+		
+		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int __CastFrom(RealStatePtr L)
+		{
+			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
+            if (lua_type == LuaTypes.LUA_TNUMBER)
+            {
+                translator.PushUnityEngineTouchPhase(L, (UnityEngine.TouchPhase)LuaAPI.xlua_tointeger(L, 1));
+            }
+			
+            else if(lua_type == LuaTypes.LUA_TSTRING)
+            {
+			    if (LuaAPI.xlua_is_eq_str(L, 1, "Began"))
+                {
+                    translator.PushUnityEngineTouchPhase(L, UnityEngine.TouchPhase.Began);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Moved"))
+                {
+                    translator.PushUnityEngineTouchPhase(L, UnityEngine.TouchPhase.Moved);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Stationary"))
+                {
+                    translator.PushUnityEngineTouchPhase(L, UnityEngine.TouchPhase.Stationary);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Ended"))
+                {
+                    translator.PushUnityEngineTouchPhase(L, UnityEngine.TouchPhase.Ended);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Canceled"))
+                {
+                    translator.PushUnityEngineTouchPhase(L, UnityEngine.TouchPhase.Canceled);
+                }
+				else
+                {
+                    return LuaAPI.luaL_error(L, "invalid string for UnityEngine.TouchPhase!");
+                }
+            }
+			
+            else
+            {
+                return LuaAPI.luaL_error(L, "invalid lua type for UnityEngine.TouchPhase! Expect number or string, got + " + lua_type);
+            }
+
+            return 1;
+		}
+	}
+    
 }

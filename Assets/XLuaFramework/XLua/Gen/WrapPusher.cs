@@ -37,6 +37,8 @@ namespace XLua
 				translator.RegisterPushAndGetAndUpdate<XLuaFramework.NetPackageType>(translator.PushXLuaFrameworkNetPackageType, translator.Get, translator.UpdateXLuaFrameworkNetPackageType);
 				translator.RegisterPushAndGetAndUpdate<UnityMMO.SceneInfoKey>(translator.PushUnityMMOSceneInfoKey, translator.Get, translator.UpdateUnityMMOSceneInfoKey);
 				translator.RegisterPushAndGetAndUpdate<UnityMMO.SceneObjectType>(translator.PushUnityMMOSceneObjectType, translator.Get, translator.UpdateUnityMMOSceneObjectType);
+				translator.RegisterPushAndGetAndUpdate<UnityEngine.TextAnchor>(translator.PushUnityEngineTextAnchor, translator.Get, translator.UpdateUnityEngineTextAnchor);
+				translator.RegisterPushAndGetAndUpdate<UnityEngine.TouchPhase>(translator.PushUnityEngineTouchPhase, translator.Get, translator.UpdateUnityEngineTouchPhase);
 			
 			}
         }
@@ -825,6 +827,174 @@ namespace XLua
             }
         }
         
+        int UnityEngineTextAnchor_TypeID = -1;
+		int UnityEngineTextAnchor_EnumRef = -1;
+        
+        public void PushUnityEngineTextAnchor(RealStatePtr L, UnityEngine.TextAnchor val)
+        {
+            if (UnityEngineTextAnchor_TypeID == -1)
+            {
+			    bool is_first;
+                UnityEngineTextAnchor_TypeID = getTypeId(L, typeof(UnityEngine.TextAnchor), out is_first);
+				
+				if (UnityEngineTextAnchor_EnumRef == -1)
+				{
+				    Utils.LoadCSTable(L, typeof(UnityEngine.TextAnchor));
+				    UnityEngineTextAnchor_EnumRef = LuaAPI.luaL_ref(L, LuaIndexes.LUA_REGISTRYINDEX);
+				}
+				
+            }
+			
+			if (LuaAPI.xlua_tryget_cachedud(L, (int)val, UnityEngineTextAnchor_EnumRef) == 1)
+            {
+			    return;
+			}
+			
+            IntPtr buff = LuaAPI.xlua_pushstruct(L, 4, UnityEngineTextAnchor_TypeID);
+            if (!CopyByValue.Pack(buff, 0, (int)val))
+            {
+                throw new Exception("pack fail fail for UnityEngine.TextAnchor ,value="+val);
+            }
+			
+			LuaAPI.lua_getref(L, UnityEngineTextAnchor_EnumRef);
+			LuaAPI.lua_pushvalue(L, -2);
+			LuaAPI.xlua_rawseti(L, -2, (int)val);
+			LuaAPI.lua_pop(L, 1);
+			
+        }
+		
+        public void Get(RealStatePtr L, int index, out UnityEngine.TextAnchor val)
+        {
+		    LuaTypes type = LuaAPI.lua_type(L, index);
+            if (type == LuaTypes.LUA_TUSERDATA )
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != UnityEngineTextAnchor_TypeID)
+				{
+				    throw new Exception("invalid userdata for UnityEngine.TextAnchor");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+				int e;
+                if (!CopyByValue.UnPack(buff, 0, out e))
+                {
+                    throw new Exception("unpack fail for UnityEngine.TextAnchor");
+                }
+				val = (UnityEngine.TextAnchor)e;
+                
+            }
+            else
+            {
+                val = (UnityEngine.TextAnchor)objectCasters.GetCaster(typeof(UnityEngine.TextAnchor))(L, index, null);
+            }
+        }
+		
+        public void UpdateUnityEngineTextAnchor(RealStatePtr L, int index, UnityEngine.TextAnchor val)
+        {
+		    
+            if (LuaAPI.lua_type(L, index) == LuaTypes.LUA_TUSERDATA)
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != UnityEngineTextAnchor_TypeID)
+				{
+				    throw new Exception("invalid userdata for UnityEngine.TextAnchor");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+                if (!CopyByValue.Pack(buff, 0,  (int)val))
+                {
+                    throw new Exception("pack fail for UnityEngine.TextAnchor ,value="+val);
+                }
+            }
+			
+            else
+            {
+                throw new Exception("try to update a data with lua type:" + LuaAPI.lua_type(L, index));
+            }
+        }
+        
+        int UnityEngineTouchPhase_TypeID = -1;
+		int UnityEngineTouchPhase_EnumRef = -1;
+        
+        public void PushUnityEngineTouchPhase(RealStatePtr L, UnityEngine.TouchPhase val)
+        {
+            if (UnityEngineTouchPhase_TypeID == -1)
+            {
+			    bool is_first;
+                UnityEngineTouchPhase_TypeID = getTypeId(L, typeof(UnityEngine.TouchPhase), out is_first);
+				
+				if (UnityEngineTouchPhase_EnumRef == -1)
+				{
+				    Utils.LoadCSTable(L, typeof(UnityEngine.TouchPhase));
+				    UnityEngineTouchPhase_EnumRef = LuaAPI.luaL_ref(L, LuaIndexes.LUA_REGISTRYINDEX);
+				}
+				
+            }
+			
+			if (LuaAPI.xlua_tryget_cachedud(L, (int)val, UnityEngineTouchPhase_EnumRef) == 1)
+            {
+			    return;
+			}
+			
+            IntPtr buff = LuaAPI.xlua_pushstruct(L, 4, UnityEngineTouchPhase_TypeID);
+            if (!CopyByValue.Pack(buff, 0, (int)val))
+            {
+                throw new Exception("pack fail fail for UnityEngine.TouchPhase ,value="+val);
+            }
+			
+			LuaAPI.lua_getref(L, UnityEngineTouchPhase_EnumRef);
+			LuaAPI.lua_pushvalue(L, -2);
+			LuaAPI.xlua_rawseti(L, -2, (int)val);
+			LuaAPI.lua_pop(L, 1);
+			
+        }
+		
+        public void Get(RealStatePtr L, int index, out UnityEngine.TouchPhase val)
+        {
+		    LuaTypes type = LuaAPI.lua_type(L, index);
+            if (type == LuaTypes.LUA_TUSERDATA )
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != UnityEngineTouchPhase_TypeID)
+				{
+				    throw new Exception("invalid userdata for UnityEngine.TouchPhase");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+				int e;
+                if (!CopyByValue.UnPack(buff, 0, out e))
+                {
+                    throw new Exception("unpack fail for UnityEngine.TouchPhase");
+                }
+				val = (UnityEngine.TouchPhase)e;
+                
+            }
+            else
+            {
+                val = (UnityEngine.TouchPhase)objectCasters.GetCaster(typeof(UnityEngine.TouchPhase))(L, index, null);
+            }
+        }
+		
+        public void UpdateUnityEngineTouchPhase(RealStatePtr L, int index, UnityEngine.TouchPhase val)
+        {
+		    
+            if (LuaAPI.lua_type(L, index) == LuaTypes.LUA_TUSERDATA)
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != UnityEngineTouchPhase_TypeID)
+				{
+				    throw new Exception("invalid userdata for UnityEngine.TouchPhase");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+                if (!CopyByValue.Pack(buff, 0,  (int)val))
+                {
+                    throw new Exception("pack fail for UnityEngine.TouchPhase ,value="+val);
+                }
+            }
+			
+            else
+            {
+                throw new Exception("try to update a data with lua type:" + LuaAPI.lua_type(L, index));
+            }
+        }
+        
         
 		// table cast optimze
 		
@@ -902,6 +1072,18 @@ namespace XLua
 				translator.PushUnityMMOSceneObjectType(L, array[index]);
 				return true;
 			}
+			else if (type == typeof(UnityEngine.TextAnchor[]))
+			{
+			    UnityEngine.TextAnchor[] array = obj as UnityEngine.TextAnchor[];
+				translator.PushUnityEngineTextAnchor(L, array[index]);
+				return true;
+			}
+			else if (type == typeof(UnityEngine.TouchPhase[]))
+			{
+			    UnityEngine.TouchPhase[] array = obj as UnityEngine.TouchPhase[];
+				translator.PushUnityEngineTouchPhase(L, array[index]);
+				return true;
+			}
             return false;
 		}
 		
@@ -971,6 +1153,18 @@ namespace XLua
 			else if (type == typeof(UnityMMO.SceneObjectType[]))
 			{
 			    UnityMMO.SceneObjectType[] array = obj as UnityMMO.SceneObjectType[];
+				translator.Get(L, obj_idx, out array[array_idx]);
+				return true;
+			}
+			else if (type == typeof(UnityEngine.TextAnchor[]))
+			{
+			    UnityEngine.TextAnchor[] array = obj as UnityEngine.TextAnchor[];
+				translator.Get(L, obj_idx, out array[array_idx]);
+				return true;
+			}
+			else if (type == typeof(UnityEngine.TouchPhase[]))
+			{
+			    UnityEngine.TouchPhase[] array = obj as UnityEngine.TouchPhase[];
 				translator.Get(L, obj_idx, out array[array_idx]);
 				return true;
 			}

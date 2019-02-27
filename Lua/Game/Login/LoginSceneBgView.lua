@@ -2,15 +2,32 @@ local LoginSceneBgView = {}
 
 function LoginSceneBgView:SetActive( isActive )
 	self.isActive = isActive
-	print('Cat:LoginSceneBgView.lua[5] self.is_inited', self.is_inited)
 	if not self.is_inited then
+		self.is_inited = true
 		self:Init()
+	end
+	if self.scene_obj then
+		self.scene_obj:SetActive(self.isActive)
+	end
+	if self.login_camera then
+		self:SwitchLoginCamera(self.isActive)
+	end
+	if self.delayDestroyTimer then
+		self.delayDestroyTimer:Stop()
+		self.delayDestroyTimer = nil
+	end
+	if not self.isActive then
+		--隐藏5秒后销毁本场景资源
+		self.delayDestroyTimer = self.delayDestroyTimer or Timer.New(function()
+        	GameObject.Destroy(self.scene_obj)
+        	GameObject.Destroy(self.login_camera)
+		end, 5)
+		self.delayDestroyTimer:Start()
 	end
 end
 
 function LoginSceneBgView:Init(  )
 	self.main_camera = GameObject.Find("MainCamera")
-	-- self.main_camera_cam = self.main_camera:GetComponent("Camera")
 	self:LoadSceneView()
 end
 
@@ -21,20 +38,12 @@ function LoginSceneBgView:SwitchLoginCamera( is_login_camera )
 	else
 		self.main_camera.gameObject:SetActive(true)
 		self.login_camera.gameObject:SetActive(false)
-		-- self.main_camera_cam.orthographic = true
-		-- self.main_camera_cam.transform.rotation = Vector3(0, 0, 0)
 	end
 end
 
 function LoginSceneBgView:LoadSceneView()
 	local camera_prefab_name = "Assets/AssetBundleRes/scene/login/objs/other_effect/chuangjue/camera_for_create_role.prefab"
 	local on_load_camera_ok = function ( go )
-		print('Cat:LoginSceneBgView.lua[32] go', go)
-		-- if not objs or not objs[0] then
-		-- 	logWarn("cannot find camera prefab name : "..camera_prefab_name)
-		-- 	return
-		-- end
-		-- local go = newObject(objs[0])
 		self.login_camera = go
 		self.camera_animator = go:GetComponent("Animator")
 		self.camera = go.transform
@@ -42,19 +51,11 @@ function LoginSceneBgView:LoadSceneView()
 	end
 	ResMgr:LoadPrefabGameObject(camera_prefab_name, on_load_camera_ok)
 	
-	-- local load_scene_res = function (  )
-		local scene_prefab_name = "Assets/AssetBundleRes/scene/login/objs/other_effect/chuangjue/scene_for_login.prefab"
-		local on_load_scene_ok = function ( go )
-			print('Cat:LoginSceneBgView.lua[47] go', go)
-			self.scene_obj = go
-		end
-		ResMgr:LoadPrefabGameObject(scene_prefab_name, on_load_scene_ok)
-	-- end
-	-- self:PreloadRes(load_scene_res)
-end
-
-function LoginSceneBgView:Hide(  )
-	
+	local scene_prefab_name = "Assets/AssetBundleRes/scene/login/objs/other_effect/chuangjue/scene_for_login.prefab"
+	local on_load_scene_ok = function ( go )
+		self.scene_obj = go
+	end
+	ResMgr:LoadPrefabGameObject(scene_prefab_name, on_load_scene_ok)
 end
 
 return LoginSceneBgView

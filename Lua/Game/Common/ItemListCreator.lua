@@ -1,7 +1,7 @@
 --[[说明:
 用于创建Item列表的组件,支持三种创建方式:
 )传入Item类名:使用字段item_class
-)传入prefab资源名:使用字段prefab_ab_name和prefab_res_name
+)传入prefab资源名:使用字段prefab_path
 )对象池类型如:UIObjPool.UIType.AwardItem:使用字段obj_pool_type
 )单个控件如：UIType.Label使用字段ui_factory_type
 各字段使用说明:
@@ -390,12 +390,55 @@ GetItemCreator = function ( self )
 				local on_load_ok = function ( item )
 					UI.GetChildren(item, item.transform, info.child_names)
 					UIHelper.SetParent(item.transform, info.item_con)
+					if item.cacheIsActive ~= nil then
+						item.gameObject:SetActive(item.cacheIsActive)
+						item.cacheIsActive = nil
+					end
+					if item.cache_pos then
+						UI.SetLocalPositionXY(item.transform, item.cache_pos.x, item.cache_pos.y)
+						item.cache_pos = nil
+					end
+					if item.cache_data and item.UpdateView then
+						item:UpdateView(item.cache_data.index, item.cache_data.data)
+						item.cache_data = nil
+					end
 				end
 				item = {
 					UIConfig = {
 						prefab_path = info.prefab_path,
 					},
-					OnLoad = on_load_ok
+					OnLoad = on_load_ok,
+					SetActive = function(item, isActive)
+						if item.is_loaded then
+							item.gameObject:SetActive(isActive)
+						else
+							item.cacheIsActive = isActive
+						end
+					end,
+					SetPosition = function(item, x, y)
+						if item.is_loaded then
+							UI.SetLocalPositionXY(item.transform, x, y)
+						else
+							item.cache_pos = {x=x, y=y}
+						end
+					end,
+					SetData = function(item, i, v)
+						if item.is_loaded and item.UpdateView then
+							item:UpdateView(i, v)
+						else
+							item.cache_data = {index=i, data=v}
+						end
+					end,
+					Destroy = function(item)
+						if item.is_loaded and item.gameObject then
+							UIMgr:RemoveAllComponents(item)
+							if item.destroy_callback then
+								item.destroy_callback(item)
+							end
+							GameObject.Destroy(item.gameObject)
+						end
+						item.had_destroyed = true
+					end,
 				}
 				UIMgr:Show(item)
 				-- ResMgr:LoadPrefabGameObject(info.prefab_path, on_load_ok)
@@ -403,7 +446,7 @@ GetItemCreator = function ( self )
 				self.item_list[i]._real_index_for_item_creator_ = i
 				item.UpdateView = on_update_prefab_item
 			end
-			item:SetVisible(true)
+			item:SetActive(true)
 			item:SetPosition(self.get_item_pos_xy_func(item._real_index_for_item_creator_))
 			item:SetData(nil, self)
 		end
@@ -441,7 +484,7 @@ GetItemCreator = function ( self )
 					end,
 					AddUIComponent = UIPartical.AddUIComponent,
 					RemoveUIComponent = UIPartical.RemoveUIComponent,
-					DeleteMe=LuaResManager.__DestroyPrefab, 
+					Destroy=LuaResManager.__DestroyPrefab, 
 				}
 				item.transform.pivot = Vector2(0, 1)--作为子节点的话一般轴点都是左上角的啦
 				item.transform.anchorMin = Vector2(0, 1)
@@ -502,13 +545,13 @@ GetCurUnvisibleRowOrCol = function ( self )
 	local cur_unvisible_row = 0
 	local move_num_per_operate = 0--每次操作的个数
 	if self.is_horizon_scroll then
-		local con_x = -GetLocalPositionX(info.item_con)
+		local con_x = -UI.GetLocalPositionX(info.item_con)
 		con_x = con_x - info.start_x
 		cur_unvisible_row = GetUnVisibleRowColBySize(self, con_x+info.space_x)
 		--水平布局下是逐个移动的
 		move_num_per_operate = 1
 	else
-		local con_y = GetLocalPositionY(info.item_con)
+		local con_y = UI.GetLocalPositionY(info.item_con)
 		con_y = con_y + info.start_y
 		cur_unvisible_row = GetUnVisibleRowColBySize(self, con_y+info.space_y)
 		--垂直布局下是整行移动的
@@ -649,7 +692,7 @@ function UI.ItemListCreator:ScrollToItem(item_index, pos_offset, animte_info)
 			target_pos_x = max_move
 		end
 		if animte_info or animte_info==nil then
-			local _, origin_pos_y, origin_pos_z = GetLocalPosition(self.info.item_con)
+			local _, origin_pos_y, origin_pos_z = UI.GetLocalPositionXYZ(self.info.item_con)
 			local action = cc.MoveTo.createLocalType(duration, target_pos_x, origin_pos_y, origin_pos_z)
 			cc.ActionManager:getInstance():addAction(action, self.info.item_con)
 		else
@@ -668,7 +711,7 @@ function UI.ItemListCreator:ScrollToItem(item_index, pos_offset, animte_info)
 			target_pos_y = max_move
 		end
 		if animte_info or animte_info==nil then
-			local origin_pos_x, _, origin_pos_z = GetLocalPosition(self.info.item_con)
+			local origin_pos_x, _, origin_pos_z = UI.GetLocalPositionXYZ(self.info.item_con)
 			local action = cc.MoveTo.createLocalType(duration, origin_pos_x, target_pos_y, origin_pos_z)
 			cc.ActionManager:getInstance():addAction(action, self.info.item_con)
 		else
@@ -728,7 +771,7 @@ ResizeItemList = function( self, min_item_num )
 			if self.destroy_pool_type then
 				UIObjPool:PushItem(self.destroy_pool_type, self.item_list[i])
 			else
-				self.item_list[i]:DeleteMe()
+				self.item_list[i]:Destroy()
 			end
 			self.item_list[i] = nil
 		end
@@ -756,7 +799,7 @@ function UI.ItemListCreator:OnClose()
 		self.item_list = {} 
 	else
 		for k,v in pairs(self.item_list) do
-			v:DeleteMe()
+			v:Destroy()
 			v = nil
 		end
 		self.item_list = {}
