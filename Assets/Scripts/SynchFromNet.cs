@@ -97,7 +97,7 @@ public class SynchFromNet {
         int new_x = int.Parse(pos_strs[0]);
         int new_y = int.Parse(pos_strs[1]);
         int new_z = int.Parse(pos_strs[2]);
-        SceneMgr.Instance.EntityManager.SetComponentData(entity, new Position {Value = new int3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic)});
+        SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = new float3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic)});
     }
 }
 }

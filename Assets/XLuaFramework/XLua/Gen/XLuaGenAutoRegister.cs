@@ -185,7 +185,7 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(UnityEngine.Animator), UnityEngineAnimatorWrap.__Register);
         
         
-            translator.DelayWrapLoader(typeof(XLuaManager.LuaUpdaterExporter), XLuaManagerLuaUpdaterExporterWrap.__Register);
+            translator.DelayWrapLoader(typeof(CircleRawImage), CircleRawImageWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(UnityEngine.Debug), UnityEngineDebugWrap.__Register);

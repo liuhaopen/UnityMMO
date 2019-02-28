@@ -59,9 +59,9 @@ function server.logout_handler(uid, subid)
 		assert(u.username == username)
 		msgserver.logout(u.username)
 		users[uid] = nil
-		if username_map[u.username] and username_map[u.username].agent then
-			table.insert (pool, username_map[u.username].agent)
-		end
+		-- if username_map[u.username] and username_map[u.username].agent then
+			-- table.insert(pool, username_map[u.username].agent)
+		-- end
 		username_map[u.username] = nil
 		skynet.call(loginservice, "lua", "logout",uid, subid)
 	end

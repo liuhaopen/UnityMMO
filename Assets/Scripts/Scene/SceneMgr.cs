@@ -218,7 +218,7 @@ public class SceneMgr : MonoBehaviour
     public Entity AddSceneObject(long uid, SceneObjectType type)
     {
         if (type == SceneObjectType.Role)
-            return RoleMgr.GetInstance().AddRole(uid);
+            return AddRole(uid);
         // else if (type == SceneObjectType.NPC)
             // return AddNPC(uid);
         return Entity.Null;

@@ -15,30 +15,30 @@ using System.Collections.Generic;
 namespace XLua.CSObjectWrap
 {
     using Utils = XLua.Utils;
-    public class XLuaManagerLuaUpdaterExporterWrap 
+    public class CircleRawImageWrap 
     {
         public static void __Register(RealStatePtr L)
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-			System.Type type = typeof(XLuaManager.LuaUpdaterExporter);
-			Utils.BeginObjectRegister(type, L, translator, 0, 0, 0, 0);
+			System.Type type = typeof(CircleRawImage);
+			Utils.BeginObjectRegister(type, L, translator, 0, 0, 1, 1);
 			
 			
 			
-			
-			
+			Utils.RegisterFunc(L, Utils.GETTER_IDX, "segments", _g_get_segments);
+            
+			Utils.RegisterFunc(L, Utils.SETTER_IDX, "segments", _s_set_segments);
+            
 			
 			Utils.EndObjectRegister(type, L, translator, null, null,
 			    null, null, null);
 
-		    Utils.BeginClassRegister(type, L, __CreateInstance, 1, 1, 1);
+		    Utils.BeginClassRegister(type, L, __CreateInstance, 1, 0, 0);
 			
 			
             
-			Utils.RegisterFunc(L, Utils.CLS_GETTER_IDX, "CSharpCallLua", _g_get_CSharpCallLua);
-            
-			Utils.RegisterFunc(L, Utils.CLS_SETTER_IDX, "CSharpCallLua", _s_set_CSharpCallLua);
-            
+			
+			
 			
 			Utils.EndClassRegister(type, L, translator);
         }
@@ -46,7 +46,24 @@ namespace XLua.CSObjectWrap
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         static int __CreateInstance(RealStatePtr L)
         {
-            return LuaAPI.luaL_error(L, "XLuaManager.LuaUpdaterExporter does not have a constructor!");
+            
+			try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+				if(LuaAPI.lua_gettop(L) == 1)
+				{
+					
+					CircleRawImage gen_ret = new CircleRawImage();
+					translator.Push(L, gen_ret);
+                    
+					return 1;
+				}
+				
+			}
+			catch(System.Exception gen_e) {
+				return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+			}
+            return LuaAPI.luaL_error(L, "invalid arguments to CircleRawImage constructor!");
+            
         }
         
 		
@@ -60,11 +77,13 @@ namespace XLua.CSObjectWrap
         
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _g_get_CSharpCallLua(RealStatePtr L)
+        static int _g_get_segments(RealStatePtr L)
         {
 		    try {
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-			    translator.Push(L, XLuaManager.LuaUpdaterExporter.CSharpCallLua);
+			
+                CircleRawImage gen_to_be_invoked = (CircleRawImage)translator.FastGetCSObj(L, 1);
+                LuaAPI.xlua_pushinteger(L, gen_to_be_invoked.segments);
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }
@@ -74,11 +93,13 @@ namespace XLua.CSObjectWrap
         
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _s_set_CSharpCallLua(RealStatePtr L)
+        static int _s_set_segments(RealStatePtr L)
         {
 		    try {
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-			    XLuaManager.LuaUpdaterExporter.CSharpCallLua = (System.Collections.Generic.List<System.Type>)translator.GetObject(L, 1, typeof(System.Collections.Generic.List<System.Type>));
+			
+                CircleRawImage gen_to_be_invoked = (CircleRawImage)translator.FastGetCSObj(L, 1);
+                gen_to_be_invoked.segments = LuaAPI.xlua_tointeger(L, 2);
             
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);

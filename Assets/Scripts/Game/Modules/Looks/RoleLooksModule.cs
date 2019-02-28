@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Profiling;
+using UnityMMO;
 
 public struct RoleLooksSpawnRequest : IComponentData
 {
@@ -111,7 +114,7 @@ public class HandleRoleLooksNetRequest : BaseComponentSystem
 [DisableAutoCreation]
 public class HandleRoleLooks : BaseComponentSystem
 {
-    ComponentGroup RoleStateGroup;
+    ComponentGroup RoleGroup;
     public HandleRoleLooks(GameWorld world) : base(world)
     {
     }
@@ -119,18 +122,23 @@ public class HandleRoleLooks : BaseComponentSystem
     {
         Debug.Log("on OnCreateManager HandleRoleLooks");
         base.OnCreateManager();
-        RoleStateGroup = GetComponentGroup(typeof(RoleState));
+        RoleGroup = GetComponentGroup(typeof(RoleState), typeof(Position));
     }
 
     protected override void OnUpdate()
     {
-        EntityArray entities = RoleStateGroup.GetEntityArray();
-        var roleStateArray = RoleStateGroup.GetComponentArray<RoleState>();
+        EntityArray entities = RoleGroup.GetEntityArray();
+        var roleStateArray = RoleGroup.GetComponentArray<RoleState>();
+        var mainRoleGOE = RoleMgr.GetInstance().GetMainRole();
+        float3 mainRolePos = float3.zero;
+        if (mainRoleGOE!=null)
+            mainRolePos = m_world.GetEntityManager().GetComponentData<Position>(mainRoleGOE.Entity).Value;
         for (int i=0; i<roleStateArray.Length; i++)
         {
             var roleState = roleStateArray[i];
             var entity = entities[i];
             bool isNeedReqLooksInfo = false;
+            bool isNeedHideLooks = false;
             if (!roleState.hasLooks)
             {
                 bool isMainRole = m_world.GetEntityManager().HasComponent(entity, typeof(UnityMMO.MainRoleTag));
@@ -141,7 +149,9 @@ public class HandleRoleLooks : BaseComponentSystem
                 else
                 {
                     //其它玩家离主角近时就要请求该玩家的角色外观信息
-                    // float distance = 
+                    var curPos = m_world.GetEntityManager().GetComponentData<Position>(entity).Value;
+                    float distance = Vector3.Distance(curPos, mainRolePos);
+                    isNeedReqLooksInfo = distance <= 200;
                 }
             }
             if (isNeedReqLooksInfo)

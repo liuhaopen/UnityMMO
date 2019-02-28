@@ -64,7 +64,6 @@ public static class XLuaGenConfig
                 typeof(ScrollRect),
                 typeof(Image),
                 typeof(Animator),
-                typeof(LuaUpdaterExporter),
                 typeof(CircleRawImage),
                 typeof(UnityEngine.Debug)
             };

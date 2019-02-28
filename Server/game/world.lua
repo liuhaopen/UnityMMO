@@ -41,7 +41,7 @@ function CMD.role_leave_game(user_info)
 			break
 		end
 	end
-	print('Cat:world.lua[44] role_id_in_account', role_id_in_account, online_role[role_id_in_account])
+	-- print('Cat:world.lua[44] role_id_in_account', role_id_in_account, online_role[role_id_in_account])
 	if role_id_in_account and online_role[role_id_in_account] then
 		skynet.call(online_role[role_id_in_account].scene_service, "lua", "role_leave_scene", role_id_in_account)
 	 	online_role[role_id_in_account] = nil
