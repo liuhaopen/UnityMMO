@@ -31,10 +31,12 @@ public class SceneMgr : MonoBehaviour
 
     // GameObject mainRolePrefab;
     // GameObject rolePrefab;
+    private bool isLoadingScene = false;
 
     Dictionary<string, GameObject> prefabDic;
 
     public EntityManager EntityManager { get => m_GameWorld.GetEntityManager();}
+    public bool IsLoadingScene { get => isLoadingScene; set => isLoadingScene = value; }
 
     public void Awake()
 	{
@@ -101,6 +103,12 @@ public class SceneMgr : MonoBehaviour
 
     public void LoadScene(int scene_id, float pos_x=0.0f, float pos_y=0.0f, float pos_z=0.0f)
     {
+        isLoadingScene = true;
+        XLuaFramework.ResourceManager.GetInstance().LoadPrefabGameObjectWithAction(SceneInfoPath+"baseworld_"+scene_id+"/baseworld_"+scene_id+".prefab", delegate(UnityEngine.Object obj)
+        {
+            Debug.Log("load base world ok");
+            isLoadingScene = false;
+        });
         Debug.Log("LoadScene scene_id "+(scene_id).ToString());
         //load scene info from json file(which export from SceneInfoExporter.cs)
         XLuaFramework.ResourceManager.GetInstance().LoadAsset<TextAsset>(SceneInfoPath+"scene_"+scene_id.ToString() +"/scene_info.json", delegate(UnityEngine.Object[] objs) {

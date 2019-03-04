@@ -963,7 +963,7 @@ namespace SprotoType {
 
 
 	public class scene_main_role_info : SprotoTypeBase {
-		private static int max_field_count = 8;
+		private static int max_field_count = 9;
 		
 		
 		private Int64 _scene_uid; // tag 0
@@ -1038,6 +1038,15 @@ namespace SprotoType {
 			get { return base.has_field.has_field (7); }
 		}
 
+		private scene_role_base_info _base_info; // tag 8
+		public scene_role_base_info base_info {
+			get { return _base_info; }
+			set { base.has_field.set_field (8, true); _base_info = value; }
+		}
+		public bool HasBase_info {
+			get { return base.has_field.has_field (8); }
+		}
+
 		public scene_main_role_info () : base(max_field_count) {}
 
 		public scene_main_role_info (byte[] buffer) : base(max_field_count, buffer) {
@@ -1071,6 +1080,9 @@ namespace SprotoType {
 					break;
 				case 7:
 					this.pos_z = base.deserialize.read_integer ();
+					break;
+				case 8:
+					this.base_info = base.deserialize.read_obj<scene_role_base_info> ();
 					break;
 				default:
 					base.deserialize.read_unknow_data ();
@@ -1112,6 +1124,10 @@ namespace SprotoType {
 
 			if (base.has_field.has_field (7)) {
 				base.serialize.write_integer (this.pos_z, 7);
+			}
+
+			if (base.has_field.has_field (8)) {
+				base.serialize.write_obj (this.base_info, 8);
 			}
 
 			return base.serialize.close ();
@@ -1334,16 +1350,16 @@ namespace SprotoType {
 	}
 
 
-	public class scene_role_info : SprotoTypeBase {
-		private static int max_field_count = 3;
+	public class scene_role_base_info : SprotoTypeBase {
+		private static int max_field_count = 2;
 		
 		
-		private Int64 _role_id; // tag 0
-		public Int64 role_id {
-			get { return _role_id; }
-			set { base.has_field.set_field (0, true); _role_id = value; }
+		private Int64 _level; // tag 0
+		public Int64 level {
+			get { return _level; }
+			set { base.has_field.set_field (0, true); _level = value; }
 		}
-		public bool HasRole_id {
+		public bool HasLevel {
 			get { return base.has_field.has_field (0); }
 		}
 
@@ -1356,18 +1372,9 @@ namespace SprotoType {
 			get { return base.has_field.has_field (1); }
 		}
 
-		private string _name; // tag 2
-		public string name {
-			get { return _name; }
-			set { base.has_field.set_field (2, true); _name = value; }
-		}
-		public bool HasName {
-			get { return base.has_field.has_field (2); }
-		}
+		public scene_role_base_info () : base(max_field_count) {}
 
-		public scene_role_info () : base(max_field_count) {}
-
-		public scene_role_info (byte[] buffer) : base(max_field_count, buffer) {
+		public scene_role_base_info (byte[] buffer) : base(max_field_count, buffer) {
 			this.decode ();
 		}
 
@@ -1376,13 +1383,10 @@ namespace SprotoType {
 			while (-1 != (tag = base.deserialize.read_tag ())) {
 				switch (tag) {
 				case 0:
-					this.role_id = base.deserialize.read_integer ();
+					this.level = base.deserialize.read_integer ();
 					break;
 				case 1:
 					this.career = base.deserialize.read_integer ();
-					break;
-				case 2:
-					this.name = base.deserialize.read_string ();
 					break;
 				default:
 					base.deserialize.read_unknow_data ();
@@ -1395,15 +1399,11 @@ namespace SprotoType {
 			base.serialize.open (stream);
 
 			if (base.has_field.has_field (0)) {
-				base.serialize.write_integer (this.role_id, 0);
+				base.serialize.write_integer (this.level, 0);
 			}
 
 			if (base.has_field.has_field (1)) {
 				base.serialize.write_integer (this.career, 1);
-			}
-
-			if (base.has_field.has_field (2)) {
-				base.serialize.write_string (this.name, 2);
 			}
 
 			return base.serialize.close ();
@@ -1539,43 +1539,70 @@ namespace SprotoType {
 	public class scene_walk {
 	
 		public class request : SprotoTypeBase {
-			private static int max_field_count = 4;
+			private static int max_field_count = 7;
 			
 			
-			private Int64 _pos_x; // tag 0
-			public Int64 pos_x {
-				get { return _pos_x; }
-				set { base.has_field.set_field (0, true); _pos_x = value; }
+			private Int64 _start_x; // tag 0
+			public Int64 start_x {
+				get { return _start_x; }
+				set { base.has_field.set_field (0, true); _start_x = value; }
 			}
-			public bool HasPos_x {
+			public bool HasStart_x {
 				get { return base.has_field.has_field (0); }
 			}
 
-			private Int64 _pos_y; // tag 1
-			public Int64 pos_y {
-				get { return _pos_y; }
-				set { base.has_field.set_field (1, true); _pos_y = value; }
+			private Int64 _start_y; // tag 1
+			public Int64 start_y {
+				get { return _start_y; }
+				set { base.has_field.set_field (1, true); _start_y = value; }
 			}
-			public bool HasPos_y {
+			public bool HasStart_y {
 				get { return base.has_field.has_field (1); }
 			}
 
-			private Int64 _pos_z; // tag 2
-			public Int64 pos_z {
-				get { return _pos_z; }
-				set { base.has_field.set_field (2, true); _pos_z = value; }
+			private Int64 _start_z; // tag 2
+			public Int64 start_z {
+				get { return _start_z; }
+				set { base.has_field.set_field (2, true); _start_z = value; }
 			}
-			public bool HasPos_z {
+			public bool HasStart_z {
 				get { return base.has_field.has_field (2); }
 			}
 
-			private Int64 _time; // tag 3
+			private Int64 _end_x; // tag 3
+			public Int64 end_x {
+				get { return _end_x; }
+				set { base.has_field.set_field (3, true); _end_x = value; }
+			}
+			public bool HasEnd_x {
+				get { return base.has_field.has_field (3); }
+			}
+
+			private Int64 _end_y; // tag 4
+			public Int64 end_y {
+				get { return _end_y; }
+				set { base.has_field.set_field (4, true); _end_y = value; }
+			}
+			public bool HasEnd_y {
+				get { return base.has_field.has_field (4); }
+			}
+
+			private Int64 _end_z; // tag 5
+			public Int64 end_z {
+				get { return _end_z; }
+				set { base.has_field.set_field (5, true); _end_z = value; }
+			}
+			public bool HasEnd_z {
+				get { return base.has_field.has_field (5); }
+			}
+
+			private Int64 _time; // tag 6
 			public Int64 time {
 				get { return _time; }
-				set { base.has_field.set_field (3, true); _time = value; }
+				set { base.has_field.set_field (6, true); _time = value; }
 			}
 			public bool HasTime {
-				get { return base.has_field.has_field (3); }
+				get { return base.has_field.has_field (6); }
 			}
 
 			public request () : base(max_field_count) {}
@@ -1589,15 +1616,24 @@ namespace SprotoType {
 				while (-1 != (tag = base.deserialize.read_tag ())) {
 					switch (tag) {
 					case 0:
-						this.pos_x = base.deserialize.read_integer ();
+						this.start_x = base.deserialize.read_integer ();
 						break;
 					case 1:
-						this.pos_y = base.deserialize.read_integer ();
+						this.start_y = base.deserialize.read_integer ();
 						break;
 					case 2:
-						this.pos_z = base.deserialize.read_integer ();
+						this.start_z = base.deserialize.read_integer ();
 						break;
 					case 3:
+						this.end_x = base.deserialize.read_integer ();
+						break;
+					case 4:
+						this.end_y = base.deserialize.read_integer ();
+						break;
+					case 5:
+						this.end_z = base.deserialize.read_integer ();
+						break;
+					case 6:
 						this.time = base.deserialize.read_integer ();
 						break;
 					default:
@@ -1611,19 +1647,31 @@ namespace SprotoType {
 				base.serialize.open (stream);
 
 				if (base.has_field.has_field (0)) {
-					base.serialize.write_integer (this.pos_x, 0);
+					base.serialize.write_integer (this.start_x, 0);
 				}
 
 				if (base.has_field.has_field (1)) {
-					base.serialize.write_integer (this.pos_y, 1);
+					base.serialize.write_integer (this.start_y, 1);
 				}
 
 				if (base.has_field.has_field (2)) {
-					base.serialize.write_integer (this.pos_z, 2);
+					base.serialize.write_integer (this.start_z, 2);
 				}
 
 				if (base.has_field.has_field (3)) {
-					base.serialize.write_integer (this.time, 3);
+					base.serialize.write_integer (this.end_x, 3);
+				}
+
+				if (base.has_field.has_field (4)) {
+					base.serialize.write_integer (this.end_y, 4);
+				}
+
+				if (base.has_field.has_field (5)) {
+					base.serialize.write_integer (this.end_z, 5);
+				}
+
+				if (base.has_field.has_field (6)) {
+					base.serialize.write_integer (this.time, 6);
 				}
 
 				return base.serialize.close ();

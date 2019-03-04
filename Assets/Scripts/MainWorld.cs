@@ -27,7 +27,7 @@ namespace UnityMMO{
 
         public void InitializeSystems() {
             m_Systems = new SystemCollection();
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<PlayerInputSystem>());
+            // m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<PlayerInputSystem>());
             
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooks>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooksNetRequest>(m_GameWorld));
@@ -35,6 +35,7 @@ namespace UnityMMO{
 
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateRoleTransformFromLooks>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<TargetPosSystem>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UploadMainRolePosSystem>(m_GameWorld));
 
             
         }
@@ -51,7 +52,7 @@ namespace UnityMMO{
                 //开始从后端请求场景信息，一旦开启就会在收到回复时再次请求
                 SynchFromNet.Instance.ReqSceneObjInfoChange();
             }
-            TestLoadMultipleNavMeshInRunTime();
+            // TestLoadMultipleNavMeshInRunTime();
         }
 
         private void Update() {

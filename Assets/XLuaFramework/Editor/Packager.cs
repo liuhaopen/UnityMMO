@@ -1,5 +1,4 @@
-﻿//this file is copied from LuaFramework : https://github.com/jarjin/LuaFramework_UGUI
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 using System.IO;
 using System.Text;
@@ -154,7 +153,6 @@ public class Packager {
 
 
         HandleSceneBundles();
-        // HandleRoleBundles();
         HandleNormalBundles("role");
         HandleNormalBundles("npc");
         HandleNormalBundles("monster");
@@ -162,7 +160,8 @@ public class Packager {
 
         BuildPipeline.BuildAssetBundles(streamPath, maps.ToArray(), BuildAssetBundleOptions.None, target);
 
-        BuildNavMeshBundles(streamPath, target);
+        // BuildSceneBundles("Assets/AssetBundleRes/scene/navmesh", streamPath, target);
+        // BuildSceneBundles("Assets/AssetBundleRes/scene/baseworld", streamPath, target);
 
         BuildFileIndex(streamPath);
 
@@ -266,9 +265,9 @@ public class Packager {
         }
     }
 
-    public static void BuildNavMeshBundles(string streamPath, BuildTarget target)
+    public static void BuildSceneBundles(string path, string streamPath, BuildTarget target)
     {
-        string path = "Assets/AssetBundleRes/scene/navmesh";
+        // string path = "Assets/AssetBundleRes/scene/navmesh";
         string[] file_paths = Directory.GetFiles(path);
         // List<string> levels = new List<string>();
         foreach(string file_path in file_paths)
@@ -291,12 +290,12 @@ public class Packager {
                 UnityEditor.Build.Reporting.BuildSummary summary = report.summary;
                 if (summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
                 {
-                    Debug.Log("Build navmesh succeeded: " + summary.totalSize + " bytes");
+                    Debug.Log("Build scene succeeded: " + summary.totalSize + " bytes");
                 }
 
                 if (summary.result == UnityEditor.Build.Reporting.BuildResult.Failed)
                 {
-                    Debug.Log("Build navmesh failed : "+file_path);
+                    Debug.Log("Build scene failed : "+file_path);
                 }
                 // BuildPipeline.BuildPlayer(levels, streamPath+"/"+navmesh_scene_name, target, BuildOptions.BuildAdditionalStreamedScenes);
             }
@@ -384,6 +383,7 @@ public class Packager {
     {
         string path = "Assets/AssetBundleRes/ui/";
         string[] dirs = Directory.GetDirectories(path);
+        Debug.Log("dirs.Length : "+dirs.Length.ToString());
         if (dirs.Length == 0)
             return;
         for (int i = 0; i < dirs.Length; i++)
@@ -635,7 +635,7 @@ public class Packager {
         info.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
         info.UseShellExecute = isWin;
         info.ErrorDialog = true;
-        Util.Log(info.FileName + " " + info.Arguments);
+        Debug.Log(info.FileName + " " + info.Arguments);
 
         System.Diagnostics.Process pro = System.Diagnostics.Process.Start(info);
         pro.WaitForExit();
