@@ -4,7 +4,7 @@ using Unity.Collections;
 
 namespace Unity.Entities.Tests
 {
-    public class SizeTests : ECSTestsFixture
+    class SizeTests : ECSTestsFixture
     {
 #pragma warning disable 0219 // assigned but its value is never used
         [Test]
@@ -22,7 +22,7 @@ namespace Unity.Entities.Tests
 
                 ChunkDataUtility.GetIndexInTypeArray(chunk0->Archetype, TypeManager.GetTypeIndex<EcsTestData2>());
 
-                Assert.AreEqual(archetype0->ChunkCapacity, archetype1->ChunkCapacity);
+                Assert.AreEqual(archetype0->BytesPerInstance, archetype1->BytesPerInstance);
             }
         }
         

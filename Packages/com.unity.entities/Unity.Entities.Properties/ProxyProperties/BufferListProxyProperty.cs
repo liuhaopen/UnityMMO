@@ -15,6 +15,8 @@ namespace Unity.Entities.Properties
 
         public Type ListItemComponentType { get; internal set; }
 
+        public int MaxItemCountShown = 10;
+
         private int m_SizeOfItem = -1;
 
         private int m_ItemCount = -1;
@@ -90,6 +92,12 @@ namespace Unity.Entities.Properties
 
                 for (var i = 0; i < count; i++)
                 {
+                    if (i >= MaxItemCountShown)
+                    {
+                        // TODO should instrument the visitor to be informed about the enumeration stop
+                        break;
+                    }
+
                     var item = GetAt(ref container, i);
 
                     itemVisitContext.Value = item;

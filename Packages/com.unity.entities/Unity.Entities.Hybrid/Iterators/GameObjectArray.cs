@@ -12,9 +12,8 @@ namespace Unity.Entities
     {
         public static GameObjectArray GetGameObjectArray(this ComponentGroup group)
         {
-            int length;
-            ComponentChunkIterator iterator;
-            group.GetComponentChunkIterator(out length, out iterator);
+            int length = group.CalculateLength();
+            ComponentChunkIterator iterator = group.GetComponentChunkIterator();
             iterator.IndexInComponentGroup = group.GetIndexInComponentGroup(TypeManager.GetTypeIndex<Transform>());
             return new GameObjectArray(iterator, length, group.ArchetypeManager);
         }

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Unity.Entities.Editor.Tests
 {
-    public class EntityDebuggerTests : ECSTestsFixture
+    class EntityDebuggerTests : ECSTestsFixture
     {
 
         private EntityDebugger m_Window;

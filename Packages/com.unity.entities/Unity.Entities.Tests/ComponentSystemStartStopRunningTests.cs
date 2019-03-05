@@ -5,7 +5,7 @@ using UnityEngine.TestTools;
 
 namespace Unity.Entities.Tests
 {
-    public class ComponentSystemStartStopRunningTests : ECSTestsFixture
+    class ComponentSystemStartStopRunningTests : ECSTestsFixture
     {
         [DisableAutoCreation]
         class TestSystem : ComponentSystem

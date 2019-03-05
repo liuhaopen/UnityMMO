@@ -113,7 +113,10 @@ namespace Unity.Entities.Editor
                     var entity = entityArray[indexInChunk];
             
                     adapter.currentItem.id = entity.Index;
-                    adapter.currentItem.displayName = $"Entity {entity.Index}";
+                    var name = adapter.entityManager.GetName(entity);
+                    if (string.IsNullOrEmpty(name))
+                        name = $"Entity {entity.Index}";
+                    adapter.currentItem.displayName = name;
                     return adapter.currentItem;
                 }
             }

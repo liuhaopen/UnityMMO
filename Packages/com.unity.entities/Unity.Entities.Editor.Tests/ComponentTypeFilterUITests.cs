@@ -3,7 +3,7 @@ using Unity.Entities.Tests;
 
 namespace Unity.Entities.Editor.Tests
 {
-    public class ComponentTypeFilterUITests : ECSTestsFixture
+    class ComponentTypeFilterUITests : ECSTestsFixture
     {
 
         public void SetFilterDummy(EntityListQuery query)

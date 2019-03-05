@@ -11,9 +11,8 @@ namespace Unity.Entities
     {
         public static ComponentArray<T> GetComponentArray<T>(this ComponentGroup group) where T : Component
         {
-            int length;
-            ComponentChunkIterator iterator;
-            group.GetComponentChunkIterator(out length, out iterator);
+            int length = group.CalculateLength();
+            ComponentChunkIterator iterator = group.GetComponentChunkIterator();
             var indexInComponentGroup = group.GetIndexInComponentGroup(TypeManager.GetTypeIndex<T>());
 
             iterator.IndexInComponentGroup = indexInComponentGroup;

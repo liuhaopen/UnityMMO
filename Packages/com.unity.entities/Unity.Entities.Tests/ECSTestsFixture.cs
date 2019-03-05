@@ -18,11 +18,12 @@ namespace Unity.Entities.Tests
         {
             return base.GetComponentGroup(componentTypes);
         }
-
+#if !UNITY_ZEROPLAYER
         new public ComponentGroupArray<T> GetEntities<T>() where T : struct
         {
             return base.GetEntities<T>();
         }
+#endif
     }
 
     public class ECSTestsFixture
@@ -42,6 +43,11 @@ namespace Unity.Entities.Tests
 
             m_Manager = World.GetOrCreateManager<EntityManager>();
             m_ManagerDebug = new EntityManager.EntityManagerDebug(m_Manager);
+
+
+            // not raising exceptions can easily bring unity down with massive logging,
+            // when tests fail.
+            UnityEngine.Assertions.Assert.raiseExceptions = true;
         }
 
         [TearDown]
@@ -49,6 +55,17 @@ namespace Unity.Entities.Tests
         {
             if (m_Manager != null)
             {
+                // Clean up systems before calling CheckInternalConsistency because we might have filters etc
+                // holding on SharedComponentData making checks fail
+                var system = World.GetExistingManager<ComponentSystemBase>();
+                while (system != null)
+                {
+                    World.DestroyManager(system);
+                    system = World.GetExistingManager<ComponentSystemBase>();
+                }
+
+                m_ManagerDebug.CheckInternalConsistency();
+                
                 World.Dispose();
                 World = null;
 

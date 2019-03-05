@@ -19,7 +19,7 @@ namespace Unity.Entities.Tests
         public SharedData2(int val) { value = val; }
     }
 
-    public class SharedComponentDataTests : ECSTestsFixture
+    class SharedComponentDataTests : ECSTestsFixture
     {
         //@TODO: No tests for invalid shared components / destroyed shared component data
         //@TODO: No tests for if we leak shared data when last entity is destroyed...

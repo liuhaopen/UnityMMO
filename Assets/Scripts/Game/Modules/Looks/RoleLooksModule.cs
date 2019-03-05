@@ -139,20 +139,31 @@ public class HandleRoleLooks : BaseComponentSystem
             var entity = entities[i];
             bool isNeedReqLooksInfo = false;
             bool isNeedHideLooks = false;
+
+            //其它玩家离主角近时就要请求该玩家的角色外观信息
+            var curPos = m_world.GetEntityManager().GetComponentData<Position>(entity).Value;
+            float distance = Vector3.Distance(curPos, mainRolePos);
+            Debug.Log("distance : "+distance);
             if (!roleState.hasLooks)
             {
-                bool isMainRole = m_world.GetEntityManager().HasComponent(entity, typeof(UnityMMO.MainRoleTag));
-                if (isMainRole)
-                {
-                    isNeedReqLooksInfo = true;
-                }
-                else
-                {
-                    //其它玩家离主角近时就要请求该玩家的角色外观信息
-                    var curPos = m_world.GetEntityManager().GetComponentData<Position>(entity).Value;
-                    float distance = Vector3.Distance(curPos, mainRolePos);
-                    isNeedReqLooksInfo = distance <= 200;
-                }
+                isNeedReqLooksInfo = distance <= 400;
+                // bool isMainRole = m_world.GetEntityManager().HasComponent(entity, typeof(UnityMMO.MainRoleTag));
+                // if (isMainRole)
+                // {
+                //     isNeedReqLooksInfo = true;
+                // }
+                // else
+                // {
+                    // //其它玩家离主角近时就要请求该玩家的角色外观信息
+                    // var curPos = m_world.GetEntityManager().GetComponentData<Position>(entity).Value;
+                    // float distance = Vector3.Distance(curPos, mainRolePos);
+                    // Debug.Log("distance : "+distance);
+                    // isNeedReqLooksInfo = distance <= 200;
+                // }
+            }
+            else
+            {
+                isNeedHideLooks = distance >= 300;
             }
             if (isNeedReqLooksInfo)
             {
@@ -182,7 +193,7 @@ public class HandleRoleLooksSpawnRequests : BaseComponentSystem
 
     protected override void OnUpdate()
     {
-        Debug.Log("on OnUpdate role looks system");
+        // Debug.Log("on OnUpdate role looks system");
         var requestArray = SpawnGroup.GetComponentDataArray<RoleLooksSpawnRequest>();
         if (requestArray.Length == 0)
             return;
@@ -238,4 +249,40 @@ public class HandleRoleLooksSpawnRequests : BaseComponentSystem
         });
     }
 
+}
+
+[DisableAutoCreation]
+public class HandleLooksFollowLogicTransform : BaseComponentSystem
+{
+    ComponentGroup Group;
+
+    public HandleLooksFollowLogicTransform(GameWorld world) : base(world)
+    {}
+
+    protected override void OnCreateManager()
+    {
+        Debug.Log("on OnCreateManager role looks system");
+        base.OnCreateManager();
+        Group = GetComponentGroup(typeof(RoleState), typeof(Position), typeof(Rotation));
+    }
+
+    protected override void OnUpdate()
+    {
+        var states = Group.GetComponentArray<RoleState>();
+        var pos = Group.GetComponentDataArray<Position>();
+        var rotations = Group.GetComponentDataArray<Rotation>();
+        for (int i = 0; i < states.Length; i++)
+        {
+            var looksEntity = states[i].looksEntity;
+            if (looksEntity != Entity.Null)
+            {
+                var transform = EntityManager.GetComponentObject<Transform>(looksEntity);
+                if (transform != null)
+                {
+                    transform.localPosition = pos[i].Value;
+                    transform.rotation = rotations[i].Value;
+                }
+            }
+        }
+    }
 }

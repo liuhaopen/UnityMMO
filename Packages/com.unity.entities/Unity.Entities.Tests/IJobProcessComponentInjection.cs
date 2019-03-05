@@ -3,7 +3,7 @@ using Unity.Jobs;
 
 namespace Unity.Entities.Tests
 {
-    public class IJobProcessComponentInjection : ECSTestsFixture
+    class IJobProcessComponentInjection : ECSTestsFixture
     {
         [DisableAutoCreation]
         class TestSystem : JobComponentSystem

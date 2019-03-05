@@ -23,12 +23,12 @@ namespace Unity.Entities.Properties
             ComponentType = t;
         }
 
-        public ClassObjectProxyProperty(Type t, object o, HashSet<Type> primitiveTypes)
+        public ClassObjectProxyProperty(Type t, string displayName, object o, HashSet<Type> primitiveTypes)
             : base(t.Name, null, null)
         {
             _wrappedObject = o;
 
-            _bag = ClassPropertyBagFactory.GetPropertyBagForObject(o, primitiveTypes);
+            _bag = ClassPropertyBagFactory.GetPropertyBagForObject(o, displayName, primitiveTypes);
 
             ComponentType = t;
         }

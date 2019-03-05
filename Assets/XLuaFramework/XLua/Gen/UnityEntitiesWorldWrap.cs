@@ -21,12 +21,13 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(Unity.Entities.World);
-			Utils.BeginObjectRegister(type, L, translator, 0, 6, 4, 0);
+			Utils.BeginObjectRegister(type, L, translator, 0, 7, 4, 0);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "ToString", _m_ToString);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Dispose", _m_Dispose);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "CreateManager", _m_CreateManager);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetOrCreateManager", _m_GetOrCreateManager);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "AddManager", _m_AddManager);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetExistingManager", _m_GetExistingManager);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "DestroyManager", _m_DestroyManager);
 			
@@ -210,6 +211,35 @@ namespace XLua.CSObjectWrap
                     System.Type _type = (System.Type)translator.GetObject(L, 2, typeof(System.Type));
                     
                         Unity.Entities.ScriptBehaviourManager gen_ret = gen_to_be_invoked.GetOrCreateManager( _type );
+                        translator.Push(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_AddManager(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                Unity.Entities.World gen_to_be_invoked = (Unity.Entities.World)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    Unity.Entities.ScriptBehaviourManager _manager = (Unity.Entities.ScriptBehaviourManager)translator.GetObject(L, 2, typeof(Unity.Entities.ScriptBehaviourManager));
+                    
+                        Unity.Entities.ScriptBehaviourManager gen_ret = gen_to_be_invoked.AddManager( _manager );
                         translator.Push(L, gen_ret);
                     
                     

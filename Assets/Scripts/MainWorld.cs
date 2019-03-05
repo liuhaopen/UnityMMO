@@ -1,6 +1,5 @@
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -14,7 +13,6 @@ namespace UnityMMO{
 
         private void Awake() {
             Instance = this;
-            Initialize();
         }
 
         public void Initialize() {
@@ -27,20 +25,26 @@ namespace UnityMMO{
 
         public void InitializeSystems() {
             m_Systems = new SystemCollection();
-            // m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<PlayerInputSystem>());
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<PlayerInputSystem>());
             
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooks>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooksNetRequest>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooksSpawnRequests>(m_GameWorld));
 
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateRoleTransformFromLooks>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<CreateTargetPosFromUserInputSystem>(m_GameWorld));
+
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<TargetPosSystem>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<GroundTestSystem>(m_GameWorld));
+
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleLooksFollowLogicTransform>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UploadMainRolePosSystem>(m_GameWorld));
 
             
         }
 
         public void StartGame() {
+            Initialize();
             if (GameVariable.IsSingleMode)
             {
                 //目前只有一个场景（本来就想做成无限大世界的）

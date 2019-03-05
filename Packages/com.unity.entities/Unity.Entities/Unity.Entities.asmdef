@@ -3,7 +3,8 @@
     "references": [
         "Unity.Collections",
         "Unity.Burst",
-        "Unity.Mathematics"
+        "Unity.Mathematics",
+        "Unity.Entities.StaticTypeRegistry"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

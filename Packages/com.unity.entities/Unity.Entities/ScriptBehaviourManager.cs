@@ -10,6 +10,12 @@ namespace Unity.Entities
     public sealed class DisableAutoCreationAttribute : Attribute
     {
     }
+    
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class GameObjectToEntityConversionAttribute : Attribute
+    {
+    }
+
 
     public abstract class ScriptBehaviourManager
     {

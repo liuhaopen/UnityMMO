@@ -7,22 +7,22 @@ namespace Unity.Entities
 {
     public static class EntityManagerExtensions
     {
-        unsafe public static Entity Instantiate(this EntityManager entityManager, GameObject srcGameObject)
-        {
-            if (entityManager.m_CachedComponentList == null)
-                entityManager.m_CachedComponentList = new List<ComponentDataWrapperBase>();
+        static readonly List<ComponentDataWrapperBase> s_ReusableComponentList = new List<ComponentDataWrapperBase>(32);
 
-            var components = (List<ComponentDataWrapperBase>)entityManager.m_CachedComponentList;
-            srcGameObject.GetComponents(components);
-            var count = components.Count;
+        public static unsafe Entity Instantiate(this EntityManager entityManager, GameObject srcGameObject)
+        {
+            srcGameObject.GetComponents(s_ReusableComponentList);
+            var count = s_ReusableComponentList.Count;
             ComponentType* componentTypes = stackalloc ComponentType[count];
 
             for (var t = 0; t != count; ++t)
-                componentTypes[t] = components[t].GetComponentType();
+                componentTypes[t] = s_ReusableComponentList[t].GetComponentType();
 
             var srcEntity = entityManager.CreateEntity(entityManager.CreateArchetype(componentTypes, count));
             for (var t = 0; t != count; ++t)
-                components[t].UpdateComponentData(entityManager, srcEntity);
+                s_ReusableComponentList[t].UpdateComponentData(entityManager, srcEntity);
+
+            s_ReusableComponentList.Clear();
 
             return srcEntity;
         }

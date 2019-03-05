@@ -4,7 +4,7 @@ using Unity.Collections;
 
 namespace Unity.Entities.Tests
 {
-    public class ComponentGroupArrayTests : ECSTestsFixture
+    class ComponentGroupArrayTests : ECSTestsFixture
 	{
         public ComponentGroupArrayTests()
         {

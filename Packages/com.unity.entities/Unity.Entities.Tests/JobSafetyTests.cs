@@ -5,7 +5,7 @@ using UnityEngine.TestTools;
 
 namespace Unity.Entities.Tests
 {
-    public class JobSafetyTests : ECSTestsFixture
+    class JobSafetyTests : ECSTestsFixture
 	{
         public JobSafetyTests()
         {

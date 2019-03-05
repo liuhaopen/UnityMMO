@@ -50,7 +50,7 @@ namespace Unity.Entities.Tests
             var b = new Entity { Index = 3, Version = 5 };
             var oldA = new Entity { Index = 1, Version = 1 };
             EntityRemapUtility.AddEntityRemapping(ref m_Remapping, a, b);
-
+            
             Assert.AreEqual(Entity.Null, EntityRemapUtility.RemapEntity(ref m_Remapping, oldA));
         }
 

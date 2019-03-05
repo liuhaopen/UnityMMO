@@ -109,6 +109,7 @@ namespace Unity.Transforms
                 entityCommandBuffer = m_EndFrameBarrier.CreateCommandBuffer()
             };
             var removeComponentsJobHandle = removeComponentsJob.Schedule(copyTransformsJobHandle);
+            m_EndFrameBarrier.AddJobHandleForProducer(removeComponentsJobHandle);
             return removeComponentsJobHandle;
         }
     }

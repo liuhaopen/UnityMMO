@@ -6,7 +6,7 @@ using UnityEditor.IMGUI.Controls;
 
 namespace Unity.Entities.Editor.Tests
 {
-    public class ListViewTests : ECSTestsFixture
+    class ListViewTests : ECSTestsFixture
     {
         private static void SetEntitySelection(Entity s)
         {

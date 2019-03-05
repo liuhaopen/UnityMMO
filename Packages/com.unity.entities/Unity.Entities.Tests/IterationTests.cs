@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Unity.Entities.Tests
 {
-	public class IterationTests : ECSTestsFixture
+	class IterationTests : ECSTestsFixture
 	{
 		[Test]
 		public void CreateComponentGroup()
@@ -252,6 +252,34 @@ namespace Unity.Entities.Tests
 
             copied.Dispose();
             entities.Dispose();
+        }
+        
+        [Test]
+        public void ComponentGroupFilteredEntityIndexWithMultipleArchetypes()
+        {
+            var archetypeA = m_Manager.CreateArchetype(typeof(EcsTestData), typeof(EcsTestData2), typeof(EcsTestSharedComp));
+            var archetypeB = m_Manager.CreateArchetype(typeof(EcsTestData), typeof(EcsTestSharedComp));
+
+            var group = m_Manager.CreateComponentGroup(typeof(EcsTestData), typeof(EcsTestSharedComp));
+
+            var entity1A = m_Manager.CreateEntity(archetypeA);
+            var entity2A = m_Manager.CreateEntity(archetypeA);
+            var entityB  = m_Manager.CreateEntity(archetypeB);
+
+            m_Manager.SetSharedComponentData(entity1A, new EcsTestSharedComp{ value = 1});
+            m_Manager.SetSharedComponentData(entity2A, new EcsTestSharedComp{ value = 2});
+
+            m_Manager.SetSharedComponentData(entityB, new EcsTestSharedComp{ value = 1});
+
+            group.SetFilter(new EcsTestSharedComp{value = 1});
+
+            var iterator = group.GetComponentChunkIterator();
+            iterator.MoveToChunkWithoutFiltering(2); // 2 is index of chunk
+            iterator.GetCurrentChunkRange(out var begin, out var end );
+
+            Assert.AreEqual(1, begin); // 1 is index of entity in filtered ComponentGroup
+
+            group.Dispose();
         }
 		
 	}

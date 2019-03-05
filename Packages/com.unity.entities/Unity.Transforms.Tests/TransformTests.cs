@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Unity.Entities.Tests
 {
     [TestFixture]
-    public class TransformTests : ECSTestsFixture
+    class TransformTests : ECSTestsFixture
     {
         const float k_Tolerance = 0.01f;
         

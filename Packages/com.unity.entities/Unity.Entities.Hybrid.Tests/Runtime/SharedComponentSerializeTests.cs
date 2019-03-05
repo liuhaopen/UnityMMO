@@ -5,10 +5,11 @@ using NUnit.Framework;
 using UnityEngine;
 using Unity.Entities.Serialization;
 using Object = UnityEngine.Object;
+#pragma warning disable 649
 
 namespace Unity.Entities.Tests
 {
-    public class SharedComponentSerializeTests : ECSTestsFixture
+    class SharedComponentSerializeTests : ECSTestsFixture
     {
         [Test]
         public void SerializingSharedComponent_WhenMoreThanOne_AndWrapperHasDisallowMultiple_DoesNotCrash()
@@ -54,7 +55,7 @@ namespace Unity.Entities.Tests
             for (int i = 0; i != 20; i++)
             {
                 var entity = m_Manager.CreateEntity();
-                m_Manager.AddSharedComponentData(entity, new TestShared(i));
+                m_Manager.AddSharedComponentData(entity, new MockSharedData { Value = i });
                 m_Manager.AddComponentData(entity, new EcsTestData(i));
             }
 
@@ -78,7 +79,7 @@ namespace Unity.Entities.Tests
                 for (int i = 0; i != 20; i++)
                 {
                     Assert.AreEqual(i, newWorldEntities.GetComponentData<EcsTestData>(entities[i]).value);
-                    Assert.AreEqual(i, newWorldEntities.GetSharedComponentData<TestShared>(entities[i]).Value);
+                    Assert.AreEqual(i, newWorldEntities.GetSharedComponentData<MockSharedData>(entities[i]).Value);
                 }
                 for (int i = 0; i != 20; i++)
                     newWorldEntities.DestroyEntity(entities[i]);

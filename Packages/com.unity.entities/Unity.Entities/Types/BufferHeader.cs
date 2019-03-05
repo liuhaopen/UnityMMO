@@ -1,16 +1,18 @@
 using System;
+using System.Runtime.InteropServices;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 
 namespace Unity.Entities
 {
+    [StructLayout(LayoutKind.Explicit)]
     internal unsafe struct BufferHeader
     {
         public const int kMinimumCapacity = 8;
 
-        public byte* Pointer;
-        public int Length;
-        public int Capacity;
+        [FieldOffset(0)] public byte* Pointer;
+        [FieldOffset(8)] public int Length;
+        [FieldOffset(12)] public int Capacity;
 
         public static byte* GetElementPointer(BufferHeader* header)
         {
@@ -80,6 +82,35 @@ namespace Unity.Entities
             }
 
             Initialize(header, 0);
+        }
+
+        // After cloning two worlds have access to the same malloc'ed buffer pointer leading to double deallocate etc.
+        // So after cloning, just allocate all malloc based buffers and copy the data.
+        public static void PatchAfterCloningChunkForDiff(Chunk* chunk)
+        {
+            for (int i = 0; i < chunk->Archetype->TypesCount; ++i)
+            {
+                var type = chunk->Archetype->Types[i];
+                if (!type.IsBuffer)
+                    continue;
+                var ti = TypeManager.GetTypeInfo(type.TypeIndex);
+                var sizeOf = chunk->Archetype->SizeOfs[i];
+                var offset = chunk->Archetype->Offsets[i];
+                for (var j = 0; j < chunk->Count; ++j)
+                {
+                    var offsetOfBuffer = offset + sizeOf * j;
+                    var header = (BufferHeader*)(chunk->Buffer + offsetOfBuffer);
+                    if (header->Pointer != null) // hoo boy, it's a malloc
+                    {
+                        BufferHeader newHeader = *header;
+                        var bytesToAllocate = header->Capacity * ti.ElementSize;
+                        var bytesToCopy = header->Length * ti.ElementSize;
+                        newHeader.Pointer = (byte*)UnsafeUtility.Malloc(bytesToAllocate, 16, Allocator.Persistent);
+                        UnsafeUtility.MemCpy(newHeader.Pointer, header->Pointer, bytesToCopy);
+                        *header = newHeader;
+                    }
+                }
+            }
         }
     }
 }

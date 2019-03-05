@@ -51,7 +51,7 @@ namespace Unity.Transforms
     /// <summary>
     /// Default TransformSystem pass. Transform components updated before EndFrameBarrier.
     /// </summary>
-    [UnityEngine.ExecuteInEditMode]
+    [UnityEngine.ExecuteAlways]
     [UpdateBefore(typeof(EndFrameBarrier))]
     public class EndFrameTransformSystem : TransformSystem
     {
@@ -377,9 +377,9 @@ namespace Unity.Transforms
                 var chunkScales = chunk.GetNativeArray(scaleType);
                 var chunkLocalToWorlds = chunk.GetNativeArray(localToWorldType);
 
-                var chunkRotationsChanged = chunk.DidAddOrChange(rotationType, lastSystemUpdateVersion);
-                var chunkPositionsChanged = chunk.DidAddOrChange(positionType, lastSystemUpdateVersion);
-                var chunkScalesChanged = chunk.DidAddOrChange(scaleType, lastSystemUpdateVersion);
+                var chunkRotationsChanged = chunk.DidChange(rotationType, lastSystemUpdateVersion);
+                var chunkPositionsChanged = chunk.DidChange(positionType, lastSystemUpdateVersion);
+                var chunkScalesChanged = chunk.DidChange(scaleType, lastSystemUpdateVersion);
                 var chunkAnyChanged = chunkRotationsChanged || chunkPositionsChanged || chunkScalesChanged;
 
                 if (!chunkAnyChanged)
@@ -510,9 +510,9 @@ namespace Unity.Transforms
                 var chunkScales = chunk.GetNativeArray(scaleType);
                 var chunkLocalToParents = chunk.GetNativeArray(localToParentType);
 
-                var chunkRotationsChanged = chunk.DidAddOrChange(rotationType, lastSystemUpdateVersion);
-                var chunkPositionsChanged = chunk.DidAddOrChange(positionType, lastSystemUpdateVersion);
-                var chunkScalesChanged = chunk.DidAddOrChange(scaleType, lastSystemUpdateVersion);
+                var chunkRotationsChanged = chunk.DidChange(rotationType, lastSystemUpdateVersion);
+                var chunkPositionsChanged = chunk.DidChange(positionType, lastSystemUpdateVersion);
+                var chunkScalesChanged = chunk.DidChange(scaleType, lastSystemUpdateVersion);
                 var chunkAnyChanged = chunkRotationsChanged || chunkPositionsChanged || chunkScalesChanged;
 
                 if (!chunkAnyChanged)
@@ -646,9 +646,9 @@ namespace Unity.Transforms
                 var chunkScales = chunk.GetNativeArray(scaleType);
                 var chunkLocalToParents = chunk.GetNativeArray(localToParentType);
 
-                var chunkRotationsChanged = chunk.DidAddOrChange(rotationType, lastSystemUpdateVersion);
-                var chunkPositionsChanged = chunk.DidAddOrChange(positionType, lastSystemUpdateVersion);
-                var chunkScalesChanged = chunk.DidAddOrChange(scaleType, lastSystemUpdateVersion);
+                var chunkRotationsChanged = chunk.DidChange(rotationType, lastSystemUpdateVersion);
+                var chunkPositionsChanged = chunk.DidChange(positionType, lastSystemUpdateVersion);
+                var chunkScalesChanged = chunk.DidChange(scaleType, lastSystemUpdateVersion);
                 var chunkAnyChanged = chunkRotationsChanged || chunkPositionsChanged || chunkScalesChanged;
 
                 if (!chunkAnyChanged)

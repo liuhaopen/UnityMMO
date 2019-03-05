@@ -4,7 +4,6 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 using XLua;
@@ -58,12 +57,6 @@ public class SceneMgr : MonoBehaviour
         m_GameWorld = world;
 
         RoleMgr.GetInstance().Init(world);
-        // LoadPrefab("Assets/AssetBundleRes/role/prefab/MainRole.prefab", "MainRole");
-        // LoadPrefab("Assets/AssetBundleRes/role/prefab/Role.prefab", "Role");
-
-		// RoleArchetype = EntityManager.CreateArchetype(
-        //         typeof(Position),typeof(TargetPosition),
-        //         typeof(MoveSpeed));
 
         NPCArchetype = EntityManager.CreateArchetype(
                 typeof(Position));
@@ -225,6 +218,7 @@ public class SceneMgr : MonoBehaviour
 
     public Entity AddSceneObject(long uid, SceneObjectType type)
     {
+        // Debug.Log("add scene obj:"+type.ToString());
         if (type == SceneObjectType.Role)
             return AddRole(uid);
         // else if (type == SceneObjectType.NPC)

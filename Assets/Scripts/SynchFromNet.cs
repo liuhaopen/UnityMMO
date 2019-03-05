@@ -60,7 +60,7 @@ public class SynchFromNet {
             for (int info_index = 0; info_index < info_len; info_index++)
             {
                 var cur_change_info = change_info_list[info_index];
-                // Debug.Log("cur_change_info.key : "+cur_change_info.key.ToString()+" scene_obj:"+(scene_obj!=Entity.Null).ToString()+ " ContainsKey:"+changeFuncDic.ContainsKey((SceneInfoKey)cur_change_info.key).ToString());
+                Debug.Log("cur_change_info.key : "+cur_change_info.key.ToString()+" scene_obj:"+(scene_obj!=Entity.Null).ToString()+ " ContainsKey:"+changeFuncDic.ContainsKey((SceneInfoKey)cur_change_info.key).ToString()+" uid"+uid.ToString()+" value:"+cur_change_info.value.ToString());
                 if (cur_change_info.key == (int)SceneInfoKey.EnterScene)
                 {
                     if (scene_obj==Entity.Null)

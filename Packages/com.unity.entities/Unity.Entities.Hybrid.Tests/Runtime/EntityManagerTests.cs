@@ -8,7 +8,7 @@ namespace Unity.Entities.Tests
     [DisallowMultipleComponent]
     public class EcsTestComponent : ComponentDataWrapper<EcsTestData> { }
 
-    public class EntityManagerTests : ECSTestsFixture
+    class EntityManagerTests : ECSTestsFixture
     {
         [Test]
         public void GetComponentObjectReturnsTheCorrectType()

@@ -2,6 +2,7 @@ using System;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using Unity.Collections.LowLevel.Unsafe;
+#pragma warning disable 649
 
 namespace Unity.Entities
 {
@@ -13,7 +14,7 @@ namespace Unity.Entities
 
 namespace Unity.Entities.Tests
 {
-    public class TypeManagerTests : ECSTestsFixture
+    class TypeManagerTests : ECSTestsFixture
     {
         struct TestType1 : IComponentData
         {
@@ -182,5 +183,17 @@ namespace Unity.Entities.Tests
         {
             Assert.Throws<ArgumentException>(() => TypeManager.RegisterUnityEngineComponentType(type));
         }
+        
+        [Test]
+        public void IsAssemblyReferencingEntities()
+        {
+            Assert.IsFalse(TypeManager.IsAssemblyReferencingEntities(typeof(UnityEngine.GameObject).Assembly));
+            Assert.IsFalse(TypeManager.IsAssemblyReferencingEntities(typeof(System.Collections.Generic.List<>).Assembly));
+            Assert.IsFalse(TypeManager.IsAssemblyReferencingEntities(typeof(Unity.Collections.NativeList<>).Assembly));
+
+            Assert.IsTrue(TypeManager.IsAssemblyReferencingEntities(typeof(IComponentData).Assembly));
+            Assert.IsTrue(TypeManager.IsAssemblyReferencingEntities(typeof(EcsTestData).Assembly));
+        }
+
     }
 }

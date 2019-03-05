@@ -1,8 +1,10 @@
 using System;
+#if !UNITY_ZEROPLAYER
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.Experimental.LowLevel;
 using UnityEngine.Experimental.PlayerLoop;
+#endif
 
 namespace Unity.Entities
 {
@@ -43,6 +45,7 @@ namespace Unity.Entities
         public Type GroupType { get; }
     }
 
+#if !UNITY_ZEROPLAYER
     public static class ScriptBehaviourUpdateOrder
     {
         // Try to find a system of the specified type in the default playerloop and update the min / max insertion position
@@ -856,4 +859,5 @@ namespace Unity.Entities
             }
         }
     }
+#endif
 }

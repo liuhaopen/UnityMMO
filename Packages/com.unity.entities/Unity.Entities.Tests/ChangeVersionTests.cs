@@ -1,11 +1,10 @@
 using NUnit.Framework;
 using Unity.Collections;
 using Unity.Jobs;
-using UnityEngine;
 
 namespace Unity.Entities.Tests
 {
-    public class ChangeVersionTests : ECSTestsFixture
+    class ChangeVersionTests : ECSTestsFixture
     {
         [DisableAutoCreation]
         class BumpVersionSystemInJob : ComponentSystem
@@ -122,7 +121,7 @@ namespace Unity.Entities.Tests
                 m_LastAllChanged = true;
                 for (int i = 0; i < chunks.Length; i++)
                 {
-                    m_LastAllChanged &= chunks[i].DidAddOrChange(ecsTestDataType,LastSystemVersion);
+                    m_LastAllChanged &= chunks[i].DidChange(ecsTestDataType,LastSystemVersion);
                 }
 
                 chunks.Dispose();

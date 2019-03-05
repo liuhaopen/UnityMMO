@@ -6,11 +6,14 @@ using UnityEngine;
 
 namespace Unity.Entities
 {
-    static class DefaultWorldInitialization
+    public static class DefaultWorldInitialization
     {
         static void DomainUnloadShutdown()
         {
             World.DisposeAllWorlds();
+
+            WordStorage.Instance.Dispose();
+            WordStorage.Instance = null;
             ScriptBehaviourUpdateOrder.UpdatePlayerLoop();
         }
 
@@ -26,6 +29,7 @@ namespace Unity.Entities
             }
         }
 
+
         public static void Initialize(string worldName, bool editorWorld)
         {
             var world = new World(worldName);
@@ -38,23 +42,22 @@ namespace Unity.Entities
 
             PlayerLoopManager.RegisterDomainUnload(DomainUnloadShutdown, 10000);
 
-            IEnumerable<Type> allTypes;
-
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
+                if (!TypeManager.IsAssemblyReferencingEntities(assembly))
+                    continue;
+                
                 try
                 {
-                    allTypes = assembly.GetTypes();
+                    var allTypes = assembly.GetTypes();
 
+                    // Create all ComponentSystem
+                    CreateBehaviourManagersForMatchingTypes(editorWorld, allTypes, world);
                 }
-                catch (ReflectionTypeLoadException e)
+                catch
                 {
-                    allTypes = e.Types.Where(t => t != null);
                     Debug.LogWarning($"DefaultWorldInitialization failed loading assembly: {(assembly.IsDynamic ? assembly.ToString() : assembly.Location)}");
                 }
-
-                // Create all ComponentSystem
-                CreateBehaviourManagersForMatchingTypes(editorWorld, allTypes, world);
             }
             
             ScriptBehaviourUpdateOrder.UpdatePlayerLoop(world);
@@ -66,11 +69,18 @@ namespace Unity.Entities
                 t.IsSubclassOf(typeof(ComponentSystemBase)) &&
                 !t.IsAbstract &&
                 !t.ContainsGenericParameters &&
-                t.GetCustomAttributes(typeof(DisableAutoCreationAttribute), true).Length == 0);
+                t.GetCustomAttributes(typeof(DisableAutoCreationAttribute), true).Length == 0 &&
+                t.GetCustomAttributes(typeof(GameObjectToEntityConversionAttribute), true).Length == 0);
+            
             foreach (var type in systemTypes)
             {
-                if (editorWorld && type.GetCustomAttributes(typeof(ExecuteInEditMode), true).Length == 0)
-                    continue;
+                if (editorWorld)
+                {
+                    if (Attribute.IsDefined(type, typeof(ExecuteInEditMode)))
+                        Debug.LogError($"{type} is decorated with {typeof(ExecuteInEditMode)}. Support for this attribute will be deprecated. Please use {typeof(ExecuteAlways)} instead.");
+                    else if (!Attribute.IsDefined(type, typeof(ExecuteAlways)))
+                        continue;
+                }
 
                 GetBehaviourManagerAndLogException(world, type);
             }

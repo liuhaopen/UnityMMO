@@ -6,7 +6,7 @@ using Unity.Jobs;
 
 namespace Unity.Entities.Tests
 {
-    public class ComponentSystemTests : ECSTestsFixture
+    class ComponentSystemTests : ECSTestsFixture
     {
         [DisableAutoCreation]
         class TestSystem : ComponentSystem
@@ -219,7 +219,6 @@ namespace Unity.Entities.Tests
             Assert.Throws<ArgumentException>(() => EmptySystem.GetComponentGroup(e));
         }
         
-        //@TODO: Behaviour is a slightly dodgy... Optimally would always return the same ComponentGroup
         [Test]
         public void GetComponentGroupWithDuplicates()
         {
@@ -235,10 +234,9 @@ namespace Unity.Entities.Tests
             
             Assert.AreEqual(2, EmptySystem.ComponentGroups.Length);
         }
-        
     }
 
-    public class Issue101 : ECSTestsFixture
+    class Issue101 : ECSTestsFixture
     {
         [BurstCompile(CompileSynchronously = true)]
         struct Issue101Job : IJob

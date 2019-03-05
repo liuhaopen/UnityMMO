@@ -4,7 +4,7 @@ using Unity.Collections;
 
 namespace Unity.Entities.Tests
 {
-	public class DisableComponentTests : ECSTestsFixture
+	class DisableComponentTests : ECSTestsFixture
 	{
 		[Test]
 		public void DIS_DontFindDisabledInComponentGroup()

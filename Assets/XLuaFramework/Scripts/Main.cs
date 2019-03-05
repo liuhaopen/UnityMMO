@@ -106,8 +106,11 @@ namespace XLuaFramework {
                     if (cur_sub_state == SubState.Enter)
                     {
                         cur_sub_state = SubState.Update;
+                        Debug.Log("main.cs start game");
                         this.gameObject.AddComponent<UnityMMO.MainWorld>();
+                        Debug.Log("main.cs start game2");
                         UnityMMO.MainWorld.Instance.StartGame();
+                        Debug.Log("main.cs start game3");
                         JumpToState(State.Playing);
                     }
                     break;

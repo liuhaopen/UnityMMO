@@ -11,19 +11,25 @@ namespace Unity.Entities.Tests
         public int b;
     }
 
-    public class Bug149 : ECSTestsFixture
+    public struct Issue476Data : IComponentData
     {
-        private EntityArchetype m_Archetype;
+        public int a;
+        public int b;
+    }
+    
+    class Bug149 : ECSTestsFixture
+    {
+        EntityArchetype m_Archetype;
 
-        private const int kBatchCount = 512;
+        const int kBatchCount = 512;
 
-        private class EntityBag
+        class EntityBag
         {
             public NativeArray<Entity> Entities;
             public int ValidVersion;
         }
 
-        private EntityBag[] Bags = new EntityBag[3];
+        EntityBag[] Bags = new EntityBag[3];
 
         [Test]
         public void TestIssue149()
@@ -64,7 +70,7 @@ namespace Unity.Entities.Tests
             }
         }
 
-        private void RecycleEntities(EntityBag bag)
+        void RecycleEntities(EntityBag bag)
         {
             if (bag.Entities.Length > 0)
             {
@@ -88,7 +94,7 @@ namespace Unity.Entities.Tests
         private static readonly ComponentType[] s_OurTypes = new ComponentType[] {
             typeof(Issue149Data)
         };
-
+        
         // Walk all accessible entity data and check that the versions match what we
         // believe the generation numbers should be.
         private void SanityCheckVersions()
@@ -125,7 +131,19 @@ namespace Unity.Entities.Tests
         }
     }
 
-    public class Bug148
+    class Bug476 : ECSTestsFixture
+    {              
+        [Test]
+        public void EntityArchetypeQueryMembersHaveSensibleDefaults()
+        {           
+            ComponentType[] types = {typeof(Issue476Data)};            
+            var query = new EntityArchetypeQuery { All = types };
+            var temp = m_Manager.CreateArchetypeChunkArray(query, Allocator.TempJob);
+            temp.Dispose();            
+        }        
+    }
+    
+    class Bug148
     {
         [Test]
         public void Test1()
@@ -149,7 +167,7 @@ namespace Unity.Entities.Tests
             foreach (Entity e in remember)
             {
                 em.DestroyEntity(e);
-            }
+            }            
         }
 
         [Test]

@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace Unity.Entities.Tests
 {
-    public class WorldDebuggingToolsTests : ECSTestsFixture
+    class WorldDebuggingToolsTests : ECSTestsFixture
     {
 
         [DisableAutoCreation]

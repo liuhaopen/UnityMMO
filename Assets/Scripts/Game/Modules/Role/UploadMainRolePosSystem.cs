@@ -32,7 +32,7 @@ public class UploadMainRolePosSystem : BaseComponentSystem
             var pos = positions[i].Value;
 
             scene_walk.request walk = new scene_walk.request();
-            // float3 cur_pos = m_Data.Position[index].Value;
+            // Debug.Log("upload pos"+pos.ToString());
             walk.start_x = (int)(pos.x*GameConst.RealToLogic);
             walk.start_y = (int)(pos.y*GameConst.RealToLogic);
             walk.start_z = (int)(pos.z*GameConst.RealToLogic);

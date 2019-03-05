@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if !UNITY_ZEROPLAYER
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -94,9 +96,8 @@ namespace Unity.Entities
         {
             var groupStructPtr = systemPtr + m_GroupFieldOffset;
 
-            int length;
-            ComponentChunkIterator iterator;
-            m_EntityGroup.GetComponentChunkIterator(out length, out iterator);
+            int length = m_EntityGroup.CalculateLength();
+            ComponentChunkIterator iterator = m_EntityGroup.GetComponentChunkIterator();
 
             for (var i = 0; i != m_ComponentDataInjections.Length; i++)
             {
@@ -124,8 +125,7 @@ namespace Unity.Entities
 
             if (m_EntityArrayOffset != -1)
             {
-                EntityArray entityArray;
-                m_EntityGroup.GetEntityArray(ref iterator, length, out entityArray);
+                EntityArray entityArray = m_EntityGroup.GetEntityArray();
                 UnsafeUtility.CopyStructureToPtr(ref entityArray, groupStructPtr + m_EntityArrayOffset);
             }
 
@@ -258,3 +258,4 @@ namespace Unity.Entities
         }
     }
 }
+#endif

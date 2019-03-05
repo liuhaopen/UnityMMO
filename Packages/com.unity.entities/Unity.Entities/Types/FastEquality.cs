@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Unity.Collections.LowLevel.Unsafe;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("Unity.Entities.Tests")]
 
@@ -10,6 +11,12 @@ namespace Unity.Entities
 {
     public static class FastEquality
     {
+#if !UNITY_CSHARP_TINY
+        internal static TypeInfo CreateTypeInfo<T>() where T : struct
+        {
+            return CreateTypeInfo(typeof(T));
+        }
+
         internal static TypeInfo CreateTypeInfo(Type type)
         {
             var begin = 0;
@@ -34,6 +41,7 @@ namespace Unity.Entities
 
             return new TypeInfo { Layouts = layoutsArray, Hash = hash };
         }
+#endif
 
         public struct Layout
         {
@@ -59,7 +67,7 @@ namespace Unity.Entities
         {
             private void* pter;
         }
-
+#if !UNITY_CSHARP_TINY
         struct FieldData
         {
             public int Offset;
@@ -145,7 +153,7 @@ namespace Unity.Entities
                 }
             }
         }
-
+#endif
         private const int FNV_32_PRIME = 0x01000193;
 
         //@TODO: Encode type in hashcode...

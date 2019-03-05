@@ -2,24 +2,24 @@
 
 namespace Unity.Entities
 {
-	[ExecuteInEditMode]
-	class PlayerLoopDisableManager : MonoBehaviour
-	{
-	    public bool IsActive;
+    [ExecuteAlways]
+    class PlayerLoopDisableManager : MonoBehaviour
+    {
+        public bool IsActive;
 
-	    public void OnEnable()
-		{
-		    if (!IsActive)
-		        return;
+        public void OnEnable()
+        {
+            if (!IsActive)
+                return;
 
-		    IsActive = false;
-		    DestroyImmediate(gameObject);
-		}
+            IsActive = false;
+            DestroyImmediate(gameObject);
+        }
 
-	    public void OnDisable()
-		{
-			if (IsActive)
-				PlayerLoopManager.InvokeBeforeDomainUnload();
-		}
-	}
+        public void OnDisable()
+        {
+            if (IsActive)
+                PlayerLoopManager.InvokeBeforeDomainUnload();
+        }
+    }
 }

@@ -139,7 +139,6 @@ local init_pos_info = function ( base_info )
 	if not base_info.scene_id or this.cur_scene_id ~= base_info.scene_id or not base_info.pos_x then
 		is_need_reset_pos = true
 	end
-	print('Cat:scene.lua[133] is_need_reset_pos', is_need_reset_pos)
 	if is_need_reset_pos then
 		local born_list = this.scene_cfg.born_list
 		local door_num = born_list and #born_list or 0
@@ -181,11 +180,18 @@ function CMD.role_enter_scene(role_id)
 	end
 end
 
+local save_role_pos = function ( role_id, pos, scene_id )
+	local gameDBServer = skynet.localname(".GameDBServer")
+	is_succeed = skynet.call(gameDBServer, "lua", "update", "RoleBaseInfo", "role_id", role_id, {pos_x=pos.x, pos_y=pos.y, pos_z=pos.z, scene_id=scene_id})
+end
+
 function CMD.role_leave_scene(role_id)
 	local role_info = this.role_list[role_id]
 	print('Cat:scene.lua[role_leave_scene] role_id', role_id, role_info)
 	if not role_info then return end
 	
+	save_role_pos(role_id, role_info.base_info.pos, this.cur_scene_id)	
+
 	--tell every one this role leave scene
 	for k,v in pairs(this.role_list) do
 		local cur_role_id = k
@@ -265,9 +271,9 @@ end
 function CMD.scene_walk( user_info, req_data )
 	-- print('Cat:scene.lua[scene_get_main_role_info] user_info, req_data', user_info, user_info.cur_role_id)
 	local role_info = this.role_list[user_info.cur_role_id]
-	if role_info then
-		role_info.pos = {x=req_data.pos_x, y=req_data.pos_y, z=req_data.pos_z}
-		local pos_info = role_info.pos.x..","..role_info.pos.y..","..role_info.pos.z
+	if role_info and role_info.base_info then
+		role_info.base_info.pos = {x=req_data.start_x, y=req_data.start_y, z=req_data.start_z}
+		local pos_info = role_info.base_info.pos.x..","..role_info.base_info.pos.y..","..role_info.base_info.pos.z
 		-- print('Cat:scene.lua[116] pos_info', pos_info, role_info.scene_uid)
 		--for test 
 		for k,v in pairs(this.role_list) do

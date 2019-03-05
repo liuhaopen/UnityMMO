@@ -1,9 +1,10 @@
 ﻿using NUnit.Framework;
 using UnityEngine;
+#pragma warning disable 649
 
 namespace Unity.Entities.Tests
 {
-    public class InjectComponentGroupTestsHybrid : ECSTestsFixture
+    class InjectComponentGroupTestsHybrid : ECSTestsFixture
     {
         [DisableAutoCreation]
         [AlwaysUpdateSystem]

@@ -9,7 +9,7 @@ using System;
 
 namespace Unity.Entities.Tests
 {
-    public class SafetyTests : ECSTestsFixture
+    class SafetyTests : ECSTestsFixture
 	{
 
 		[Test]

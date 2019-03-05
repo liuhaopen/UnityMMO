@@ -4,7 +4,7 @@ using Unity.Collections;
 
 namespace Unity.Entities.Tests
 {
-	public class PrefabComponentTests : ECSTestsFixture
+	class PrefabComponentTests : ECSTestsFixture
 	{
 		[Test]
 		public void PFB_DontFindPrefabInComponentGroup()

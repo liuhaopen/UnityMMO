@@ -19,8 +19,11 @@ namespace Unity.Entities.Properties
         {
             _wrappedObject = o;
 
+            string displayName = o.GetType().Name;
+
             _bag = new ClassPropertyBag<ObjectContainerProxy>(
-                new ClassObjectProxyProperty(o.GetType(), o, primitiveTypes));
+                new ClassObjectProxyProperty(
+                    o.GetType(), displayName, o, primitiveTypes));
 
             ComponentType = t;
         }

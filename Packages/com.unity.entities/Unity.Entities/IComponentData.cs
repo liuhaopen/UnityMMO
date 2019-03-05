@@ -39,4 +39,15 @@ namespace Unity.Entities
     public struct Prefab : IComponentData
     {
     }
+    
+    public struct LinkedEntityGroup : IBufferElementData
+    {
+        public Entity Value;
+        
+        public static implicit operator LinkedEntityGroup(Entity e)
+        {
+            return new LinkedEntityGroup {Value = e};
+        }
+
+    }
 }

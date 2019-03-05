@@ -9,19 +9,15 @@ namespace Unity.Entities.Properties
 
         public FieldInfo Field { get; set; }
 
-        public FieldObjectProperty(object parentObject, FieldInfo info) : base(info.Name, null, null)
+        public FieldObjectProperty(FieldInfo info) : base(info.Name, null, null)
         {
-            _parentObject = parentObject;
-
             Field = info;
         }
 
         public override TValue GetValue(ObjectContainerProxy container)
         {
-            return (TValue)Field.GetValue(_parentObject);
+            return (TValue)Field.GetValue(container.o);
         }
-
-        private readonly object _parentObject;
     }
 
     internal class CSharpPropertyObjectProperty<TValue> : ValueClassProperty<ObjectContainerProxy, TValue>
@@ -30,18 +26,14 @@ namespace Unity.Entities.Properties
 
         public PropertyInfo Property { get; set; }
 
-        public CSharpPropertyObjectProperty(object parentObject, PropertyInfo info) : base(info.Name, null, null)
+        public CSharpPropertyObjectProperty(PropertyInfo info) : base(info.Name, null, null)
         {
-            _parentObject = parentObject;
-
             Property = info;
         }
 
         public override TValue GetValue(ObjectContainerProxy container)
         {
-            return (TValue) Property.GetValue(_parentObject);
+            return (TValue) Property.GetValue(container.o);
         }
-
-        private readonly object _parentObject;
     }
 }

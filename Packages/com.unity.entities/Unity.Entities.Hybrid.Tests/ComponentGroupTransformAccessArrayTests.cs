@@ -1,10 +1,11 @@
 ﻿using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Jobs;
+#pragma warning disable 649
 
 namespace Unity.Entities.Tests
 {
-    public class ComponentGroupTransformAccessArrayTests : ECSTestsFixture
+    class ComponentGroupTransformAccessArrayTests : ECSTestsFixture
 	{
 
 	    TransformAccessArrayInjectionHook m_TransformAccessArrayInjectionHook = new TransformAccessArrayInjectionHook();

@@ -9,7 +9,7 @@ namespace Unity.Entities
     [JobProducerType(typeof(JobChunkExtensions.JobChunkLiveFilter_Process<>))]
     public interface IJobChunk
     {
-        void Execute(ArchetypeChunk chunk, int chunkIndex);
+        void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex);
     }
 
     public static class JobChunkExtensions
@@ -35,8 +35,7 @@ namespace Unity.Entities
         internal static unsafe JobHandle ScheduleInternal<T>(ref T jobData, ComponentGroup group, JobHandle dependsOn, ScheduleMode mode)
             where T : struct, IJobChunk
         {
-            ComponentChunkIterator iterator;
-            group.GetComponentChunkIterator(out iterator);
+            ComponentChunkIterator iterator = group.GetComponentChunkIterator();
 
             JobDataLiveFilter<T> fullData = new JobDataLiveFilter<T>
             {
@@ -82,9 +81,11 @@ namespace Unity.Entities
                     jobData.iterator.MoveToChunkWithoutFiltering(chunkIndex);
                     if (!jobData.iterator.MatchesFilter())
                         continue;
+                    
+                    jobData.iterator.GetFilteredChunkAndEntityIndices(out var filteredChunkIndex, out var entityOffset);
 
                     var chunk = jobData.iterator.GetCurrentChunk();
-                    jobData.data.Execute(chunk, chunkIndex);
+                    jobData.data.Execute(chunk, filteredChunkIndex, entityOffset);
                 }
             }
         }

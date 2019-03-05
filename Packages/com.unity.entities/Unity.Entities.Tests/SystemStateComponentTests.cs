@@ -5,7 +5,7 @@ using System;
 namespace Unity.Entities.Tests
 {
     [TestFixture]
-    public class SystemStateComponentTests : ECSTestsFixture
+    class SystemStateComponentTests : ECSTestsFixture
     {
         void VerifyComponentCount<T>(int expectedCount)
             where T : IComponentData

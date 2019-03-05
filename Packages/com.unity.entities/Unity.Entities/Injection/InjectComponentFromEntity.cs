@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if !UNITY_ZEROPLAYER
+using System.Collections.Generic;
 using System.Reflection;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -83,3 +84,4 @@ namespace Unity.Entities
         }
     }
 }
+#endif

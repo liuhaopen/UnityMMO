@@ -4,7 +4,7 @@ using Unity.Entities.Tests;
 
 namespace Unity.Entities.Editor.Tests
 {
-    public class EntityArrayListAdapterTests : ECSTestsFixture
+    class EntityArrayListAdapterTests : ECSTestsFixture
     {
         private NativeArray<ArchetypeChunk> m_ChunkArray;
 

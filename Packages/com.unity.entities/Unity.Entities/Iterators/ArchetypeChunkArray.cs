@@ -1,4 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.ConstrainedExecution;
+using System.Runtime.InteropServices;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -6,10 +12,13 @@ using Unity.Jobs;
 
 namespace Unity.Entities
 {
+    [DebuggerTypeProxy(typeof(ArchetypeChunkDebugView))]
     public unsafe struct ArchetypeChunk : IEquatable<ArchetypeChunk>
     {
         [NativeDisableUnsafePtrRestriction] internal Chunk* m_Chunk;
         public int Count => m_Chunk->Count;
+        public int Capacity => m_Chunk->Capacity;
+        public bool Full => Count == Capacity;
 
         public static bool operator ==(ArchetypeChunk lhs, ArchetypeChunk rhs)
         {
@@ -57,6 +66,20 @@ namespace Unity.Entities
             return m_Chunk->Archetype->NumSharedComponents;
         }
 
+        public bool Invalid()
+        {
+            return m_Chunk->Archetype == null;
+        }
+
+        /// <summary>
+        /// Returns true if Chunk is Locked
+        /// </summary>
+        /// <returns></returns>
+        public bool Locked()
+        {
+            return m_Chunk->Locked;
+        }
+
         public NativeArray<Entity> GetNativeArray(ArchetypeChunkEntityType archetypeChunkEntityType)
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
@@ -73,24 +96,14 @@ namespace Unity.Entities
             return result;
         }
 
-        public bool DidAddOrChange<T>(ArchetypeChunkComponentType<T> chunkComponentType, uint version) where T : struct, IComponentData
+        public bool DidChange<T>(ArchetypeChunkComponentType<T> chunkComponentType, uint version) where T : struct, IComponentData
         {
-            return ChangeVersionUtility.DidAddOrChange(GetComponentVersion(chunkComponentType), version);
+            return ChangeVersionUtility.DidChange(GetComponentVersion(chunkComponentType), version);
         }
 
-        public bool DidAddOrChange<T>(ArchetypeChunkBufferType<T> chunkBufferType, uint version) where T : struct, IBufferElementData
+        public bool DidChange<T>(ArchetypeChunkBufferType<T> chunkBufferType, uint version) where T : struct, IBufferElementData
         {
-            return ChangeVersionUtility.DidAddOrChange(GetComponentVersion(chunkBufferType), version);
-        }
-
-        public bool DidChange<T>(ArchetypeChunkComponentType<T> chunkComponentType) where T : struct, IComponentData
-        {
-            return ChangeVersionUtility.DidChange(GetComponentVersion(chunkComponentType), chunkComponentType.GlobalSystemVersion);
-        }
-
-        public bool DidChange<T>(ArchetypeChunkBufferType<T> chunkBufferType) where T : struct, IBufferElementData
-        {
-            return ChangeVersionUtility.DidChange(GetComponentVersion(chunkBufferType), chunkBufferType.GlobalSystemVersion);
+            return ChangeVersionUtility.DidChange(GetComponentVersion(chunkBufferType), version);
         }
 
         public uint GetComponentVersion<T>(ArchetypeChunkComponentType<T> chunkComponentType)
@@ -109,6 +122,30 @@ namespace Unity.Entities
             return m_Chunk->ChangeVersion[typeIndexInArchetype];
         }
 
+        public T GetChunkComponentData<T>(ArchetypeChunkComponentType<T> chunkComponentType)
+            where T : struct
+        {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            AtomicSafetyHandle.CheckReadAndThrow(chunkComponentType.m_Safety);
+#endif
+            var entities = m_Chunk->Archetype->EntityDataManager;
+            var ptr = entities->GetComponentDataWithTypeRO(m_Chunk->metaChunkEntity, chunkComponentType.m_TypeIndex);
+            T value;
+            UnsafeUtility.CopyPtrToStructure(ptr, out value);
+            return value;
+        }
+
+        public void SetChunkComponentData<T>(ArchetypeChunkComponentType<T> chunkComponentType, T value)
+            where T : struct
+        {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            AtomicSafetyHandle.CheckWriteAndThrow(chunkComponentType.m_Safety);
+#endif
+            var entities = m_Chunk->Archetype->EntityDataManager;
+            var ptr = entities->GetComponentDataWithTypeRW(m_Chunk->metaChunkEntity, chunkComponentType.m_TypeIndex, entities->GlobalSystemVersion);
+            UnsafeUtility.CopyStructureToPtr(ref value, ptr);
+        }
+
         public int GetSharedComponentIndex<T>(ArchetypeChunkSharedComponentType<T> chunkSharedComponentData)
             where T : struct, ISharedComponentData
         {
@@ -121,8 +158,21 @@ namespace Unity.Entities
             return sharedComponentIndex;
         }
 
+        public T GetSharedComponentData<T>(ArchetypeChunkSharedComponentType<T> chunkSharedComponentData, EntityManager entityManager)
+            where T : struct, ISharedComponentData
+        {
+            return entityManager.GetSharedComponentData<T>(GetSharedComponentIndex(chunkSharedComponentData));
+        }
+
         public bool Has<T>(ArchetypeChunkComponentType<T> chunkComponentType)
             where T : struct, IComponentData
+        {
+            var typeIndexInArchetype = ChunkDataUtility.GetIndexInTypeArray(m_Chunk->Archetype, chunkComponentType.m_TypeIndex);
+            return (typeIndexInArchetype != -1);
+        }
+
+        public bool Has<T>(ArchetypeChunkSharedComponentType<T> chunkComponentType)
+            where T : struct, ISharedComponentData
         {
             var typeIndexInArchetype = ChunkDataUtility.GetIndexInTypeArray(m_Chunk->Archetype, chunkComponentType.m_TypeIndex);
             return (typeIndexInArchetype != -1);
@@ -168,6 +218,24 @@ namespace Unity.Entities
             return result;
         }
 
+        public ArchetypeChunkComponentObjects<T> GetComponentObjects<T>(ArchetypeChunkComponentType<T> componentType, EntityManager manager)
+            where T : class
+        {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            AtomicSafetyHandle.CheckReadAndThrow(componentType.m_Safety);
+#endif
+            var archetype = m_Chunk->Archetype;
+
+            var typeIndexInArchetype = ChunkDataUtility.GetIndexInTypeArray(archetype, componentType.m_TypeIndex);
+
+            int offset, length;
+            var array = manager.ArchetypeManager.GetManagedObjectRange(m_Chunk, typeIndexInArchetype, out offset, out length);
+
+            var componentArray = new ArchetypeChunkComponentObjects<T>(offset, length, array);
+            return componentArray;
+        }
+
+
         public BufferAccessor<T> GetBufferAccessor<T>(ArchetypeChunkBufferType<T> bufferComponentType)
             where T : struct, IBufferElementData
         {
@@ -199,6 +267,12 @@ namespace Unity.Entities
             return new BufferAccessor<T>(buffer + startOffset, length, stride);
 #endif
         }
+    }
+
+    public unsafe struct ChunkHeader : ISystemStateComponentData
+    {
+        internal Chunk* chunk;
+        public ArchetypeChunk ArchetypeChunk => new ArchetypeChunk{m_Chunk = chunk};
     }
 
     [NativeContainer]
@@ -269,7 +343,7 @@ namespace Unity.Entities
     }
 
     [BurstCompile]
-    unsafe struct GatherChunks : IJobParallelFor
+    unsafe struct GatherArchetypeChunks : IJobParallelFor
     {
         [ReadOnly] public NativeList<EntityArchetype> Archetypes;
         [ReadOnly] public NativeArray<int> Offsets;
@@ -279,16 +353,10 @@ namespace Unity.Entities
         public void Execute(int index)
         {
             var archetype = Archetypes[index];
-            var chunkCount = archetype.Archetype->ChunkCount;
-            var chunk = (Chunk*) archetype.Archetype->ChunkList.Begin;
             var offset = Offsets[index];
             var dstChunksPtr = (Chunk**) Chunks.GetUnsafePtr();
-
-            for (int j = 0; j < chunkCount; j++)
-            {
-                dstChunksPtr[offset + j] = chunk;
-                chunk = (Chunk*)chunk->ChunkListNode.Next;
-            }
+            for (var i = 0; i < archetype.Archetype->Chunks.Count; ++i)
+                dstChunksPtr[offset + i] = archetype.Archetype->Chunks.p[i];
         }
     }
 
@@ -306,11 +374,11 @@ namespace Unity.Entities
             for (var i = 0; i < archetypeCount; i++)
             {
                 offsets[i] = length;
-                length += archetypes[i].Archetype->ChunkCount;
+                length += archetypes[i].Archetype->Chunks.Count;
             }
 
             var chunks = new NativeArray<ArchetypeChunk>(length, allocator, NativeArrayOptions.UninitializedMemory);
-            var gatherChunksJob = new GatherChunks
+            var gatherChunksJob = new GatherArchetypeChunks
             {
                 Archetypes = archetypes,
                 Offsets = offsets,
@@ -338,14 +406,12 @@ namespace Unity.Entities
     [NativeContainer]
     [NativeContainerSupportsMinMaxWriteRestriction]
     public struct ArchetypeChunkComponentType<T>
-        where T : struct, IComponentData
     {
         internal readonly int m_TypeIndex;
         internal readonly uint m_GlobalSystemVersion;
         internal readonly bool m_IsReadOnly;
         internal readonly bool m_IsZeroSized;
 
-        public int TypeIndex => m_TypeIndex;
         public uint GlobalSystemVersion => m_GlobalSystemVersion;
         public bool IsReadOnly => m_IsReadOnly;
 
@@ -395,7 +461,7 @@ namespace Unity.Entities
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
         private readonly int m_MinIndex;
         private readonly int m_MaxIndex;
-        
+
         internal AtomicSafetyHandle m_Safety0;
         internal AtomicSafetyHandle m_Safety1;
         internal int m_SafetyReadOnlyCount;
@@ -484,6 +550,40 @@ namespace Unity.Entities
             m_MaxIndex = 0;
             m_Safety = safety;
 #endif
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ArchetypeChunkComponentObjects<T>
+        where T : class
+    {
+        public readonly int  Length;
+        internal int         Offset;
+        internal T[]         Array;
+
+        internal const int ArrayByteOffset = 8;
+
+        unsafe internal ArchetypeChunkComponentObjects(int offset, int length, object[] objectArray)
+        {
+            Length = length;
+            Offset = offset;
+            Array = null;
+
+            var arrayPtr = (byte*) UnsafeUtility.AddressOf(ref this);
+            UnsafeUtility.CopyObjectAddressToPtr(objectArray, arrayPtr + ArrayByteOffset);
+        }
+
+        public T this[int index]
+        {
+            get
+            {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+                if ((uint)index >= (uint)Length)
+                    throw new IndexOutOfRangeException($"index: {index} must be smaller than Length: {Length}");
+#endif
+
+                return Array[Offset + index];
+            }
         }
     }
 }

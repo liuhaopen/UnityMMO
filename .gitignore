@@ -72,3 +72,23 @@ Server/lualib/ECS/ECSCore.exp
 Server/lualib/ECS/ECSCore.iobj
 Server/lualib/ECS/ECSCore.ipdb
 Server/lualib/ECS/ECSCore.lib
+Assets/AssetBundleRes/scene/common.meta
+Assets/AssetBundleRes/scene/common/birch_tree.meta
+Assets/AssetBundleRes/scene/common/birch_tree/Birch_bark.mat
+Assets/AssetBundleRes/scene/common/birch_tree/Birch_bark.mat.meta
+Assets/AssetBundleRes/scene/common/birch_tree/Birch_bark.tga.meta
+Assets/AssetBundleRes/scene/common/birch_tree/Birch_leaves 1.mat
+Assets/AssetBundleRes/scene/common/birch_tree/Birch_leaves 1.mat.meta
+Assets/AssetBundleRes/scene/common/birch_tree/Birch_leaves.mat
+Assets/AssetBundleRes/scene/common/birch_tree/Birch_leaves.mat.meta
+Assets/AssetBundleRes/scene/common/birch_tree/Birch_leaves.tga.meta
+Assets/AssetBundleRes/scene/common/birch_tree/Birch_tree1.fbx.meta
+Assets/AssetBundleRes/scene/common/birch_tree/Birch_tree1.prefab
+Assets/AssetBundleRes/scene/common/birch_tree/Birch_tree1.prefab.meta
+Assets/AssetBundleRes/scene/common/birch_tree/Birch_tree2.prefab
+Assets/AssetBundleRes/scene/common/birch_tree/Birch_tree2.prefab.meta
+Assets/AssetBundleRes/scene/common/birch_tree/Materials.meta
+Assets/AssetBundleRes/scene/common/birch_tree/Materials/Birch_bark.mat
+Assets/AssetBundleRes/scene/common/birch_tree/Materials/Birch_bark.mat.meta
+Assets/AssetBundleRes/scene/common/birch_tree/Materials/Birch_leaves.mat
+Assets/AssetBundleRes/scene/common/birch_tree/Materials/Birch_leaves.mat.meta

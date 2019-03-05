@@ -7,7 +7,7 @@ namespace Unity.Entities.Tests
 {
     //@TODO: Test for prevent adding Wrapper component to type system...
 
-	public class GameObjectEntityTests : ECSTestsFixture
+	class GameObjectEntityTests : ECSTestsFixture
     {
         [Test]
         [Ignore("not implemented")]

@@ -10,12 +10,12 @@ namespace Unity
             UnityEngine.Debug.LogError(message);
         }
 
-        public static void LogWarning(object message)
+        public static void LogWarning(string message)
         {
             UnityEngine.Debug.LogWarning(message);
         }
 
-        public static void Log(object message)
+        public static void Log(string message)
         {
             UnityEngine.Debug.Log(message);
         }

@@ -221,7 +221,7 @@ namespace Unity.Entities.Editor
 
                     state.Showing = EditorGUILayout.Foldout(
                         state.Showing,
-                        displayName,
+                        new GUIContent(displayName, displayName),
                         new GUIStyle(EditorStyles.foldout) { fontStyle = FontStyle.Bold }
                     );
 
@@ -357,6 +357,11 @@ namespace Unity.Entities.Editor
             }
         }
 
+        private static string GetListPropertyDisplayName(string name, int count)
+        {
+            return string.Format("{0} - [{1}]", name, count);
+        }
+
         public bool DoBeginCollection<TContainer, TValue>(ref TContainer container, VisitContext<TValue> context)
             where TContainer : IPropertyContainer
         {
@@ -373,9 +378,19 @@ namespace Unity.Entities.Editor
             }
             state = _states[_currentPath.ToString()];
 
+            string displayName = Property.Name;
+            if (context.Property != null && typeof(IListProperty).IsAssignableFrom(context.Property.GetType()))
+            {
+                int count = (context.Property as IListProperty).Count(container);
+                displayName = GetListPropertyDisplayName(
+                    Property.Name,
+                    count
+                    );
+            }
+
             state.Showing = EditorGUILayout.Foldout(
                 state.Showing,
-                Property.Name,
+                displayName,
                 new GUIStyle(EditorStyles.foldout) { fontStyle = FontStyle.Bold }
             );
 

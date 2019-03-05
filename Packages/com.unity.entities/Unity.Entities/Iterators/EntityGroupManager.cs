@@ -15,6 +15,7 @@ namespace Unity.Entities
         public EntityGroupManager(ComponentJobSafetyManager safetyManager)
         {
             m_JobSafetyManager = safetyManager;
+            m_GroupDataChunkAllocator = new ChunkAllocator();
         }
 
         public void Dispose()
@@ -23,13 +24,13 @@ namespace Unity.Entities
             m_GroupDataChunkAllocator.Dispose();
         }
 
-        ArchetypeQuery* CreateQuery(ComponentType[] requiredTypes)
+        ArchetypeQuery* CreateQuery(ComponentType* requiredTypes, int count)
         {
             var filter = (ArchetypeQuery*)m_GroupDataChunkAllocator.Allocate(sizeof(ArchetypeQuery), UnsafeUtility.AlignOf<ArchetypeQuery>());
 
             int noneCount = 0;
             int allCount = 0;
-            for (int i = 0; i != requiredTypes.Length; i++)
+            for (int i = 0; i != count; i++)
             {
                 if (requiredTypes[i].AccessModeType == ComponentType.AccessMode.Subtractive)
                     noneCount++;
@@ -48,14 +49,14 @@ namespace Unity.Entities
 
             noneCount = 0;
             allCount = 0;
-            for (int i = 0; i != requiredTypes.Length; i++)
+            for (int i = 0; i != count; i++)
             {
                 if (requiredTypes[i].AccessModeType == ComponentType.AccessMode.Subtractive)
                     filter->None[noneCount++] = requiredTypes[i].TypeIndex;
                 else
                     filter->All[allCount++] = requiredTypes[i].TypeIndex;
             }
-            
+
             return filter;
         }
 
@@ -74,11 +75,11 @@ namespace Unity.Entities
                     outTypes[i] = types[i].TypeIndex;
             }
         }
-        
+
         ArchetypeQuery* CreateQuery(EntityArchetypeQuery[] query)
         {
             //@TODO: Check that query doesn't contain any SubtractiveComponent...
-            
+
             var outQuery = (ArchetypeQuery*)m_GroupDataChunkAllocator.Allocate(sizeof(ArchetypeQuery) * query.Length, UnsafeUtility.AlignOf<ArchetypeQuery>());
             for (int q = 0; q != query.Length; q++)
             {
@@ -89,23 +90,23 @@ namespace Unity.Entities
 
             return outQuery;
         }
-        
-        void CreateRequiredComponents(ComponentType[] requiredComponents, out ComponentType* types, out int typesCount)
+
+        void CreateRequiredComponents(ComponentType* requiredComponents, int requiredComponentsCount, out ComponentType* types, out int typesCount)
         {
-            types = (ComponentType*) m_GroupDataChunkAllocator.Allocate(sizeof(ComponentType) * (requiredComponents.Length + 1), UnsafeUtility.AlignOf<ComponentType>());
+            types = (ComponentType*) m_GroupDataChunkAllocator.Allocate(sizeof(ComponentType) * (requiredComponentsCount + 1), UnsafeUtility.AlignOf<ComponentType>());
             types[0] = ComponentType.Create<Entity>();
-            for (int i = 0; i != requiredComponents.Length; i++)
+            for (int i = 0; i != requiredComponentsCount; i++)
                 types[i + 1] = requiredComponents[i];
-                    
-            typesCount = requiredComponents.Length + 1;
+
+            typesCount = requiredComponentsCount + 1;
         }
-        
+
         public static bool CompareQueryArray(ComponentType[] filter, int* typeArray, int typeArrayCount)
         {
             int filterLength = filter != null ? filter.Length : 0;
             if (typeArrayCount != filterLength)
                 return false;
-            
+
             for (var i = 0; i < filterLength; ++i)
             {
                 if (typeArray[i] != filter[i].TypeIndex)
@@ -119,7 +120,7 @@ namespace Unity.Entities
         {
             if (groupData->RequiredComponents != null)
                 return false;
-            
+
             if (groupData->ArchetypeQueryCount != query.Length)
                 return false;
 
@@ -136,23 +137,23 @@ namespace Unity.Entities
             return true;
         }
 
-        public static bool CompareComponents(ComponentType[] componentTypes, EntityGroupData* groupData)
+        public static bool CompareComponents(ComponentType* componentTypes, int componentTypesCount, EntityGroupData* groupData)
         {
             if (groupData->RequiredComponents == null)
                 return false;
-            
+
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            for (var k = 0; k < componentTypes.Length; ++k)
+            for (var k = 0; k < componentTypesCount; ++k)
                 if (componentTypes[k].TypeIndex == TypeManager.GetTypeIndex<Entity>())
                     throw new ArgumentException(
                         "ComponentGroup.CompareComponents may not include typeof(Entity), it is implicit");
 #endif
 
             // ComponentGroups are constructed including the Entity ID
-            if (componentTypes.Length + 1 != groupData->RequiredComponentsCount)
+            if (componentTypesCount + 1 != groupData->RequiredComponentsCount)
                 return false;
 
-            for (var i = 0; i < componentTypes.Length; ++i)
+            for (var i = 0; i < componentTypesCount; ++i)
             {
                 if (groupData->RequiredComponents[i + 1] != componentTypes[i])
                     return false;
@@ -160,45 +161,47 @@ namespace Unity.Entities
 
             return true;
         }
-        
-        
+
+
         public ComponentGroup CreateEntityGroup(ArchetypeManager typeMan, EntityDataManager* entityDataManager, EntityArchetypeQuery[] query)
         {
             //@TODO: Support for CreateEntityGroup with query but using ComponentDataArray etc
             return CreateEntityGroup(typeMan, entityDataManager, CreateQuery(query), query.Length, null, 0);
         }
 
-        public ComponentGroup CreateEntityGroup(ArchetypeManager typeMan, EntityDataManager* entityDataManager,
-            ComponentType[] requiredComponents)
+        public ComponentGroup CreateEntityGroup(ArchetypeManager typeMan, EntityDataManager* entityDataManager, ComponentType* inRequiredComponents, int inRequiredComponentsCount)
         {
             ComponentType* requiredComponentPtr;
             int requiredComponentCount;
-            CreateRequiredComponents(requiredComponents, out requiredComponentPtr, out requiredComponentCount);
-            return CreateEntityGroup(typeMan, entityDataManager, CreateQuery(requiredComponents), 1, requiredComponentPtr, requiredComponentCount);
+            CreateRequiredComponents(inRequiredComponents, inRequiredComponentsCount, out requiredComponentPtr, out requiredComponentCount);
+            return CreateEntityGroup(typeMan, entityDataManager, CreateQuery(inRequiredComponents, inRequiredComponentsCount), 1, requiredComponentPtr, requiredComponentCount);
         }
 
         public ComponentGroup CreateEntityGroup(ArchetypeManager typeMan, EntityDataManager* entityDataManager,
             ArchetypeQuery* archetypeQueries, int archetypeFiltersCount, ComponentType* requiredComponents, int requiredComponentsCount)
         {
             //@TODO: Validate that required types is subset of archetype filters all...
-            
+
             var grp = (EntityGroupData*) m_GroupDataChunkAllocator.Allocate(sizeof(EntityGroupData), 8);
             grp->PrevGroup = m_LastGroupData;
             m_LastGroupData = grp;
             grp->RequiredComponentsCount = requiredComponentsCount;
             grp->RequiredComponents = requiredComponents;
             InitializeReaderWriter(grp, requiredComponents, requiredComponentsCount);
-            
+
             grp->ArchetypeQuery = archetypeQueries;
             grp->ArchetypeQueryCount = archetypeFiltersCount;
             grp->FirstMatchingArchetype = null;
             grp->LastMatchingArchetype = null;
-            for (var type = typeMan.m_LastArchetype; type != null; type = type->PrevArchetype)
-                AddArchetypeIfMatching(type, grp);
+            for (var i = typeMan.m_Archetypes.Count - 1; i >= 0; --i)
+            {
+                var archetype = typeMan.m_Archetypes.p[i];
+                AddArchetypeIfMatching(archetype, grp);
+            }
 
             return new ComponentGroup(grp, m_JobSafetyManager, typeMan, entityDataManager);
         }
-        
+
         void InitializeReaderWriter(EntityGroupData* grp, ComponentType* requiredTypes, int requiredCount)
         {
             grp->ReaderTypesCount = 0;
@@ -209,7 +212,7 @@ namespace Unity.Entities
                 //@TODO: Investigate why Entity is not early out on this one...
                 if (!requiredTypes[i].RequiresJobDependency)
                     continue;
-                
+
                 switch (requiredTypes[i].AccessModeType)
                 {
                     case ComponentType.AccessMode.ReadOnly:
@@ -252,7 +255,7 @@ namespace Unity.Entities
         {
             if (!IsMatchingArchetype(archetype, group))
                 return;
-            
+
             var match = (MatchingArchetypes*) m_GroupDataChunkAllocator.Allocate(
                 MatchingArchetypes.GetAllocationSize(group->RequiredComponentsCount), 8);
             match->Archetype = archetype;
@@ -277,8 +280,8 @@ namespace Unity.Entities
             }
         }
 
-        
-        //@TODO: All this could be much faster by having all ComponentType pre-sorted to perform a single search loop instead two nested for loops... 
+
+        //@TODO: All this could be much faster by having all ComponentType pre-sorted to perform a single search loop instead two nested for loops...
         static bool IsMatchingArchetype(Archetype* archetype, EntityGroupData* group)
         {
             for (int i = 0; i != group->ArchetypeQueryCount; i++)
@@ -301,7 +304,7 @@ namespace Unity.Entities
 
             return true;
         }
-        
+
         static bool TestMatchingArchetypeAny(Archetype* archetype, int* anyTypes, int anyCount)
         {
             if (anyCount == 0) return true;
@@ -314,14 +317,14 @@ namespace Unity.Entities
                 for (var j = 0; j < anyCount; j++)
                 {
                     var anyTypeIndex = anyTypes[j];
-                    if (componentTypeIndex == anyTypeIndex) 
+                    if (componentTypeIndex == anyTypeIndex)
                         return true;
                 }
             }
 
             return false;
         }
-        
+
         static bool TestMatchingArchetypeNone(Archetype* archetype, int* noneTypes, int noneCount)
         {
             var componentTypes = archetype->Types;
@@ -346,8 +349,11 @@ namespace Unity.Entities
             var foundCount = 0;
             var disabledTypeIndex = TypeManager.GetTypeIndex<Disabled>();
             var prefabTypeIndex = TypeManager.GetTypeIndex<Prefab>();
+            var chunkHeaderTypeIndex = TypeManager.GetTypeIndex<ChunkHeader>();
             var requestedDisabled = false;
             var requestedPrefab = false;
+            var requestedChunkHeader = false;
+
             for (var i = 0; i < componentTypesCount; i++)
             {
                 var componentTypeIndex = componentTypes[i].TypeIndex;
@@ -358,6 +364,8 @@ namespace Unity.Entities
                         requestedDisabled = true;
                     if (allTypeIndex == prefabTypeIndex)
                         requestedPrefab = true;
+                    if (allTypeIndex == chunkHeaderTypeIndex)
+                        requestedChunkHeader = true;
                     if (componentTypeIndex == allTypeIndex) foundCount++;
                 }
             }
@@ -366,12 +374,14 @@ namespace Unity.Entities
                 return false;
             if (archetype->Prefab && (!requestedPrefab))
                 return false;
+            if (archetype->HasChunkHeader && (!requestedChunkHeader))
+                return false;
 
             return foundCount == allCount;
         }
     }
 
-    
+
     [StructLayout(LayoutKind.Sequential)]
     unsafe struct MatchingArchetypes
     {
@@ -391,10 +401,10 @@ namespace Unity.Entities
     {
         public int*     Any;
         public int      AnyCount;
-        
+
         public int*     All;
         public int      AllCount;
-        
+
         public int*     None;
         public int      NoneCount;
     }
@@ -404,7 +414,7 @@ namespace Unity.Entities
         //@TODO: better name or remove entirely...
         public ComponentType*       RequiredComponents;
         public int                  RequiredComponentsCount;
-        
+
         public int*                 ReaderTypes;
         public int                  ReaderTypesCount;
 
@@ -413,10 +423,10 @@ namespace Unity.Entities
 
         public ArchetypeQuery*      ArchetypeQuery;
         public int                  ArchetypeQueryCount;
-        
+
         public MatchingArchetypes*  FirstMatchingArchetype;
         public MatchingArchetypes*  LastMatchingArchetype;
-        
+
         public EntityGroupData*     PrevGroup;
     }
 }

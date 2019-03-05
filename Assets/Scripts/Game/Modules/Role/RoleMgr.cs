@@ -63,7 +63,6 @@ public class RoleMgr
         roleGameOE.transform.SetParent(RoleContainer);
         Entity role = roleGameOE.Entity;
         InitRole(role, uid, pos);
-		// Entity role = AddRole(uid);
         EntityManager.AddComponent(role, ComponentType.Create<MainRoleTag>());
         EntityManager.AddComponent(role, ComponentType.Create<PlayerInput>());
         EntityManager.AddComponent(role, ComponentType.Create<PosSynchInfo>());
@@ -84,7 +83,9 @@ public class RoleMgr
     public Entity AddRole(long uid)
 	{
         GameObjectEntity roleGameOE = m_GameWorld.Spawn<GameObjectEntity>(prefabDic["Role"]);
+        // Debug.Log("add role : "+(roleGameOE!=null).ToString());
         roleGameOE.name = "Role_"+uid;
+        roleGameOE.transform.SetParent(RoleContainer);
         Entity role = roleGameOE.Entity;
         InitRole(role, uid, Vector3.zero);
         // EntityManager.AddSharedComponentData(role, GetLookFromPrototype("Prototype/MainRoleRenderPrototype"));
@@ -97,6 +98,8 @@ public class RoleMgr
         EntityManager.AddComponentData(role, new Position {Value = new float3(pos.x, pos.y, pos.z)});
         EntityManager.AddComponentData(role, new MoveSpeed {Value = 12});
         EntityManager.AddComponentData(role, new TargetPosition {Value = new float3(pos.x, pos.y, pos.z)});
+        EntityManager.AddComponentData(role, new Rotation {Value = quaternion.identity});
+        // EntityManager.AddComponentData(role, new GroundInfo());
         
         RoleState roleState = EntityManager.GetComponentObject<RoleState>(role);
         roleState.position = pos;

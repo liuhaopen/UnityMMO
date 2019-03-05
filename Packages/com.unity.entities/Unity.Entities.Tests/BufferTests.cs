@@ -4,10 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Jobs;
+#pragma warning disable 649
 
 namespace Unity.Entities.Tests
 {
-	public class BufferTests : ECSTestsFixture
+	class BufferTests : ECSTestsFixture
 	{
         [InternalBufferCapacity(1024*1024)]
         public struct OverSizedCapacity : IBufferElementData
@@ -562,7 +563,7 @@ namespace Unity.Entities.Tests
 	        var original = m_Manager.CreateEntity(typeof(EcsIntElement));
 	        var buffer = m_Manager.GetBuffer<EcsIntElement>(original);
 	        buffer.Add(1);
-	        var array = buffer.ToNativeArray();
+	        var array = buffer.AsNativeArray();
 	        Assert.AreEqual(1, array[0].Value);
 	        Assert.AreEqual(1, array.Length);
 	        buffer.Add(2);
@@ -591,8 +592,8 @@ namespace Unity.Entities.Tests
 	        b0.Add(1);
 	        b1.Add(1);
 
-	        var a0 = b0.ToNativeArray();
-	        var a1 = b1.ToNativeArray();
+	        var a0 = b0.AsNativeArray();
+	        var a1 = b1.AsNativeArray();
 
 	        b0.Add(1);
 
@@ -615,7 +616,7 @@ namespace Unity.Entities.Tests
 	        var original = m_Manager.CreateEntity(typeof(EcsIntElement));
 	        var buffer = m_Manager.GetBuffer<EcsIntElement>(original);
 	        buffer.Add(1);
-	        var array = buffer.ToNativeArray();
+	        var array = buffer.AsNativeArray();
 	        Assert.AreEqual(1, array[0].Value);
 	        Assert.AreEqual(1, array.Length);
 	        buffer[0] = 2;
@@ -637,7 +638,7 @@ namespace Unity.Entities.Tests
 	        var original = m_Manager.CreateEntity(typeof(EcsIntElement));
 	        var buffer = m_Manager.GetBuffer<EcsIntElement>(original);
 	        buffer.Add(1);
-	        var handle = new ArrayConsumingJob {Array = buffer.ToNativeArray()}.Schedule();
+	        var handle = new ArrayConsumingJob {Array = buffer.AsNativeArray()}.Schedule();
 	        Assert.Throws<InvalidOperationException>(() => buffer.Add(2));
 	        Assert.Throws<InvalidOperationException>(() => m_Manager.DestroyEntity(original));
 	        handle.Complete();
@@ -662,15 +663,13 @@ namespace Unity.Entities.Tests
 	        // ensure there are two different archetypes
 	        var prototype0 = m_Manager.CreateEntity();
 	        m_Manager.AddComponent(prototype0, typeof(MockData0));
-	        m_Manager.AddBuffer<MockElement>(prototype0);
-	        var buffer = m_Manager.GetBuffer<MockElement>(prototype0);
+	        var buffer = m_Manager.AddBuffer<MockElement>(prototype0);
 	        for (var i = 0; i < MockElement.BufferCapacity; ++i)
 	            buffer.Add(new MockElement { Value = 0 });
 
 	        var prototype1 = m_Manager.CreateEntity();
 	        m_Manager.AddComponent(prototype1, typeof(MockData1));
-	        m_Manager.AddBuffer<MockElement>(prototype1);
-	        buffer = m_Manager.GetBuffer<MockElement>(prototype1);
+	        buffer = m_Manager.AddBuffer<MockElement>(prototype1);
 	        for (var i = 0; i < MockElement.BufferCapacity; ++i)
 	            buffer.Add(new MockElement { Value = 0 });
 
@@ -742,13 +741,13 @@ namespace Unity.Entities.Tests
 	    {
 	        public ArchetypeChunkBufferType<EcsIntElement> Int;
 
-	        public void Execute(ArchetypeChunk chunk, int chunkIndex)
+	        public void Execute(ArchetypeChunk chunk, int chunkIndex, int entityOffset)
 	        {
 	            var intValue = chunk.GetBufferAccessor(Int)[0];
 	            
 	            Assert.AreEqual(intValue.Length, 1);
 
-	            var intValueArray = intValue.ToNativeArray();
+	            var intValueArray = intValue.AsNativeArray();
 	            
 	            Assert.AreEqual(5, intValue[0].Value);
 	            Assert.AreEqual(5, intValueArray[0].Value);
@@ -782,7 +781,7 @@ namespace Unity.Entities.Tests
 	        [ReadOnly]
 	        public ArchetypeChunkBufferType<EcsIntElement> Int;
 
-	        public void Execute(ArchetypeChunk chunk, int chunkIndex)
+	        public void Execute(ArchetypeChunk chunk, int chunkIndex, int entityOffset)
 	        {
 	            var intValue = chunk.GetBufferAccessor(Int)[0];
 	            
@@ -791,7 +790,7 @@ namespace Unity.Entities.Tests
 	            Assert.AreEqual(5, intValue[0].Value);
 
 	            // Reading casted native array
-	            var intValueArray = intValue.ToNativeArray();
+	            var intValueArray = intValue.AsNativeArray();
 	            Assert.AreEqual(intValueArray.Length, 1);
 	            Assert.AreEqual(5, intValueArray[0].Value);
 
@@ -878,7 +877,7 @@ namespace Unity.Entities.Tests
 
 	        var job = new ReadOnlyNativeArrayJob
 	        {
-	            IntArray = buffer.ToNativeArray()
+	            IntArray = buffer.AsNativeArray()
 	        };
             var jobHandle = job.Schedule();
 
@@ -892,6 +891,20 @@ namespace Unity.Entities.Tests
  
             jobHandle.Complete();
 	    }
-	    
+
+        [Test]
+        public void DynamicBuffer_Default_IsCreated_IsFalse()
+        {
+            DynamicBuffer<EcsIntElement> buffer = default;
+            Assert.False(buffer.IsCreated);
+        }
+
+        [Test]
+        public void DynamicBuffer_FromEntity_IsCreated_IsTrue()
+        {
+            var entity = m_Manager.CreateEntity(typeof(EcsIntElement));
+            var buffer = m_Manager.GetBuffer<EcsIntElement>(entity);
+            Assert.IsTrue(buffer.IsCreated);
+        }
 	}
 }

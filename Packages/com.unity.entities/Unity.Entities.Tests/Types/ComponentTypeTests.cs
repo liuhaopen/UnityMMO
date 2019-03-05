@@ -3,7 +3,7 @@
 namespace Unity.Entities.Tests.Types
 {
     [TestFixture]
-    public class ComponentTypeTests : ECSTestsFixture
+    class ComponentTypeTests : ECSTestsFixture
     {
         struct MockComponentData : IComponentData {}
 

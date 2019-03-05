@@ -6,16 +6,17 @@ using Unity.Jobs;
 namespace Unity.Entities.Tests
 {
     [TestFixture]
-    public class ComponentGroupDelta : ECSTestsFixture
+    class ComponentGroupDelta : ECSTestsFixture
     {
+        private static Entity[] nothing = {};
         // * TODO: using out of date version cached ComponentDataArray should give exception... (We store the System order version in it...)
         // * TODO: Using monobehaviour as delta inputs?
         // * TODO: Self-delta-mutation doesn't trigger update (ComponentDataFromEntity.cs)
-            // /////@TODO: GlobalSystemVersion can't be pulled from m_Entities... indeterministic
+        // /////@TODO: GlobalSystemVersion can't be pulled from m_Entities... indeterministic
         // * TODO: Chained delta works
-            // How can this work? Need to use specialized job type because the number of entities to be
-            // processed isn't known until running the job... Need some kind of late binding of parallel for length etc...
-            // How do we prevent incorrect usage / default...
+        // How can this work? Need to use specialized job type because the number of entities to be
+        // processed isn't known until running the job... Need some kind of late binding of parallel for length etc...
+        // How do we prevent incorrect usage / default...
 
         [DisableAutoCreation]
         public class DeltaCheckSystem : ComponentSystem
@@ -27,10 +28,14 @@ namespace Unity.Entities.Tests
                 var group = GetComponentGroup(typeof(EcsTestData));
                 group.SetFilterChanged(typeof(EcsTestData));
 
-                CollectionAssert.AreEqual(Expected, group.GetEntityArray().ToArray());
+                var actualEntityArray = group.GetEntityArray().ToArray();
+                var systemVersion = GlobalSystemVersion;
+                var lastSystemVersion = LastSystemVersion;
+
+                CollectionAssert.AreEqual(Expected, actualEntityArray);
             }
 
-            public void UpdateExpect(Entity[] expected)
+            public void UpdateExpectedResults(Entity[] expected)
             {
                 Expected = expected;
                 Update();
@@ -39,11 +44,11 @@ namespace Unity.Entities.Tests
 
 
         [Test]
-        public void CreateEntityDoesNotTriggerChange()
+        public void CreateEntityTriggersChange()
         {
-            m_Manager.CreateEntity(typeof(EcsTestData));
+            Entity[] entity = new Entity[] { m_Manager.CreateEntity(typeof(EcsTestData)) };
             var deltaCheckSystem = World.CreateManager<DeltaCheckSystem>();
-            deltaCheckSystem.UpdateExpect(new Entity[0]);
+            deltaCheckSystem.UpdateExpectedResults(entity);
         }
 
         public enum ChangeMode
@@ -67,6 +72,7 @@ namespace Unity.Entities.Tests
         }
 #pragma warning restore 649
 
+        // Running SetValue should change the chunk version for the data it's writing to.
         unsafe void SetValue(int index, int value, ChangeMode mode)
         {
             EmptySystem.Update();
@@ -84,7 +90,7 @@ namespace Unity.Entities.Tests
             }
             else if (mode == ChangeMode.SetComponentDataFromEntity)
             {
-                //@TODO: Chaining correctness... Definately not implemented right now...
+                //@TODO: Chaining correctness... Definitely not implemented right now...
                 var array = EmptySystem.GetComponentDataFromEntity<EcsTestData>(false);
                 array[entity] = new EcsTestData(value);
             }
@@ -94,6 +100,7 @@ namespace Unity.Entities.Tests
             }
         }
 
+        // Running GetValue should not trigger any changes to chunk version.
         void GetValue(ChangeMode mode)
         {
             EmptySystem.Update();
@@ -133,28 +140,48 @@ namespace Unity.Entities.Tests
             var deltaCheckSystem0 = World.CreateManager<DeltaCheckSystem>();
             var deltaCheckSystem1 = World.CreateManager<DeltaCheckSystem>();
 
+            // Chunk versions are considered changed upon creation and until after they're first updated.
+            deltaCheckSystem0.UpdateExpectedResults(new Entity[] { entity0, entity1 });
+
+            // First update of chunks. 
             SetValue(0, 2, mode);
-
-            deltaCheckSystem0.UpdateExpect(new Entity[] { entity0 });
-
             SetValue(1, 2, mode);
+            deltaCheckSystem0.UpdateExpectedResults(new Entity[] { entity0, entity1 });
 
-            deltaCheckSystem0.UpdateExpect(new Entity[] { entity1 });
-            deltaCheckSystem1.UpdateExpect(new Entity[] { entity0, entity1 });
+            // Now that everything has been updated, the change filter won't trigger until we explicitly change something.
+            deltaCheckSystem0.UpdateExpectedResults(nothing);
 
-            deltaCheckSystem0.UpdateExpect(new Entity[0]);
-            deltaCheckSystem1.UpdateExpect(new Entity[0]);
+            // Change entity0's chunk.
+            SetValue(0, 3, mode);
+            deltaCheckSystem0.UpdateExpectedResults(new Entity[] { entity0 });
+
+            // Change entity1's chunk.
+            SetValue(1, 3, mode);
+            deltaCheckSystem0.UpdateExpectedResults(new Entity[] { entity1 });
+
+            // Already did the initial changes to these chunks in another system, so a change in this context is based on the system's change version.
+            deltaCheckSystem1.UpdateExpectedResults(new Entity[] { entity0, entity1 });
+
+            deltaCheckSystem0.UpdateExpectedResults(nothing);
+            deltaCheckSystem1.UpdateExpectedResults(nothing);
         }
 
         [Test]
         public void GetEntityDataDoesNotChange([Values]ChangeMode mode)
         {
-            m_Manager.CreateEntity(typeof(EcsTestData));
-            m_Manager.CreateEntity(typeof(EcsTestData), typeof(EcsTestData2));
-
+            var entity0 = m_Manager.CreateEntity(typeof(EcsTestData));
+            var entity1 = m_Manager.CreateEntity(typeof(EcsTestData), typeof(EcsTestData2));
             var deltaCheckSystem = World.CreateManager<DeltaCheckSystem>();
+
+            // First update of chunks after creation. 
+            SetValue(0, 2, mode);
+            SetValue(1, 2, mode);
+            deltaCheckSystem.UpdateExpectedResults(new Entity[] { entity0, entity1 });
+            deltaCheckSystem.UpdateExpectedResults(nothing);
+
+            // Now ensure that GetValue does not trigger a change on the ComponentGroup.
             GetValue(mode);
-            deltaCheckSystem.UpdateExpect(new Entity[] { });
+            deltaCheckSystem.UpdateExpectedResults(nothing);
         }
 
         [Test]
@@ -169,10 +196,10 @@ namespace Unity.Entities.Tests
             for (int i = 0; i != 7; i++)
             {
                 SetValue(0, 1, ChangeMode.SetComponentData);
-                deltaCheckSystem.UpdateExpect(new Entity[] { entity });
+                deltaCheckSystem.UpdateExpectedResults(new Entity[] { entity });
             }
 
-            deltaCheckSystem.UpdateExpect(new Entity[0]);
+            deltaCheckSystem.UpdateExpectedResults(nothing);
         }
 
         [Test]
@@ -184,10 +211,10 @@ namespace Unity.Entities.Tests
             SetValue(0, 2, ChangeMode.SetComponentData);
 
             var deltaCheckSystem = World.CreateManager<DeltaCheckSystem>();
-            deltaCheckSystem.UpdateExpect(new Entity[] { entity });
+            deltaCheckSystem.UpdateExpectedResults(new Entity[] { entity });
 
             for (int i = 0; i != 7; i++)
-                deltaCheckSystem.UpdateExpect(new Entity[0]);
+                deltaCheckSystem.UpdateExpectedResults(nothing);
         }
 
         [DisableAutoCreation]
@@ -216,11 +243,23 @@ namespace Unity.Entities.Tests
 
             var deltaSystem = World.CreateManager<DeltaProcessComponentSystem>();
 
+            // First update of chunks after creation. 
+            SetValue(0, -100, ChangeMode.SetComponentData);
+            SetValue(1, -100, ChangeMode.SetComponentData);
+            deltaSystem.Update();
+            Assert.AreEqual(0, m_Manager.GetComponentData<EcsTestData2>(entity0).value0);
+            Assert.AreEqual(0, m_Manager.GetComponentData<EcsTestData2>(entity1).value0);
+
+            // Change entity0's chunk.
             SetValue(0, 2, ChangeMode.SetComponentData);
 
+            // Test [ChangedFilter] for real now.
             deltaSystem.Update();
 
+            // Only entity0 should have changed.
             Assert.AreEqual(100 + 2, m_Manager.GetComponentData<EcsTestData2>(entity0).value0);
+
+            // entity1.value0 should be unchanged from 0.
             Assert.AreEqual(0, m_Manager.GetComponentData<EcsTestData2>(entity1).value0);
         }
 
@@ -250,11 +289,21 @@ namespace Unity.Entities.Tests
 
             var deltaSystem = World.CreateManager<DeltaProcessComponentSystemUsingRun>();
 
+            // First update of chunks after creation.
+            SetValue(0, -100, ChangeMode.SetComponentData);
+            SetValue(1, -100, ChangeMode.SetComponentData);
+
+            deltaSystem.Update();
+
+            // Test [ChangedFilter] for real now.
             SetValue(0, 2, ChangeMode.SetComponentData);
 
             deltaSystem.Update();
 
+            // Only entity0 should have changed.
             Assert.AreEqual(100 + 2, m_Manager.GetComponentData<EcsTestData2>(entity0).value0);
+
+            // entity1.value0 should be unchanged from 0.
             Assert.AreEqual(0, m_Manager.GetComponentData<EcsTestData2>(entity1).value0);
         }
 
@@ -311,6 +360,13 @@ namespace Unity.Entities.Tests
         [DisableAutoCreation]
         public class DeltaModifyComponentSystem1Comp : JobComponentSystem
         {
+            struct DeltaJobFirstRunAfterCreation : IJobProcessComponentData<EcsTestData>
+            {
+                public void Execute([ChangedFilter]ref EcsTestData output)
+                {
+                    output.value = 0;
+                }
+            }
             struct DeltaJob : IJobProcessComponentData<EcsTestData>
             {
                 public void Execute([ChangedFilter]ref EcsTestData output)
@@ -321,6 +377,10 @@ namespace Unity.Entities.Tests
 
             protected override JobHandle OnUpdate(JobHandle deps)
             {
+                if (LastSystemVersion == 0)
+                {
+                    return new DeltaJobFirstRunAfterCreation().Schedule(this, deps);
+                }
                 return new DeltaJob().Schedule(this, deps);
             }
         }
@@ -334,6 +394,10 @@ namespace Unity.Entities.Tests
 
             var modifSystem = World.CreateManager<ModifyComponentSystem1Comp>();
             var deltaSystem = World.CreateManager<DeltaModifyComponentSystem1Comp>();
+
+            // First update of chunks after creation.
+            modifSystem.Update();
+            deltaSystem.Update();
 
             modifSystem.m_sharedComp = new EcsTestSharedComp(456);
             for (int i = 123; i < entities.Length; i += 345)
@@ -396,6 +460,15 @@ namespace Unity.Entities.Tests
         [DisableAutoCreation]
         public class DeltaModifyComponentSystem2Comp : JobComponentSystem
         {
+            struct DeltaJobFirstRunAfterCreation : IJobProcessComponentData<EcsTestData, EcsTestData2>
+            {
+                public void Execute(ref EcsTestData output, ref EcsTestData2 output2)
+                {
+                    output.value = 0;
+                    output2.value0 = 0;
+                }
+            }
+
             struct DeltaJobChanged0 : IJobProcessComponentData<EcsTestData, EcsTestData2>
             {
                 public void Execute([ChangedFilter]ref EcsTestData output, ref EcsTestData2 output2)
@@ -424,6 +497,10 @@ namespace Unity.Entities.Tests
 
             protected override JobHandle OnUpdate(JobHandle deps)
             {
+                if(LastSystemVersion == 0)
+                {
+                    return new DeltaJobFirstRunAfterCreation().Schedule(this, deps);
+                }
                 switch (variant)
                 {
                     case Variant.FirstComponentChanged:
@@ -443,8 +520,13 @@ namespace Unity.Entities.Tests
             var entities = new NativeArray<Entity>(10000, Allocator.Persistent);
             m_Manager.CreateEntity(archetype, entities);
 
+            // All entities have just been created, so they're all technically "changed".
             var modifSystem = World.CreateManager<ModifyComponentSystem2Comp>();
             var deltaSystem = World.CreateManager<DeltaModifyComponentSystem2Comp>();
+
+            // First update of chunks after creation.
+            modifSystem.Update();
+            deltaSystem.Update();
 
             deltaSystem.variant = variant;
 

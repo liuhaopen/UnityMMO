@@ -3,7 +3,7 @@ using Unity.Collections;
 
 namespace Unity.Entities.Tests
 {
-    public class IJobProcessComponentDataCombinationsTests : ECSTestsFixture
+    class IJobProcessComponentDataCombinationsTests : ECSTestsFixture
     {
         struct Process1 : IJobProcessComponentData<EcsTestData>
         {
@@ -76,7 +76,7 @@ namespace Unity.Entities.Tests
             Run
         }
 
-        void Schedule<T>(ProcessMode mode) where T : struct, IBaseJobProcessComponentData
+        void Schedule<T>(ProcessMode mode) where T : struct, JobProcessComponentDataExtensions.IBaseJobProcessComponentData
         {
             if (mode == ProcessMode.Parallel)
                 new T().Schedule(EmptySystem).Complete();

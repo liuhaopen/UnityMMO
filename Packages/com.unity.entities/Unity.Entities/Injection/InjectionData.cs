@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !UNITY_ZEROPLAYER
+using System;
 using System.Reflection;
 using Unity.Collections.LowLevel.Unsafe;
 
@@ -22,3 +23,4 @@ namespace Unity.Entities
         }
     }
 }
+#endif

@@ -23,6 +23,7 @@ namespace Unity.Entities
         public bool IsSystemStateSharedComponent => TypeManager.IsSystemStateSharedComponent(TypeIndex);
         public bool IsSharedComponent => TypeManager.IsSharedComponent(TypeIndex);
         public bool IsZeroSized => TypeManager.GetTypeInfo(TypeIndex).IsZeroSized;
+        public bool IsChunkComponent => (TypeIndex & TypeManager.ChunkComponentTypeFlag) != 0;
 
         public static ComponentType Create<T>()
         {
@@ -51,6 +52,20 @@ namespace Unity.Entities
         {
             ComponentType t = Create<T>();
             t.AccessModeType = AccessMode.ReadOnly;
+            return t;
+        }
+
+        public static ComponentType ChunkComponent(Type type)
+        {
+            ComponentType t = FromTypeIndex(TypeManager.GetTypeIndex(type));
+            t.TypeIndex |= TypeManager.ChunkComponentTypeFlag;
+            return t;
+        }
+
+        public static ComponentType ChunkComponent<T>()
+        {
+            ComponentType t = Create<T>();
+            t.TypeIndex |= TypeManager.ChunkComponentTypeFlag;
             return t;
         }
 

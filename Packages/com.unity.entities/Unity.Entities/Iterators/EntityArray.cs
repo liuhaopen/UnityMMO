@@ -4,6 +4,9 @@ using Unity.Collections.LowLevel.Unsafe;
 
 namespace Unity.Entities
 {
+    /// <summary>
+    ///     Enables array-like iteration over entities in a set of chunks.
+    /// </summary>
     [NativeContainer]
     [NativeContainerIsReadOnly]
     public unsafe struct EntityArray

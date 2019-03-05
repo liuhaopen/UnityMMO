@@ -23,7 +23,7 @@ namespace Unity.Entities.Editor
 
         internal bool TypeListValid()
         {
-            return selectedFilterTypes.Count == 2 * (TypeManager.TypesCount - 2); // First two entries are not ComponentTypes
+            return selectedFilterTypes.Count == 2 * (TypeManager.GetTypeCount() - 2); // First two entries are not ComponentTypes
         }
 
         internal void GetTypes()
@@ -35,9 +35,10 @@ namespace Unity.Entities.Editor
                 selectedFilterTypes.Clear();
                 var requiredTypes = new List<ComponentType>();
                 var subtractiveTypes = new List<ComponentType>();
-                filterTypes.Capacity = TypeManager.TypesCount;
-                selectedFilterTypes.Capacity = TypeManager.TypesCount;
-                foreach (var type in TypeManager.AllTypes())
+                var typeCount = TypeManager.GetTypeCount();
+                filterTypes.Capacity = typeCount;
+                selectedFilterTypes.Capacity = typeCount;
+                foreach (var type in TypeManager.AllTypes)
                 {
                     if (type.Type == typeof(Entity)) continue;
                     var typeIndex = TypeManager.GetTypeIndex(type.Type);

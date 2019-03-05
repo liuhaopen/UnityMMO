@@ -3,9 +3,11 @@ using System;
 using Unity.Collections;
 using Unity.Jobs;
 
+#pragma warning disable 649
+
 namespace Unity.Entities.Tests
 {
-	public class InjectComponentGroupTests : ECSTestsFixture
+	class InjectComponentGroupTests : ECSTestsFixture
 	{
 		[DisableAutoCreation]
 		[AlwaysUpdateSystem]
@@ -277,6 +279,11 @@ namespace Unity.Entities.Tests
 				Assert.AreEqual(1, group.Data.Length);
 				Assert.AreEqual(42, group.Data[0].value);
 			}
+
+		    protected override JobHandle OnUpdate(JobHandle inputDeps)
+		    {
+		        return inputDeps;
+		    }
 		}
 
 		[Test]
@@ -302,6 +309,11 @@ namespace Unity.Entities.Tests
 	        {
 	            Assert.AreEqual(1, group.Data.Length);
 	            Assert.AreEqual(42, group.Data[0].value);
+	        }
+
+	        protected override JobHandle OnUpdate(JobHandle inputDeps)
+	        {
+	            return inputDeps;
 	        }
 	    }
 

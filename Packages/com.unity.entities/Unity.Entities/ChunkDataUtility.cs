@@ -139,6 +139,32 @@ namespace Unity.Entities
                 UnsafeUtility.MemCpy(dst, src, sizeOf * count);
             }
         }
+        
+        public static void SwapComponents(Chunk* srcChunk, int srcIndex, Chunk* dstChunk, int dstIndex, int count)
+        {
+            Assert.IsTrue(srcChunk->Archetype == dstChunk->Archetype);
+
+            var arch = srcChunk->Archetype;
+            var srcBuffer = srcChunk->Buffer;
+            var dstBuffer = dstChunk->Buffer;
+            var offsets = arch->Offsets;
+            var sizeOfs = arch->SizeOfs;
+            var typesCount = arch->TypesCount;
+            
+            for (var t = 1; t < typesCount; t++) // Only swap component data, not Entity
+            {
+                var offset = offsets[t];
+                var sizeOf = sizeOfs[t];
+                var src = srcBuffer + (offset + sizeOf * srcIndex);
+                var dst = dstBuffer + (offset + sizeOf * dstIndex);
+                Byte* buffer = stackalloc Byte[sizeOf * count];
+
+                dstChunk->ChangeVersion[t] = srcChunk->ChangeVersion[t];
+                UnsafeUtility.MemCpy(buffer, src, sizeOf * count);
+                UnsafeUtility.MemCpy(src, dst, sizeOf * count);
+                UnsafeUtility.MemCpy(dst, buffer, sizeOf * count);
+            }
+        }
 
         public static void InitializeComponents(Chunk* dstChunk, int dstIndex, int count)
         {
@@ -171,8 +197,7 @@ namespace Unity.Entities
             }
         }
 
-        public static void ReplicateComponents(Chunk* srcChunk, int srcIndex, Chunk* dstChunk, int dstBaseIndex,
-            int count)
+        public static void ReplicateComponents(Chunk* srcChunk, int srcIndex, Chunk* dstChunk, int dstBaseIndex, int count)
         {
             var srcArchetype  = srcChunk->Archetype;
             var srcBuffer     = srcChunk->Buffer;
@@ -223,6 +248,118 @@ namespace Unity.Entities
                 }
 
                 dstTypeIndex++;
+            }
+        }
+
+        public static void Convert(Chunk* srcChunk, int srcIndex, Chunk* dstChunk, int dstIndex, int count)
+        {
+            var srcArch = srcChunk->Archetype;
+            var dstArch = dstChunk->Archetype;
+
+            //Debug.Log($"Convert {EntityManager.EntityManagerDebug.GetArchetypeDebugString(srcArch)} to {EntityManager.EntityManagerDebug.GetArchetypeDebugString(dstArch)}");
+
+            var srcI = 0;
+            var dstI = 0;
+            while (srcI < srcArch->TypesCount && dstI < dstArch->TypesCount)
+            {
+                var srcStride = srcArch->SizeOfs[srcI];
+                var dstStride = dstArch->SizeOfs[dstI];
+                var src = srcChunk->Buffer + srcArch->Offsets[srcI] + srcIndex * srcStride;
+                var dst = dstChunk->Buffer + dstArch->Offsets[dstI] + dstIndex * dstStride;
+
+                if (srcArch->Types[srcI] < dstArch->Types[dstI])
+                {
+                    // Clear any buffers we're not going to keep.
+                    if (srcArch->Types[srcI].IsBuffer)
+                    {
+                        var srcPtr = src;
+                        for(int i = 0; i < count; i++)
+                        {
+                            BufferHeader.Destroy((BufferHeader*)srcPtr);
+                            srcPtr += srcStride;
+                        }
+                    }
+
+                    ++srcI;
+                }
+                else if (srcArch->Types[srcI] > dstArch->Types[dstI])
+                {
+                    // Clear components in the destination that aren't copied
+
+                    if (dstArch->Types[dstI].IsBuffer)
+                    {
+                        var bufferCapacity = dstArch->Types[dstI].BufferCapacity;
+                        var dstPtr = dst;
+                        for(int i = 0; i < count; i++)
+                        {
+                            BufferHeader.Initialize((BufferHeader*)dstPtr, bufferCapacity);
+                            dstPtr += dstStride;
+                        }
+                        
+                    }
+                    else
+                    {
+                        UnsafeUtility.MemClear(dst, count * dstStride);
+                    }
+
+                    ++dstI;
+                }
+                else
+                {
+                    UnsafeUtility.MemCpy(dst, src, count * srcStride);
+
+                    // Poison source buffer to make sure there is no aliasing.
+                    if (srcArch->Types[srcI].IsBuffer)
+                    {
+                        var bufferCapacity = srcArch->Types[srcI].BufferCapacity;
+                        var srcPtr = src;
+                        for(int i = 0; i < count; i++)
+                        {
+                            BufferHeader.Initialize((BufferHeader*)srcPtr, bufferCapacity);
+                            srcPtr += srcStride;
+                        }
+                    }
+
+                    ++srcI;
+                    ++dstI;
+                }
+            }
+
+            // Handle remaining components in the source that aren't copied
+            for (; srcI < srcArch->TypesCount; ++srcI)
+            {
+                var srcStride = srcArch->SizeOfs[srcI];
+                var src = srcChunk->Buffer + srcArch->Offsets[srcI] + srcIndex * srcStride;
+                if (srcArch->Types[srcI].IsBuffer)
+                {
+                    var srcPtr = src;
+                    for(int i = 0; i < count; i++)
+                    {
+                        BufferHeader.Destroy((BufferHeader*)srcPtr);
+                        srcPtr += srcStride;
+                    }
+                }
+            }
+
+            // Clear remaining components in the destination that aren't copied
+            for (; dstI < dstArch->TypesCount; ++dstI)
+            {
+                var dstStride = dstArch->SizeOfs[dstI];
+                var dst = dstChunk->Buffer + dstArch->Offsets[dstI] + dstIndex * dstStride;
+                if (dstArch->Types[dstI].IsBuffer)
+                {
+                    var bufferCapacity = dstArch->Types[dstI].BufferCapacity;
+                    var dstPtr = dst;
+                    for (int i = 0; i < count; i++)
+                    {
+                        BufferHeader.Initialize((BufferHeader*)dstPtr, bufferCapacity);
+                        dstPtr += dstStride;
+                    }
+                }
+                else
+                {
+                    UnsafeUtility.MemClear(dst, count * dstStride);
+                }
             }
         }
 

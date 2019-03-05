@@ -5,7 +5,7 @@ using Unity.Collections;
 
 namespace Unity.Entities.Tests
 {
-    public class ComponentOrderVersionTests : ECSTestsFixture
+    class ComponentOrderVersionTests : ECSTestsFixture
     {
         int oddTestValue = 34;
         int evenTestValue = 17;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !UNITY_CSHARP_TINY
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -149,8 +150,8 @@ namespace Unity.Entities
 
         public ComponentGroupArrayData(ComponentGroupArrayStaticCache staticCache)
         {
-            var length = 0;
-            staticCache.ComponentGroup.GetComponentChunkIterator(out length, out m_ChunkIterator);
+            var length = staticCache.ComponentGroup.CalculateLength();
+            m_ChunkIterator = staticCache.ComponentGroup.GetComponentChunkIterator();
             m_ChunkIterator.IndexInComponentGroup = 0;
 
             m_Length = length;
@@ -159,7 +160,7 @@ namespace Unity.Entities
 
             CacheBeginIndex = 0;
             CacheEndIndex = 0;
-            m_ArchetypeManager = staticCache.ComponentGroup.GetArchetypeManager();
+            m_ArchetypeManager = staticCache.ComponentGroup.ArchetypeManager;
 
             m_ComponentDataCount = staticCache.ComponentDataCount;
             m_ComponentCount = staticCache.ComponentCount;
@@ -412,3 +413,4 @@ namespace Unity.Entities
         }
     }
 }
+#endif

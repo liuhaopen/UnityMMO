@@ -18,9 +18,15 @@ namespace Unity.Entities.Properties
         {
             public ReadOnlyComponentsProperty(string name) : base(name, null, null) { }
 
+            public override int Count(ref EntityContainer container)
+            {
+                return container.m_Manager.GetComponentCount(container.m_Entity);
+            }
+
             public override void Accept(ref EntityContainer container, IPropertyVisitor visitor)
             {
-                var count = container.m_Manager.GetComponentCount(container.m_Entity);
+                var count = Count(container);
+
                 var listContext = new VisitContext<IList<StructProxy>> { Property = this, Value = null, Index = -1 };
 
                 // @TODO improve, split the deps
@@ -43,7 +49,12 @@ namespace Unity.Entities.Properties
                 {
                     for (var i = 0; i < count; i++)
                     {
-                        var item = Get(ref container, i, primitiveTypes);
+                        StructProxy item;
+                        if ( ! Get(ref container, i, primitiveTypes, out item))
+                        {
+                            continue;
+                        }
+
                         var context = new VisitContext<StructProxy>
                         {
                             Property = this,
@@ -63,10 +74,16 @@ namespace Unity.Entities.Properties
                 visitor.EndCollection(ref container, listContext);
             }
 
-            private static StructProxy Get(ref EntityContainer container, int index, HashSet<Type> primitiveTypes)
+            private static bool Get(
+                ref EntityContainer container,
+                int index,
+                HashSet<Type> primitiveTypes,
+                out StructProxy p)
             {
                 var typeIndex = container.m_Manager.GetComponentTypeIndex(container.m_Entity, index);
                 var propertyType = TypeManager.GetType(typeIndex);
+
+                p = new StructProxy();
 
                 if (typeof(ISharedComponentData).IsAssignableFrom(propertyType))
                 {
@@ -76,7 +93,7 @@ namespace Unity.Entities.Properties
 
                         // TODO: skip the StructObjectProxyProperty adapter and have the Accept()
                         // TODO:    handle Struct & Object proxies
-                        var p = new StructProxy
+                        p = new StructProxy
                         {
                             bag = new StructPropertyBag<StructProxy>(
                                 new StructObjectProxyProperty(propertyType, o, primitiveTypes)
@@ -85,11 +102,11 @@ namespace Unity.Entities.Properties
                             type = propertyType
                         };
 
-                        return p;
+                        return true;
                     }
                     catch (Exception)
                     {
-
+                        return false;
                     }
                 }
 
@@ -97,7 +114,7 @@ namespace Unity.Entities.Properties
                 {
                     IPropertyBag bag = TypeInformation.GetOrCreate(propertyType, primitiveTypes);
 
-                    var p = new StructProxy
+                    p = new StructProxy
                     {
                         bag = new StructPropertyBag<StructProxy>(
                                 new BufferListProxyProperty(
@@ -109,27 +126,33 @@ namespace Unity.Entities.Properties
                         data = (byte*) container.m_Manager.GetBufferRawRW(container.m_Entity, typeIndex),
                         type = propertyType
                     };
-                    return p;
+
+                    return true;
                 }
 
                 {
                     IPropertyBag bag = TypeInformation.GetOrCreate(propertyType, primitiveTypes);
 
-                    byte* data = null;
-                    if (bag.PropertyCount > 1 || ! TypeManager.GetTypeInfo(typeIndex).IsZeroSized)
+                    // We skip the property bag & proxy creation for zero sized types (e.g. MonoBehaviors, etc).
+                    // They wont get displayed at all in the inspector since we dont know 
+                    if (bag.PropertyCount > 1 && ! TypeManager.GetTypeInfo(typeIndex).IsZeroSized)
                     {
-                        data = (byte*)container.m_Manager.GetComponentDataRawRW(container.m_Entity, typeIndex);
+                        byte* data = (byte*)container.m_Manager.GetComponentDataRawRW(container.m_Entity, typeIndex);
+                        if (data != null)
+                        {
+                            p = new StructProxy
+                            {
+                                bag = bag,
+                                data = data,
+                                type = propertyType
+                            };
+
+                            return true;
+                        }
                     }
-
-                    var p = new StructProxy
-                    {
-                        bag = bag,
-                        data = data,
-                        type = propertyType
-                    };
-
-                    return p;
                 }
+
+                return false;
             }
         }
         

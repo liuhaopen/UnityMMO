@@ -85,23 +85,22 @@ namespace Unity.Entities
                 return index;
             }
 
-            var typeInfo = TypeManager.GetTypeInfo(typeIndex).FastEqualityTypeInfo;
-            var hashcode = FastEquality.GetHashCode(ref newData, typeInfo);
+            var hashcode = TypeManager.GetHashCode<T>(ref newData);
+
             return Add(typeIndex, hashcode, newData);
         }
 
         private unsafe int FindSharedComponentIndex<T>(int typeIndex, T newData) where T : struct
         {
             var defaultVal = default(T);
-            var typeInfo = TypeManager.GetTypeInfo(typeIndex).FastEqualityTypeInfo;
-            if (FastEquality.Equals(ref defaultVal, ref newData, typeInfo))
+            if (TypeManager.Equals(ref defaultVal, ref newData))
                 return 0;
-            return FindNonDefaultSharedComponentIndex(typeIndex, FastEquality.GetHashCode(ref newData, typeInfo),
-                UnsafeUtility.AddressOf(ref newData), typeInfo);
+
+            return FindNonDefaultSharedComponentIndex(typeIndex, TypeManager.GetHashCode(ref newData),
+                UnsafeUtility.AddressOf(ref newData));
         }
 
-        private unsafe int FindNonDefaultSharedComponentIndex(int typeIndex, int hashCode, void* newData,
-            FastEquality.TypeInfo typeInfo)
+        private unsafe int FindNonDefaultSharedComponentIndex(int typeIndex, int hashCode, void* newData)
         {
             int itemIndex;
             NativeMultiHashMapIterator<int> iter;
@@ -116,7 +115,7 @@ namespace Unity.Entities
                 {
                     ulong handle;
                     var value = PinGCObjectAndGetAddress(data, out handle);
-                    var res = FastEquality.Equals(newData, value, typeInfo);
+                    var res = TypeManager.Equals(newData, value, typeIndex);
                     UnsafeUtility.ReleaseGCObject(handle);
 
                     if (res)
@@ -127,13 +126,12 @@ namespace Unity.Entities
             return -1;
         }
 
-        internal unsafe int InsertSharedComponentAssumeNonDefault(int typeIndex, int hashCode, object newData,
-            FastEquality.TypeInfo typeInfo)
+        internal unsafe int InsertSharedComponentAssumeNonDefault(int typeIndex, int hashCode, object newData)
         {
             ulong handle;
             var newDataPtr = PinGCObjectAndGetAddress(newData, out handle);
 
-            var index = FindNonDefaultSharedComponentIndex(typeIndex, hashCode, newDataPtr, typeInfo);
+            var index = FindNonDefaultSharedComponentIndex(typeIndex, hashCode, newDataPtr);
 
             UnsafeUtility.ReleaseGCObject(handle);
 
@@ -195,6 +193,7 @@ namespace Unity.Entities
             return (T) m_SharedComponentData[index];
         }
 
+#if !UNITY_CSHARP_TINY
         public object GetSharedComponentDataBoxed(int index, int typeIndex)
         {
             if (index == 0)
@@ -202,6 +201,7 @@ namespace Unity.Entities
 
             return m_SharedComponentData[index];
         }
+#endif
 
         public object GetSharedComponentDataNonDefaultBoxed(int index)
         {
@@ -215,11 +215,11 @@ namespace Unity.Entities
                 ++m_SharedComponentRefCount[index];
         }
 
-        private static unsafe int GetHashCodeFast(object target, FastEquality.TypeInfo typeInfo)
+        public static unsafe int GetHashCodeFast(object target, int typeIndex)
         {
             ulong handle;
             var ptr = PinGCObjectAndGetAddress(target, out handle);
-            var hashCode = FastEquality.GetHashCode(ptr, typeInfo);
+            var hashCode = TypeManager.GetHashCode(ptr, typeIndex);
             UnsafeUtility.ReleaseGCObject(handle);
 
             return hashCode;
@@ -244,9 +244,7 @@ namespace Unity.Entities
                 return;
 
             var typeIndex = m_SharedComponentType[index];
-
-            var typeInfo = TypeManager.GetTypeInfo(typeIndex).FastEqualityTypeInfo;
-            var hashCode = GetHashCodeFast(m_SharedComponentData[index], typeInfo);
+            var hashCode = GetHashCodeFast(m_SharedComponentData[index], typeIndex);
 
             m_SharedComponentData[index] = null;
             m_SharedComponentType[index] = -1;
@@ -322,11 +320,27 @@ namespace Unity.Entities
                 var srcData = srcSharedComponents.m_SharedComponentData[srcIndex];
                 var typeIndex = srcSharedComponents.m_SharedComponentType[srcIndex];
 
-                var typeInfo = TypeManager.GetTypeInfo(typeIndex).FastEqualityTypeInfo;
-                var hashCode = GetHashCodeFast(srcData, typeInfo);
+                var hashCode = GetHashCodeFast(srcData, typeIndex);
+                var dstIndex = InsertSharedComponentAssumeNonDefault(typeIndex, hashCode, srcData);
 
-                var dstIndex = InsertSharedComponentAssumeNonDefault(typeIndex, hashCode, srcData, typeInfo);
                 srcSharedComponents.RemoveReference(srcIndex);
+
+                sharedComponentIndices[i] = dstIndex;
+            }
+        }
+
+        public unsafe void CopySharedComponents(SharedComponentDataManager srcSharedComponents, int* sharedComponentIndices, int sharedComponentIndicesCount)
+        {
+            for (var i = 0; i != sharedComponentIndicesCount; i++)
+            {
+                var srcIndex = sharedComponentIndices[i];
+                if (srcIndex == 0)
+                    continue;
+
+                var srcData = srcSharedComponents.m_SharedComponentData[srcIndex];
+                var typeIndex = srcSharedComponents.m_SharedComponentType[srcIndex];
+                var hashCode = GetHashCodeFast(srcData, typeIndex);
+                var dstIndex = InsertSharedComponentAssumeNonDefault(typeIndex, hashCode, srcData);
 
                 sharedComponentIndices[i] = dstIndex;
             }
@@ -336,20 +350,17 @@ namespace Unity.Entities
         {
             var chunkCount = new NativeArray<int>(m_SharedComponentRefCount.Length, Allocator.Temp);
 
-            var archetype = archetypeManager.m_LastArchetype;
-            while (archetype != null)
+            for(var i = archetypeManager.m_Archetypes.Count - 1; i >= 0; --i)
             {
-                for (var c = archetype->ChunkList.Begin; c != archetype->ChunkList.End; c = c->Next)
+                var archetype = archetypeManager.m_Archetypes.p[i];
+                for (var ci = 0; ci < archetype->Chunks.Count; ++ci)
                 {
-                    var chunk = (Chunk*)c;
-
-                    for (int i = 0; i < archetype->NumSharedComponents; ++i)
+                    var chunk = archetype->Chunks.p[ci];
+                    for (int j = 0; j < archetype->NumSharedComponents; ++j)
                     {
-                        chunkCount[chunk->SharedComponentValueArray[i]] += 1;
+                        chunkCount[chunk->SharedComponentValueArray[j]] += 1;
                     }
                 }
-
-                archetype = archetype->PrevArchetype;
             }
 
             chunkCount[0] = 1;
@@ -359,8 +370,60 @@ namespace Unity.Entities
             return cmp == 0;
         }
 
-        public unsafe NativeArray<int> MoveAllSharedComponents(SharedComponentDataManager srcSharedComponents,
-            Allocator allocator)
+        public static unsafe bool FastEquality_CompareBoxed(object lhs, object rhs, int typeIndex)
+        {
+            ulong lhsHandle, rhsHandle;
+            var valueLHS = PinGCObjectAndGetAddress(lhs, out lhsHandle);
+            var valueRHS = PinGCObjectAndGetAddress(rhs, out rhsHandle);
+
+            var res = TypeManager.Equals(valueLHS, valueRHS, typeIndex);
+
+            UnsafeUtility.ReleaseGCObject(lhsHandle);
+            UnsafeUtility.ReleaseGCObject(rhsHandle);
+
+            return res;
+        }
+
+        public static unsafe bool FastEquality_ComparePtr(void* lhs, void* rhs, int typeIndex)
+        {
+            var res = TypeManager.Equals(lhs, rhs, typeIndex);
+            return res;
+        }
+
+        public static unsafe bool FastEquality_CompareElements(void* lhs, void* rhs, int count, int typeIndex)
+        {
+            var typeInfo = TypeManager.GetTypeInfo(typeIndex);
+            for(var i = 0; i < count; ++i)
+            {
+                if (!TypeManager.Equals(lhs, rhs, typeIndex))
+                    return false;
+                lhs = (byte*) lhs + typeInfo.ElementSize;
+                rhs = (byte*) rhs + typeInfo.ElementSize;
+            }
+            return true;
+        }
+
+#if !UNITY_CSHARP_TINY
+        unsafe static object CloneAndPatch(object src, in TypeManager.TypeInfo typeInfo, ref NativeArray<EntityRemapUtility.EntityRemapInfo> remapInfos)
+        {
+            var clone = Activator.CreateInstance(typeInfo.Type);
+            
+            ulong srcHandle, dstHandle;
+            void* srcData= PinGCObjectAndGetAddress(src, out srcHandle);
+            void* dstData  = PinGCObjectAndGetAddress(clone, out dstHandle);
+            int sizeOf = UnsafeUtility.SizeOf(typeInfo.Type);
+            UnsafeUtility.MemCpy(dstData, srcData, sizeOf);
+
+            EntityRemapUtility.PatchEntities(typeInfo.EntityOffsets, (byte*)dstData, ref remapInfos);
+
+            UnsafeUtility.ReleaseGCObject(dstHandle);
+            UnsafeUtility.ReleaseGCObject(srcHandle);
+
+            return clone;
+        }
+#endif
+
+        public unsafe NativeArray<int> MoveAllSharedComponents(SharedComponentDataManager srcSharedComponents, NativeArray<EntityRemapUtility.EntityRemapInfo> remapInfos, Allocator allocator)
         {
             var remap = new NativeArray<int>(srcSharedComponents.GetSharedComponentCount(), allocator);
             remap[0] = 0;
@@ -371,11 +434,15 @@ namespace Unity.Entities
                 if (srcData == null) continue;
 
                 var typeIndex = srcSharedComponents.m_SharedComponentType[srcIndex];
+                var typeInfo = TypeManager.GetTypeInfo(typeIndex);
 
-                var typeInfo = TypeManager.GetTypeInfo(typeIndex).FastEqualityTypeInfo;
-                var hashCode = GetHashCodeFast(srcData, typeInfo);
+                #if !UNITY_CSHARP_TINY
+                    if (typeInfo.EntityOffsets != null)
+                        srcData = CloneAndPatch(srcData, typeInfo, ref remapInfos);
+                #endif
 
-                var dstIndex = InsertSharedComponentAssumeNonDefault(typeIndex, hashCode, srcData, typeInfo);
+                var hashCode = GetHashCodeFast(srcData, typeIndex);
+                var dstIndex = InsertSharedComponentAssumeNonDefault(typeIndex, hashCode, srcData);
 
                 m_SharedComponentRefCount[dstIndex] += srcSharedComponents.m_SharedComponentRefCount[srcIndex] - 1;
 
@@ -394,7 +461,7 @@ namespace Unity.Entities
         }
 
         public unsafe NativeArray<int> MoveSharedComponents(SharedComponentDataManager srcSharedComponents,
-            NativeArray<ArchetypeChunk> chunks, Allocator allocator)
+            NativeArray<ArchetypeChunk> chunks, NativeArray<EntityRemapUtility.EntityRemapInfo> remapInfos, Allocator allocator)
         {
             var remap = new NativeArray<int>(srcSharedComponents.GetSharedComponentCount(), allocator);
 
@@ -416,13 +483,16 @@ namespace Unity.Entities
                     continue;
 
                 var srcData = srcSharedComponents.m_SharedComponentData[srcIndex];
-
                 var typeIndex = srcSharedComponents.m_SharedComponentType[srcIndex];
+                var typeInfo = TypeManager.GetTypeInfo(typeIndex);
+                
+                #if !UNITY_CSHARP_TINY
+                    if (typeInfo.EntityOffsets != null)
+                        srcData = CloneAndPatch(srcData, typeInfo, ref remapInfos);
+                #endif
 
-                var typeInfo = TypeManager.GetTypeInfo(typeIndex).FastEqualityTypeInfo;
-                var hashCode = GetHashCodeFast(srcData, typeInfo);
-
-                var dstIndex = InsertSharedComponentAssumeNonDefault(typeIndex, hashCode, srcData, typeInfo);
+                var hashCode = GetHashCodeFast(srcData, typeIndex);
+                var dstIndex = InsertSharedComponentAssumeNonDefault(typeIndex, hashCode, srcData);
 
                 m_SharedComponentRefCount[dstIndex] += remap[srcIndex] - 1;
                 srcSharedComponents.RemoveReference(srcIndex, remap[srcIndex]);

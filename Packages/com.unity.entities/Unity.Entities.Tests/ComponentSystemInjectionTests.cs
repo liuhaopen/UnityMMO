@@ -2,7 +2,7 @@
 
 namespace Unity.Entities.Tests
 {
-    public class ComponentSystemInjectionTests : ECSTestsFixture
+    class ComponentSystemInjectionTests : ECSTestsFixture
     {
         [DisableAutoCreation]
         class TestSystem : ComponentSystem

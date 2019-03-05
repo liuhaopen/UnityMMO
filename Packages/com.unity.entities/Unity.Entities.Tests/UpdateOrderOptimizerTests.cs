@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Unity.Entities.Tests
 {
-    public class UpdateOrderOptimizerTests : ECSTestsFixture
+    class UpdateOrderOptimizerTests : ECSTestsFixture
 	{
         PlayerLoopSystem m_fakePlayerLoop;
         public UpdateOrderOptimizerTests()

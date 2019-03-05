@@ -56,6 +56,14 @@ namespace Unity.Entities
             }
         }
 
+        public bool IsCreated
+        {
+            get
+            {
+                return m_Buffer != null;
+            }
+        }
+
         [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
         void CheckBounds(int index)
         {
@@ -215,7 +223,7 @@ namespace Unity.Entities
         /// <summary>
         /// Return a native array that aliases the buffer contents. The array is only legal to access as long as the buffer is not reallocated.
         /// </summary>
-        public NativeArray<T> ToNativeArray()
+        public NativeArray<T> AsNativeArray()
         {
             CheckReadAccess();
             
@@ -229,16 +237,23 @@ namespace Unity.Entities
             return shadow;
         }
 
+        [Obsolete("Use AsNativeArray")]
+        public NativeArray<T> ToNativeArray()
+        {
+            return AsNativeArray();
+        }
+
+        
         public void CopyFrom(NativeArray<T> v)
         {
             ResizeUninitialized(v.Length);
-            ToNativeArray().CopyFrom(v);
+            AsNativeArray().CopyFrom(v);
         }
 
         public void CopyFrom(T[] v)
         {
             ResizeUninitialized(v.Length);
-            ToNativeArray().CopyFrom(v);
+            AsNativeArray().CopyFrom(v);
         }
     }
 }

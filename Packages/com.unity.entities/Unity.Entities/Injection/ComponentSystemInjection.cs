@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !UNITY_ZEROPLAYER
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -109,3 +110,4 @@ namespace Unity.Entities
         }
     }
 }
+#endif

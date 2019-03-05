@@ -139,9 +139,54 @@ namespace Unity.Entities.Tests
             var entityProcess = m_Manager.CreateEntity(typeof(EcsTestData), typeof(EcsTestData2), typeof(EcsTestData4));
             Test(true, entityProcess);
         }
-
-
+        struct ProcessFilteredData : IJobProcessComponentData<EcsTestData>
+        {
+            public void Execute(ref EcsTestData c0)
+            {
+                c0 = new EcsTestData {value = 10};
+            }
+        }
         
+        [Test]
+        public void JobProcessWithFilteredComponentGroup()
+        {
+            var archetype = m_Manager.CreateArchetype(typeof(EcsTestData), typeof(EcsTestSharedComp));
+
+            var entityInGroupA = m_Manager.CreateEntity(archetype);
+            var entityInGroupB = m_Manager.CreateEntity(archetype);
+            
+            m_Manager.SetComponentData<EcsTestData>(entityInGroupA, new EcsTestData{value = 5});
+            m_Manager.SetComponentData<EcsTestData>(entityInGroupB, new EcsTestData{value = 5});
+            m_Manager.SetSharedComponentData<EcsTestSharedComp>(entityInGroupA, new EcsTestSharedComp { value = 1} );
+            m_Manager.SetSharedComponentData<EcsTestSharedComp>(entityInGroupB, new EcsTestSharedComp { value = 2} );
+           
+            var group = EmptySystem.GetComponentGroup(typeof(EcsTestData), typeof(EcsTestSharedComp));
+            group.SetFilter(new EcsTestSharedComp { value = 1});
+            
+            var processJob = new ProcessFilteredData();
+            processJob.ScheduleGroup(group).Complete();
+            
+            Assert.AreEqual(10, m_Manager.GetComponentData<EcsTestData>(entityInGroupA).value);
+            Assert.AreEqual(5,  m_Manager.GetComponentData<EcsTestData>(entityInGroupB).value);
+        }
+        
+        [Test]
+        public void JobCalculateEntityCount()
+        {
+            m_Manager.CreateEntity(typeof(EcsTestData));
+            m_Manager.CreateEntity(typeof(EcsTestData), typeof(EcsTestData2));
+            m_Manager.CreateEntity(typeof(EcsTestData), typeof(EcsTestData2));
+            m_Manager.CreateEntity(typeof(EcsTestData), typeof(EcsTestData2), typeof(EcsTestData3));
+            m_Manager.CreateEntity(typeof(EcsTestData), typeof(EcsTestData2), typeof(EcsTestData3));
+
+            var job = new Process1();
+            Assert.AreEqual(5, job.CalculateEntityCount(EmptySystem));
+            job.Schedule(EmptySystem).Complete();
+            
+            var job2 = new Process2();
+            Assert.AreEqual(4, job2.CalculateEntityCount(EmptySystem));
+            job2.Schedule(EmptySystem).Complete();
+        }
 
         [Test]
         [Ignore("TODO")]

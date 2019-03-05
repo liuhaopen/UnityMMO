@@ -8,7 +8,7 @@ using Unity.Mathematics;
 namespace Unity.Entities.Tests
 {
     [TestFixture]
-    public class ArchetypeChunkArrayTest : ECSTestsFixture
+    class ArchetypeChunkArrayTest : ECSTestsFixture
     {
         public Entity CreateEntity(int value, int sharedValue)
         {
@@ -409,11 +409,9 @@ namespace Unity.Entities.Tests
             {
                 var chunk = chunks[i];
 
-                // Test DidChange() and DidAddOrChange() before modifications
+                // Test DidChange() before modifications
                 chunkBufferVersions[i] = chunk.GetComponentVersion(intElements);
-                bool beforeDidAddOrChange = chunk.DidAddOrChange(intElements, chunkBufferVersions[i]);
-                Assert.IsFalse(beforeDidAddOrChange, "DidAddOrChange() is true before modifications");
-                bool beforeDidChange = chunk.DidChange(intElements);
+                bool beforeDidChange = chunk.DidChange(intElements, chunkBufferVersions[i]);
                 Assert.IsFalse(beforeDidChange, "DidChange() is true before modifications");
                 uint beforeVersion = chunk.GetComponentVersion(intElements);
                 Assert.AreEqual(chunkBufferVersions[i], beforeVersion, "version mismatch before modifications");
@@ -430,10 +428,8 @@ namespace Unity.Entities.Tests
 
                 uint afterVersion = chunk.GetComponentVersion(intElements);
                 Assert.AreNotEqual(chunkBufferVersions[i], afterVersion, "version match after modifications");
-                bool afterDidAddChange = chunk.DidAddOrChange(intElements, chunkBufferVersions[i]);
-                Assert.IsTrue(afterDidAddChange, "DidAddOrChange() is false after modifications");
-                bool afterDidChange = chunk.DidChange(intElements);
-                Assert.IsTrue(afterDidChange, "DidChange() is false after modifications");
+                bool afterDidAddChange = chunk.DidChange(intElements, chunkBufferVersions[i]);
+                Assert.IsTrue(afterDidAddChange, "DidChange() is false after modifications");
             }
 
             chunks.Dispose();

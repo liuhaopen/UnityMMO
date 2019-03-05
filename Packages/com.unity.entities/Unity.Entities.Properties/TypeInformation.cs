@@ -181,59 +181,66 @@ namespace Unity.Entities.Properties
             public int Offset { get; set; } = 0;
         }
 
-        public IPropertyBag Parse(Type t)
+        public IPropertyBag Parse(Type t, string propertyDisplayName)
         {
-            return DoParse(t, new TypeTreeParsingContext());
+            return DoParse(t, new TypeTreeParsingContext(), propertyDisplayName);
         }
 
-        private IPropertyBag DoParse(Type t, TypeTreeParsingContext context)
+        private void AddPropertiesFromIterator(
+            IEnumerable<ITypedMemberDescriptor> members,
+            TypeTreeParsingContext context,
+            Dictionary<string, IStructProperty<StructProxy>> properties)
+        {
+            foreach (var member in members)
+            {
+                try
+                {
+                    IStructProperty<StructProxy> property =
+                        VisitType(member, new TypeTreeParsingContext() { Offset = context.Offset + member.GetOffset() });
+
+                    if (property != null && !properties.ContainsKey(property.Name))
+                    {
+                        properties[property.Name] = property;
+                    }
+                }
+                catch (Exception)
+                { }
+            }
+        }
+
+        private IPropertyBag DoParse(Type t, TypeTreeParsingContext context, string propertyDisplayName)
         {
             if (_propertyBagCache.ContainsKey(t))
             {
                 return _propertyBagCache[t];
             }
 
+            string a = propertyDisplayName;
             Dictionary<string, IStructProperty<StructProxy>> properties = new Dictionary<string, IStructProperty<StructProxy>>()
             {
-                { ComponentIdProperty.Name, ComponentIdProperty }
+                { ComponentIdProperty.Name, new TypeIdStructProperty((ref StructProxy c) => a) }
             };
 
-            foreach (var member in new TypeFieldIterator(t).Get(
-                TypeFieldIterator.Specifier.Public | TypeFieldIterator.Specifier.ValueType))
-            {
-                IStructProperty<StructProxy> property = VisitType(member, new TypeTreeParsingContext() { Offset = context.Offset + member.GetOffset() });
-                if (!properties.ContainsKey(property.Name))
-                {
-                    properties[property.Name] = property;
-                }
-            }
+            AddPropertiesFromIterator(
+                new TypeFieldIterator(t).Get(TypeFieldIterator.Specifier.Public | TypeFieldIterator.Specifier.ValueType),
+                context,
+                properties);
 
-            foreach (var member in new TypePropertyIterator(t).Get(
-                TypePropertyIterator.Specifier.Public | TypePropertyIterator.Specifier.ValueType))
-            {
-                try
-                {
-                    IStructProperty<StructProxy> property = VisitType(member, new TypeTreeParsingContext() { Offset = context.Offset });
+            // TODO: add support for C# auto/non auto properties
 
-                    // TODO Unknown types: GameObjects, etc
-                    if (property != null)
-                    {
-                        if (!properties.ContainsKey(property.Name))
-                        {
-                            properties[property.Name] = property;
-                        }
-                    }
-                }
-                catch (Exception)
-                { }
-            }
+            AddPropertiesFromIterator(
+                new TypePropertyIterator(t).Get(TypePropertyIterator.Specifier.Public | TypePropertyIterator.Specifier.ValueType),
+                context,
+                properties);
 
             _propertyBagCache[t] = new StructPropertyBag<StructProxy>(properties.Values.ToList());
 
             return _propertyBagCache[t];
         }
 
-        private IStructProperty<StructProxy> VisitType(ITypedMemberDescriptor d, TypeTreeParsingContext context)
+        private IStructProperty<StructProxy> VisitType(
+            ITypedMemberDescriptor d,
+            TypeTreeParsingContext context)
         {
             Type memberType = d.GetMemberType();
 
@@ -259,7 +266,7 @@ namespace Unity.Entities.Properties
                 }
             }
 
-            return new NestedStructProxyProperty(d) { PropertyBag = Parse(memberType) };
+            return new NestedStructProxyProperty(d) { PropertyBag = Parse(memberType, d.Name) };
         }
 
         private static readonly IStructProperty<StructProxy> ComponentIdProperty = new TypeIdStructProperty(
@@ -275,7 +282,10 @@ namespace Unity.Entities.Properties
         public static IPropertyBag GetOrCreate(Type componentType, HashSet<Type> primitiveTypes)
         {
             _propertyTypeParser.PrimitiveTypes = primitiveTypes;
-            return _propertyTypeParser.Parse(componentType);
+
+            string propertyDisplayName = componentType.Name;
+
+            return _propertyTypeParser.Parse(componentType, propertyDisplayName);
         }
     }
 }

@@ -6,7 +6,7 @@ using UnityEngine.Jobs;
 
 namespace Unity.Transforms
 {
-    [UnityEngine.ExecuteInEditMode]
+    [UnityEngine.ExecuteAlways]
     [UpdateBefore(typeof(EndFrameTransformSystem))]
     public class CopyTransformToGameObjectSystem : JobComponentSystem
     {

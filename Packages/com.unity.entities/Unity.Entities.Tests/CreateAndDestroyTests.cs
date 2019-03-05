@@ -1,10 +1,9 @@
 using NUnit.Framework;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 
 namespace Unity.Entities.Tests
 {
-	public class CreateAndDestroyTests : ECSTestsFixture
+	class CreateAndDestroyTests : ECSTestsFixture
 	{
         [Test]
         unsafe public void CreateAndDestroyOne()
@@ -227,11 +226,11 @@ namespace Unity.Entities.Tests
 	        Assert.AreEqual(0, archetype.ChunkCount);
 
 	        unsafe {
-	            Assert.IsTrue(archetype.Archetype->ChunkList.IsEmpty);
+	            Assert.IsTrue(archetype.Archetype->Chunks.Count == 0);
 	            Assert.AreEqual(0, archetype.Archetype->EntityCount);
 
 	            var archetype2 = m_Manager.Entities->GetArchetype(entity);
-	            Assert.AreEqual(1, archetype2->ChunkCount);
+	            Assert.AreEqual(1, archetype2->Chunks.Count);
 	            Assert.AreEqual(1, archetype2->EntityCount);
 	        }
 	    }
@@ -242,7 +241,11 @@ namespace Unity.Entities.Tests
 	        var archetype = m_Manager.CreateArchetype(typeof(EcsTestData));
 	        var entity = m_Manager.CreateEntity(archetype);
 
-	        var typesToAdd = new ComponentTypes(new ComponentType[] {typeof(EcsTestData3), typeof(EcsTestData2)});	        
+	        // Create dummy archetype with unrelated type to override the internal cache in the entity manager
+	        // This exposed a bug in AddComponent
+            m_Manager.CreateArchetype(typeof(EcsTestData4));
+
+            var typesToAdd = new ComponentTypes(new ComponentType[] {typeof(EcsTestData3), typeof(EcsTestData2)});
 	        m_Manager.AddComponents(entity, typesToAdd);
 
 	        var expectedTotalTypes = new ComponentTypes(new ComponentType[] {typeof(EcsTestData2), typeof(EcsTestData3), typeof(EcsTestData)});
@@ -321,6 +324,57 @@ namespace Unity.Entities.Tests
 
 	            Assert.IsFalse(m_Manager.HasComponent<EcsState1>(dst));
 	        }
+	    }
+
+	    [TypeManager.ForcedMemoryOrderingAttribute(2)]
+	    struct EcsSharedForcedOrder : ISharedComponentData
+	    {
+	        public int Value;
+
+	        public EcsSharedForcedOrder(int value)
+	        {
+	            Value = value;
+	        }
+	    }
+
+	    [TypeManager.ForcedMemoryOrderingAttribute(1)]
+	    struct EcsSharedStateForcedOrder : ISystemStateSharedComponentData
+	    {
+	        public int Value;
+
+	        public EcsSharedStateForcedOrder(int value)
+	        {
+	            Value = value;
+	        }
+	    }
+
+	    [Test]
+	    public void InstantiateWithSharedSystemStateComponent()
+	    {
+	        var srcEntity = m_Manager.CreateEntity();
+
+	        var sharedValue = new EcsSharedForcedOrder(123);
+	        var systemValue = new EcsSharedStateForcedOrder(234);
+
+	        m_Manager.AddSharedComponentData(srcEntity, sharedValue);
+	        m_Manager.AddSharedComponentData(srcEntity, systemValue);
+
+	        var versionSharedBefore = m_Manager.GetSharedComponentOrderVersion(sharedValue);
+	        var versionSystemBefore = m_Manager.GetSharedComponentOrderVersion(systemValue);
+
+	        var dstEntity = m_Manager.Instantiate(srcEntity);
+	        var sharedValueCopied = m_Manager.GetSharedComponentData<EcsSharedForcedOrder>(dstEntity);
+
+	        var versionSharedAfter = m_Manager.GetSharedComponentOrderVersion(sharedValue);
+	        var versionSystemAfter = m_Manager.GetSharedComponentOrderVersion(systemValue);
+
+	        Assert.IsTrue(m_Manager.HasComponent<EcsSharedForcedOrder>(dstEntity));
+	        Assert.IsFalse(m_Manager.HasComponent<EcsSharedStateForcedOrder>(dstEntity));
+
+	        Assert.AreEqual(sharedValue, sharedValueCopied);
+
+	        Assert.AreNotEqual(versionSharedBefore, versionSharedAfter);
+	        Assert.AreEqual(versionSystemBefore, versionSystemAfter);
 	    }
 	}
 }

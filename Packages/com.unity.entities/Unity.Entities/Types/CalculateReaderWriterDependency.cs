@@ -19,15 +19,18 @@ namespace Unity.Entities
                 reading.Add(type.TypeIndex);
                 return true;
             }
+            else
+            {
+                if (writing.Contains(type.TypeIndex))
+                    return false;
 
-            var readingIndex = reading.IndexOf(type.TypeIndex);
-            if (readingIndex != -1)
-                reading.RemoveAtSwapBack(readingIndex);
-            if (writing.Contains(type.TypeIndex))
-                return false;
+                var readingIndex = reading.IndexOf(type.TypeIndex);
+                if (readingIndex != -1)
+                    reading.RemoveAtSwapBack(readingIndex);
 
-            writing.Add(type.TypeIndex);
-            return true;
+                writing.Add(type.TypeIndex);
+                return true;
+            }
         }
     }
 }

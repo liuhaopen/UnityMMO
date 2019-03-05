@@ -8,7 +8,7 @@ using UnityEngine.TestTools;
 
 namespace Unity.Entities.Tests
 {
-    public class EntityTransactionTests : ECSTestsFixture
+    class EntityTransactionTests : ECSTestsFixture
     {
         ComponentGroup m_Group;
 
@@ -156,6 +156,76 @@ namespace Unity.Entities.Tests
             var entities = new NativeArray<Entity>(1000, Allocator.Persistent);
             transaction.CreateEntity(arch, entities);
             entities.Dispose();
+        }
+
+        struct DynamicBufferElement : IBufferElementData
+        {
+            public int Value;
+        }
+
+        struct DynamicBufferJob : IJob
+        {
+            public ExclusiveEntityTransaction Transaction;
+            public Entity OldEntity;
+            public NativeArray<Entity> NewEntity;
+
+            public void Execute()
+            {
+                NewEntity[0] = Transaction.CreateEntity(typeof(DynamicBufferElement));
+                var newBuffer = Transaction.GetBuffer<DynamicBufferElement>(NewEntity[0]);
+
+                var oldBuffer = Transaction.GetBuffer<DynamicBufferElement>(OldEntity);
+                var oldArray = new NativeArray<DynamicBufferElement>(oldBuffer.Length, Allocator.Temp);
+                oldBuffer.AsNativeArray().CopyTo(oldArray);
+
+                foreach (var element in oldArray)
+                {
+                    newBuffer.Add(new DynamicBufferElement {Value = element.Value * 2});
+                }
+
+                oldArray.Dispose();
+            }
+        }
+
+        [Test]
+        public void DynamicBuffer([Values] bool mainThread)
+        {
+            var entity = m_Manager.CreateEntity(typeof(DynamicBufferElement));
+            var buffer = m_Manager.GetBuffer<DynamicBufferElement>(entity);
+
+            buffer.Add(new DynamicBufferElement {Value = 123});
+            buffer.Add(new DynamicBufferElement {Value = 234});
+            buffer.Add(new DynamicBufferElement {Value = 345});
+
+            var newEntity = new NativeArray<Entity>(1, Allocator.TempJob);
+
+            var job = new DynamicBufferJob();
+            job.NewEntity = newEntity;
+            job.Transaction = m_Manager.BeginExclusiveEntityTransaction();
+            job.OldEntity = entity;
+
+            if (mainThread)
+            {
+                job.Execute();
+            }
+            else
+            {
+                job.Schedule().Complete();
+            }
+
+            m_Manager.EndExclusiveEntityTransaction();
+
+            Assert.AreNotEqual(entity, job.NewEntity[0]);
+
+            var newBuffer = m_Manager.GetBuffer<DynamicBufferElement>(job.NewEntity[0]);
+
+            Assert.AreEqual(3, newBuffer.Length);
+
+            Assert.AreEqual(123 * 2, newBuffer[0].Value);
+            Assert.AreEqual(234 * 2, newBuffer[1].Value);
+            Assert.AreEqual(345 * 2, newBuffer[2].Value);
+
+            newEntity.Dispose();
         }
     }
 }

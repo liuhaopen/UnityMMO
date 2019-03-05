@@ -10,6 +10,7 @@ namespace Unity.Entities.Properties
     {
         public static ClassPropertyBag<ObjectContainerProxy> GetPropertyBagForObject(
             object o,
+            string objectDisplayName,
             HashSet<Type> primitiveTypes)
         {
             Type type = o.GetType();
@@ -21,7 +22,7 @@ namespace Unity.Entities.Properties
 
             var bag = new ClassPropertyBag<ObjectContainerProxy>();
 
-            bag.AddProperty(new TypeIdClassProperty((ObjectContainerProxy c) => c.o.GetType().Name));
+            bag.AddProperty(new TypeIdClassProperty((ObjectContainerProxy c) => objectDisplayName));
 
             foreach (var f in type.GetFields(BindingFlags.Public | BindingFlags.Instance))
             {
@@ -37,14 +38,18 @@ namespace Unity.Entities.Properties
                     {
                         var objectProperty = typeof(FieldObjectProperty<>).MakeGenericType(f.FieldType);
 
-                        bag.AddProperty((IClassProperty<ObjectContainerProxy>)Activator.CreateInstance(objectProperty, o, f));
+                        bag.AddProperty((IClassProperty<ObjectContainerProxy>)Activator.CreateInstance(objectProperty, f));
                     }
                     // TODO: only class type for now
                     else if (f.FieldType.IsClass)
                     {
                         if (f.FieldType.Name != type.Name)
                         {
-                            bag.AddProperty(new ClassObjectProxyProperty(f.FieldType, value, primitiveTypes));
+                            string displayName = f.Name;
+
+                            bag.AddProperty(new ClassObjectProxyProperty(
+                                f.FieldType, displayName, value, primitiveTypes)
+                                );
                         }
                     }
                 }
@@ -61,7 +66,7 @@ namespace Unity.Entities.Properties
                     {
                         var objectProperty = typeof(CSharpPropertyObjectProperty<>).MakeGenericType(f.PropertyType);
 
-                        bag.AddProperty((IClassProperty<ObjectContainerProxy>)Activator.CreateInstance(objectProperty, o, f));
+                        bag.AddProperty((IClassProperty<ObjectContainerProxy>)Activator.CreateInstance(objectProperty, f));
                     }
                     // TODO: only class type for now
                 }
@@ -73,6 +78,11 @@ namespace Unity.Entities.Properties
             _propertyBagCache[type] = bag;
 
             return bag;
+        }
+
+        public static ClassPropertyBag<ObjectContainerProxy> GetPropertyBagForObject(object o, HashSet<Type> primitiveTypes)
+        {
+            return GetPropertyBagForObject(o, o.GetType().Name, primitiveTypes);
         }
 
         private static bool IsPrimitiveValue(ICollection<Type> primitiveTypes, Type t)

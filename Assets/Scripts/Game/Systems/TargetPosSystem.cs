@@ -19,11 +19,15 @@ public class TargetPosSystem : BaseComponentSystem
     protected override void OnUpdate()
     {
         float dt = Time.deltaTime;
+        var entities = group.GetEntityArray();
         var targetPositions = group.GetComponentDataArray<TargetPosition>();
         var speeds = group.GetComponentDataArray<MoveSpeed>();
         var curPositions = group.GetComponentDataArray<Position>();
         for (int i=0; i<targetPositions.Length; i++)
         {
+            if (m_world.GetEntityManager().HasComponent<MainRoleTag>(entities[i]))
+                continue;
+            
             var targetPos = targetPositions[i].Value;
             var speed = speeds[i].Value;
             var curPos = curPositions[i];

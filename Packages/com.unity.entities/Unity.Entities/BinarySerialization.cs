@@ -22,6 +22,11 @@ namespace Unity.Entities.Serialization
             writer.WriteBytes(&value, sizeof(int));
         }
 
+        public static void Write(this BinaryWriter writer, ulong value)
+        {
+            writer.WriteBytes(&value, sizeof(ulong));
+        }
+
         public static void Write(this BinaryWriter writer, byte[] bytes)
         {
             fixed(byte* p = bytes)
@@ -74,6 +79,7 @@ namespace Unity.Entities.Serialization
         }
     }
 
+#if !UNITY_CSHARP_TINY
     public unsafe class StreamBinaryReader : BinaryReader
     {
         private Stream stream;
@@ -141,6 +147,10 @@ namespace Unity.Entities.Serialization
                 }
             }
         }
+
+        public long Length => stream.Length;
     }
+    
+#endif
 }
 

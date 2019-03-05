@@ -110,13 +110,13 @@ public class GameWorld
         //     GameObject.DontDestroyOnLoad(m_sceneRoot);
         // }
 
-#if UNITY_EDITOR
+// #if UNITY_EDITOR
         // When running in editor the world could be created, so we silently keep it.
         m_ECSWorld = World.Active != null ? World.Active : new World(name); 
-#else
-        GameDebug.Assert(World.Active == null);
-        m_ECSWorld = new World(name);
-#endif        
+// #else
+//         GameDebug.Assert(World.Active == null);
+//         m_ECSWorld = new World(name);
+// #endif        
         
 
         World.Active = m_ECSWorld;
