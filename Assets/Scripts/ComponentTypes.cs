@@ -30,12 +30,17 @@ namespace UnityMMO
         public float3 EndPos;
     }
 
-    public class GroundInfo : MonoBehaviour
+    public struct GroundInfo : IComponentData
     {
-        public Collider groundCollider;
+        // public Collider groundCollider;
         public Vector3 groundNormal;
         public float altitude; 
-        public GroundInfo(){}
+        // public GroundInfo(){}
+    }
+
+    public struct SprintInfo : IComponentData
+    {
+        public int IsSprinting;//1:yes
     }
 
     public struct Shot : IComponentData
