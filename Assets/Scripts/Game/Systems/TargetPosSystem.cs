@@ -59,6 +59,7 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
         var userCommandArray = group.GetComponentDataArray<UserCommand>();
         var targetPosArray = group.GetComponentDataArray<TargetPosition>();
         var moveSpeedArray = group.GetComponentDataArray<MoveSpeed>();
+        Debug.Log("userCommandArray.Length : "+userCommandArray.Length);
         if (userCommandArray.Length==0)
             return;
         var userCommand = userCommandArray[0];

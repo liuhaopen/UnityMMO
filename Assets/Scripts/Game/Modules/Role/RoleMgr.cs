@@ -71,7 +71,8 @@ public class RoleMgr
         entityDic.Add(uid, role);
         mainRoleGOE = roleGameOE;
 
-        SceneMgr.Instance.ApplyDetector(roleGameOE.GetComponent<SceneDetectorBase>());
+        // SceneMgr.Instance.ApplyDetector(roleGameOE.GetComponent<SceneDetectorBase>());
+        SceneMgr.Instance.ApplyMainRole(roleGameOE);
         return role;
 	}
 

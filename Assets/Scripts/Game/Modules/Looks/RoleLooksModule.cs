@@ -226,7 +226,9 @@ public class HandleRoleLooksSpawnRequests : BaseComponentSystem
                 {
                     GameObject bodyObj = objs[0] as GameObject;
                     GameObjectEntity bodyOE = m_world.Spawn<GameObjectEntity>(bodyObj);
-                    bodyOE.transform.SetParent(UnityMMO.RoleMgr.GetInstance().RoleContainer);
+                    var parentTrans = EntityManager.GetComponentObject<Transform>(request.ownerEntity);
+                    bodyOE.transform.SetParent(parentTrans);
+                    // bodyOE.transform.SetParent(UnityMMO.RoleMgr.GetInstance().RoleContainer);
                     bodyOE.transform.localPosition = request.position;
                     bodyOE.GetComponent<Rigidbody>().isKinematic = true;
                     playerState.looksEntity = bodyOE.Entity;

@@ -13,7 +13,7 @@ public class UpdateRoleAnimatorSystem : BaseComponentSystem
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        group = GetComponentGroup(typeof(RoleState));
+        group = GetComponentGroup(typeof(RoleState), typeof(GroundInfo));
     }
 
     protected override void OnUpdate()
@@ -21,7 +21,14 @@ public class UpdateRoleAnimatorSystem : BaseComponentSystem
         var states = group.GetComponentArray<RoleState>();
         for (int i=0; i<states.Length; i++)
         {
-            // EntityManager
+            var looksEntity = states.looksEntity;
+            var animator = m_World.GetEntityManager().GetComponentObject<Animator>(looksEntity);
+            UpdateAnimator(states[i], animator);
         }
+    }
+
+    void UpdateAnimator(RoleState state, Animator animator)
+    {
+        
     }
 }
