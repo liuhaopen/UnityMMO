@@ -31,16 +31,18 @@ namespace UnityMMO{
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooksNetRequest>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooksSpawnRequests>(m_GameWorld));
 
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateRoleTransformFromLooks>(m_GameWorld));
+            // m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateRoleTransformFromLooks>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<CreateTargetPosFromUserInputSystem>(m_GameWorld));
 
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<TargetPosSystem>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<GroundTestSystem>(m_GameWorld));
 
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleLooksFollowLogicTransform>(m_GameWorld));
+            // m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleLooksFollowLogicTransform>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UploadMainRolePosSystem>(m_GameWorld));
 
-            
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateGOBJPosSystem>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateRoleAnimatorSystem>(m_GameWorld));
+    
         }
 
         public void StartGame() {

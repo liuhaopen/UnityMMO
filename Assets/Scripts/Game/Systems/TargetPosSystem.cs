@@ -23,16 +23,18 @@ public class TargetPosSystem : BaseComponentSystem
         var targetPositions = group.GetComponentDataArray<TargetPosition>();
         var speeds = group.GetComponentDataArray<MoveSpeed>();
         var curPositions = group.GetComponentDataArray<Position>();
+        Debug.Log("targetPositions.Length : "+targetPositions.Length);
         for (int i=0; i<targetPositions.Length; i++)
         {
-            if (m_world.GetEntityManager().HasComponent<MainRoleTag>(entities[i]))
-                continue;
+            // if (m_world.GetEntityManager().HasComponent<MainRoleTag>(entities[i]))
+                // continue;
             
             var targetPos = targetPositions[i].Value;
             var speed = speeds[i].Value;
             var curPos = curPositions[i];
             var startPos = curPos.Value;
             var newPos = startPos+(targetPos-startPos)*speed/GameConst.SpeedFactor*dt;
+            // Debug.Log("speed : "+speed+" newPos : "+newPos.x+" "+newPos.y+" "+newPos.z);
             curPos.Value = newPos;
             curPositions[i] = curPos;
         }
@@ -59,7 +61,6 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
         var userCommandArray = group.GetComponentDataArray<UserCommand>();
         var targetPosArray = group.GetComponentDataArray<TargetPosition>();
         var moveSpeedArray = group.GetComponentDataArray<MoveSpeed>();
-        Debug.Log("userCommandArray.Length : "+userCommandArray.Length);
         if (userCommandArray.Length==0)
             return;
         var userCommand = userCommandArray[0];
@@ -72,6 +73,7 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
             var speed = moveSpeedArray[0].Value;
             var newTargetPos = new TargetPosition();
             newTargetPos.Value = lastTargetPos+userCommand.moveYaw*(speed/GameConst.SpeedFactor*dt);
+            //TODO:通过navmesh判断是否障碍区，是的话取得最近点
             targetPosArray[0] = newTargetPos;
         }
     }

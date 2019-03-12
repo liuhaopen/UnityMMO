@@ -2257,7 +2257,7 @@ GameObject:
   - component: {fileID: 2013751184}
   - component: {fileID: 2013751183}
   m_Layer: 0
-  m_Name: CM FreeLook1
+  m_Name: FreeLookCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

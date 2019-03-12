@@ -97,7 +97,7 @@ public class RoleMgr
     private void InitRole(Entity role, long uid, Vector3 pos)
     {
         EntityManager.AddComponentData(role, new Position {Value = new float3(pos.x, pos.y, pos.z)});
-        EntityManager.AddComponentData(role, new MoveSpeed {Value = 12});
+        EntityManager.AddComponentData(role, new MoveSpeed {Value = 10000});
         EntityManager.AddComponentData(role, new TargetPosition {Value = new float3(pos.x, pos.y, pos.z)});
         EntityManager.AddComponentData(role, new Rotation {Value = quaternion.identity});
         // EntityManager.AddComponentData(role, new GroundInfo());

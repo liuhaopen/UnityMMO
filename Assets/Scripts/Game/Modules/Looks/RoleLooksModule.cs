@@ -143,7 +143,6 @@ public class HandleRoleLooks : BaseComponentSystem
             //其它玩家离主角近时就要请求该玩家的角色外观信息
             var curPos = m_world.GetEntityManager().GetComponentData<Position>(entity).Value;
             float distance = Vector3.Distance(curPos, mainRolePos);
-            Debug.Log("distance : "+distance);
             if (!roleState.hasLooks)
             {
                 isNeedReqLooksInfo = distance <= 400;
@@ -229,7 +228,9 @@ public class HandleRoleLooksSpawnRequests : BaseComponentSystem
                     var parentTrans = EntityManager.GetComponentObject<Transform>(request.ownerEntity);
                     bodyOE.transform.SetParent(parentTrans);
                     // bodyOE.transform.SetParent(UnityMMO.RoleMgr.GetInstance().RoleContainer);
-                    bodyOE.transform.localPosition = request.position;
+                    // bodyOE.transform.localPosition = request.position;
+                    bodyOE.transform.localPosition = Vector3.zero;
+                    bodyOE.transform.localRotation = Quaternion.identity;
                     bodyOE.GetComponent<Rigidbody>().isKinematic = true;
                     playerState.looksEntity = bodyOE.Entity;
                     LoadHair(hairPath, bodyOE.transform.Find("head"));

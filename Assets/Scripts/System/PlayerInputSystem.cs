@@ -28,8 +28,7 @@ namespace UnityMMO
                 return;
             var userCommand = userCommandArray[0];
             SampleInput(ref userCommand, dt);
-
-           
+            userCommandArray[0] = userCommand;
             // for (int i = 0; i < inputDataArray.Length; ++i)
             // {
             //     PlayerInput pi;

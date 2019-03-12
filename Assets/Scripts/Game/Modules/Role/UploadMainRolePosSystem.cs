@@ -30,9 +30,11 @@ public class UploadMainRolePosSystem : BaseComponentSystem
         {
             var targetPos = targetPositions[i].Value;
             var pos = positions[i].Value;
-
+            var distance = Vector3.Distance(targetPos, pos);
+            if (distance <= 0.5)
+                continue;
             scene_walk.request walk = new scene_walk.request();
-            // Debug.Log("upload pos"+pos.ToString());
+            Debug.Log("upload pos"+pos.ToString());
             walk.start_x = (int)(pos.x*GameConst.RealToLogic);
             walk.start_y = (int)(pos.y*GameConst.RealToLogic);
             walk.start_z = (int)(pos.z*GameConst.RealToLogic);

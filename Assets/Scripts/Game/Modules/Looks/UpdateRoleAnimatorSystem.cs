@@ -19,16 +19,20 @@ public class UpdateRoleAnimatorSystem : BaseComponentSystem
     protected override void OnUpdate()
     {
         var states = group.GetComponentArray<RoleState>();
+        var grounds = group.GetComponentDataArray<GroundInfo>();
         for (int i=0; i<states.Length; i++)
         {
-            var looksEntity = states.looksEntity;
-            var animator = m_World.GetEntityManager().GetComponentObject<Animator>(looksEntity);
-            UpdateAnimator(states[i], animator);
+            var looksEntity = states[i].looksEntity;
+            var animator = m_world.GetEntityManager().GetComponentObject<Animator>(looksEntity);
+            Debug.Log("animator : "+(animator!=null).ToString());
+            if (animator!=null)
+                UpdateAnimator(animator, states[i], grounds[i]);
         }
     }
 
-    void UpdateAnimator(RoleState state, Animator animator)
+    void UpdateAnimator(Animator animator, RoleState state, GroundInfo groundInfo)
     {
+        // animator.SetBool("IsGrounded", groundInfo.groundNormal);
         
     }
 }

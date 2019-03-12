@@ -23,7 +23,7 @@ local _Time =
 	timeSinceLevelLoad	= 0,
 	unscaledDeltaTime	= 0,	
 	unscaledTime		= 0,	
-	serverTime  		= 0,
+	serverTimeMSOnStart	= 0,
 	req_time			= 0,
 	is_start_synch_time = false,
 
@@ -99,12 +99,19 @@ function Time:SetDeltaTime(deltaTime, unscaledDeltaTime)
 	end		
 end
 
+--获取服务器时间，单位秒
+function Time:GetServerTimeSec( )
+	return math.floor((_Time.serverTimeMSOnStart+1000*_Time.realtimeSinceStartup)/1000+0.5)
+end
+
+--获取服务器时间，单位毫秒
 function Time:GetServerTime( )
-	return _Time.serverTime
+	return math.floor(_Time.serverTimeMSOnStart+1000*_Time.realtimeSinceStartup+0.5)
 end
 
 function Time:SetServerTime( value )
-	_Time.serverTime = value
+	_Time.serverTimeMSOnStart = math.floor(value-_Time.realtimeSinceStartup*1000+0.5)
+	-- print('Cat:Time.lua[115] _Time.serverTimeMSOnStart', _Time.serverTimeMSOnStart, _Time.realtimeSinceStartup)
 end
 
 function Time:SetFixedDelta(fixedDeltaTime)	
@@ -134,23 +141,33 @@ function Time:StartSynchServerTime(  )
         _Time.is_start_synch_time = true
         local synch_time
         synch_time = function()
-            _Time.req_time = _Time.unscaledTime
+            _Time.req_time = _Time.realtimeSinceStartup*1000
             local on_server_time_ack = function ( server_time_info )
             	--从请求至收到回复的时间间隔
-            	local time_offset = _Time.unscaledTime - _Time.req_time
+            	local time_offset = _Time.realtimeSinceStartup*1000 - _Time.req_time
                 -- print('Cat:LoginController.lua[118] server_time_info:', server_time_info.server_time, " time_offset:", time_offset)
                 Time:SetServerTime(server_time_info.server_time+time_offset/2)
                 local timer = Timer.New(function()
                 	--每隔几秒就同步一次
 	                synch_time()
-				end, 5)
+				end, 600)
 				timer:Start()
             end
             NetDispatcher:SendMessage("account_get_server_time", nil, on_server_time_ack)
         end
         synch_time()
     end
-   
+ 	--  do --test 
+	--     local show_time_func
+	--     show_time_func = function()
+	--     	local timer = Timer.New(function()
+	--     		print('Cat:Time.lua[162] Time.GetServ', Time:GetServerTime(), Time:GetServerTimeSec())
+	--             show_time_func()
+	-- 		end, 0.5)
+	-- 		timer:Start()
+	-- 	end
+	-- 	show_time_func()
+	-- end
 end
 
 
