@@ -39,11 +39,13 @@ public class SceneMgr : MonoBehaviour
     public EntityManager EntityManager { get => m_GameWorld.GetEntityManager();}
     public bool IsLoadingScene { get => isLoadingScene; set => isLoadingScene = value; }
     public CinemachineFreeLook FreeLookCamera { get => freeLookCamera; set => freeLookCamera = value; }
-    public Transform FreeLookCameraTrans { get => freeLookCameraTrans; set => freeLookCameraTrans = value; }
+    public Transform MainCameraTrans { get => mainCameraTrans; }
+    public Transform FreeLookCameraTrans { get => freeLookCameraTrans; }
     public SceneInfo CurSceneInfo { get => curSceneInfo; }
 
     Cinemachine.CinemachineFreeLook freeLookCamera;
     Transform freeLookCameraTrans;
+    Transform mainCameraTrans;
 
     public void Awake()
 	{
@@ -51,6 +53,8 @@ public class SceneMgr : MonoBehaviour
 		// EntityManager = World.Active.GetExistingManager<EntityManager>();
         entityDic = new Dictionary<long, Entity>();
         prefabDic = new Dictionary<string, GameObject>();
+        var mainCamera = GameObject.Find("MainCamera");
+        mainCameraTrans = mainCamera.transform;
         var camera = GameObject.Find("FreeLookCamera");
         if (camera != null)
         {

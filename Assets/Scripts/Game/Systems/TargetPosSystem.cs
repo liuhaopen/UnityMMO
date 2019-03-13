@@ -41,6 +41,7 @@ public class TargetPosSystem : BaseComponentSystem
             moveQuery.moveQueryStart = startPos;
             moveQuery.moveQueryEnd = newPos;
 
+            //change role rotation
             Vector3 targetDirection = new Vector3(moveDir.x, moveDir.y, moveDir.z);
             Vector3 lookDirection = targetDirection.normalized;
             Quaternion freeRotation = Quaternion.LookRotation(lookDirection, curTrans.up);
@@ -49,7 +50,7 @@ public class TargetPosSystem : BaseComponentSystem
 
             if (diferenceRotation < 0 || diferenceRotation > 0) eulerY = freeRotation.eulerAngles.y;
             var euler = new Vector3(0, eulerY, 0);
-            curTrans.rotation = Quaternion.Slerp(curTrans.rotation, Quaternion.Euler(euler), Time.deltaTime);
+            curTrans.rotation = Quaternion.Slerp(curTrans.rotation, Quaternion.Euler(euler), Time.deltaTime*50);
         }
     }
 }
@@ -78,56 +79,20 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
         if (userCommandArray.Length==0)
             return;
         var userCommand = userCommandArray[0];
-        // if (userCommand.moveMagnitude > 0)
-        // {
-            Vector2 input = new Vector2();
-            input.x = Input.GetAxis("Horizontal");
-	        input.y = Input.GetAxis("Vertical");
-
-            var forward = SceneMgr.Instance.FreeLookCameraTrans.TransformDirection(Vector3.forward);
-            forward.y = 0;
-            //get the right-facing direction of the referenceTransform
-            var right = SceneMgr.Instance.FreeLookCameraTrans.TransformDirection(Vector3.right);
-            // determine the direction the player will face based on input and the referenceTransform's right and forward directions
-            float3 targetDirection = input.x * right + input.y * forward;
-            // Debug.Log("targetDirection : "+targetDirection.x + " "+targetDirection.y+" "+targetDirection.z);
-            // var moveYawRotation = Quaternion.Euler(0, userCommand.lookYaw + userCommand.moveYaw, 0);
-            // var moveVec = moveYawRotation * Vector3.forward * userCommand.moveMagnitude;
-            // var lastTargetPos = targetPosArray[0].Value;
-            float3 curPos = posArray[0].localPosition;
-            var speed = moveSpeedArray[0].Value;
-            var newTargetPos = new TargetPosition();
-            // newTargetPos.Value = lastTargetPos+userCommand.moveYaw*(speed/GameConst.SpeedFactor*dt);
-            newTargetPos.Value = curPos+targetDirection*(speed/GameConst.SpeedFactor*1);//延着方向前进1秒为目标坐标
-            //TODO:通过navmesh判断是否障碍区，是的话取得最近点
-            targetPosArray[0] = newTargetPos;
-            // Debug.Log("curPos : "+curPos.x+" "+curPos.y+" "+curPos.z+" dir:"+targetDirection.x+" "+targetDirection.z);
-        // }
+        Vector2 input = new Vector2();
+        input.x = Input.GetAxis("Horizontal");
+        input.y = Input.GetAxis("Vertical");
+        var forward = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.forward);
+        forward.y = 0;
+        var right = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.right);
+        float3 targetDirection = input.x * right + input.y * forward;
+        // Debug.Log("targetDirection : "+targetDirection.x + " "+targetDirection.y+" "+targetDirection.z);
+        float3 curPos = posArray[0].localPosition;
+        var speed = moveSpeedArray[0].Value;
+        var newTargetPos = new TargetPosition();
+        newTargetPos.Value = curPos+targetDirection*(speed/GameConst.SpeedFactor*1);//延着方向前进1秒为目标坐标
+        //TODO:通过navmesh判断是否障碍区，是的话取得最近点
+        targetPosArray[0] = newTargetPos;
+        // Debug.Log("curPos : "+curPos.x+" "+curPos.y+" "+curPos.z+" dir:"+targetDirection.x+" "+targetDirection.z);
     }
 }
-
-
-// [DisableAutoCreation]
-// class MovementHandleCollision : BaseComponentDataSystem<RoleState, RoleMoveQuery>
-// {
-//     public MovementHandleCollision(GameWorld world) : base(world)
-//     {
-//         // ExtraComponentRequirements = new ComponentType[] { typeof(ServerEntity) } ;
-//     }
-    
-//     protected override void Update(Entity entity, RoleState roleState, RoleMoveQuery query)
-//     {
-//         var time = m_world.worldTime;
-//         var predictedState = EntityManager.GetComponentData<CharacterPredictedData>(charAbility.character);
-    
-//         // Manually calculate resulting velocity as characterController.velocity is linked to Time.deltaTime
-//         var newPos = query.moveQueryResult;
-//         // var oldPos = query.moveQueryStart;
-//         // var velocity = (newPos - oldPos) / time.tickDuration;
-    
-//         // predictedState.velocity = velocity;
-//         roleState.transform.position = query.moveQueryResult;
-        
-//         // EntityManager.SetComponentData(charAbility.character, predictedState);
-//     }
-// }
