@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using Cinemachine;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -23,6 +24,7 @@ public class SceneMgr : MonoBehaviour
     public EntityArchetype MonsterArchetype;
     public EntityArchetype NPCArchetype;
     Dictionary<long, Entity> entityDic;
+    SceneInfo curSceneInfo;
     Entity mainRole;
     public SceneDetectorBase detector;
     private SceneObjectLoadController m_Controller;
@@ -36,8 +38,12 @@ public class SceneMgr : MonoBehaviour
 
     public EntityManager EntityManager { get => m_GameWorld.GetEntityManager();}
     public bool IsLoadingScene { get => isLoadingScene; set => isLoadingScene = value; }
+    public CinemachineFreeLook FreeLookCamera { get => freeLookCamera; set => freeLookCamera = value; }
+    public Transform FreeLookCameraTrans { get => freeLookCameraTrans; set => freeLookCameraTrans = value; }
+    public SceneInfo CurSceneInfo { get => curSceneInfo; }
 
     Cinemachine.CinemachineFreeLook freeLookCamera;
+    Transform freeLookCameraTrans;
 
     public void Awake()
 	{
@@ -47,7 +53,10 @@ public class SceneMgr : MonoBehaviour
         prefabDic = new Dictionary<string, GameObject>();
         var camera = GameObject.Find("FreeLookCamera");
         if (camera != null)
-            freeLookCamera = camera.GetComponent<Cinemachine.CinemachineFreeLook>();
+        {
+            freeLookCameraTrans = camera.transform;
+            FreeLookCamera = camera.GetComponent<Cinemachine.CinemachineFreeLook>();
+        }
 	}
 
     void Update()
@@ -114,6 +123,7 @@ public class SceneMgr : MonoBehaviour
             string scene_json = txt.text;
             scene_json = Repalce(scene_json);
             SceneInfo scene_info = JsonUtility.FromJson<SceneInfo>(scene_json);
+            curSceneInfo = scene_info;
             ApplyLightInfo(scene_info);
             
             m_Controller = gameObject.GetComponent<SceneObjectLoadController>();
@@ -137,19 +147,8 @@ public class SceneMgr : MonoBehaviour
             }
         });
     }
+
     LightmapData[] lightmaps = null;
-
-    public void ApplyMainRole(GameObjectEntity mainRole)
-    {
-        ApplyDetector(mainRole.GetComponent<SceneDetectorBase>());
-        if (freeLookCamera)
-        {
-            var mainRoleTrans = mainRole.GetComponent<Transform>();
-            freeLookCamera.m_Follow = mainRoleTrans;
-            freeLookCamera.m_LookAt = mainRoleTrans;
-        }
-    }
-
     public void ApplyDetector(SceneDetectorBase detector)
     {
         this.detector = detector;
@@ -194,6 +193,18 @@ public class SceneMgr : MonoBehaviour
                 }
             }
  
+        }
+    }
+    
+    public void ApplyMainRole(GameObjectEntity mainRole)
+    {
+        ApplyDetector(mainRole.GetComponent<SceneDetectorBase>());
+        if (FreeLookCamera)
+        {
+            var mainRoleTrans = mainRole.GetComponent<Transform>();
+            FreeLookCamera.m_Follow = mainRoleTrans;
+            // FreeLookCamera.m_LookAt = mainRoleTrans;
+            FreeLookCamera.m_LookAt = mainRoleTrans.Find("CameraLook");
         }
     }
 

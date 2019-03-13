@@ -180,9 +180,9 @@ function CMD.role_enter_scene(role_id)
 	end
 end
 
-local save_role_pos = function ( role_id, pos, scene_id )
+local save_role_pos = function ( role_id, pos_x, pos_y, pos_z, scene_id )
 	local gameDBServer = skynet.localname(".GameDBServer")
-	is_succeed = skynet.call(gameDBServer, "lua", "update", "RoleBaseInfo", "role_id", role_id, {pos_x=pos.x, pos_y=pos.y, pos_z=pos.z, scene_id=scene_id})
+	is_succeed = skynet.call(gameDBServer, "lua", "update", "RoleBaseInfo", "role_id", role_id, {pos_x=pos_x, pos_y=pos_y, pos_z=pos_z, scene_id=scene_id})
 end
 
 function CMD.role_leave_scene(role_id)
@@ -190,7 +190,7 @@ function CMD.role_leave_scene(role_id)
 	print('Cat:scene.lua[role_leave_scene] role_id', role_id, role_info)
 	if not role_info then return end
 	
-	save_role_pos(role_id, role_info.base_info.pos, this.cur_scene_id)	
+	save_role_pos(role_id, role_info.base_info.pos_x, role_info.base_info.pos_y, role_info.base_info.pos_z, this.cur_scene_id)	
 
 	--tell every one this role leave scene
 	for k,v in pairs(this.role_list) do
@@ -208,6 +208,7 @@ end
 function CMD.scene_get_role_look_info( user_info, req_data )
 	print('Cat:scene.lua[scene_get_role_look_info] user_info, req_data', user_info, user_info.cur_role_id)
 	local role_info = this.object_list[req_data.uid]
+	print('Cat:scene.lua[211] role_info', role_info, req_data.uid, this.object_list[req_data.uid])
 	local looks_info
 	if role_info then
 		looks_info = {

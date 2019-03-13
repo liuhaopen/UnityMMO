@@ -15,21 +15,20 @@ public class UploadMainRolePosSystem : BaseComponentSystem
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        group = GetComponentGroup(typeof(Position), typeof(TargetPosition), typeof(MainRoleTag));
+        group = GetComponentGroup(typeof(Transform), typeof(TargetPosition), typeof(MainRoleTag));
     }
 
     protected override void OnUpdate()
     {
-        if (Time.time - lastSynchTime < 0.2 || !GameVariable.IsNeedSynchSceneInfo)
+        if (Time.time - lastSynchTime < 0.5 || !GameVariable.IsNeedSynchSceneInfo)
             return;
-        lastSynchTime = Time.time;
-        var positions = group.GetComponentDataArray<Position>();
+        var positions = group.GetComponentArray<Transform>();
         var targetPositions = group.GetComponentDataArray<TargetPosition>();
         long synchTime = System.DateTime.Now.Millisecond;
         for (int i=0; i<targetPositions.Length; i++)
         {
             var targetPos = targetPositions[i].Value;
-            var pos = positions[i].Value;
+            var pos = positions[i].localPosition;
             var distance = Vector3.Distance(targetPos, pos);
             if (distance <= 0.5)
                 continue;
@@ -43,6 +42,7 @@ public class UploadMainRolePosSystem : BaseComponentSystem
             walk.end_z = (int)(targetPos.z*GameConst.RealToLogic);
             walk.time = synchTime;
             NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_walk>(walk);
+            lastSynchTime = Time.time;
         }
     }
 }
