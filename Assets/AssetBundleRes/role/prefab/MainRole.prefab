@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8904815260076866137}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: CameraLook
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 4653454486938067084}
   - component: {fileID: 7390081389632161362}
   - component: {fileID: 1269004611595199333}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: MainRole
   m_TagString: Untagged
   m_Icon: {fileID: 0}

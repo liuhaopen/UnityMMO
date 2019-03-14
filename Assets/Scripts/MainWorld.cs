@@ -34,7 +34,7 @@ namespace UnityMMO{
             // m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateRoleTransformFromLooks>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<CreateTargetPosFromUserInputSystem>(m_GameWorld));
 
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<TargetPosSystem>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<MovementUpdateSystem>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleMovementQueries>(m_GameWorld));
 
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<GroundTestSystem>(m_GameWorld));

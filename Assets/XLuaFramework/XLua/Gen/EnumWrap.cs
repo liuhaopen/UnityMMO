@@ -78,7 +78,7 @@ namespace XLua.CSObjectWrap
 		    Utils.BeginObjectRegister(typeof(UnityMMO.SceneInfoKey), L, translator, 0, 0, 0, 0);
 			Utils.EndObjectRegister(typeof(UnityMMO.SceneInfoKey), L, translator, null, null, null, null, null);
 			
-			Utils.BeginClassRegister(typeof(UnityMMO.SceneInfoKey), L, null, 5, 0, 0);
+			Utils.BeginClassRegister(typeof(UnityMMO.SceneInfoKey), L, null, 7, 0, 0);
             
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "None", UnityMMO.SceneInfoKey.None);
             
@@ -87,6 +87,10 @@ namespace XLua.CSObjectWrap
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "LeaveScene", UnityMMO.SceneInfoKey.LeaveScene);
             
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "PosChange", UnityMMO.SceneInfoKey.PosChange);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "TargetPos", UnityMMO.SceneInfoKey.TargetPos);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "JumpState", UnityMMO.SceneInfoKey.JumpState);
             
 			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
             
@@ -120,6 +124,14 @@ namespace XLua.CSObjectWrap
 				else if (LuaAPI.xlua_is_eq_str(L, 1, "PosChange"))
                 {
                     translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.PosChange);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "TargetPos"))
+                {
+                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.TargetPos);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "JumpState"))
+                {
+                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.JumpState);
                 }
 				else
                 {

@@ -67,7 +67,8 @@ public class RoleMgr
         InitRole(role, uid, pos);
         EntityManager.AddComponent(role, ComponentType.Create<MainRoleTag>());
         EntityManager.AddComponent(role, ComponentType.Create<PlayerInput>());
-        EntityManager.AddComponent(role, ComponentType.Create<PosSynchInfo>());
+        // EntityManager.AddComponent(role, ComponentType.Create<PosSynchInfo>());
+        EntityManager.AddComponentData(role, new PosSynchInfo {LastUploadPos = float3.zero});
         EntityManager.AddComponent(role, ComponentType.Create<UserCommand>());
         
         entityDic.Add(uid, role);
@@ -101,13 +102,14 @@ public class RoleMgr
         // EntityManager.AddComponentData(role, new Position {Value = new float3(pos.x, pos.y, pos.z)});
         EntityManager.AddComponentData(role, new MoveSpeed {Value = 500});
         EntityManager.AddComponentData(role, new TargetPosition {Value = new float3(pos.x, pos.y, pos.z)});
+        EntityManager.AddComponentData(role, new LocomotionState {Value = LocomotionState.State.Idle});
         // EntityManager.AddComponentData(role, new Rotation {Value = quaternion.identity});
         // EntityManager.AddComponentData(role, new GroundInfo());
         RoleState roleState = EntityManager.GetComponentObject<RoleState>(role);
         // roleState.position = pos;
         roleState.roleUid = uid;
 
-        RoleMoveQuery rmq = EntityManager.GetComponentObject<RoleMoveQuery>(role);
+        MoveQuery rmq = EntityManager.GetComponentObject<MoveQuery>(role);
         rmq.Initialize();
     }
 }

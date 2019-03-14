@@ -25,6 +25,7 @@ public class SynchFromNet {
     {
         changeFuncDic = new Dictionary<SceneInfoKey, Action<Entity, SprotoType.info_item>>();
         changeFuncDic[SceneInfoKey.PosChange] = ApplyChangeInfoPos;
+        changeFuncDic[SceneInfoKey.TargetPos] = ApplyChangeInfoPos;
     }
 
     public void ReqSceneObjInfoChange()
@@ -86,6 +87,27 @@ public class SynchFromNet {
     }
 
     private void ApplyChangeInfoPos(Entity entity, SprotoType.info_item change_info)
+    {
+        string[] pos_strs = change_info.value.Split(',');
+        // Debug.Log("SynchFromNet recieve pos value : "+change_info.value);
+        if (pos_strs.Length != 3)
+        {
+            Debug.Log("SynchFromNet recieve a wrong pos value : "+change_info.value);
+            return;
+        }
+        int new_x = int.Parse(pos_strs[0]);
+        int new_y = int.Parse(pos_strs[1]);
+        int new_z = int.Parse(pos_strs[2]);
+        if (SceneMgr.Instance.EntityManager.HasComponent<Transform>(entity))
+        {
+            Transform trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(entity);
+            Debug.Log("receive new pos"+new_x+" "+new_y+" "+new_z);
+            trans.localPosition = new Vector3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic);
+        }
+        // SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = new float3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic)});
+    }
+
+    private void ApplyChangeInfoTargetPos(Entity entity, SprotoType.info_item change_info)
     {
         string[] pos_strs = change_info.value.Split(',');
         // Debug.Log("SynchFromNet recieve pos value : "+change_info.value);

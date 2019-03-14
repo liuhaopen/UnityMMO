@@ -10,6 +10,8 @@ public enum SceneInfoKey
     EnterScene=1,//value is scene object type
     LeaveScene=2,
     PosChange=3,
+    TargetPos=4,
+    JumpState=5,
 }
 
 [Hotfix]

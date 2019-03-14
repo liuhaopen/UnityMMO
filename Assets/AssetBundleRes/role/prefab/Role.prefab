@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1685857544176099494}
   - component: {fileID: 3854395812734997324}
   - component: {fileID: 386428649218336243}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Role
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -74,6 +74,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43a15ffa6f4da2b41b0aa9a0f8cac273, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  slopeLimit: 0
+  stepOffset: 0
+  skinWidth: 0
+  minMoveDistance: 0
+  center:
+    x: 0
+    y: 0
+    z: 0
+  radius: 0
+  height: 0
 --- !u!54 &3854395812734997324
 Rigidbody:
   m_ObjectHideFlags: 0

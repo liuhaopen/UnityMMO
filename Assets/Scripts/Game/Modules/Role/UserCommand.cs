@@ -12,7 +12,7 @@ public struct UserCommand : Unity.Entities.IComponentData
     public int sprint;//冲刺
     public int skill;//使用的技能索引，普攻也是技能来的
 
-    // public static readonly UserCommand defaultCommand = new UserCommand(0); 
+    public static readonly UserCommand defaultCommand = new UserCommand(0); 
 
     private UserCommand(int i)    
     {

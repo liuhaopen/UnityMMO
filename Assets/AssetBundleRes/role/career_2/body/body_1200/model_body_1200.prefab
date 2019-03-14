@@ -133,7 +133,6 @@ GameObject:
   - component: {fileID: 4406606441481026}
   - component: {fileID: 95740665156493556}
   - component: {fileID: 8259024314196684061}
-  - component: {fileID: 6732449475122538702}
   m_Layer: 0
   m_Name: model_body_1200
   m_TagString: Untagged
@@ -172,7 +171,7 @@ Animator:
   m_GameObject: {fileID: 1730197470680304}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 5621b1009431d3846867f6d27f3793b9, type: 3}
-  m_Controller: {fileID: 9100000, guid: 027acc3d5e287004f8d5a503355ccd2d, type: 2}
+  m_Controller: {fileID: 9100000, guid: b4b2e908363a01947b3b5edd8aa5f4d0, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -193,20 +192,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf10cdea1344482e91a4f2b58506b77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!136 &6732449475122538702
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1730197470680304}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  m_Radius: 0.24
-  m_Height: 1.54
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.7, z: 0}
 --- !u!1 &1790775108586710
 GameObject:
   m_ObjectHideFlags: 0

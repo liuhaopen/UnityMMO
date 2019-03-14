@@ -14,6 +14,35 @@ namespace UnityMMO
     {
     }
 
+    public struct LocomotionState : IComponentData
+    {
+        public enum State
+        {
+            Idle,
+            Run,
+            Sprint,
+            Jump,
+            DoubleJump,
+            TrebleJump,
+            InAir,
+            StateNum,
+        }
+        public State Value;
+    }
+
+    public struct JumpInfo : IComponentData
+    {
+        public enum State
+        {
+            None = 0,
+            StartJump = 1,
+            InAir = 2,
+            EndJump = 3,
+        }
+        public State JumpState;
+        public float StartTime;
+    }
+
     public struct MoveSpeed : IComponentData
     {
         public float Value;
@@ -26,8 +55,7 @@ namespace UnityMMO
 
     public struct PosSynchInfo : IComponentData
     {
-        public float3 StartPos;
-        public float3 EndPos;
+        public float3 LastUploadPos;
     }
 
     public struct GroundInfo : IComponentData

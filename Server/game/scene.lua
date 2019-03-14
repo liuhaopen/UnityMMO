@@ -23,7 +23,12 @@ local SceneInfoKey = {
 	EnterScene=1,
     LeaveScene=2,
     PosChange=3,
+    TargetPos=4,
 }
+
+local get_cur_time = function (  )
+	return math.floor(skynet.time()*1000+0.5)
+end
 
 local new_scene_uid = function ( scene_obj_type )
 	this.scene_uid = scene_obj_type*10000000000+this.scene_uid + 1
@@ -155,10 +160,11 @@ end
 
 function CMD.role_enter_scene(role_id)
 	print('Cat:scene.lua[role_enter_scene] role_id', role_id)
+	local cur_time = get_cur_time()
 	do 
 		--tell every one a new role enter scene
 		for k,v in pairs(this.role_list) do
-			v.change_obj_infos = add_info_item(v.change_obj_infos, v.scene_uid, {key=SceneInfoKey.EnterScene, value=SceneObjectType.Role, time=os.time()})
+			v.change_obj_infos = add_info_item(v.change_obj_infos, v.scene_uid, {key=SceneInfoKey.EnterScene, value=SceneObjectType.Role, time=cur_time})
 		end
 	end
 	if not this.role_list[role_id] then
@@ -171,7 +177,7 @@ function CMD.role_enter_scene(role_id)
 		--tell the new guy who are here
 		for k,v in pairs(this.role_list) do
 			if v.scene_uid ~= scene_uid then
-				this.role_list[role_id].change_obj_infos = add_info_item(this.role_list[role_id].change_obj_infos, v.scene_uid, {key=SceneInfoKey.EnterScene, value=SceneObjectType.Role, time=os.time()})
+				this.role_list[role_id].change_obj_infos = add_info_item(this.role_list[role_id].change_obj_infos, v.scene_uid, {key=SceneInfoKey.EnterScene, value=SceneObjectType.Role, time=cur_time})
 			end
 		end
 		for k,v in pairs(this.npc_list) do
@@ -182,6 +188,7 @@ end
 
 local save_role_pos = function ( role_id, pos_x, pos_y, pos_z, scene_id )
 	local gameDBServer = skynet.localname(".GameDBServer")
+	print('Cat:scene.lua[191] role_id, pos_x, pos_y, pos_z, scene_id', role_id, pos_x, pos_y, pos_z, scene_id)
 	is_succeed = skynet.call(gameDBServer, "lua", "update", "RoleBaseInfo", "role_id", role_id, {pos_x=pos_x, pos_y=pos_y, pos_z=pos_z, scene_id=scene_id})
 end
 
@@ -192,11 +199,12 @@ function CMD.role_leave_scene(role_id)
 	
 	save_role_pos(role_id, role_info.base_info.pos_x, role_info.base_info.pos_y, role_info.base_info.pos_z, this.cur_scene_id)	
 
+	local cur_time = get_cur_time()
 	--tell every one this role leave scene
 	for k,v in pairs(this.role_list) do
 		local cur_role_id = k
 		if v.cur_role_id ~= role_id then
-			v.change_obj_infos = add_info_item(v.change_obj_infos, role_info.scene_uid, {key=SceneInfoKey.LeaveScene, value=SceneObjectType.Role, time=os.time()})
+			v.change_obj_infos = add_info_item(v.change_obj_infos, role_info.scene_uid, {key=SceneInfoKey.LeaveScene, value=SceneObjectType.Role, time=cur_time})
 		end
 	end
 	if role_info.ack_scene_get_objs_info_change then
@@ -273,15 +281,21 @@ function CMD.scene_walk( user_info, req_data )
 	-- print('Cat:scene.lua[scene_get_main_role_info] user_info, req_data', user_info, user_info.cur_role_id)
 	local role_info = this.role_list[user_info.cur_role_id]
 	if role_info and role_info.base_info then
-		role_info.base_info.pos = {x=req_data.start_x, y=req_data.start_y, z=req_data.start_z}
-		local pos_info = role_info.base_info.pos.x..","..role_info.base_info.pos.y..","..role_info.base_info.pos.z
+		-- role_info.base_info.pos = {x=req_data.start_x, y=req_data.start_y, z=req_data.start_z}
+		role_info.base_info.pos_x = req_data.start_x
+		role_info.base_info.pos_y = req_data.start_y
+		role_info.base_info.pos_z = req_data.start_z
+		local pos_info = role_info.base_info.pos_x..","..role_info.base_info.pos_y..","..role_info.base_info.pos_z
+		local target_pos_info = req_data.end_x..","..req_data.end_y..","..req_data.end_z
 		-- print('Cat:scene.lua[116] pos_info', pos_info, role_info.scene_uid)
+		local cur_time = get_cur_time()
 		--for test 
 		for k,v in pairs(this.role_list) do
 			local role_id = k
 			-- print('Cat:scene.lua[101] role_id, user_info.cur_role_id', role_id, user_info.cur_role_id, v.scene_uid, role_info.scene_uid)
 			if role_id ~= user_info.cur_role_id then
-				v.change_obj_infos = add_info_item(v.change_obj_infos, role_info.scene_uid, {key=SceneInfoKey.PosChange, value=pos_info, time=os.time()})
+				v.change_obj_infos = add_info_item(v.change_obj_infos, role_info.scene_uid, {key=SceneInfoKey.PosChange, value=pos_info, time= cur_time})
+				v.change_obj_infos = add_info_item(v.change_obj_infos, role_info.scene_uid, {key=SceneInfoKey.TargetPos, value=target_pos_info, time=cur_time})
 			end
 		end
 	end

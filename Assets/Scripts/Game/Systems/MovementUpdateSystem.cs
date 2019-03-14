@@ -5,16 +5,16 @@ using UnityEngine;
 using UnityMMO;
 
 [DisableAutoCreation]
-public class TargetPosSystem : BaseComponentSystem
+public class MovementUpdateSystem : BaseComponentSystem
 {
-    public TargetPosSystem(GameWorld world) : base(world) {}
+    public MovementUpdateSystem(GameWorld world) : base(world) {}
 
     ComponentGroup group;
 
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(RoleMoveQuery));
+        group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(MoveQuery), typeof(LocomotionState));
     }
 
     protected override void OnUpdate()
@@ -24,33 +24,60 @@ public class TargetPosSystem : BaseComponentSystem
         var targetPositions = group.GetComponentDataArray<TargetPosition>();
         var speeds = group.GetComponentDataArray<MoveSpeed>();
         var transforms = group.GetComponentArray<Transform>();
-        var moveQuerys = group.GetComponentArray<RoleMoveQuery>();
+        var moveQuerys = group.GetComponentArray<MoveQuery>();
+        var locoStates = group.GetComponentDataArray<LocomotionState>();
         for (int i=0; i<targetPositions.Length; i++)
         {
-            // if (m_world.GetEntityManager().HasComponent<MainRoleTag>(entities[i]))
-                // continue;
             var targetPos = targetPositions[i].Value;
             var speed = speeds[i].Value;
             var curTrans = transforms[i];
             float3 startPos = curTrans.localPosition;
             var moveDir = targetPos-startPos;
-            moveDir.y = -20;
+            var groundDir = moveDir;
+            groundDir.y = 0;
+            bool isMoveWanted = Vector3.Magnitude(groundDir)!=0.0f;
             var newPos = startPos+moveDir*speed/GameConst.SpeedFactor*dt;
-            // curTrans.localPosition = newPos;
             var moveQuery = moveQuerys[i];
             moveQuery.moveQueryStart = startPos;
+
+            //new locomotion state
+            var newLocoState = LocomotionState.State.StateNum;
+            var curLocoStateObj = locoStates[i];
+            var curLocoState = curLocoStateObj.Value;
+            bool isOnGround = curLocoState == LocomotionState.State.Idle || curLocoState == LocomotionState.State.Run || curLocoState == LocomotionState.State.Sprint;
+            if (isOnGround)
+            {
+                if (isMoveWanted)
+                    newLocoState = LocomotionState.State.Run;
+                else
+                    newLocoState = LocomotionState.State.Idle;
+            }
+            //jump
+            if (isOnGround && Input.GetKeyDown(KeyCode.Space))
+            {
+
+            }
+            if (newLocoState != LocomotionState.State.StateNum && newLocoState != curLocoState)
+            {
+                curLocoStateObj.Value = newLocoState;
+                locoStates[i] = curLocoStateObj;
+            }
+            //不能直接设置新坐标，因为需要和地形做碰撞处理什么的，所以利用CharacterController走路，在HandleMovementQueries才设置新坐标
             moveQuery.moveQueryEnd = newPos;
 
             //change role rotation
-            Vector3 targetDirection = new Vector3(moveDir.x, moveDir.y, moveDir.z);
-            Vector3 lookDirection = targetDirection.normalized;
-            Quaternion freeRotation = Quaternion.LookRotation(lookDirection, curTrans.up);
-            var diferenceRotation = freeRotation.eulerAngles.y - curTrans.eulerAngles.y;
-            var eulerY = curTrans.eulerAngles.y;
+            if (isMoveWanted)
+            {
+                Vector3 targetDirection = new Vector3(moveDir.x, moveDir.y, moveDir.z);
+                Vector3 lookDirection = targetDirection.normalized;
+                Quaternion freeRotation = Quaternion.LookRotation(lookDirection, curTrans.up);
+                var diferenceRotation = freeRotation.eulerAngles.y - curTrans.eulerAngles.y;
+                var eulerY = curTrans.eulerAngles.y;
 
-            if (diferenceRotation < 0 || diferenceRotation > 0) eulerY = freeRotation.eulerAngles.y;
-            var euler = new Vector3(0, eulerY, 0);
-            curTrans.rotation = Quaternion.Slerp(curTrans.rotation, Quaternion.Euler(euler), Time.deltaTime*50);
+                if (diferenceRotation < 0 || diferenceRotation > 0) eulerY = freeRotation.eulerAngles.y;
+                var euler = new Vector3(0, eulerY, 0);
+                curTrans.rotation = Quaternion.Slerp(curTrans.rotation, Quaternion.Euler(euler), Time.deltaTime*50);
+            }
         }
     }
 }
@@ -86,6 +113,7 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
         forward.y = 0;
         var right = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.right);
         float3 targetDirection = input.x * right + input.y * forward;
+        targetDirection.y = -10;//模仿重力，人物需要贴着地面走，有碰撞检测的所以不怕
         // Debug.Log("targetDirection : "+targetDirection.x + " "+targetDirection.y+" "+targetDirection.z);
         float3 curPos = posArray[0].localPosition;
         var speed = moveSpeedArray[0].Value;

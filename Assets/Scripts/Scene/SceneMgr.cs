@@ -33,6 +33,7 @@ public class SceneMgr : MonoBehaviour
     // GameObject mainRolePrefab;
     // GameObject rolePrefab;
     private bool isLoadingScene = false;
+    public LayerMask groundLayer = 1 << 0;
 
     Dictionary<string, GameObject> prefabDic;
 
@@ -47,7 +48,7 @@ public class SceneMgr : MonoBehaviour
     Transform freeLookCameraTrans;
     Transform mainCameraTrans;
 
-    public void Awake()
+    void Awake()
 	{
 		Instance = this; // worst singleton ever but it works
 		// EntityManager = World.Active.GetExistingManager<EntityManager>();
@@ -119,6 +120,7 @@ public class SceneMgr : MonoBehaviour
         {
             Debug.Log("load base world ok");
             isLoadingScene = false;
+            CorrectMainRolePos();
         });
         Debug.Log("LoadScene scene_id "+(scene_id).ToString());
         //load scene info from json file(which export from SceneInfoExporter.cs)
@@ -199,6 +201,36 @@ public class SceneMgr : MonoBehaviour
  
         }
     }
+
+    //校正角色的坐标
+    public void CorrectMainRolePos()
+    {
+        var mainRole = RoleMgr.GetInstance().GetMainRole();
+        if (isLoadingScene || mainRole == null)
+            return;
+        Vector3 oldPos = mainRole.transform.localPosition;
+        Vector3 newPos = GetCorrectPos(oldPos);
+        Debug.Log("old pos:"+oldPos.x+" "+oldPos.y+" "+oldPos.z+" newPos:"+newPos.x+" "+newPos.y+" "+newPos.z);
+        mainRole.transform.localPosition = newPos;
+    }
+
+    public Vector3 GetCorrectPos(Vector3 originPos)
+    {
+        Vector3 newPos;
+        Ray ray1 = new Ray(originPos + new Vector3(0, 10000, 0), Vector3.down);
+        RaycastHit groundHit;
+        if (Physics.Raycast(ray1, out groundHit, 12000, groundLayer))
+        {
+            newPos = groundHit.point;
+            newPos.y += 10;
+        }
+        else
+        {
+            //wrong pos, return a nearest position
+            newPos = Vector3.zero;
+        }
+        return newPos;
+    }
     
     public void ApplyMainRole(GameObjectEntity mainRole)
     {
@@ -210,6 +242,7 @@ public class SceneMgr : MonoBehaviour
             // FreeLookCamera.m_LookAt = mainRoleTrans;
             FreeLookCamera.m_LookAt = mainRoleTrans.Find("CameraLook");
         }
+        CorrectMainRolePos();
     }
 
     public Entity AddMainRole(long uid, Vector3 pos)
