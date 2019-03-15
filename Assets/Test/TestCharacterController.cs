@@ -25,7 +25,7 @@ public class TestCharacterController : MonoBehaviour
 
         var forward = FreeLookCameraTrans.TransformDirection(Vector3.forward);
         // var forward = FreeLookCameraTrans.forward;
-        Debug.Log("forward : "+forward.x+" "+forward.z);
+        // Debug.Log("forward : "+forward.x+" "+forward.z);
         forward.y = 0;
         var right = FreeLookCameraTrans.TransformDirection(Vector3.right);
         // var right = FreeLookCameraTrans.right;

@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 4653454486938067084}
   - component: {fileID: 7390081389632161362}
   - component: {fileID: 1269004611595199333}
+  - component: {fileID: 257994511674841158}
   m_Layer: 8
   m_Name: MainRole
   m_TagString: Untagged
@@ -127,3 +128,20 @@ MonoBehaviour:
     z: 0
   radius: 0.24
   height: 1.54
+--- !u!320 &257994511674841158
+PlayableDirector:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9175231960445069694}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_PlayableAsset: {fileID: 0}
+  m_InitialState: 0
+  m_WrapMode: 2
+  m_DirectorUpdateMode: 1
+  m_InitialTime: 0
+  m_SceneBindings: []
+  m_ExposedReferences:
+    m_References: []

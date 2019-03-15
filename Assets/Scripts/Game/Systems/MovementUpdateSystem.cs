@@ -53,7 +53,7 @@ public class MovementUpdateSystem : BaseComponentSystem
                     newLocoState = LocomotionState.State.Idle;
             }
             //jump
-            if (isOnGround && Input.GetKeyDown(KeyCode.Space))
+            if (isOnGround)
             {
 
             }
@@ -109,6 +109,7 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
         Vector2 input = new Vector2();
         input.x = Input.GetAxis("Horizontal");
         input.y = Input.GetAxis("Vertical");
+        bool isJump = Input.GetKeyDown(KeyCode.Space);
         var forward = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.forward);
         forward.y = 0;
         var right = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.right);
