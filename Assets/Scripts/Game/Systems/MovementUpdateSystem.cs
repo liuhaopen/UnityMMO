@@ -106,9 +106,10 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
         if (userCommandArray.Length==0)
             return;
         var userCommand = userCommandArray[0];
-        Vector2 input = new Vector2();
-        input.x = Input.GetAxis("Horizontal");
-        input.y = Input.GetAxis("Vertical");
+        // Vector2 input = new Vector2();
+        var input = GameInput.GetInstance().JoystickDir;
+        // input.x = Input.GetAxis("Horizontal");
+        // input.y = Input.GetAxis("Vertical");
         bool isJump = Input.GetKeyDown(KeyCode.Space);
         var forward = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.forward);
         forward.y = 0;

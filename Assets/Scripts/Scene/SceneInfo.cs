@@ -15,5 +15,19 @@ public class SceneInfo{
     public Bounds Bounds;
     [DataMember]
     public List<SceneStaticObject> ObjectInfoList;
+    [DataMember]
+    public List<BornInfoData> BornList;
+}
+
+public class BaseSceneInfoData
+{
+    [SerializeField]
+    [DataMember]
+    public Vector3 pos;
+
+    public BaseSceneInfoData(Vector3 pos)
+    {
+        this.pos = pos;
+    }
 }
 }

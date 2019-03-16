@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityMMO;
 
 public class FixedJoystick : Joystick
 {
@@ -10,6 +11,7 @@ public class FixedJoystick : Joystick
 
     void Awake() {
         Instance = this;
+        UICamera = GameObject.Find("UICamera").GetComponent<Camera>();
     }
 
     void Start()
@@ -23,6 +25,7 @@ public class FixedJoystick : Joystick
         inputVector = (direction.magnitude > background.sizeDelta.x / 2f) ? direction.normalized : direction / (background.sizeDelta.x / 2f);
         ClampJoystick();
         handle.anchoredPosition = (inputVector * background.sizeDelta.x / 2f) * handleLimit;
+        GameInput.GetInstance().JoystickDir = inputVector;
     }
 
     public override void OnPointerDown(PointerEventData eventData)

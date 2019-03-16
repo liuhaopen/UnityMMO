@@ -66,6 +66,7 @@ namespace UnityMMO{
         private void Update() {
             // Debug.Log("main world update");
             m_Systems.Update();
+            GameInput.GetInstance().Reset();
         }
         
         void TestLoadMultipleNavMeshInRunTime()

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Json;
@@ -33,7 +34,9 @@ public class SceneMgr : MonoBehaviour
     // GameObject mainRolePrefab;
     // GameObject rolePrefab;
     private bool isLoadingScene = false;
+    bool isBaseWorldLoadOk = false;
     public LayerMask groundLayer = 1 << 0;
+    float lastCheckMainRolePosTime = 0;
 
     Dictionary<string, GameObject> prefabDic;
 
@@ -69,6 +72,24 @@ public class SceneMgr : MonoBehaviour
         // Debug.Log("detector : "+(detector!=null).ToString()+" cont : "+(m_Controller != null).ToString());
         if (detector != null && m_Controller != null)
             m_Controller.RefreshDetector(detector);
+        
+        CheckMainRolePos();
+    }
+
+    public void CheckMainRolePos()
+    {
+        if (Time.time - lastCheckMainRolePosTime < 3)
+            return;
+        var mainRole = RoleMgr.GetInstance().GetMainRole();
+        if (!isBaseWorldLoadOk || mainRole == null || curSceneInfo==null)
+            return;
+        
+        lastCheckMainRolePosTime = Time.time;
+
+        Vector3 curPos = mainRole.transform.localPosition;
+        bool isInScene = curSceneInfo.Bounds.Contains(curPos);
+        if (!isInScene)
+            CorrectMainRolePos();
     }
 
 	public void Init(GameWorld world)
@@ -113,16 +134,8 @@ public class SceneMgr : MonoBehaviour
         return str;
     }
 
-    public void LoadScene(int scene_id, float pos_x=0.0f, float pos_y=0.0f, float pos_z=0.0f)
+    void LoadSceneInfo(int scene_id, Action<int> action)
     {
-        isLoadingScene = true;
-        XLuaFramework.ResourceManager.GetInstance().LoadPrefabGameObjectWithAction(SceneInfoPath+"baseworld_"+scene_id+"/baseworld_"+scene_id+".prefab", delegate(UnityEngine.Object obj)
-        {
-            Debug.Log("load base world ok");
-            isLoadingScene = false;
-            CorrectMainRolePos();
-        });
-        Debug.Log("LoadScene scene_id "+(scene_id).ToString());
         //load scene info from json file(which export from SceneInfoExporter.cs)
         XLuaFramework.ResourceManager.GetInstance().LoadAsset<TextAsset>(SceneInfoPath+"scene_"+scene_id.ToString() +"/scene_info.json", delegate(UnityEngine.Object[] objs) {
             TextAsset txt = objs[0] as TextAsset;
@@ -151,6 +164,23 @@ public class SceneMgr : MonoBehaviour
             {
                 detector = mainRoleGOE.GetComponent<SceneDetectorBase>();
             }
+            action(1);
+        });
+    }
+
+    public void LoadScene(int scene_id, float pos_x=0.0f, float pos_y=0.0f, float pos_z=0.0f)
+    {
+        isLoadingScene = true;
+        isBaseWorldLoadOk = false;
+        XLuaFramework.ResourceManager.GetInstance().LoadPrefabGameObjectWithAction(SceneInfoPath+"baseworld_"+scene_id+"/baseworld_"+scene_id+".prefab", delegate(UnityEngine.Object obj)
+        {
+            Debug.Log("load base world ok!");
+            Debug.Log("LoadScene scene_id "+(scene_id).ToString());
+            LoadSceneInfo(scene_id, delegate(int result){
+                isLoadingScene = false;
+                isBaseWorldLoadOk = true;
+                CorrectMainRolePos();
+            });
         });
     }
 
@@ -206,7 +236,7 @@ public class SceneMgr : MonoBehaviour
     public void CorrectMainRolePos()
     {
         var mainRole = RoleMgr.GetInstance().GetMainRole();
-        if (isLoadingScene || mainRole == null)
+        if (!isBaseWorldLoadOk || mainRole == null || curSceneInfo==null)
             return;
         Vector3 oldPos = mainRole.transform.localPosition;
         Vector3 newPos = GetCorrectPos(oldPos);
@@ -216,7 +246,7 @@ public class SceneMgr : MonoBehaviour
 
     public Vector3 GetCorrectPos(Vector3 originPos)
     {
-        Vector3 newPos;
+        Vector3 newPos = originPos;
         Ray ray1 = new Ray(originPos + new Vector3(0, 10000, 0), Vector3.down);
         RaycastHit groundHit;
         if (Physics.Raycast(ray1, out groundHit, 12000, groundLayer))
@@ -226,8 +256,28 @@ public class SceneMgr : MonoBehaviour
         }
         else
         {
-            //wrong pos, return a nearest position
-            newPos = Vector3.zero;
+            //wrong pos, return a nearest safe position
+            if (curSceneInfo != null)
+            {
+                float minDistance = int.MaxValue;
+                // int nearestIndex = 0;
+                for (int i = 0; i < curSceneInfo.BornList.Count; i++)
+                {
+                    var bornInfo = curSceneInfo.BornList[i];
+                    var bornPos = bornInfo.pos;
+                    var dis = Vector3.Distance(bornPos, originPos);
+                    if (dis < minDistance)
+                    {
+                        // nearestIndex = i;
+                        minDistance = dis;
+                        newPos = bornPos;
+                    }
+                }
+                // if (nearestIndex < curSceneInfo.bornList.Count)
+                // {
+                //     var bornInfo = curSceneInfo.bornList[nearestIndex];
+                // }
+            }
         }
         return newPos;
     }

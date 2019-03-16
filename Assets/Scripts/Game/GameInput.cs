@@ -6,9 +6,28 @@ public class GameInput
 {
     static GameInput instance;
     Dictionary<KeyCode, bool> keyUp;
-        private object InputSystem;
+    Vector2 joystickDir;
+    private object InputSystem;
 
-        public static GameInput GetInstance()
+    public Vector2 JoystickDir 
+    { 
+        get {
+            if (joystickDir.sqrMagnitude>0)
+            {
+                return joystickDir; 
+            }
+            else
+            {
+                Vector2 input = new Vector2();
+                input.x = Input.GetAxis("Horizontal");
+                input.y = Input.GetAxis("Vertical");
+                return input;
+            }
+        }
+        set => joystickDir = value; 
+    }
+
+    public static GameInput GetInstance()
     {
         if (instance!=null)
             return instance;
@@ -22,6 +41,7 @@ public class GameInput
         {
             keyUp[keyInfo.Key] = false;
         }
+        // JoystickDir = Vector2.zero;
     }
 
     public bool GetKeyUp(KeyCode key)
