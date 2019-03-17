@@ -105,7 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8149045ebb3b68d42a0ea5f2b00bd91f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectorSize: {x: 150, y: 100, z: 150}
+  detectorSize: {x: 150, y: 100, z: 250}
 --- !u!114 &1269004611595199333
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,10 +124,10 @@ MonoBehaviour:
   minMoveDistance: 0.001
   center:
     x: 0
-    y: 0.7
+    y: 0.75
     z: 0
-  radius: 0.24
-  height: 1.54
+  radius: 0.3
+  height: 1.5
 --- !u!320 &257994511674841158
 PlayableDirector:
   m_ObjectHideFlags: 0

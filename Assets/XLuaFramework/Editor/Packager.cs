@@ -160,7 +160,7 @@ public class Packager {
 
         BuildPipeline.BuildAssetBundles(streamPath, maps.ToArray(), BuildAssetBundleOptions.None, target);
 
-        // BuildSceneBundles("Assets/AssetBundleRes/scene/navmesh", streamPath, target);
+        BuildSceneBundles("Assets/AssetBundleRes/scene/navmesh", streamPath, target);
         // BuildSceneBundles("Assets/AssetBundleRes/scene/baseworld", streamPath, target);
 
         BuildFileIndex(streamPath);

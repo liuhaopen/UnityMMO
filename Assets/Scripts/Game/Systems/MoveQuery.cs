@@ -37,13 +37,13 @@ public class MoveQuery : MonoBehaviour
         charController = go.GetComponent<CharacterController>();
         charController.transform.position = transform.position;
         charController.transform.SetParent(transform.parent);
-        // charController.slopeLimit = settings.slopeLimit;
-        // charController.stepOffset = settings.stepOffset;
-        // charController.skinWidth = settings.skinWidth;
-        // charController.minMoveDistance = settings.minMoveDistance;
-        // charController.center = settings.center; 
-        // charController.radius = settings.radius; 
-        // charController.height = settings.height;
+        charController.slopeLimit = this.slopeLimit;
+        charController.stepOffset = this.stepOffset;
+        charController.skinWidth = this.skinWidth;
+        charController.minMoveDistance = this.minMoveDistance;
+        charController.center = this.center; 
+        charController.radius = this.radius; 
+        charController.height = this.height;
 
         // var hitCollision = go.GetComponent<HitCollision>();
         // hitCollision.owner = hitCollOwner;
