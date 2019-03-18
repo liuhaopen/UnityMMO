@@ -47,8 +47,13 @@ PrefabWin窗口一开始时肯定是没东西的啦,你可以往里面拉prefab,
 运行时可以放心地修改并保存prefab,结束运行时也会重新加载到最新的(默认情况下unity结束运行后是会重置到运行前的状态的)  
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UGUI-Editor/reload_after_exit.gif)   
 
+## 显示界面名
+按Ctrl+E切换显示或隐藏所有的界面名
+![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UGUI-Editor/show_layout_name.gif)   
+
 ## 其它功能
 )运行结束后重新加载所有正在编辑的界面(因为运行期间的修改在运行结束后会重置的)  
+)运行时打开的界面,退出运行时Unity会自动清掉的,所以我们要记录下来,退出时重新打开  
 )记录每个界面的参考图信息(现在每次重新打开界面都要添加一次参考图太麻烦了)  
 )增加右键菜单:优化层级,文字放一起,同一图集的放一起  
 )按ctrl+shift+c可以复制选中的节点名到剪切板上,生成的字符串是带路径的:  
@@ -57,7 +62,6 @@ PrefabWin窗口一开始时肯定是没东西的啦,你可以往里面拉prefab,
 ## TODO  
 )界面优化大全:选中某界面后遍历其所有子节点并在一个window列出优化建议(比如Text别用bestfix,用到了其它图集的小图等等)  
 )支持大部分操作的Undo(在操作前用Undo这个工具类记录)(30%)  
-)运行时打开的界面,退出运行时Unity会自动清掉的,所以我们要记录下来,退出时重新打开  
 )右键显示颜色框(有时代码要设置颜色值可以用的)  
 )Hierarchy界面也要显示我们的右键菜单  
 
