@@ -13,28 +13,30 @@ public class UpdateRoleAnimatorSystem : BaseComponentSystem
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        group = GetComponentGroup(typeof(RoleState), typeof(LocomotionState));
+        group = GetComponentGroup(typeof(LooksInfo), typeof(LocomotionState));
     }
 
     protected override void OnUpdate()
     {
-        var states = group.GetComponentArray<RoleState>();
+        // var states = group.GetComponentArray<RoleState>();
         // var grounds = group.GetComponentDataArray<GroundInfo>();
+        var looksInfos = group.GetComponentDataArray<LooksInfo>();
         var locoStates = group.GetComponentDataArray<LocomotionState>();
         // Debug.Log("states.Length : "+states.Length);
-        for (int i=0; i<states.Length; i++)
+        for (int i=0; i<looksInfos.Length; i++)
         {
-            if (!states[i].hasLooks || states[i].looksEntity == Entity.Null)
+            var looksInfo = looksInfos[i];
+            if (looksInfo.CurState!=LooksInfo.State.Loaded)
                 continue;
-            var looksEntity = states[i].looksEntity;
+            var looksEntity = looksInfo.LooksEntity;
             var animator = m_world.GetEntityManager().GetComponentObject<Animator>(looksEntity);
             // Debug.Log("animator : "+(animator!=null).ToString());
             if (animator!=null)
-                UpdateAnimator(animator, states[i], locoStates[i].Value);
+                UpdateAnimator(animator, locoStates[i].Value);
         }
     }
 
-    void UpdateAnimator(Animator animator, RoleState state, LocomotionState.State locoState)
+    void UpdateAnimator(Animator animator, LocomotionState.State locoState)
     {
         // Debug.Log("locoState : "+locoState.ToString());
         if (locoState == LocomotionState.State.Idle)

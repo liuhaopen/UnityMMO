@@ -65,9 +65,8 @@ public class RoleMgr
         roleGameOE.transform.localPosition = pos;
         Entity role = roleGameOE.Entity;
         InitRole(role, uid, pos);
-        EntityManager.AddComponent(role, ComponentType.Create<MainRoleTag>());
-        EntityManager.AddComponent(role, ComponentType.Create<PlayerInput>());
-        // EntityManager.AddComponent(role, ComponentType.Create<PosSynchInfo>());
+        // EntityManager.AddComponent(role, ComponentType.Create<MainRoleTag>());
+        // EntityManager.AddComponent(role, ComponentType.Create<PlayerInput>());
         EntityManager.AddComponentData(role, new PosSynchInfo {LastUploadPos = float3.zero});
         EntityManager.AddComponent(role, ComponentType.Create<UserCommand>());
         
@@ -100,9 +99,10 @@ public class RoleMgr
     private void InitRole(Entity role, long uid, Vector3 pos)
     {
         // EntityManager.AddComponentData(role, new Position {Value = new float3(pos.x, pos.y, pos.z)});
-        EntityManager.AddComponentData(role, new MoveSpeed {Value = 500});
+        EntityManager.AddComponentData(role, new MoveSpeed {Value = 200});
         EntityManager.AddComponentData(role, new TargetPosition {Value = new float3(pos.x, pos.y, pos.z)});
         EntityManager.AddComponentData(role, new LocomotionState {Value = LocomotionState.State.Idle});
+        EntityManager.AddComponentData(role, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
         // EntityManager.AddComponentData(role, new Rotation {Value = quaternion.identity});
         // EntityManager.AddComponentData(role, new GroundInfo());
         RoleState roleState = EntityManager.GetComponentObject<RoleState>(role);

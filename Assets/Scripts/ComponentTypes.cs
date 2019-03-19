@@ -5,14 +5,14 @@ using UnityEngine;
 
 namespace UnityMMO
 {
-    public struct PlayerInput : IComponentData
-    {
-        public float2 Move;
-    }
+    // public struct PlayerInput : IComponentData
+    // {
+    //     public float2 Move;
+    // }
 
-    public struct MainRoleTag : IComponentData
-    {
-    }
+    // public struct MainRoleTag : IComponentData
+    // {
+    // }
 
     public struct LocomotionState : IComponentData
     {
@@ -43,6 +43,19 @@ namespace UnityMMO
         public float StartTime;
     }
 
+    public struct ActionInfo : IComponentData
+    {
+        public enum Type
+        {
+            None = 0,
+            Skill1 = 1,
+            Skill2 = 2,
+            Skill3 = 3,
+            Skill4 = 4,
+        }
+        public Type Value;
+    }
+
     public struct MoveSpeed : IComponentData
     {
         public float Value;
@@ -56,6 +69,19 @@ namespace UnityMMO
     public struct PosSynchInfo : IComponentData
     {
         public float3 LastUploadPos;
+    }
+
+    public struct LooksInfo : IComponentData
+    {
+        public enum State
+        {
+            None = 0,
+            Loading = 1,
+            Loaded = 2,
+            // Deleting = 3,
+        }
+        public Entity LooksEntity;
+        public State CurState;
     }
 
     public struct GroundInfo : IComponentData

@@ -7,11 +7,14 @@ public class GameInput
     static GameInput instance;
     Dictionary<KeyCode, bool> keyUp;
     Vector2 joystickDir;
+    bool isBlock;
     private object InputSystem;
 
     public Vector2 JoystickDir 
     { 
         get {
+            if (isBlock)
+                return Vector2.zero;
             if (joystickDir.sqrMagnitude>0)
             {
                 return joystickDir; 
@@ -26,6 +29,8 @@ public class GameInput
         }
         set => joystickDir = value; 
     }
+
+    public bool IsBlock { get => isBlock; set => isBlock = value; }
 
     public static GameInput GetInstance()
     {
@@ -46,6 +51,8 @@ public class GameInput
 
     public bool GetKeyUp(KeyCode key)
     {
+        if (isBlock)
+            return false;
         bool isUp = false;
         keyUp.TryGetValue(key, out isUp);
         return isUp || UnityEngine.Input.GetKeyUp(key);

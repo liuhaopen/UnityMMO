@@ -1,5 +1,9 @@
-﻿using Unity.Entities;
+﻿using System.Collections.Generic;
+using Unity.Entities;
 using UnityEngine;
+using UnityEngine.Playables;
+using UnityEngine.Timeline;
+using XLuaFramework;
 
 namespace UnityMMO
 {
@@ -67,10 +71,64 @@ namespace UnityMMO
 
             command.lookPitch += deltaMousePos.y * configMouseSensitivity;
             command.lookPitch = Mathf.Clamp(command.lookPitch, 0, 180);
+            if (GameInput.GetInstance().GetKeyUp(KeyCode.U))
+                TestSkill1();
 
             command.jump = (command.jump!=0 || Input.GetKeyDown(KeyCode.Space))?1:0; 
             command.sprint = (command.sprint!=0 || Input.GetKey(KeyCode.LeftShift))?1:0;
             // command.skill = 
+        }
+
+        void TestSkill1()
+        {
+            string assetPath = "Assets/AssetBundleRes/role/career_2/skill/timeline/Attack.playable";
+            ResourceManager.GetInstance().LoadAsset<PlayableAsset>(assetPath, delegate(UnityEngine.Object[] objs)
+            {
+                if (objs==null || objs.Length<=0)
+                    return;
+                var mainRole = RoleMgr.GetInstance().GetMainRole();
+                var playerDirector = mainRole.GetComponent<PlayableDirector>();
+                playerDirector.playableAsset = objs[0] as PlayableAsset;
+                var animator = mainRole.GetComponentInChildren<Animator>();
+                Debug.Log("animator : "+(animator!=null).ToString());
+                // EntityManager.GetComponentData<
+                // mainRole.transform.Find("")
+                Dictionary<string, PlayableBinding> bindingDict = new Dictionary<string, PlayableBinding>();
+                foreach (var at in playerDirector.playableAsset.outputs)
+                {
+                    // if (!bindingDict.ContainsKey(at.streamName))
+                    // {
+                    //     Debug.Log("at.streamName : "+at.streamName);
+                    //     bindingDict.Add(at.streamName, at);
+                    // }
+                    if (at.streamName.StartsWith("AnimationTrack"))
+                    {
+                        playerDirector.SetGenericBinding(at.sourceObject, animator);
+                    }
+                    else if (at.streamName.StartsWith("ParticleTrack"))
+                    {
+                        var ct = at.sourceObject as ControlTrack;
+                        Debug.Log(" ct : "+(ct!=null).ToString());
+                        var looksInfo = EntityManager.GetComponentData<LooksInfo>(mainRole.Entity);
+                        var looksEntity = looksInfo.LooksEntity;
+                        var looksTrans = EntityManager.GetComponentObject<Transform>(looksEntity);
+                        var particleParent = looksTrans.Find("root");
+                        foreach (var info in ct.GetClips())
+                        {
+                            Debug.Log("info.displayName : "+info.displayName);
+                            if (info.displayName == "particle")
+                            {
+                                var cpa = info.asset as ControlPlayableAsset;
+                                 Debug.Log(" cpa : "+(cpa!=null).ToString());
+                                Debug.Log("cpa.sourceGameObject.exposedName : "+cpa.sourceGameObject.exposedName);
+                                playerDirector.SetReferenceValue(cpa.sourceGameObject.exposedName, particleParent.gameObject);
+                               
+                            }
+                        }
+                    }
+                }
+                playerDirector.Play();
+            });
         }
       
     }

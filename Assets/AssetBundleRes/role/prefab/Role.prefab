@@ -73,16 +73,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43a15ffa6f4da2b41b0aa9a0f8cac273, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slopeLimit: 0
-  stepOffset: 0
-  skinWidth: 0
-  minMoveDistance: 0
+  slopeLimit: 45
+  stepOffset: 0.3
+  skinWidth: 0.08
+  minMoveDistance: 0.001
   center:
     x: 0
-    y: 0
+    y: 0.75
     z: 0
-  radius: 0
-  height: 0
+  radius: 0.3
+  height: 1.5
 --- !u!320 &2476167516451789215
 PlayableDirector:
   m_ObjectHideFlags: 0

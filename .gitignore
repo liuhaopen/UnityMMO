@@ -53,6 +53,8 @@ sysinfo.txt
 UnityMMO.VC.db
 Assets/UIEditor/Res/Preview.meta
 .vscode/settings.json
+Assets/AssetBundleRes/role
+Assets/AssetBundleRes/role.meta
 Assets/AssetBundleRes/scene
 Assets/AssetBundleRes/scene.meta
 Assets/AssetBundleRes/monster
@@ -92,3 +94,5 @@ Assets/AssetBundleRes/scene/common/birch_tree/Materials/Birch_bark.mat
 Assets/AssetBundleRes/scene/common/birch_tree/Materials/Birch_bark.mat.meta
 Assets/AssetBundleRes/scene/common/birch_tree/Materials/Birch_leaves.mat
 Assets/AssetBundleRes/scene/common/birch_tree/Materials/Birch_leaves.mat.meta
+Assets/LuaFramework/*
+Assets/LuaFramework.meta

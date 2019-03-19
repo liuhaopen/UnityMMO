@@ -35,7 +35,7 @@ public class MovementUpdateSystem : BaseComponentSystem
             var moveDir = targetPos-startPos;
             var groundDir = moveDir;
             groundDir.y = 0;
-            bool isMoveWanted = Vector3.Magnitude(groundDir)!=0.0f;
+            bool isMoveWanted = Vector3.Magnitude(groundDir)>0.1f;
             var newPos = startPos+moveDir*speed/GameConst.SpeedFactor*dt;
             var moveQuery = moveQuerys[i];
             moveQuery.moveQueryStart = startPos;

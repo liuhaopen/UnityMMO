@@ -31,7 +31,6 @@ namespace UnityMMO{
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooksNetRequest>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooksSpawnRequests>(m_GameWorld));
 
-            // m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateRoleTransformFromLooks>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<CreateTargetPosFromUserInputSystem>(m_GameWorld));
 
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<MovementUpdateSystem>(m_GameWorld));
@@ -42,7 +41,9 @@ namespace UnityMMO{
             // m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleLooksFollowLogicTransform>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UploadMainRolePosSystem>(m_GameWorld));
 
-            // m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateGOBJPosSystem>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<SkillSpawnSystem>(m_GameWorld));
+
+            
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateRoleAnimatorSystem>(m_GameWorld));
     
         }
@@ -58,7 +59,7 @@ namespace UnityMMO{
             else
             {
                 //开始从后端请求场景信息，一旦开启就会在收到回复时再次请求
-                SynchFromNet.Instance.ReqSceneObjInfoChange();
+                SynchFromNet.Instance.StartSynchFromNet();
             }
             // TestLoadMultipleNavMeshInRunTime();
         }

@@ -170,12 +170,18 @@ public class SceneMgr : MonoBehaviour
 
     public void LoadScene(int scene_id, float pos_x=0.0f, float pos_y=0.0f, float pos_z=0.0f)
     {
+        Debug.Log("LoadScene scene_id "+(scene_id).ToString());
         isLoadingScene = true;
         isBaseWorldLoadOk = false;
         XLuaFramework.ResourceManager.GetInstance().LoadPrefabGameObjectWithAction(SceneInfoPath+"baseworld_"+scene_id+"/baseworld_"+scene_id+".prefab", delegate(UnityEngine.Object obj)
         {
             Debug.Log("load base world ok!");
-            Debug.Log("LoadScene scene_id "+(scene_id).ToString());
+            Transform baseworldTrans = (obj as GameObject).transform;
+            for (int i = 0; i < baseworldTrans.childCount; i++)
+            {
+                baseworldTrans.GetChild(i).gameObject.layer = LayerMask.NameToLayer("Ground");
+            }
+            // (obj as GameObject).layer = LayerMask.NameToLayer("Ground");
             LoadSceneInfo(scene_id, delegate(int result){
                 isLoadingScene = false;
                 isBaseWorldLoadOk = true;

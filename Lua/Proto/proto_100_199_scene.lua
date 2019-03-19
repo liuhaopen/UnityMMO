@@ -38,6 +38,23 @@ return [[
 	hp 2 : integer
 	maxhp 3 : integer
 }
+
+.scene_fight_defender_info {
+	uid 0 : integer
+	hp 1 : integer
+	hurt 2 : integer
+}
+.scene_fight_event_info {
+	attacker_uid 0 : integer
+	skill_id 1 : integer
+	skill_lv 2 : integer
+	attacker_pos_x 3 : integer
+	attacker_pos_y 4 : integer
+	attacker_pos_z 5 : integer
+	defenders 6 : *scene_fight_defender_info
+	time 7 : integer
+}
+
 .scene_npc_info {
 	npc_id 0 : integer
 	npc_type_id 1 : integer
@@ -87,7 +104,26 @@ scene_get_role_look_info 104 {
 	}
 }
 
-scene_get_monster_detail 105 {
+scene_use_skill 105 {
+	request {
+		skill_id 0 : integer
+		dir_angle 1 : integer
+		target_uid 2 : *integer
+	}
+	response {
+		result 0 : integer
+	}
+}
+
+scene_listen_fight_event 106 {
+	request {
+	}
+	response {
+		fight_events 0 : *scene_fight_event_info
+	}
+}
+
+scene_get_monster_detail 107 {
 	request {
 		uid 0 : integer
 	}

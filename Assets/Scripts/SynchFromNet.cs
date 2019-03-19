@@ -25,7 +25,33 @@ public class SynchFromNet {
     {
         changeFuncDic = new Dictionary<SceneInfoKey, Action<Entity, SprotoType.info_item>>();
         changeFuncDic[SceneInfoKey.PosChange] = ApplyChangeInfoPos;
-        changeFuncDic[SceneInfoKey.TargetPos] = ApplyChangeInfoPos;
+        changeFuncDic[SceneInfoKey.TargetPos] = ApplyChangeInfoTargetPos;
+    }
+
+    public void StartSynchFromNet()
+    {
+        ReqSceneObjInfoChange();
+        ReqNewFightEvens();
+    }
+
+    public void ReqNewFightEvens()
+    {
+        // Debug.Log("GameVariable.IsNeedSynchSceneInfo : "+GameVariable.IsNeedSynchSceneInfo.ToString());
+        if (GameVariable.IsNeedSynchSceneInfo)
+        {
+            SprotoType.scene_get_objs_info_change.request req = new SprotoType.scene_get_objs_info_change.request();
+            NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_get_objs_info_change>(req, OnAckFightEvents);
+        }
+        else
+        {
+            Timer.Register(0.5f, () => ReqNewFightEvens());
+        }
+    }
+
+    public void OnAckFightEvents(SprotoTypeBase result)
+    {
+        
+
     }
 
     public void ReqSceneObjInfoChange()
@@ -61,7 +87,7 @@ public class SynchFromNet {
             for (int info_index = 0; info_index < info_len; info_index++)
             {
                 var cur_change_info = change_info_list[info_index];
-                Debug.Log("cur_change_info.key : "+cur_change_info.key.ToString()+" scene_obj:"+(scene_obj!=Entity.Null).ToString()+ " ContainsKey:"+changeFuncDic.ContainsKey((SceneInfoKey)cur_change_info.key).ToString()+" uid"+uid.ToString()+" value:"+cur_change_info.value.ToString());
+                // Debug.Log("cur_change_info.key : "+cur_change_info.key.ToString()+" scene_obj:"+(scene_obj!=Entity.Null).ToString()+ " ContainsKey:"+changeFuncDic.ContainsKey((SceneInfoKey)cur_change_info.key).ToString()+" uid"+uid.ToString()+" value:"+cur_change_info.value.ToString());
                 if (cur_change_info.key == (int)SceneInfoKey.EnterScene)
                 {
                     if (scene_obj==Entity.Null)
@@ -95,13 +121,13 @@ public class SynchFromNet {
             Debug.Log("SynchFromNet recieve a wrong pos value : "+change_info.value);
             return;
         }
-        int new_x = int.Parse(pos_strs[0]);
-        int new_y = int.Parse(pos_strs[1]);
-        int new_z = int.Parse(pos_strs[2]);
+        long new_x = Int64.Parse(pos_strs[0]);
+        long new_y = Int64.Parse(pos_strs[1]);
+        long new_z = Int64.Parse(pos_strs[2]);
         if (SceneMgr.Instance.EntityManager.HasComponent<Transform>(entity))
         {
             Transform trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(entity);
-            Debug.Log("receive new pos"+new_x+" "+new_y+" "+new_z);
+            // Debug.Log("receive new pos"+new_x+" "+new_y+" "+new_z);
             trans.localPosition = new Vector3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic);
         }
         // SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = new float3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic)});
@@ -116,9 +142,9 @@ public class SynchFromNet {
             Debug.Log("SynchFromNet recieve a wrong pos value : "+change_info.value);
             return;
         }
-        int new_x = int.Parse(pos_strs[0]);
-        int new_y = int.Parse(pos_strs[1]);
-        int new_z = int.Parse(pos_strs[2]);
+        long new_x = Int64.Parse(pos_strs[0]);
+        long new_y = Int64.Parse(pos_strs[1]);
+        long new_z = Int64.Parse(pos_strs[2]);
         SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = new float3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic)});
     }
 }
