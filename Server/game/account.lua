@@ -82,7 +82,8 @@ function account.account_create_role( user_info, req_data )
 end
 
 function account.account_get_server_time( user_info, req_data )
-	return {server_time = os.time()}
+	local cur_time = skynet.time()
+	return {server_time = math.floor(cur_time*1000+0.5)}
 end
 
 function account.account_select_role_enter_game( user_info, req_data )

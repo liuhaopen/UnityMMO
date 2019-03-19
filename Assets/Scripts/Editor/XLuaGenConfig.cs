@@ -13,6 +13,7 @@ using XLua;
 using TMPro;
 using UnityEngine.UI;
 using static XLuaManager;
+using System.Reflection;
 //using System.Reflection;
 //using System.Linq;
 
@@ -70,10 +71,24 @@ public static class XLuaGenConfig
 
     [LuaCallCSharp]
     public static List<Type> LuaCallCSharpEntities = new List<Type>() {
-                typeof(Unity.Entities.World),
-                typeof(Unity.Entities.EntityManager)
+        typeof(Unity.Entities.World),
+        // typeof(Unity.Entities.Entity),
+        typeof(Unity.Entities.EntityManager)
     };
-            
+
+    // [LuaCallCSharp]
+    // public static List<Type> LuaCallCSharp
+    // {
+    //     get
+    //     {
+    //         Assembly.GetExecutingAssembly().GetTypes()
+    //         List<Type> list = Assembly.Load("UnityMMO").GetExportedTypes().Concat(customTypes)
+    //              .Where(type => !type.IsGenericTypeDefinition)//去除泛型
+    //             .Where(type => !type.IsNested);//去除嵌套类型
+    //             // .Where(type => !isExcluded(type)).ToList();
+    //         return list;
+    //     }
+    // }
 
     [LuaCallCSharp]
     public static List<Type> LuaCallCSharpTextMeshPro = new List<Type>() {
@@ -125,6 +140,8 @@ public static class XLuaGenConfig
                 new List<string>(){"System.IO.DirectoryInfo", "CreateSubdirectory", "System.String", "System.Security.AccessControl.DirectorySecurity"},
                 new List<string>(){"System.IO.DirectoryInfo", "Create", "System.Security.AccessControl.DirectorySecurity"},
                 new List<string>(){"UnityEngine.MonoBehaviour", "runInEditMode"},
+                new List<string>(){"Unity.Entities.EntityManager", "GetName", "Unity.Entities.Entity"},
+                new List<string>(){"Unity.Entities.EntityManager", "SetName", "Unity.Entities.Entity", "System.String"},
             };
 
     //static bool hasGenericParameter(Type type)

@@ -25,12 +25,16 @@ public struct RoleLooksSpawnRequest : IComponentData
         this.hair = hair;
     }
     
-    public static void Create(EntityCommandBuffer commandBuffer, int career, Vector3 position, Quaternion rotation, Entity ownerEntity, int body, int hair)
-    {
-        var data = new RoleLooksSpawnRequest(career, position, rotation, ownerEntity, body, hair);
-        commandBuffer.CreateEntity();
-        commandBuffer.AddComponent(data);
-    }
+    // public static void Create(EntityCommandBuffer commandBuffer, int career, Vector3 position, Quaternion rotation, Entity ownerEntity, int body, int hair)
+    // {
+    //     Debug.Log("create 1");
+    //     var data = new RoleLooksSpawnRequest(career, position, rotation, ownerEntity, body, hair);
+    //     Debug.Log("create 2");
+    //     commandBuffer.CreateEntity();
+    //     Debug.Log("create 3");
+    //     commandBuffer.AddComponent(data);
+    //     Debug.Log("create 4");
+    // }
 
     public static void Create(EntityManager entityMgr, int career, Vector3 position, Quaternion rotation, Entity ownerEntity, int body, int hair)
     {
@@ -101,8 +105,10 @@ public class HandleRoleLooksNetRequest : BaseComponentSystem
                     if (hasRoleState)
                     {
                         RoleState roleState = m_world.GetEntityManager().GetComponentObject<RoleState>(owner); 
-                        Debug.Log("roleState.position : "+roleState.position.ToString());
-                        RoleLooksSpawnRequest.Create(m_world.GetEntityManager(), (int)rsp.role_looks_info.career, roleState.position, Quaternion.identity, owner, (int)rsp.role_looks_info.body, (int)rsp.role_looks_info.hair);
+                        Debug.Log("roleState.position : "+roleState.transform.localPosition.ToString());
+                        //因为是异步操作，等后端发送信息过来时PostUpdateCommands已经失效了，所以不能这么用
+                        // RoleLooksSpawnRequest.Create(PostUpdateCommands, (int)rsp.role_looks_info.career, roleState.transform.localPosition, roleState.transform.localRotation, owner, (int)rsp.role_looks_info.body, (int)rsp.role_looks_info.hair);
+                        RoleLooksSpawnRequest.Create(m_world.GetEntityManager(), (int)rsp.role_looks_info.career, roleState.transform.localPosition, roleState.transform.localRotation, owner, (int)rsp.role_looks_info.body, (int)rsp.role_looks_info.hair);
                     }
                 }
             });
@@ -122,52 +128,43 @@ public class HandleRoleLooks : BaseComponentSystem
     {
         Debug.Log("on OnCreateManager HandleRoleLooks");
         base.OnCreateManager();
-        RoleGroup = GetComponentGroup(typeof(RoleState), typeof(Position));
+        RoleGroup = GetComponentGroup(typeof(RoleState), typeof(LooksInfo));
     }
 
     protected override void OnUpdate()
     {
         EntityArray entities = RoleGroup.GetEntityArray();
         var roleStateArray = RoleGroup.GetComponentArray<RoleState>();
+        var looksInfoArray = RoleGroup.GetComponentDataArray<LooksInfo>();
         var mainRoleGOE = RoleMgr.GetInstance().GetMainRole();
         float3 mainRolePos = float3.zero;
         if (mainRoleGOE!=null)
-            mainRolePos = m_world.GetEntityManager().GetComponentData<Position>(mainRoleGOE.Entity).Value;
-        for (int i=0; i<roleStateArray.Length; i++)
+            mainRolePos = m_world.GetEntityManager().GetComponentObject<Transform>(mainRoleGOE.Entity).localPosition;
+        for (int i=0; i<looksInfoArray.Length; i++)
         {
             var roleState = roleStateArray[i];
+            var looksInfo = looksInfoArray[i];
             var entity = entities[i];
             bool isNeedReqLooksInfo = false;
             bool isNeedHideLooks = false;
 
             //其它玩家离主角近时就要请求该玩家的角色外观信息
-            var curPos = m_world.GetEntityManager().GetComponentData<Position>(entity).Value;
+            var curPos = m_world.GetEntityManager().GetComponentObject<Transform>(entity).localPosition;
             float distance = Vector3.Distance(curPos, mainRolePos);
-            Debug.Log("distance : "+distance);
-            if (!roleState.hasLooks)
+            if (looksInfo.CurState == LooksInfo.State.None)
             {
                 isNeedReqLooksInfo = distance <= 400;
-                // bool isMainRole = m_world.GetEntityManager().HasComponent(entity, typeof(UnityMMO.MainRoleTag));
-                // if (isMainRole)
-                // {
-                //     isNeedReqLooksInfo = true;
-                // }
-                // else
-                // {
-                    // //其它玩家离主角近时就要请求该玩家的角色外观信息
-                    // var curPos = m_world.GetEntityManager().GetComponentData<Position>(entity).Value;
-                    // float distance = Vector3.Distance(curPos, mainRolePos);
-                    // Debug.Log("distance : "+distance);
-                    // isNeedReqLooksInfo = distance <= 200;
-                // }
             }
             else
             {
                 isNeedHideLooks = distance >= 300;
             }
+            // Debug.Log("isNeedReqLooksInfo : "+isNeedReqLooksInfo.ToString()+" looksInfo.CurState:"+looksInfo.CurState.ToString());
             if (isNeedReqLooksInfo)
             {
                 roleState.hasLooks = true;
+                looksInfo.CurState = LooksInfo.State.Loading;
+                looksInfoArray[i] = looksInfo;
                 RoleLooksNetRequest.Create(PostUpdateCommands, roleState.roleUid, entity);
             }
         }
@@ -212,6 +209,7 @@ public class HandleRoleLooksSpawnRequests : BaseComponentSystem
         {
             var request = spawnRequests[i];
             var playerState = EntityManager.GetComponentObject<RoleState>(request.ownerEntity);
+            var looksInfo = EntityManager.GetComponentData<LooksInfo>(request.ownerEntity);
             int career = request.career;
             int body = request.body;
             int hair = request.hair;
@@ -226,11 +224,20 @@ public class HandleRoleLooksSpawnRequests : BaseComponentSystem
                 {
                     GameObject bodyObj = objs[0] as GameObject;
                     GameObjectEntity bodyOE = m_world.Spawn<GameObjectEntity>(bodyObj);
-                    bodyOE.transform.SetParent(UnityMMO.RoleMgr.GetInstance().RoleContainer);
-                    bodyOE.transform.localPosition = request.position;
-                    bodyOE.GetComponent<Rigidbody>().isKinematic = true;
+                    var parentTrans = EntityManager.GetComponentObject<Transform>(request.ownerEntity);
+                    parentTrans.localPosition = request.position;
+                    bodyOE.transform.SetParent(parentTrans);
+                    // bodyOE.transform.SetParent(UnityMMO.RoleMgr.GetInstance().RoleContainer);
+                    // bodyOE.transform.localPosition = request.position;
+                    bodyOE.transform.localPosition = Vector3.zero;
+                    bodyOE.transform.localRotation = Quaternion.identity;
+                    // bodyOE.GetComponent<Rigidbody>().isKinematic = true;
                     playerState.looksEntity = bodyOE.Entity;
                     LoadHair(hairPath, bodyOE.transform.Find("head"));
+                    Debug.Log("load ok role model");
+                    looksInfo.CurState = LooksInfo.State.Loaded;
+                    looksInfo.LooksEntity = bodyOE.Entity;
+                    EntityManager.SetComponentData<LooksInfo>(request.ownerEntity, looksInfo);
                 }
                 else
                 {

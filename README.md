@@ -36,16 +36,15 @@
 
 # Todo
 前端:   
-)人物场景漫游-ECS做法(70%)  
-)场景切割及动态加载(85%)  
+)人物场景漫游-ECS做法(90%)  
+)场景切割及动态加载(95%)  
 )基于组件的UI框架(85%)  
-)人物动作方面等Unity的新版Animation系统(IAnimationJob)完善后再介入吧  
 )战斗系统  
 )场景模型LOD,试试UnityGithub上的AutoLOD  
 
 后端:  
 )lua版本的ECS(70%)  
-)人物的移动同步(80%)  
+)人物的移动同步(90%)  
 )NPC与怪物AI(5%)     
 )使用Redis  
 )AOI  
@@ -74,11 +73,11 @@
 19.10.15：增加lua版本的cocos action  
 19.10.25：增加本地存档接口cookiemgr，保存一些本地设置如历史输入帐号  
 18.11.08：写脚本导出场景信息给后端使用（npc和怪物列表），直接生成lua代码。  
-18.11.13：初步完成的大世界场景分块加载（还在考虑无限场景的NavMesh资源管理，先尝试用跳跃点连接n个地图块的navmesh）:   
-![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/run_in_terrain.gif)   
+18.11.13：初步完成的大世界场景分块加载（还在考虑无限场景的NavMesh资源管理，先尝试用跳跃点连接n个地图块的navmesh）  
 18.11.23：由于unity的entities版本更新修改较多导致之前的部分逻辑要重写了，感觉还是暂时先不弄前端的game play逻辑较好，先弄寻路和后端逻辑吧。开始写后端逻辑后想用ecs，考虑了两种方案：1把unity的entites去掉unity引擎的依赖并移植到linux然后导出接口给lua，2用lua实现一份ecs。最后选择了方案2，因为方案1需要在linux上运行c#，连带上了整个mono运行时，这就太累赘了。所以还是用lua实现多一份的好，虽然已经有很多第三方ecs库了，但还是自己实现的好玩。  
 18.12.15：unity的entities框架从c#转换为lua实现时需要留意几点：1）数组从0起始，而lua习惯了从1开始，0索引会放在hash部分，所以大部分代码都要改成1起始，用起来也方便一点，有个例外就是ChunkDataUtility.lua里面的函数还是0起始，因为要直接操作指针。  
 2）为了保证组件信息尽量存放在连续内存中，从而提高缓存命中率，组件信息都平坦地保存在名为Chunk的userdata里，引用时根据偏移算出指针地址进行读写。  
 19.01.23：初步完成了可运行的lua版本ecs框架了（因为公司游戏上线忙死了所以基本上没什么时间弄），开始做后端的NPC和怪物逻辑吧，边做功能边给lua ecs补特性吧。后端的寻路就用recastnavigation库吧，要先导出接口给lua，其次是unity-navmesh导出的数据不能直接用的，所以还要写个脚本把unity生成的navmesh导出成recast支持的格式  
 19.02.03：前端的寻路资源流程确定为大世界的navmesh分块打包（需要划分到不同的scene把所有节点删光，这样就只有navmesh数据了），然后运行时可以Additive模式加载该Scene，当然导出navmesh前还需要拉几个OffMeshLink，这样加载多个scene时会就自动把多个navmesh关联起来。  
 19.02.13：终于把unity的navmesh导出成recastnavigation可以使用的数据了，主要思路是利用unity的NavMesh.CalculateTriangulation方法返回的三角形数据转化为recast里的rcPolyMesh对象然后再参照RecastDemo那样创建出dtNavMesh对象，详细见[Navigator](https://github.com/liuhaopen/Navigator "Navigator")  
+19.03.17：把人物场景漫游的逻辑换成ECS实现了，不过动作还是用Animator，场景加载还是先改成baseworld加细节物件九宫格加载：![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/run_in_green_scene.gif)   

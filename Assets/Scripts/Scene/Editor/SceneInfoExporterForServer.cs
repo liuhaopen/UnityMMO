@@ -13,8 +13,39 @@ public class SceneInfoExporterForServer : Editor
 {
     const string SavePath = "Assets/ConfigServer/";
 
-    [MenuItem("Terrain/Export Scene Info For Server")]
+    [MenuItem("SceneEditor/Export Scene Info For Server")]
     private static void Export()
+    {
+        // {
+        //     Text();
+        //     return;
+        // }
+        SceneInfoForServer scene_info = Selection.activeTransform.GetComponent<SceneInfoForServer>();
+        if (scene_info == null)
+        {
+            EditorUtility.DisplayDialog("Warning", "you must select a GameObject with SceneInfoForServer component", "Ok");
+            return;
+        }
+        SceneInfoForServer export_info = new SceneInfoForServer();
+        export_info.scene_id = scene_info.scene_id;
+        export_info.scene_name = scene_info.scene_name;
+        DoorInfo[] door_list = Selection.activeTransform.GetComponentsInChildren<DoorInfo>();
+        export_info.door_list = new List<DoorInfo>(door_list);
+        BornInfo[] born_list = Selection.activeTransform.GetComponentsInChildren<BornInfo>();
+        export_info.born_list = new List<BornInfo>(born_list);
+        NPCInfo[] npc_list = Selection.activeTransform.GetComponentsInChildren<NPCInfo>();
+        export_info.npc_list = new List<NPCInfo>(npc_list);
+        MonsterInfo[] monster_list = Selection.activeTransform.GetComponentsInChildren<MonsterInfo>();
+        export_info.monster_list = new List<MonsterInfo>(monster_list);
+        string content = LuaUtility.ToLua(export_info);
+        content = "local config = " + content;
+        Debug.Log(content);
+        content += "\nreturn config";
+        string save_file_path = SavePath+"config_scene_"+export_info.scene_id+".lua";
+        File.WriteAllText(save_file_path, content);
+        Debug.Log("save to file path : "+save_file_path);
+    }
+    private static void Text()
     {
         SceneInfoForServer export_info = new SceneInfoForServer();
         export_info.scene_id = 1001;
@@ -22,7 +53,7 @@ public class SceneInfoExporterForServer : Editor
         export_info.door_list = new List<DoorInfo>();
         DoorInfo door = new DoorInfo();
         door.door_id = 1;
-        door.pos_x = 1.1f;
+        // door.pos_x = 1.1f;
         door.pos_y = 2.2f;
         door.pos_z = 3.123456f;
         door.target_scene_id = 1002;
@@ -47,12 +78,10 @@ public class SceneInfoExporterForServer : Editor
         monster.pos_y = 2.2f;
         monster.pos_z = 3.123456f;
         export_info.monster_list.Add(monster);
-
         // export_info.test_dic = new Dictionary<int, string>();
         // export_info.test_dic.Add(1, "one");
         // export_info.test_dic.Add(3, "three");
         // export_info.test_dic.Add(6, "haha");
-        
         string content = LuaUtility.ToLua(export_info);
         Debug.Log("SceneInfoExporterForServer:Export content : "+content);
     }

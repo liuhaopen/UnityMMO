@@ -21,7 +21,7 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(Unity.Entities.EntityManager);
-			Utils.BeginObjectRegister(type, L, translator, 0, 33, 7, 2);
+			Utils.BeginObjectRegister(type, L, translator, 0, 31, 7, 2);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "CreateComponentGroup", _m_CreateComponentGroup);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "CreateArchetype", _m_CreateArchetype);
@@ -31,8 +31,6 @@ namespace XLua.CSObjectWrap
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "CreateChunk", _m_CreateChunk);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetChunk", _m_GetChunk);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "DestroyEntity", _m_DestroyEntity);
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetName", _m_GetName);
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "SetName", _m_SetName);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Exists", _m_Exists);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "HasComponent", _m_HasComponent);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Instantiate", _m_Instantiate);
@@ -428,64 +426,6 @@ namespace XLua.CSObjectWrap
             }
             
             return LuaAPI.luaL_error(L, "invalid arguments to Unity.Entities.EntityManager.DestroyEntity!");
-            
-        }
-        
-        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_GetName(RealStatePtr L)
-        {
-		    try {
-            
-                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-            
-            
-                Unity.Entities.EntityManager gen_to_be_invoked = (Unity.Entities.EntityManager)translator.FastGetCSObj(L, 1);
-            
-            
-                
-                {
-                    Unity.Entities.Entity _entity;translator.Get(L, 2, out _entity);
-                    
-                        string gen_ret = gen_to_be_invoked.GetName( _entity );
-                        LuaAPI.lua_pushstring(L, gen_ret);
-                    
-                    
-                    
-                    return 1;
-                }
-                
-            } catch(System.Exception gen_e) {
-                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
-            }
-            
-        }
-        
-        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_SetName(RealStatePtr L)
-        {
-		    try {
-            
-                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-            
-            
-                Unity.Entities.EntityManager gen_to_be_invoked = (Unity.Entities.EntityManager)translator.FastGetCSObj(L, 1);
-            
-            
-                
-                {
-                    Unity.Entities.Entity _entity;translator.Get(L, 2, out _entity);
-                    string _name = LuaAPI.lua_tostring(L, 3);
-                    
-                    gen_to_be_invoked.SetName( _entity, _name );
-                    
-                    
-                    
-                    return 0;
-                }
-                
-            } catch(System.Exception gen_e) {
-                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
-            }
             
         }
         

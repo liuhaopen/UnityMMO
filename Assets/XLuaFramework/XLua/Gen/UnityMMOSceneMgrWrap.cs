@@ -21,13 +21,16 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(UnityMMO.SceneMgr);
-			Utils.BeginObjectRegister(type, L, translator, 0, 11, 5, 4);
+			Utils.BeginObjectRegister(type, L, translator, 0, 14, 10, 6);
 			
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Awake", _m_Awake);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "CheckMainRolePos", _m_CheckMainRolePos);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Init", _m_Init);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "OnDestroy", _m_OnDestroy);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "LoadScene", _m_LoadScene);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "ApplyDetector", _m_ApplyDetector);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "CorrectMainRolePos", _m_CorrectMainRolePos);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetCorrectPos", _m_GetCorrectPos);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "ApplyMainRole", _m_ApplyMainRole);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "AddMainRole", _m_AddMainRole);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "AddRole", _m_AddRole);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "AddNPC", _m_AddNPC);
@@ -38,14 +41,21 @@ namespace XLua.CSObjectWrap
 			
 			Utils.RegisterFunc(L, Utils.GETTER_IDX, "EntityManager", _g_get_EntityManager);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "IsLoadingScene", _g_get_IsLoadingScene);
+            Utils.RegisterFunc(L, Utils.GETTER_IDX, "FreeLookCamera", _g_get_FreeLookCamera);
+            Utils.RegisterFunc(L, Utils.GETTER_IDX, "MainCameraTrans", _g_get_MainCameraTrans);
+            Utils.RegisterFunc(L, Utils.GETTER_IDX, "FreeLookCameraTrans", _g_get_FreeLookCameraTrans);
+            Utils.RegisterFunc(L, Utils.GETTER_IDX, "CurSceneInfo", _g_get_CurSceneInfo);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "MonsterArchetype", _g_get_MonsterArchetype);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "NPCArchetype", _g_get_NPCArchetype);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "detector", _g_get_detector);
+            Utils.RegisterFunc(L, Utils.GETTER_IDX, "groundLayer", _g_get_groundLayer);
             
 			Utils.RegisterFunc(L, Utils.SETTER_IDX, "IsLoadingScene", _s_set_IsLoadingScene);
+            Utils.RegisterFunc(L, Utils.SETTER_IDX, "FreeLookCamera", _s_set_FreeLookCamera);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "MonsterArchetype", _s_set_MonsterArchetype);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "NPCArchetype", _s_set_NPCArchetype);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "detector", _s_set_detector);
+            Utils.RegisterFunc(L, Utils.SETTER_IDX, "groundLayer", _s_set_groundLayer);
             
 			
 			Utils.EndObjectRegister(type, L, translator, null, null,
@@ -94,7 +104,7 @@ namespace XLua.CSObjectWrap
         
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_Awake(RealStatePtr L)
+        static int _m_CheckMainRolePos(RealStatePtr L)
         {
 		    try {
             
@@ -107,7 +117,7 @@ namespace XLua.CSObjectWrap
                 
                 {
                     
-                    gen_to_be_invoked.Awake(  );
+                    gen_to_be_invoked.CheckMainRolePos(  );
                     
                     
                     
@@ -259,6 +269,90 @@ namespace XLua.CSObjectWrap
                     SceneDetectorBase _detector = (SceneDetectorBase)translator.GetObject(L, 2, typeof(SceneDetectorBase));
                     
                     gen_to_be_invoked.ApplyDetector( _detector );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_CorrectMainRolePos(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    
+                    gen_to_be_invoked.CorrectMainRolePos(  );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_GetCorrectPos(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    UnityEngine.Vector3 _originPos;translator.Get(L, 2, out _originPos);
+                    
+                        UnityEngine.Vector3 gen_ret = gen_to_be_invoked.GetCorrectPos( _originPos );
+                        translator.PushUnityEngineVector3(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_ApplyMainRole(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    Unity.Entities.GameObjectEntity _mainRole = (Unity.Entities.GameObjectEntity)translator.GetObject(L, 2, typeof(Unity.Entities.GameObjectEntity));
+                    
+                    gen_to_be_invoked.ApplyMainRole( _mainRole );
                     
                     
                     
@@ -478,6 +572,62 @@ namespace XLua.CSObjectWrap
         }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_FreeLookCamera(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
+                translator.Push(L, gen_to_be_invoked.FreeLookCamera);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_MainCameraTrans(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
+                translator.Push(L, gen_to_be_invoked.MainCameraTrans);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_FreeLookCameraTrans(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
+                translator.Push(L, gen_to_be_invoked.FreeLookCameraTrans);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_CurSceneInfo(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
+                translator.Push(L, gen_to_be_invoked.CurSceneInfo);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         static int _g_get_Instance(RealStatePtr L)
         {
 		    try {
@@ -531,6 +681,20 @@ namespace XLua.CSObjectWrap
             return 1;
         }
         
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_groundLayer(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
+                translator.Push(L, gen_to_be_invoked.groundLayer);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
+        
         
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -541,6 +705,21 @@ namespace XLua.CSObjectWrap
 			
                 UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
                 gen_to_be_invoked.IsLoadingScene = LuaAPI.lua_toboolean(L, 2);
+            
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 0;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _s_set_FreeLookCamera(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
+                gen_to_be_invoked.FreeLookCamera = (Cinemachine.CinemachineFreeLook)translator.GetObject(L, 2, typeof(Cinemachine.CinemachineFreeLook));
             
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
@@ -601,6 +780,22 @@ namespace XLua.CSObjectWrap
 			
                 UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
                 gen_to_be_invoked.detector = (SceneDetectorBase)translator.GetObject(L, 2, typeof(SceneDetectorBase));
+            
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 0;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _s_set_groundLayer(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
+                UnityEngine.LayerMask gen_value;translator.Get(L, 2, out gen_value);
+				gen_to_be_invoked.groundLayer = gen_value;
             
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);

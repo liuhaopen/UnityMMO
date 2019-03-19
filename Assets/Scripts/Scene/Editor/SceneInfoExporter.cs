@@ -13,7 +13,7 @@ public class SceneInfoExporter : Editor
 {
     const string SavePath = "Assets/AssetBundleRes/scene/";
 
-    [MenuItem("Terrain/Export Scene Info")]
+    [MenuItem("SceneEditor/Export Scene Info")]
     private static void Export()
     {
         SceneInfo export_info = new SceneInfo();
@@ -46,20 +46,26 @@ public class SceneInfoExporter : Editor
 
         SaveLightInfo(export_info);
 
+        BornInfo[] born_list = Selection.activeTransform.GetComponentsInChildren<BornInfo>();
+        export_info.BornList = new List<BornInfoData>();
+        foreach (var item in born_list)
+        {
+            export_info.BornList.Add(new BornInfoData(item.GetUnityPos(), item.born_id));
+        }
+        Debug.Log("born_list : "+born_list.Length+" "+export_info.BornList.Count);
         // DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(SceneInfo));
         // MemoryStream msObj = new MemoryStream();
-        // //将序列化之后的Json格式数据写入流中
+        //将序列化之后的Json格式数据写入流中
         // js.WriteObject(msObj, export_info);
         // msObj.Position = 0;
         // StreamReader sr = new StreamReader(msObj, Encoding.UTF8);
         // string json = sr.ReadToEnd();
-        // File.WriteAllText(SavePath+Selection.activeGameObject.name+"/scene_info.json", json);
         // sr.Close();
         // msObj.Close();
-        string json = JsonUtility.ToJson(export_info);
-        File.WriteAllText(SavePath+Selection.activeGameObject.name+"/scene_info.json", json);
-        Debug.Log("export : "+json);
-        // Debug.Log("export : "+json);
+        string json = JsonUtility.ToJson(export_info, true);
+        string savePath = SavePath+Selection.activeGameObject.name+"/scene_info.json";
+        File.WriteAllText(savePath, json);
+        Debug.Log("export succeed : "+savePath+" content : "+json);
     }
 
     private static void SaveLightInfo(SceneInfo export_info)
@@ -97,7 +103,8 @@ public class SceneInfoExporter : Editor
         {
             for (int i = 0; i < transform.childCount; i++)
             {
-                PickChild(transform.GetChild(i), sceneObjectList);
+                if (transform.GetChild(i).gameObject.activeSelf)
+                    PickChild(transform.GetChild(i), sceneObjectList);
             }
         }
     }

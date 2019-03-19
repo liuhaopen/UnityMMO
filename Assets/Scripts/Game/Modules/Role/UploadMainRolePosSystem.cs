@@ -15,32 +15,39 @@ public class UploadMainRolePosSystem : BaseComponentSystem
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        group = GetComponentGroup(typeof(Position), typeof(TargetPosition), typeof(MainRoleTag));
+        group = GetComponentGroup(typeof(Transform), typeof(TargetPosition), typeof(PosSynchInfo));
     }
 
     protected override void OnUpdate()
     {
-        if (Time.time - lastSynchTime < 0.2 || !GameVariable.IsNeedSynchSceneInfo)
+        if (Time.time - lastSynchTime < 0.5 || !GameVariable.IsNeedSynchSceneInfo)
             return;
-        lastSynchTime = Time.time;
-        var positions = group.GetComponentDataArray<Position>();
+        var positions = group.GetComponentArray<Transform>();
         var targetPositions = group.GetComponentDataArray<TargetPosition>();
+        var synchInfos = group.GetComponentDataArray<PosSynchInfo>();
         long synchTime = System.DateTime.Now.Millisecond;
         for (int i=0; i<targetPositions.Length; i++)
         {
             var targetPos = targetPositions[i].Value;
-            var pos = positions[i].Value;
-
+            var pos = positions[i].localPosition;
+            var synchInfo = synchInfos[i];
+            var distance = Vector3.Distance(targetPos, pos);
+            var distance_with_last = Vector3.Distance(synchInfo.LastUploadPos, pos);
+            // Debug.Log("distance:"+distance+" distance_with_last:"+distance_with_last+" upload pos"+pos.x+" "+pos.y+" "+pos.z);
+            if (distance <= 0.5 && distance_with_last <= 0.5)
+                continue;
+            synchInfo.LastUploadPos = pos;
+            synchInfos[i] = synchInfo;
             scene_walk.request walk = new scene_walk.request();
-            // Debug.Log("upload pos"+pos.ToString());
-            walk.start_x = (int)(pos.x*GameConst.RealToLogic);
-            walk.start_y = (int)(pos.y*GameConst.RealToLogic);
-            walk.start_z = (int)(pos.z*GameConst.RealToLogic);
-            walk.end_x = (int)(targetPos.x*GameConst.RealToLogic);
-            walk.end_y = (int)(targetPos.y*GameConst.RealToLogic);
-            walk.end_z = (int)(targetPos.z*GameConst.RealToLogic);
+            walk.start_x = (long)(pos.x*GameConst.RealToLogic);
+            walk.start_y = (long)(pos.y*GameConst.RealToLogic);
+            walk.start_z = (long)(pos.z*GameConst.RealToLogic);
+            walk.end_x = (long)(targetPos.x*GameConst.RealToLogic);
+            walk.end_y = (long)(targetPos.y*GameConst.RealToLogic);
+            walk.end_z = (long)(targetPos.z*GameConst.RealToLogic);
             walk.time = synchTime;
             NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_walk>(walk);
+            lastSynchTime = Time.time;
         }
     }
 }

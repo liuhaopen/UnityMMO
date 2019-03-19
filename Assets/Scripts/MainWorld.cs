@@ -31,16 +31,21 @@ namespace UnityMMO{
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooksNetRequest>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooksSpawnRequests>(m_GameWorld));
 
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateRoleTransformFromLooks>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<CreateTargetPosFromUserInputSystem>(m_GameWorld));
 
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<TargetPosSystem>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<MovementUpdateSystem>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleMovementQueries>(m_GameWorld));
+
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<GroundTestSystem>(m_GameWorld));
 
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleLooksFollowLogicTransform>(m_GameWorld));
+            // m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleLooksFollowLogicTransform>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UploadMainRolePosSystem>(m_GameWorld));
 
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<SkillSpawnSystem>(m_GameWorld));
+
             
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateRoleAnimatorSystem>(m_GameWorld));
+    
         }
 
         public void StartGame() {
@@ -54,7 +59,7 @@ namespace UnityMMO{
             else
             {
                 //开始从后端请求场景信息，一旦开启就会在收到回复时再次请求
-                SynchFromNet.Instance.ReqSceneObjInfoChange();
+                SynchFromNet.Instance.StartSynchFromNet();
             }
             // TestLoadMultipleNavMeshInRunTime();
         }
@@ -62,6 +67,7 @@ namespace UnityMMO{
         private void Update() {
             // Debug.Log("main world update");
             m_Systems.Update();
+            GameInput.GetInstance().Reset();
         }
         
         void TestLoadMultipleNavMeshInRunTime()

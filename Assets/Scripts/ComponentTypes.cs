@@ -5,13 +5,55 @@ using UnityEngine;
 
 namespace UnityMMO
 {
-    public struct PlayerInput : IComponentData
+    // public struct PlayerInput : IComponentData
+    // {
+    //     public float2 Move;
+    // }
+
+    // public struct MainRoleTag : IComponentData
+    // {
+    // }
+
+    public struct LocomotionState : IComponentData
     {
-        public float2 Move;
+        public enum State
+        {
+            Idle,
+            Run,
+            Sprint,
+            Jump,
+            DoubleJump,
+            TrebleJump,
+            InAir,
+            StateNum,
+        }
+        public State Value;
     }
 
-    public struct MainRoleTag : IComponentData
+    public struct JumpInfo : IComponentData
     {
+        public enum State
+        {
+            None = 0,
+            StartJump = 1,
+            InAir = 2,
+            EndJump = 3,
+        }
+        public State JumpState;
+        public float StartTime;
+    }
+
+    public struct ActionInfo : IComponentData
+    {
+        public enum Type
+        {
+            None = 0,
+            Skill1 = 1,
+            Skill2 = 2,
+            Skill3 = 3,
+            Skill4 = 4,
+        }
+        public Type Value;
     }
 
     public struct MoveSpeed : IComponentData
@@ -26,16 +68,33 @@ namespace UnityMMO
 
     public struct PosSynchInfo : IComponentData
     {
-        public float3 StartPos;
-        public float3 EndPos;
+        public float3 LastUploadPos;
     }
 
-    public class GroundInfo : MonoBehaviour
+    public struct LooksInfo : IComponentData
     {
-        public Collider groundCollider;
+        public enum State
+        {
+            None = 0,
+            Loading = 1,
+            Loaded = 2,
+            // Deleting = 3,
+        }
+        public Entity LooksEntity;
+        public State CurState;
+    }
+
+    public struct GroundInfo : IComponentData
+    {
+        // public Collider groundCollider;
         public Vector3 groundNormal;
         public float altitude; 
-        public GroundInfo(){}
+        // public GroundInfo(){}
+    }
+
+    public struct SprintInfo : IComponentData
+    {
+        public int IsSprinting;//1:yes
     }
 
     public struct Shot : IComponentData

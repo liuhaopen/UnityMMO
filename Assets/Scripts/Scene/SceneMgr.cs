@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using Cinemachine;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -23,6 +25,7 @@ public class SceneMgr : MonoBehaviour
     public EntityArchetype MonsterArchetype;
     public EntityArchetype NPCArchetype;
     Dictionary<long, Entity> entityDic;
+    SceneInfo curSceneInfo;
     Entity mainRole;
     public SceneDetectorBase detector;
     private SceneObjectLoadController m_Controller;
@@ -31,18 +34,37 @@ public class SceneMgr : MonoBehaviour
     // GameObject mainRolePrefab;
     // GameObject rolePrefab;
     private bool isLoadingScene = false;
+    bool isBaseWorldLoadOk = false;
+    public LayerMask groundLayer = 1 << 0;
+    float lastCheckMainRolePosTime = 0;
 
     Dictionary<string, GameObject> prefabDic;
 
     public EntityManager EntityManager { get => m_GameWorld.GetEntityManager();}
     public bool IsLoadingScene { get => isLoadingScene; set => isLoadingScene = value; }
+    public CinemachineFreeLook FreeLookCamera { get => freeLookCamera; set => freeLookCamera = value; }
+    public Transform MainCameraTrans { get => mainCameraTrans; }
+    public Transform FreeLookCameraTrans { get => freeLookCameraTrans; }
+    public SceneInfo CurSceneInfo { get => curSceneInfo; }
 
-    public void Awake()
+    Cinemachine.CinemachineFreeLook freeLookCamera;
+    Transform freeLookCameraTrans;
+    Transform mainCameraTrans;
+
+    void Awake()
 	{
 		Instance = this; // worst singleton ever but it works
 		// EntityManager = World.Active.GetExistingManager<EntityManager>();
         entityDic = new Dictionary<long, Entity>();
         prefabDic = new Dictionary<string, GameObject>();
+        var mainCamera = GameObject.Find("MainCamera");
+        mainCameraTrans = mainCamera.transform;
+        var camera = GameObject.Find("FreeLookCamera");
+        if (camera != null)
+        {
+            freeLookCameraTrans = camera.transform;
+            FreeLookCamera = camera.GetComponent<Cinemachine.CinemachineFreeLook>();
+        }
 	}
 
     void Update()
@@ -50,6 +72,24 @@ public class SceneMgr : MonoBehaviour
         // Debug.Log("detector : "+(detector!=null).ToString()+" cont : "+(m_Controller != null).ToString());
         if (detector != null && m_Controller != null)
             m_Controller.RefreshDetector(detector);
+        
+        CheckMainRolePos();
+    }
+
+    public void CheckMainRolePos()
+    {
+        if (Time.time - lastCheckMainRolePosTime < 3)
+            return;
+        var mainRole = RoleMgr.GetInstance().GetMainRole();
+        if (!isBaseWorldLoadOk || mainRole == null || curSceneInfo==null)
+            return;
+        
+        lastCheckMainRolePosTime = Time.time;
+
+        Vector3 curPos = mainRole.transform.localPosition;
+        bool isInScene = curSceneInfo.Bounds.Contains(curPos);
+        if (!isInScene)
+            CorrectMainRolePos();
     }
 
 	public void Init(GameWorld world)
@@ -94,21 +134,15 @@ public class SceneMgr : MonoBehaviour
         return str;
     }
 
-    public void LoadScene(int scene_id, float pos_x=0.0f, float pos_y=0.0f, float pos_z=0.0f)
+    void LoadSceneInfo(int scene_id, Action<int> action)
     {
-        isLoadingScene = true;
-        XLuaFramework.ResourceManager.GetInstance().LoadPrefabGameObjectWithAction(SceneInfoPath+"baseworld_"+scene_id+"/baseworld_"+scene_id+".prefab", delegate(UnityEngine.Object obj)
-        {
-            Debug.Log("load base world ok");
-            isLoadingScene = false;
-        });
-        Debug.Log("LoadScene scene_id "+(scene_id).ToString());
         //load scene info from json file(which export from SceneInfoExporter.cs)
         XLuaFramework.ResourceManager.GetInstance().LoadAsset<TextAsset>(SceneInfoPath+"scene_"+scene_id.ToString() +"/scene_info.json", delegate(UnityEngine.Object[] objs) {
             TextAsset txt = objs[0] as TextAsset;
             string scene_json = txt.text;
             scene_json = Repalce(scene_json);
             SceneInfo scene_info = JsonUtility.FromJson<SceneInfo>(scene_json);
+            curSceneInfo = scene_info;
             ApplyLightInfo(scene_info);
             
             m_Controller = gameObject.GetComponent<SceneObjectLoadController>();
@@ -130,10 +164,33 @@ public class SceneMgr : MonoBehaviour
             {
                 detector = mainRoleGOE.GetComponent<SceneDetectorBase>();
             }
+            action(1);
         });
     }
-    LightmapData[] lightmaps = null;
 
+    public void LoadScene(int scene_id, float pos_x=0.0f, float pos_y=0.0f, float pos_z=0.0f)
+    {
+        Debug.Log("LoadScene scene_id "+(scene_id).ToString());
+        isLoadingScene = true;
+        isBaseWorldLoadOk = false;
+        XLuaFramework.ResourceManager.GetInstance().LoadPrefabGameObjectWithAction(SceneInfoPath+"baseworld_"+scene_id+"/baseworld_"+scene_id+".prefab", delegate(UnityEngine.Object obj)
+        {
+            Debug.Log("load base world ok!");
+            Transform baseworldTrans = (obj as GameObject).transform;
+            for (int i = 0; i < baseworldTrans.childCount; i++)
+            {
+                baseworldTrans.GetChild(i).gameObject.layer = LayerMask.NameToLayer("Ground");
+            }
+            // (obj as GameObject).layer = LayerMask.NameToLayer("Ground");
+            LoadSceneInfo(scene_id, delegate(int result){
+                isLoadingScene = false;
+                isBaseWorldLoadOk = true;
+                CorrectMainRolePos();
+            });
+        });
+    }
+
+    LightmapData[] lightmaps = null;
     public void ApplyDetector(SceneDetectorBase detector)
     {
         this.detector = detector;
@@ -181,25 +238,76 @@ public class SceneMgr : MonoBehaviour
         }
     }
 
+    //校正角色的坐标
+    public void CorrectMainRolePos()
+    {
+        var mainRole = RoleMgr.GetInstance().GetMainRole();
+        if (!isBaseWorldLoadOk || mainRole == null || curSceneInfo==null)
+            return;
+        Vector3 oldPos = mainRole.transform.localPosition;
+        Vector3 newPos = GetCorrectPos(oldPos);
+        Debug.Log("old pos:"+oldPos.x+" "+oldPos.y+" "+oldPos.z+" newPos:"+newPos.x+" "+newPos.y+" "+newPos.z);
+        mainRole.transform.localPosition = newPos;
+    }
+
+    public Vector3 GetCorrectPos(Vector3 originPos)
+    {
+        Vector3 newPos = originPos;
+        Ray ray1 = new Ray(originPos + new Vector3(0, 10000, 0), Vector3.down);
+        RaycastHit groundHit;
+        if (Physics.Raycast(ray1, out groundHit, 12000, groundLayer))
+        {
+            newPos = groundHit.point;
+            newPos.y += 10;
+        }
+        else
+        {
+            //wrong pos, return a nearest safe position
+            if (curSceneInfo != null)
+            {
+                float minDistance = int.MaxValue;
+                // int nearestIndex = 0;
+                for (int i = 0; i < curSceneInfo.BornList.Count; i++)
+                {
+                    var bornInfo = curSceneInfo.BornList[i];
+                    var bornPos = bornInfo.pos;
+                    var dis = Vector3.Distance(bornPos, originPos);
+                    if (dis < minDistance)
+                    {
+                        // nearestIndex = i;
+                        minDistance = dis;
+                        newPos = bornPos;
+                    }
+                }
+                // if (nearestIndex < curSceneInfo.bornList.Count)
+                // {
+                //     var bornInfo = curSceneInfo.bornList[nearestIndex];
+                // }
+            }
+        }
+        return newPos;
+    }
+    
+    public void ApplyMainRole(GameObjectEntity mainRole)
+    {
+        ApplyDetector(mainRole.GetComponent<SceneDetectorBase>());
+        if (FreeLookCamera)
+        {
+            var mainRoleTrans = mainRole.GetComponent<Transform>();
+            FreeLookCamera.m_Follow = mainRoleTrans;
+            // FreeLookCamera.m_LookAt = mainRoleTrans;
+            FreeLookCamera.m_LookAt = mainRoleTrans.Find("CameraLook");
+        }
+        CorrectMainRolePos();
+    }
+
     public Entity AddMainRole(long uid, Vector3 pos)
 	{
         Entity role = RoleMgr.GetInstance().AddMainRole(uid, pos);
         entityDic.Add(uid, role);
         return role;
     }
-    
-    //     GameObjectEntity roleGameOE = m_GameWorld.Spawn<GameObjectEntity>(prefabDic["MainRole"]);
-    //     roleGameOE.name = "MainRole_"+uid;
-    //     Entity role = roleGameOE.Entity;
-    //     InitRole(role, uid);
-	// 	// Entity role = AddRole(uid);
-    //     EntityManager.AddComponent(role, ComponentType.Create<MainRoleTag>());
-    //     EntityManager.AddComponent(role, ComponentType.Create<PlayerInput>());
-    //     EntityManager.AddComponent(role, ComponentType.Create<SynchPosFlag>());
-    //     entityDic.Add(uid, role);
-    //     mainRole = role;
-    //     return role;
-	// }
+
     public Entity AddRole(long uid)
 	{
         Entity role = RoleMgr.GetInstance().AddRole(uid);
@@ -241,13 +349,6 @@ public class SceneMgr : MonoBehaviour
         return Entity.Null;
     }
 
-	// private MeshInstanceRenderer GetLookFromPrototype(string protoName)
-    // {
-    //     var proto = GameObject.Find(protoName);
-    //     var result = proto.GetComponent<MeshInstanceRendererComponent>().Value;
-    //     // Object.Destroy(proto);
-    //     return result;
-    // }
 }
 
 }

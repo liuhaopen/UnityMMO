@@ -27,7 +27,7 @@ public class GroundTestSystem : BaseComponentSystem
     protected override void OnUpdate()
     {        
         var posArray = Group.GetComponentDataArray<Position>();
-        var groundArray = Group.GetComponentArray<GroundInfo>();
+        var groundArray = Group.GetComponentDataArray<GroundInfo>();
         
         var startOffset = 1f;
         var distance = 3f;
@@ -49,10 +49,10 @@ public class GroundTestSystem : BaseComponentSystem
         for (var i = 0; i < groundArray.Length; i++)
         {
             var groundInfo = groundArray[i];
-            groundInfo.groundCollider = rayResults[i].collider;
-            groundInfo.altitude = groundInfo.groundCollider != null ? rayResults[i].distance - startOffset : distance - startOffset;
+            // groundInfo.groundCollider = rayResults[i].collider;
+            groundInfo.altitude = rayResults[i].collider != null ? rayResults[i].distance - startOffset : distance - startOffset;
 
-            if (groundInfo.groundCollider != null)
+            if (rayResults[i].collider != null)
                 groundInfo.groundNormal = rayResults[i].normal;
         }
         
