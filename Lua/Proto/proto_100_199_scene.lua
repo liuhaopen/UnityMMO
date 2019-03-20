@@ -51,8 +51,11 @@ return [[
 	attacker_pos_x 3 : integer
 	attacker_pos_y 4 : integer
 	attacker_pos_z 5 : integer
-	defenders 6 : *scene_fight_defender_info
-	time 7 : integer
+	target_pos_x 6 : integer
+	target_pos_y 7 : integer
+	target_pos_z 8 : integer
+	time 9 : integer
+	defenders 10 : *scene_fight_defender_info
 }
 
 .scene_npc_info {
@@ -107,8 +110,9 @@ scene_get_role_look_info 104 {
 scene_use_skill 105 {
 	request {
 		skill_id 0 : integer
-		dir_angle 1 : integer
-		target_uid 2 : *integer
+		target_pos_x 1 : integer
+		target_pos_y 2 : integer
+		target_pos_z 3 : integer
 	}
 	response {
 		result 0 : integer

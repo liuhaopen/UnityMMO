@@ -39,8 +39,8 @@ public class SynchFromNet {
         // Debug.Log("GameVariable.IsNeedSynchSceneInfo : "+GameVariable.IsNeedSynchSceneInfo.ToString());
         if (GameVariable.IsNeedSynchSceneInfo)
         {
-            SprotoType.scene_get_objs_info_change.request req = new SprotoType.scene_get_objs_info_change.request();
-            NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_get_objs_info_change>(req, OnAckFightEvents);
+            SprotoType.scene_listen_fight_event.request req = new SprotoType.scene_listen_fight_event.request();
+            NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_listen_fight_event>(req, OnAckFightEvents);
         }
         else
         {
@@ -50,8 +50,12 @@ public class SynchFromNet {
 
     public void OnAckFightEvents(SprotoTypeBase result)
     {
+        SprotoType.scene_listen_fight_event.request req = new SprotoType.scene_listen_fight_event.request();
+        NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_listen_fight_event>(req, OnAckSceneObjInfoChange);
+        SprotoType.scene_listen_fight_event.response ack = result as SprotoType.scene_listen_fight_event.response;
+        if (ack==null)
+            return;
         
-
     }
 
     public void ReqSceneObjInfoChange()

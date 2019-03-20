@@ -90,10 +90,7 @@ namespace UnityMMO
                 var playerDirector = mainRole.GetComponent<PlayableDirector>();
                 playerDirector.playableAsset = objs[0] as PlayableAsset;
                 var animator = mainRole.GetComponentInChildren<Animator>();
-                Debug.Log("animator : "+(animator!=null).ToString());
-                // EntityManager.GetComponentData<
-                // mainRole.transform.Find("")
-                Dictionary<string, PlayableBinding> bindingDict = new Dictionary<string, PlayableBinding>();
+                // Dictionary<string, PlayableBinding> bindingDict = new Dictionary<string, PlayableBinding>();
                 foreach (var at in playerDirector.playableAsset.outputs)
                 {
                     // if (!bindingDict.ContainsKey(at.streamName))
@@ -108,19 +105,15 @@ namespace UnityMMO
                     else if (at.streamName.StartsWith("ParticleTrack"))
                     {
                         var ct = at.sourceObject as ControlTrack;
-                        Debug.Log(" ct : "+(ct!=null).ToString());
                         var looksInfo = EntityManager.GetComponentData<LooksInfo>(mainRole.Entity);
                         var looksEntity = looksInfo.LooksEntity;
                         var looksTrans = EntityManager.GetComponentObject<Transform>(looksEntity);
                         var particleParent = looksTrans.Find("root");
                         foreach (var info in ct.GetClips())
                         {
-                            Debug.Log("info.displayName : "+info.displayName);
                             if (info.displayName == "particle")
                             {
                                 var cpa = info.asset as ControlPlayableAsset;
-                                 Debug.Log(" cpa : "+(cpa!=null).ToString());
-                                Debug.Log("cpa.sourceGameObject.exposedName : "+cpa.sourceGameObject.exposedName);
                                 playerDirector.SetReferenceValue(cpa.sourceGameObject.exposedName, particleParent.gameObject);
                                
                             }

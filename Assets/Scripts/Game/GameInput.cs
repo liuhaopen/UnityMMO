@@ -8,7 +8,7 @@ public class GameInput
     Dictionary<KeyCode, bool> keyUp;
     Vector2 joystickDir;
     bool isBlock;
-    private object InputSystem;
+    // private object InputSystem;
 
     public Vector2 JoystickDir 
     { 

@@ -30,6 +30,8 @@ public class MovementUpdateSystem : BaseComponentSystem
         {
             var targetPos = targetPositions[i].Value;
             var speed = speeds[i].Value;
+            if (speed<=0)
+                continue;
             var curTrans = transforms[i];
             float3 startPos = curTrans.localPosition;
             var moveDir = targetPos-startPos;
