@@ -40,7 +40,7 @@ end
 lua ./Tests/test_all.lua -v  
 
 # Todo
-)System根据UpdateBefore，After等排序  
+)优化ECSCore读写性能  
 )整理目录结构  
 )补全测试用例  
 )增加字符串和引用类型  
@@ -49,3 +49,4 @@ lua ./Tests/test_all.lua -v
 )命名规则改成lua风格  
 )安全相关（为指针作边界判定）  
 )支持多线程？  
+)System根据UpdateBefore，After等排序  
