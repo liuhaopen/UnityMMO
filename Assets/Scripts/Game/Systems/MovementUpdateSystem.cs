@@ -47,6 +47,7 @@ public class MovementUpdateSystem : BaseComponentSystem
             var curLocoStateObj = locoStates[i];
             var curLocoState = curLocoStateObj.Value;
             bool isOnGround = curLocoState == LocomotionState.State.Idle || curLocoState == LocomotionState.State.Run || curLocoState == LocomotionState.State.Sprint;
+            Debug.Log("isOnGround : "+isOnGround.ToString()+" movewanted:"+isMoveWanted.ToString());
             if (isOnGround)
             {
                 if (isMoveWanted)
@@ -122,7 +123,10 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
         float3 curPos = posArray[0].localPosition;
         var speed = moveSpeedArray[0].Value;
         var newTargetPos = new TargetPosition();
-        newTargetPos.Value = curPos+targetDirection*(speed/GameConst.SpeedFactor*1);//延着方向前进1秒为目标坐标
+        if (speed > 0)
+            newTargetPos.Value = curPos+targetDirection*(speed/GameConst.SpeedFactor*1);//延着方向前进1秒为目标坐标
+        else
+            newTargetPos.Value = curPos;
         //TODO:通过navmesh判断是否障碍区，是的话取得最近点
         targetPosArray[0] = newTargetPos;
         // Debug.Log("curPos : "+curPos.x+" "+curPos.y+" "+curPos.z+" dir:"+targetDirection.x+" "+targetDirection.z);

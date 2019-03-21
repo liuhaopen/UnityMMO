@@ -43,11 +43,10 @@ namespace UnityMMO{
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<SkillSpawnSystem>(m_GameWorld));
 
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<TimelineSpawnSystem>(m_GameWorld));
-
             
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateRoleAnimatorSystem>(m_GameWorld));
 
-            TimelineSpawnRequest.Create(m_GameWorld.GetEntityManager(), Entity.Null, "haha");
+            // TimelineSpawnRequest.Create(m_GameWorld.GetEntityManager(), Entity.Null, "haha");
         }
 
         public void StartGame() {

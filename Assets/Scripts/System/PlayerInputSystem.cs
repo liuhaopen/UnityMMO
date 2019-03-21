@@ -81,7 +81,7 @@ namespace UnityMMO
 
         void TestSkill1()
         {
-            string assetPath = "Assets/AssetBundleRes/role/career_2/skill/timeline/Attack.playable";
+            string assetPath = "Assets/AssetBundleRes/role/career_2/skill/timeline/skill_10011.playable";
             ResourceManager.GetInstance().LoadAsset<PlayableAsset>(assetPath, delegate(UnityEngine.Object[] objs)
             {
                 if (objs==null || objs.Length<=0)
@@ -90,14 +90,8 @@ namespace UnityMMO
                 var playerDirector = mainRole.GetComponent<PlayableDirector>();
                 playerDirector.playableAsset = objs[0] as PlayableAsset;
                 var animator = mainRole.GetComponentInChildren<Animator>();
-                // Dictionary<string, PlayableBinding> bindingDict = new Dictionary<string, PlayableBinding>();
                 foreach (var at in playerDirector.playableAsset.outputs)
                 {
-                    // if (!bindingDict.ContainsKey(at.streamName))
-                    // {
-                    //     Debug.Log("at.streamName : "+at.streamName);
-                    //     bindingDict.Add(at.streamName, at);
-                    // }
                     if (at.streamName.StartsWith("AnimationTrack"))
                     {
                         playerDirector.SetGenericBinding(at.sourceObject, animator);
@@ -111,7 +105,7 @@ namespace UnityMMO
                         var particleParent = looksTrans.Find("root");
                         foreach (var info in ct.GetClips())
                         {
-                            if (info.displayName == "particle")
+                            if (info.displayName.StartsWith("particle"))
                             {
                                 var cpa = info.asset as ControlPlayableAsset;
                                 playerDirector.SetReferenceValue(cpa.sourceGameObject.exposedName, particleParent.gameObject);

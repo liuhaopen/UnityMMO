@@ -7,13 +7,13 @@ using UnityMMO;
 public struct TimelineSpawnRequest : IComponentData
 {
     public Entity Owner;
-    public string TimelinePath;
+    // public string TimelinePath;
 
     public static void Create(EntityManager entityMgr, Entity Owner, string TimelinePath)
     {
         var data = new TimelineSpawnRequest();
         data.Owner = Owner;
-        data.TimelinePath = TimelinePath;
+        // data.TimelinePath = TimelinePath;
         Entity entity = entityMgr.CreateEntity(typeof(RoleLooksSpawnRequest));
         entityMgr.SetComponentData(entity, data);
     }

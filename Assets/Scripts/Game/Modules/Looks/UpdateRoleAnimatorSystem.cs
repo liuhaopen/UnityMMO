@@ -26,6 +26,7 @@ public class UpdateRoleAnimatorSystem : BaseComponentSystem
         for (int i=0; i<looksInfos.Length; i++)
         {
             var looksInfo = looksInfos[i];
+            Debug.Log("looksInfo.CurState : "+looksInfo.CurState.ToString());
             if (looksInfo.CurState!=LooksInfo.State.Loaded)
                 continue;
             var looksEntity = looksInfo.LooksEntity;
@@ -38,7 +39,7 @@ public class UpdateRoleAnimatorSystem : BaseComponentSystem
 
     void UpdateAnimator(Animator animator, LocomotionState.State locoState)
     {
-        // Debug.Log("locoState : "+locoState.ToString());
+        Debug.Log("locoState : "+locoState.ToString());
         if (locoState == LocomotionState.State.Idle)
         {
             // animator.CrossFade("idle", 0.2f, 0, Time.deltaTime);
