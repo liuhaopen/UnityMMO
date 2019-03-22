@@ -42,9 +42,12 @@ public class GameInput
 
     public void Reset()
     {
-        foreach(var keyInfo in keyUp)
+        var keysCount = keyUp.Keys.Count;
+        KeyCode[] keyNames = new KeyCode[keysCount];
+        keyUp.Keys.CopyTo(keyNames, 0);
+        for (int i = 0; i < keyNames.Length; i++)
         {
-            keyUp[keyInfo.Key] = false;
+            this.keyUp[keyNames[i]] = false;
         }
         // JoystickDir = Vector2.zero;
     }
@@ -60,6 +63,7 @@ public class GameInput
 
     public void SetKeyUp(KeyCode key, bool isUp=true)
     {
+        Debug.Log("key code : "+key.ToString()+" isup"+isUp.ToString());
         keyUp[key] = isUp;
     }
 

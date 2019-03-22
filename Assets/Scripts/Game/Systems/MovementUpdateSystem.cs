@@ -47,7 +47,7 @@ public class MovementUpdateSystem : BaseComponentSystem
             var curLocoStateObj = locoStates[i];
             var curLocoState = curLocoStateObj.Value;
             bool isOnGround = curLocoState == LocomotionState.State.Idle || curLocoState == LocomotionState.State.Run || curLocoState == LocomotionState.State.Sprint;
-            Debug.Log("isOnGround : "+isOnGround.ToString()+" movewanted:"+isMoveWanted.ToString());
+            // Debug.Log("isOnGround : "+isOnGround.ToString()+" movewanted:"+isMoveWanted.ToString());
             if (isOnGround)
             {
                 if (isMoveWanted)
