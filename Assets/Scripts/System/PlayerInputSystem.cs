@@ -81,7 +81,7 @@ namespace UnityMMO
 
         void TestSkill1()
         {
-            string assetPath = "Assets/AssetBundleRes/role/career_2/skill/timeline/skill_10011.playable";
+            string assetPath = "Assets/AssetBundleRes/role/career_2/skill/timeline/skill_10021.playable";
             ResourceManager.GetInstance().LoadAsset<PlayableAsset>(assetPath, delegate(UnityEngine.Object[] objs)
             {
                 if (objs==null || objs.Length<=0)
