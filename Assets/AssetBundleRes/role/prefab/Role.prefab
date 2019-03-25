@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1343213851583006089}
-  - component: {fileID: 8662642469374315852}
   - component: {fileID: 1531720513504706436}
   - component: {fileID: 1685857544176099494}
   - component: {fileID: 2476167516451789215}
@@ -34,21 +33,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8662642469374315852
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9175231960445069694}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3cd7e85a5e0d78f4297af25dd961b004, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  roleUid: 0
-  position: {x: 0, y: 0, z: 0}
-  hasLooks: 0
 --- !u!114 &1531720513504706436
 MonoBehaviour:
   m_ObjectHideFlags: 0

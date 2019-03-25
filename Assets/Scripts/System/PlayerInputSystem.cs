@@ -32,14 +32,7 @@ namespace UnityMMO
                 return;
             var userCommand = userCommandArray[0];
             SampleInput(ref userCommand, dt);
-            userCommandArray[0] = userCommand;
-            // for (int i = 0; i < inputDataArray.Length; ++i)
-            // {
-            //     PlayerInput pi;
-            //     pi.Move.x = Input.GetAxis("Horizontal");
-            //     pi.Move.y = Input.GetAxis("Vertical");
-            //     inputDataArray[i] = pi;
-            // }
+            // userCommandArray[0] = userCommand;
         }
 
         public void SampleInput(ref UserCommand command, float deltaTime)
@@ -81,41 +74,45 @@ namespace UnityMMO
 
         void TestSkill1()
         {
+            var mainRole = RoleMgr.GetInstance().GetMainRole();
+            var uid = EntityManager.GetComponentData<UID>(mainRole.Entity);
             string assetPath = "Assets/AssetBundleRes/role/career_2/skill/timeline/skill_10021.playable";
-            ResourceManager.GetInstance().LoadAsset<PlayableAsset>(assetPath, delegate(UnityEngine.Object[] objs)
-            {
-                if (objs==null || objs.Length<=0)
-                    return;
-                var mainRole = RoleMgr.GetInstance().GetMainRole();
-                var playerDirector = mainRole.GetComponent<PlayableDirector>();
-                playerDirector.playableAsset = objs[0] as PlayableAsset;
-                var animator = mainRole.GetComponentInChildren<Animator>();
-                foreach (var at in playerDirector.playableAsset.outputs)
-                {
-                    if (at.streamName.StartsWith("AnimationTrack"))
-                    {
-                        playerDirector.SetGenericBinding(at.sourceObject, animator);
-                    }
-                    else if (at.streamName.StartsWith("ParticleTrack"))
-                    {
-                        var ct = at.sourceObject as ControlTrack;
-                        var looksInfo = EntityManager.GetComponentData<LooksInfo>(mainRole.Entity);
-                        var looksEntity = looksInfo.LooksEntity;
-                        var looksTrans = EntityManager.GetComponentObject<Transform>(looksEntity);
-                        var particleParent = looksTrans.Find("root");
-                        foreach (var info in ct.GetClips())
-                        {
-                            if (info.displayName.StartsWith("particle"))
-                            {
-                                var cpa = info.asset as ControlPlayableAsset;
-                                playerDirector.SetReferenceValue(cpa.sourceGameObject.exposedName, particleParent.gameObject);
+            TimelineManager.GetInstance().AddTimeline(uid.Value, new TimelineInfo{ResPath=assetPath});
+            TimelineSpawnRequest.Create(EntityManager, mainRole.Entity, uid.Value);
+            // ResourceManager.GetInstance().LoadAsset<PlayableAsset>(assetPath, delegate(UnityEngine.Object[] objs)
+            // {
+            //     if (objs==null || objs.Length<=0)
+            //         return;
+            //     var mainRole = RoleMgr.GetInstance().GetMainRole();
+            //     var playerDirector = mainRole.GetComponent<PlayableDirector>();
+            //     playerDirector.playableAsset = objs[0] as PlayableAsset;
+            //     var animator = mainRole.GetComponentInChildren<Animator>();
+            //     foreach (var at in playerDirector.playableAsset.outputs)
+            //     {
+            //         if (at.streamName.StartsWith("AnimationTrack"))
+            //         {
+            //             playerDirector.SetGenericBinding(at.sourceObject, animator);
+            //         }
+            //         else if (at.streamName.StartsWith("ParticleTrack"))
+            //         {
+            //             var ct = at.sourceObject as ControlTrack;
+            //             var looksInfo = EntityManager.GetComponentData<LooksInfo>(mainRole.Entity);
+            //             var looksEntity = looksInfo.LooksEntity;
+            //             var looksTrans = EntityManager.GetComponentObject<Transform>(looksEntity);
+            //             var particleParent = looksTrans.Find("root");
+            //             foreach (var info in ct.GetClips())
+            //             {
+            //                 if (info.displayName.StartsWith("particle"))
+            //                 {
+            //                     var cpa = info.asset as ControlPlayableAsset;
+            //                     playerDirector.SetReferenceValue(cpa.sourceGameObject.exposedName, particleParent.gameObject);
                                
-                            }
-                        }
-                    }
-                }
-                playerDirector.Play();
-            });
+            //                 }
+            //             }
+            //         }
+            //     }
+            //     playerDirector.Play();
+            // });
         }
       
     }

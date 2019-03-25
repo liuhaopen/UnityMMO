@@ -17,6 +17,7 @@ namespace UnityMMO{
 
         public void Initialize() {
             m_GameWorld = new GameWorld("ClientWorld");
+            TimelineManager.GetInstance().Init();
             SceneMgr.Instance.Init(m_GameWorld);
             SynchFromNet.Instance.Init();
 

@@ -75,9 +75,9 @@ scene_walk 101 {
 		start_y 1 : integer
 		start_z 2 : integer
 		end_x 3 : integer
-		end_y 4 : integer
-		end_z 5 : integer
-		time  6 : integer
+		end_z 4 : integer
+		time  5 : integer
+		jump_state 6 : integer
 	}
 	response {
 	}
@@ -107,7 +107,7 @@ scene_get_role_look_info 104 {
 	}
 }
 
-scene_use_skill 105 {
+scene_cast_skill 105 {
 	request {
 		skill_id 0 : integer
 		target_pos_x 1 : integer

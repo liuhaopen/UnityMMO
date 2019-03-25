@@ -6,6 +6,7 @@ public class PackRule
     static string UIPath = "Assets/AssetBundleRes/ui/";
     static string ScenePath = "Assets/AssetBundleRes/scene/";
     static string RolePath = "Assets/AssetBundleRes/role/";
+    static string EffectPath = "Assets/AssetBundleRes/effect/";
     static string NPCPath = "Assets/AssetBundleRes/npc/";
     static string MonsterPath = "Assets/AssetBundleRes/monster/";
     public static string PathToAssetBundleName(string path)
@@ -38,12 +39,12 @@ public class PackRule
             if (path_parts.Length>0)
                 return  "scene_"+path_parts[0];
         }
-        else if (path.StartsWith(RolePath))
+        else if (path.StartsWith(EffectPath))
         {
-            string sub_path = path.Substring(RolePath.Length);
+            string sub_path = path.Substring(EffectPath.Length);
             string[] path_parts = sub_path.Split('/');
             if (path_parts.Length>0)
-                return "role_"+path_parts[0];
+                return "effect_"+path_parts[0];
         }
         else if (path.StartsWith(NPCPath))
         {

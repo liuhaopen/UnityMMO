@@ -13,6 +13,10 @@ namespace UnityMMO
     // public struct MainRoleTag : IComponentData
     // {
     // }
+    public struct UID : IComponentData
+    {
+        public long Value;
+    }
 
     public struct LocomotionState : IComponentData
     {

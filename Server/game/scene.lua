@@ -172,6 +172,7 @@ end
 
 function CMD.role_enter_scene(role_id)
 	print('Cat:scene.lua[role_enter_scene] role_id', role_id)
+	print("Cat:scene [175role_enter_scene] : ",debug.traceback())
 	local cur_time = get_cur_time()
 	do 
 		--tell every one a new role enter scene
@@ -298,7 +299,7 @@ function CMD.scene_walk( user_info, req_data )
 		role_info.base_info.pos_y = req_data.start_y
 		role_info.base_info.pos_z = req_data.start_z
 		local pos_info = role_info.base_info.pos_x..","..role_info.base_info.pos_y..","..role_info.base_info.pos_z
-		local target_pos_info = req_data.end_x..","..req_data.end_y..","..req_data.end_z
+		local target_pos_info = req_data.end_x..","..req_data.end_z
 		-- print('Cat:scene.lua[116] pos_info', pos_info, role_info.scene_uid)
 		local cur_time = get_cur_time()
 		--for test 
@@ -325,7 +326,7 @@ function CMD.scene_get_objs_info_change( user_info, req_data )
 	return {}
 end
 
-function CMD.scene_use_skill(user_info, req_data)
+function CMD.scene_cast_skill(user_info, req_data)
 	
 end
 

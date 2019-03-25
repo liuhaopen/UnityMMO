@@ -577,6 +577,149 @@ namespace SprotoType {
 	}
 
 
+	public class scene_cast_skill {
+	
+		public class request : SprotoTypeBase {
+			private static int max_field_count = 4;
+			
+			
+			private Int64 _skill_id; // tag 0
+			public Int64 skill_id {
+				get { return _skill_id; }
+				set { base.has_field.set_field (0, true); _skill_id = value; }
+			}
+			public bool HasSkill_id {
+				get { return base.has_field.has_field (0); }
+			}
+
+			private Int64 _target_pos_x; // tag 1
+			public Int64 target_pos_x {
+				get { return _target_pos_x; }
+				set { base.has_field.set_field (1, true); _target_pos_x = value; }
+			}
+			public bool HasTarget_pos_x {
+				get { return base.has_field.has_field (1); }
+			}
+
+			private Int64 _target_pos_y; // tag 2
+			public Int64 target_pos_y {
+				get { return _target_pos_y; }
+				set { base.has_field.set_field (2, true); _target_pos_y = value; }
+			}
+			public bool HasTarget_pos_y {
+				get { return base.has_field.has_field (2); }
+			}
+
+			private Int64 _target_pos_z; // tag 3
+			public Int64 target_pos_z {
+				get { return _target_pos_z; }
+				set { base.has_field.set_field (3, true); _target_pos_z = value; }
+			}
+			public bool HasTarget_pos_z {
+				get { return base.has_field.has_field (3); }
+			}
+
+			public request () : base(max_field_count) {}
+
+			public request (byte[] buffer) : base(max_field_count, buffer) {
+				this.decode ();
+			}
+
+			protected override void decode () {
+				int tag = -1;
+				while (-1 != (tag = base.deserialize.read_tag ())) {
+					switch (tag) {
+					case 0:
+						this.skill_id = base.deserialize.read_integer ();
+						break;
+					case 1:
+						this.target_pos_x = base.deserialize.read_integer ();
+						break;
+					case 2:
+						this.target_pos_y = base.deserialize.read_integer ();
+						break;
+					case 3:
+						this.target_pos_z = base.deserialize.read_integer ();
+						break;
+					default:
+						base.deserialize.read_unknow_data ();
+						break;
+					}
+				}
+			}
+
+			public override int encode (SprotoStream stream) {
+				base.serialize.open (stream);
+
+				if (base.has_field.has_field (0)) {
+					base.serialize.write_integer (this.skill_id, 0);
+				}
+
+				if (base.has_field.has_field (1)) {
+					base.serialize.write_integer (this.target_pos_x, 1);
+				}
+
+				if (base.has_field.has_field (2)) {
+					base.serialize.write_integer (this.target_pos_y, 2);
+				}
+
+				if (base.has_field.has_field (3)) {
+					base.serialize.write_integer (this.target_pos_z, 3);
+				}
+
+				return base.serialize.close ();
+			}
+		}
+
+
+		public class response : SprotoTypeBase {
+			private static int max_field_count = 1;
+			
+			
+			private Int64 _result; // tag 0
+			public Int64 result {
+				get { return _result; }
+				set { base.has_field.set_field (0, true); _result = value; }
+			}
+			public bool HasResult {
+				get { return base.has_field.has_field (0); }
+			}
+
+			public response () : base(max_field_count) {}
+
+			public response (byte[] buffer) : base(max_field_count, buffer) {
+				this.decode ();
+			}
+
+			protected override void decode () {
+				int tag = -1;
+				while (-1 != (tag = base.deserialize.read_tag ())) {
+					switch (tag) {
+					case 0:
+						this.result = base.deserialize.read_integer ();
+						break;
+					default:
+						base.deserialize.read_unknow_data ();
+						break;
+					}
+				}
+			}
+
+			public override int encode (SprotoStream stream) {
+				base.serialize.open (stream);
+
+				if (base.has_field.has_field (0)) {
+					base.serialize.write_integer (this.result, 0);
+				}
+
+				return base.serialize.close ();
+			}
+		}
+
+
+	}
+
+
 	public class scene_change_aoi_radius {
 	
 		public class request : SprotoTypeBase {
@@ -1897,149 +2040,6 @@ namespace SprotoType {
 	}
 
 
-	public class scene_use_skill {
-	
-		public class request : SprotoTypeBase {
-			private static int max_field_count = 4;
-			
-			
-			private Int64 _skill_id; // tag 0
-			public Int64 skill_id {
-				get { return _skill_id; }
-				set { base.has_field.set_field (0, true); _skill_id = value; }
-			}
-			public bool HasSkill_id {
-				get { return base.has_field.has_field (0); }
-			}
-
-			private Int64 _target_pos_x; // tag 1
-			public Int64 target_pos_x {
-				get { return _target_pos_x; }
-				set { base.has_field.set_field (1, true); _target_pos_x = value; }
-			}
-			public bool HasTarget_pos_x {
-				get { return base.has_field.has_field (1); }
-			}
-
-			private Int64 _target_pos_y; // tag 2
-			public Int64 target_pos_y {
-				get { return _target_pos_y; }
-				set { base.has_field.set_field (2, true); _target_pos_y = value; }
-			}
-			public bool HasTarget_pos_y {
-				get { return base.has_field.has_field (2); }
-			}
-
-			private Int64 _target_pos_z; // tag 3
-			public Int64 target_pos_z {
-				get { return _target_pos_z; }
-				set { base.has_field.set_field (3, true); _target_pos_z = value; }
-			}
-			public bool HasTarget_pos_z {
-				get { return base.has_field.has_field (3); }
-			}
-
-			public request () : base(max_field_count) {}
-
-			public request (byte[] buffer) : base(max_field_count, buffer) {
-				this.decode ();
-			}
-
-			protected override void decode () {
-				int tag = -1;
-				while (-1 != (tag = base.deserialize.read_tag ())) {
-					switch (tag) {
-					case 0:
-						this.skill_id = base.deserialize.read_integer ();
-						break;
-					case 1:
-						this.target_pos_x = base.deserialize.read_integer ();
-						break;
-					case 2:
-						this.target_pos_y = base.deserialize.read_integer ();
-						break;
-					case 3:
-						this.target_pos_z = base.deserialize.read_integer ();
-						break;
-					default:
-						base.deserialize.read_unknow_data ();
-						break;
-					}
-				}
-			}
-
-			public override int encode (SprotoStream stream) {
-				base.serialize.open (stream);
-
-				if (base.has_field.has_field (0)) {
-					base.serialize.write_integer (this.skill_id, 0);
-				}
-
-				if (base.has_field.has_field (1)) {
-					base.serialize.write_integer (this.target_pos_x, 1);
-				}
-
-				if (base.has_field.has_field (2)) {
-					base.serialize.write_integer (this.target_pos_y, 2);
-				}
-
-				if (base.has_field.has_field (3)) {
-					base.serialize.write_integer (this.target_pos_z, 3);
-				}
-
-				return base.serialize.close ();
-			}
-		}
-
-
-		public class response : SprotoTypeBase {
-			private static int max_field_count = 1;
-			
-			
-			private Int64 _result; // tag 0
-			public Int64 result {
-				get { return _result; }
-				set { base.has_field.set_field (0, true); _result = value; }
-			}
-			public bool HasResult {
-				get { return base.has_field.has_field (0); }
-			}
-
-			public response () : base(max_field_count) {}
-
-			public response (byte[] buffer) : base(max_field_count, buffer) {
-				this.decode ();
-			}
-
-			protected override void decode () {
-				int tag = -1;
-				while (-1 != (tag = base.deserialize.read_tag ())) {
-					switch (tag) {
-					case 0:
-						this.result = base.deserialize.read_integer ();
-						break;
-					default:
-						base.deserialize.read_unknow_data ();
-						break;
-					}
-				}
-			}
-
-			public override int encode (SprotoStream stream) {
-				base.serialize.open (stream);
-
-				if (base.has_field.has_field (0)) {
-					base.serialize.write_integer (this.result, 0);
-				}
-
-				return base.serialize.close ();
-			}
-		}
-
-
-	}
-
-
 	public class scene_walk {
 	
 		public class request : SprotoTypeBase {
@@ -2082,30 +2082,30 @@ namespace SprotoType {
 				get { return base.has_field.has_field (3); }
 			}
 
-			private Int64 _end_y; // tag 4
-			public Int64 end_y {
-				get { return _end_y; }
-				set { base.has_field.set_field (4, true); _end_y = value; }
+			private Int64 _end_z; // tag 4
+			public Int64 end_z {
+				get { return _end_z; }
+				set { base.has_field.set_field (4, true); _end_z = value; }
 			}
-			public bool HasEnd_y {
+			public bool HasEnd_z {
 				get { return base.has_field.has_field (4); }
 			}
 
-			private Int64 _end_z; // tag 5
-			public Int64 end_z {
-				get { return _end_z; }
-				set { base.has_field.set_field (5, true); _end_z = value; }
+			private Int64 _time; // tag 5
+			public Int64 time {
+				get { return _time; }
+				set { base.has_field.set_field (5, true); _time = value; }
 			}
-			public bool HasEnd_z {
+			public bool HasTime {
 				get { return base.has_field.has_field (5); }
 			}
 
-			private Int64 _time; // tag 6
-			public Int64 time {
-				get { return _time; }
-				set { base.has_field.set_field (6, true); _time = value; }
+			private Int64 _jump_state; // tag 6
+			public Int64 jump_state {
+				get { return _jump_state; }
+				set { base.has_field.set_field (6, true); _jump_state = value; }
 			}
-			public bool HasTime {
+			public bool HasJump_state {
 				get { return base.has_field.has_field (6); }
 			}
 
@@ -2132,13 +2132,13 @@ namespace SprotoType {
 						this.end_x = base.deserialize.read_integer ();
 						break;
 					case 4:
-						this.end_y = base.deserialize.read_integer ();
-						break;
-					case 5:
 						this.end_z = base.deserialize.read_integer ();
 						break;
-					case 6:
+					case 5:
 						this.time = base.deserialize.read_integer ();
+						break;
+					case 6:
+						this.jump_state = base.deserialize.read_integer ();
 						break;
 					default:
 						base.deserialize.read_unknow_data ();
@@ -2167,15 +2167,15 @@ namespace SprotoType {
 				}
 
 				if (base.has_field.has_field (4)) {
-					base.serialize.write_integer (this.end_y, 4);
+					base.serialize.write_integer (this.end_z, 4);
 				}
 
 				if (base.has_field.has_field (5)) {
-					base.serialize.write_integer (this.end_z, 5);
+					base.serialize.write_integer (this.time, 5);
 				}
 
 				if (base.has_field.has_field (6)) {
-					base.serialize.write_integer (this.time, 6);
+					base.serialize.write_integer (this.jump_state, 6);
 				}
 
 				return base.serialize.close ();
@@ -2239,6 +2239,10 @@ public class Protocol : ProtocolBase {
 		Protocol.SetRequest<SprotoType.account_select_role_enter_game.request> (account_select_role_enter_game.Tag);
 		Protocol.SetResponse<SprotoType.account_select_role_enter_game.response> (account_select_role_enter_game.Tag);
 
+		Protocol.SetProtocol<scene_cast_skill> (scene_cast_skill.Tag);
+		Protocol.SetRequest<SprotoType.scene_cast_skill.request> (scene_cast_skill.Tag);
+		Protocol.SetResponse<SprotoType.scene_cast_skill.response> (scene_cast_skill.Tag);
+
 		Protocol.SetProtocol<scene_change_aoi_radius> (scene_change_aoi_radius.Tag);
 		Protocol.SetRequest<SprotoType.scene_change_aoi_radius.request> (scene_change_aoi_radius.Tag);
 
@@ -2260,10 +2264,6 @@ public class Protocol : ProtocolBase {
 		Protocol.SetProtocol<scene_listen_fight_event> (scene_listen_fight_event.Tag);
 		Protocol.SetRequest<SprotoType.scene_listen_fight_event.request> (scene_listen_fight_event.Tag);
 		Protocol.SetResponse<SprotoType.scene_listen_fight_event.response> (scene_listen_fight_event.Tag);
-
-		Protocol.SetProtocol<scene_use_skill> (scene_use_skill.Tag);
-		Protocol.SetRequest<SprotoType.scene_use_skill.request> (scene_use_skill.Tag);
-		Protocol.SetResponse<SprotoType.scene_use_skill.response> (scene_use_skill.Tag);
 
 		Protocol.SetProtocol<scene_walk> (scene_walk.Tag);
 		Protocol.SetRequest<SprotoType.scene_walk.request> (scene_walk.Tag);
@@ -2291,6 +2291,10 @@ public class Protocol : ProtocolBase {
 		public const int Tag = 5;
 	}
 
+	public class scene_cast_skill {
+		public const int Tag = 105;
+	}
+
 	public class scene_change_aoi_radius {
 		public const int Tag = 103;
 	}
@@ -2313,10 +2317,6 @@ public class Protocol : ProtocolBase {
 
 	public class scene_listen_fight_event {
 		public const int Tag = 106;
-	}
-
-	public class scene_use_skill {
-		public const int Tag = 105;
 	}
 
 	public class scene_walk {
