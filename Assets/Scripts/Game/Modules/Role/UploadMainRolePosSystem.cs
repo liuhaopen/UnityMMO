@@ -43,9 +43,10 @@ public class UploadMainRolePosSystem : BaseComponentSystem
             walk.start_y = (long)(pos.y*GameConst.RealToLogic);
             walk.start_z = (long)(pos.z*GameConst.RealToLogic);
             walk.end_x = (long)(targetPos.x*GameConst.RealToLogic);
-            walk.end_y = (long)(targetPos.y*GameConst.RealToLogic);
+            // walk.end_y = (long)(targetPos.y*GameConst.RealToLogic);
             walk.end_z = (long)(targetPos.z*GameConst.RealToLogic);
             walk.time = synchTime;
+            walk.jump_state = 0;
             NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_walk>(walk);
             lastSynchTime = Time.time;
         }

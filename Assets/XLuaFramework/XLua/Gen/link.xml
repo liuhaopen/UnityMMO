@@ -17,6 +17,9 @@
 		<type fullname="UnityMMO.SceneObjectType" preserve="all"/>
 		<type fullname="UnityMMO.SceneMgr" preserve="all"/>
 		<type fullname="CircleRawImage" preserve="all"/>
+		<type fullname="UnityMMO.GameInput" preserve="all"/>
+		<type fullname="SkillManager" preserve="all"/>
+		<type fullname="UnityMMO.TimelineManager" preserve="all"/>
 		
 	</assembly>
 
@@ -91,7 +94,13 @@
 
 	<assembly fullname="Unity.Entities">
 	    <type fullname="Unity.Entities.World" preserve="all"/>
+		<type fullname="Unity.Entities.Entity" preserve="all"/>
 		<type fullname="Unity.Entities.EntityManager" preserve="all"/>
+		
+	</assembly>
+
+	<assembly fullname="Unity.Entities.Hybrid">
+	    <type fullname="Unity.Entities.GameObjectEntity" preserve="all"/>
 		
 	</assembly>
 

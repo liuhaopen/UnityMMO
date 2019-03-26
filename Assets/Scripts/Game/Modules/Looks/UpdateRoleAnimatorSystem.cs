@@ -26,6 +26,7 @@ public class UpdateRoleAnimatorSystem : BaseComponentSystem
         for (int i=0; i<looksInfos.Length; i++)
         {
             var looksInfo = looksInfos[i];
+            // Debug.Log("looksInfo.CurState : "+looksInfo.CurState.ToString());
             if (looksInfo.CurState!=LooksInfo.State.Loaded)
                 continue;
             var looksEntity = looksInfo.LooksEntity;

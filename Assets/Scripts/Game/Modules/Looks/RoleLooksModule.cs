@@ -101,14 +101,14 @@ public class HandleRoleLooksNetRequest : BaseComponentSystem
                 Debug.Log("rsp.result : "+rsp.result.ToString()+" owner:"+owner.ToString());
                 if (rsp.result == UnityMMO.GameConst.NetResultOk)
                 {
-                    bool hasRoleState = m_world.GetEntityManager().HasComponent<RoleState>(owner);
-                    if (hasRoleState)
+                    bool hasTrans = m_world.GetEntityManager().HasComponent<Transform>(owner);
+                    if (hasTrans)
                     {
-                        RoleState roleState = m_world.GetEntityManager().GetComponentObject<RoleState>(owner); 
-                        Debug.Log("roleState.position : "+roleState.transform.localPosition.ToString());
+                        var transform = m_world.GetEntityManager().GetComponentObject<Transform>(owner); 
+                        Debug.Log("roleState.position : "+transform.localPosition.ToString());
                         //因为是异步操作，等后端发送信息过来时PostUpdateCommands已经失效了，所以不能这么用
-                        // RoleLooksSpawnRequest.Create(PostUpdateCommands, (int)rsp.role_looks_info.career, roleState.transform.localPosition, roleState.transform.localRotation, owner, (int)rsp.role_looks_info.body, (int)rsp.role_looks_info.hair);
-                        RoleLooksSpawnRequest.Create(m_world.GetEntityManager(), (int)rsp.role_looks_info.career, roleState.transform.localPosition, roleState.transform.localRotation, owner, (int)rsp.role_looks_info.body, (int)rsp.role_looks_info.hair);
+                        // RoleLooksSpawnRequest.Create(PostUpdateCommands, (int)rsp.role_looks_info.career, transform.localPosition, transform.localRotation, owner, (int)rsp.role_looks_info.body, (int)rsp.role_looks_info.hair);
+                        RoleLooksSpawnRequest.Create(m_world.GetEntityManager(), (int)rsp.role_looks_info.career, transform.localPosition, transform.localRotation, owner, (int)rsp.role_looks_info.body, (int)rsp.role_looks_info.hair);
                     }
                 }
             });
@@ -128,13 +128,13 @@ public class HandleRoleLooks : BaseComponentSystem
     {
         Debug.Log("on OnCreateManager HandleRoleLooks");
         base.OnCreateManager();
-        RoleGroup = GetComponentGroup(typeof(RoleState), typeof(LooksInfo));
+        RoleGroup = GetComponentGroup(typeof(UID), typeof(LooksInfo));
     }
 
     protected override void OnUpdate()
     {
         EntityArray entities = RoleGroup.GetEntityArray();
-        var roleStateArray = RoleGroup.GetComponentArray<RoleState>();
+        var uidArray = RoleGroup.GetComponentDataArray<UID>();
         var looksInfoArray = RoleGroup.GetComponentDataArray<LooksInfo>();
         var mainRoleGOE = RoleMgr.GetInstance().GetMainRole();
         float3 mainRolePos = float3.zero;
@@ -142,7 +142,7 @@ public class HandleRoleLooks : BaseComponentSystem
             mainRolePos = m_world.GetEntityManager().GetComponentObject<Transform>(mainRoleGOE.Entity).localPosition;
         for (int i=0; i<looksInfoArray.Length; i++)
         {
-            var roleState = roleStateArray[i];
+            var uid = uidArray[i];
             var looksInfo = looksInfoArray[i];
             var entity = entities[i];
             bool isNeedReqLooksInfo = false;
@@ -162,10 +162,9 @@ public class HandleRoleLooks : BaseComponentSystem
             // Debug.Log("isNeedReqLooksInfo : "+isNeedReqLooksInfo.ToString()+" looksInfo.CurState:"+looksInfo.CurState.ToString());
             if (isNeedReqLooksInfo)
             {
-                roleState.hasLooks = true;
                 looksInfo.CurState = LooksInfo.State.Loading;
                 looksInfoArray[i] = looksInfo;
-                RoleLooksNetRequest.Create(PostUpdateCommands, roleState.roleUid, entity);
+                RoleLooksNetRequest.Create(PostUpdateCommands, uid.Value, entity);
             }
         }
     }
@@ -208,7 +207,7 @@ public class HandleRoleLooksSpawnRequests : BaseComponentSystem
         for(var i =0;i<spawnRequests.Length;i++)
         {
             var request = spawnRequests[i];
-            var playerState = EntityManager.GetComponentObject<RoleState>(request.ownerEntity);
+            // var playerState = EntityManager.GetComponentObject<RoleState>(request.ownerEntity);
             var looksInfo = EntityManager.GetComponentData<LooksInfo>(request.ownerEntity);
             int career = request.career;
             int body = request.body;
@@ -232,7 +231,7 @@ public class HandleRoleLooksSpawnRequests : BaseComponentSystem
                     bodyOE.transform.localPosition = Vector3.zero;
                     bodyOE.transform.localRotation = Quaternion.identity;
                     // bodyOE.GetComponent<Rigidbody>().isKinematic = true;
-                    playerState.looksEntity = bodyOE.Entity;
+                    // playerState.looksEntity = bodyOE.Entity;
                     LoadHair(hairPath, bodyOE.transform.Find("head"));
                     Debug.Log("load ok role model");
                     looksInfo.CurState = LooksInfo.State.Loaded;
@@ -270,17 +269,17 @@ public class HandleLooksFollowLogicTransform : BaseComponentSystem
     {
         Debug.Log("on OnCreateManager role looks system");
         base.OnCreateManager();
-        Group = GetComponentGroup(typeof(RoleState), typeof(Position), typeof(Rotation));
+        Group = GetComponentGroup(typeof(LooksInfo), typeof(Position), typeof(Rotation));
     }
 
     protected override void OnUpdate()
     {
-        var states = Group.GetComponentArray<RoleState>();
+        var states = Group.GetComponentDataArray<LooksInfo>();
         var pos = Group.GetComponentDataArray<Position>();
         var rotations = Group.GetComponentDataArray<Rotation>();
         for (int i = 0; i < states.Length; i++)
         {
-            var looksEntity = states[i].looksEntity;
+            var looksEntity = states[i].LooksEntity;
             if (looksEntity != Entity.Null)
             {
                 var transform = EntityManager.GetComponentObject<Transform>(looksEntity);

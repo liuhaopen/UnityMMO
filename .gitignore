@@ -53,6 +53,8 @@ sysinfo.txt
 UnityMMO.VC.db
 Assets/UIEditor/Res/Preview.meta
 .vscode/settings.json
+Assets/AssetBundleRes/effect
+Assets/AssetBundleRes/effect.meta
 Assets/AssetBundleRes/role
 Assets/AssetBundleRes/role.meta
 Assets/AssetBundleRes/scene

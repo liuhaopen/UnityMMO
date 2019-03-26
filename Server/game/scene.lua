@@ -118,6 +118,18 @@ function CMD.init(scene_id)
 			skynet.sleep(10)
 		end
 	end)
+	skynet.fork(function()
+		while true do 
+			for k,role_info in pairs(this.role_list) do
+				if role_info.fight_events and role_info.ack_scene_listen_fight_event then
+					role_info.ack_scene_listen_fight_event(true, role_info.fight_events)
+					role_info.fight_events = nil
+					role_info.ack_scene_listen_fight_event = nil
+				end
+			end
+			skynet.sleep(10)
+		end
+	end)
 end
 
 local get_base_info_by_roleid = function ( role_id )
@@ -286,7 +298,7 @@ function CMD.scene_walk( user_info, req_data )
 		role_info.base_info.pos_y = req_data.start_y
 		role_info.base_info.pos_z = req_data.start_z
 		local pos_info = role_info.base_info.pos_x..","..role_info.base_info.pos_y..","..role_info.base_info.pos_z
-		local target_pos_info = req_data.end_x..","..req_data.end_y..","..req_data.end_z
+		local target_pos_info = req_data.end_x..","..req_data.end_z
 		-- print('Cat:scene.lua[116] pos_info', pos_info, role_info.scene_uid)
 		local cur_time = get_cur_time()
 		--for test 
@@ -294,7 +306,7 @@ function CMD.scene_walk( user_info, req_data )
 			local role_id = k
 			-- print('Cat:scene.lua[101] role_id, user_info.cur_role_id', role_id, user_info.cur_role_id, v.scene_uid, role_info.scene_uid)
 			if role_id ~= user_info.cur_role_id then
-				v.change_obj_infos = add_info_item(v.change_obj_infos, role_info.scene_uid, {key=SceneInfoKey.PosChange, value=pos_info, time= cur_time})
+				-- v.change_obj_infos = add_info_item(v.change_obj_infos, role_info.scene_uid, {key=SceneInfoKey.PosChange, value=pos_info, time= cur_time})
 				v.change_obj_infos = add_info_item(v.change_obj_infos, role_info.scene_uid, {key=SceneInfoKey.TargetPos, value=target_pos_info, time=cur_time})
 			end
 		end
@@ -308,6 +320,20 @@ function CMD.scene_get_objs_info_change( user_info, req_data )
 	if role_info and not role_info.ack_scene_get_objs_info_change then
 		--synch info at fixed time
 		role_info.ack_scene_get_objs_info_change = skynet.response()
+		return NORET
+	end
+	return {}
+end
+
+function CMD.scene_cast_skill(user_info, req_data)
+	
+end
+
+function CMD.scene_listen_fight_event(user_info, req_data)
+	local role_info = this.role_list[user_info.cur_role_id]
+	if role_info and not role_info.ack_scene_listen_fight_event then
+		--synch info at fixed time
+		role_info.ack_scene_listen_fight_event = skynet.response()
 		return NORET
 	end
 	return {}

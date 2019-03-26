@@ -39,7 +39,7 @@
 )人物场景漫游-ECS做法(90%)  
 )场景切割及动态加载(95%)  
 )基于组件的UI框架(85%)  
-)战斗系统  
+)战斗系统(40%)    
 )场景模型LOD,试试UnityGithub上的AutoLOD  
 
 后端:  
@@ -81,3 +81,5 @@
 19.02.03：前端的寻路资源流程确定为大世界的navmesh分块打包（需要划分到不同的scene把所有节点删光，这样就只有navmesh数据了），然后运行时可以Additive模式加载该Scene，当然导出navmesh前还需要拉几个OffMeshLink，这样加载多个scene时会就自动把多个navmesh关联起来。  
 19.02.13：终于把unity的navmesh导出成recastnavigation可以使用的数据了，主要思路是利用unity的NavMesh.CalculateTriangulation方法返回的三角形数据转化为recast里的rcPolyMesh对象然后再参照RecastDemo那样创建出dtNavMesh对象，详细见[Navigator](https://github.com/liuhaopen/Navigator "Navigator")  
 19.03.17：把人物场景漫游的逻辑换成ECS实现了，不过动作还是用Animator，场景加载还是先改成baseworld加细节物件九宫格加载：![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/run_in_green_scene.gif)   
+19.03.26：用Timeline实现了普攻和技能，省下了开发技能编辑器的功夫。接下来就弄个好看的轻功四段跳和场景同步逻辑了。另外资源方面还没上传最新的，主要是两点原因：1我还在纠结资源命名规范和目录结构等细节，未来会经常变动。2因为懒得在网上找资源所以直接用了公司项目的了，这个不好直接上传，等功能做得差不多了我再找替代资源。
+![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/cast_skill.gif)   

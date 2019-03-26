@@ -30,13 +30,25 @@ public class MovementUpdateSystem : BaseComponentSystem
         {
             var targetPos = targetPositions[i].Value;
             var speed = speeds[i].Value;
+            if (speed<=0)
+                continue;
             var curTrans = transforms[i];
             float3 startPos = curTrans.localPosition;
             var moveDir = targetPos-startPos;
             var groundDir = moveDir;
             groundDir.y = 0;
-            bool isMoveWanted = Vector3.Magnitude(groundDir)>0.1f;
-            var newPos = startPos+moveDir*speed/GameConst.SpeedFactor*dt;
+            float moveDistance = Vector3.Magnitude(groundDir);
+            bool isMoveWanted = moveDistance>0.01f;
+            float3 newPos = new float3();
+            if (moveDistance < speed/GameConst.SpeedFactor*dt)
+            {
+                //目标已经离得很近了
+                newPos = targetPos;
+            }
+            else
+            {
+                newPos = startPos+moveDir*speed/GameConst.SpeedFactor*dt;
+            }
             var moveQuery = moveQuerys[i];
             moveQuery.moveQueryStart = startPos;
 
@@ -45,6 +57,7 @@ public class MovementUpdateSystem : BaseComponentSystem
             var curLocoStateObj = locoStates[i];
             var curLocoState = curLocoStateObj.Value;
             bool isOnGround = curLocoState == LocomotionState.State.Idle || curLocoState == LocomotionState.State.Run || curLocoState == LocomotionState.State.Sprint;
+            // Debug.Log("isOnGround : "+isOnGround.ToString()+" movewanted:"+isMoveWanted.ToString());
             if (isOnGround)
             {
                 if (isMoveWanted)
@@ -120,8 +133,10 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
         float3 curPos = posArray[0].localPosition;
         var speed = moveSpeedArray[0].Value;
         var newTargetPos = new TargetPosition();
-        newTargetPos.Value = curPos+targetDirection*(speed/GameConst.SpeedFactor*1);//延着方向前进1秒为目标坐标
-        //TODO:通过navmesh判断是否障碍区，是的话取得最近点
+        if (speed > 0)
+            newTargetPos.Value = curPos+targetDirection*(speed/GameConst.SpeedFactor*0.5f);//延着方向前进0.5秒为目标坐标
+        else
+            newTargetPos.Value = curPos;
         targetPosArray[0] = newTargetPos;
         // Debug.Log("curPos : "+curPos.x+" "+curPos.y+" "+curPos.z+" dir:"+targetDirection.x+" "+targetDirection.z);
     }

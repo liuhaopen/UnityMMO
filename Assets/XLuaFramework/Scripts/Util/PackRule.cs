@@ -6,6 +6,7 @@ public class PackRule
     static string UIPath = "Assets/AssetBundleRes/ui/";
     static string ScenePath = "Assets/AssetBundleRes/scene/";
     static string RolePath = "Assets/AssetBundleRes/role/";
+    static string EffectPath = "Assets/AssetBundleRes/effect/";
     static string NPCPath = "Assets/AssetBundleRes/npc/";
     static string MonsterPath = "Assets/AssetBundleRes/monster/";
     public static string PathToAssetBundleName(string path)
@@ -19,17 +20,6 @@ public class PackRule
             string[] path_parts = sub_path.Split('/');
             if (path_parts.Length>0)
                 return  "ui_"+path_parts[0];
-            // Debug.Log("UIPath : "+UIPath);
-            // ab_name = "ui_";
-            // string sub_path = path.Substring(UIPath.Length);
-            // string[] path_parts = sub_path.Split('/');
-            // for (int i = 1; i < path_parts.Length-1; i++)
-            // {
-            //     ab_name += path_parts[i];
-            //     if (i < path_parts.Length - 2)
-            //         ab_name += "_";
-            // }
-            // return ab_name;
         }
         else if (path.StartsWith(ScenePath))
         {
@@ -45,6 +35,13 @@ public class PackRule
             if (path_parts.Length>0)
                 return "role_"+path_parts[0];
         }
+        else if (path.StartsWith(EffectPath))
+        {
+            string sub_path = path.Substring(EffectPath.Length);
+            string[] path_parts = sub_path.Split('/');
+            if (path_parts.Length>0)
+                return "effect_"+path_parts[0];
+        }
         else if (path.StartsWith(NPCPath))
         {
             string sub_path = path.Substring(NPCPath.Length);
@@ -59,7 +56,7 @@ public class PackRule
             if (path_parts.Length>0)
                 return "monster_"+path_parts[0];
         }
-        Debug.Log("PackRule:PathToAssetBundleName : cannot find ab name : " + path);
+        Debug.LogError("PackRule:PathToAssetBundleName : cannot find ab name : " + path);
         return "";
     } 
 }

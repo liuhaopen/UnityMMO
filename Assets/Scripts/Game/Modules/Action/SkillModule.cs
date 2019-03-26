@@ -4,6 +4,74 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityMMO;
 
+public class SkillManager
+{
+    static SkillManager instance;
+    int curComboIndex;
+    int career;
+    int[] skillIDs = new int[4];//主界面里的四个技能id，因为人物有多于4技能可以选择，所以需要后端记录下来哪四个常用的放在主界面
+    public static SkillManager GetInstance()
+    {
+        if (instance != null)
+            return instance;
+        instance = new SkillManager();
+        return instance;
+    }
+
+    public void Init(int career)
+    {
+        Debug.Log("career : "+career);
+        this.career = career;
+        this.curComboIndex = 0;
+        //just for test
+        for (int i = 0; i < 4; i++)
+        {
+            skillIDs[i] = 10000+career*1000+10+i;
+        }
+    }
+
+    public int GetCurAttackID()
+    {
+        return GetAttackID(career, curComboIndex);
+    }
+
+    public void ResetCombo()
+    {
+        curComboIndex = 0;
+    }
+
+    public void IncreaseCombo()
+    {
+        //普攻有四个
+        curComboIndex++;
+        if (curComboIndex>=4)
+            curComboIndex = 0;
+    }
+
+    public int GetSkillIDByIndex(int skillIndex)
+    {
+        if (skillIndex == -1)
+            return GetCurAttackID();
+        else
+            return skillIDs[skillIndex];
+    }
+
+    // public void SetSkillIDs(int[] ids)
+    // {
+    //     skillIDs = ids;
+    // }
+
+    private static int GetAttackID(int career, int comboIndex)
+    {
+        //技能id：万位是类型1角色，2怪物，3NPC，千位为职业，个十百位随便用
+        return 10000+career*1000+comboIndex;
+    }
+
+    private SkillManager()
+    {
+    }
+}
+
 public struct SkillSpawnRequest : IComponentData
 {
     public long UID;

@@ -56,7 +56,7 @@ public class RoleMgr
 		Instance = null;
 	}
 
-    public Entity AddMainRole(long uid, Vector3 pos)
+    public Entity AddMainRole(long uid, string name, int career, Vector3 pos)
 	{
         GameObjectEntity roleGameOE = m_GameWorld.Spawn<GameObjectEntity>(prefabDic["MainRole"]);
         roleGameOE.name = "MainRole_"+uid;
@@ -65,10 +65,12 @@ public class RoleMgr
         roleGameOE.transform.localPosition = pos;
         Entity role = roleGameOE.Entity;
         InitRole(role, uid, pos);
-        // EntityManager.AddComponent(role, ComponentType.Create<MainRoleTag>());
-        // EntityManager.AddComponent(role, ComponentType.Create<PlayerInput>());
         EntityManager.AddComponentData(role, new PosSynchInfo {LastUploadPos = float3.zero});
         EntityManager.AddComponent(role, ComponentType.Create<UserCommand>());
+        
+        var roleInfo = roleGameOE.GetComponent<RoleInfo>();
+        roleInfo.Name = name;
+        roleInfo.Career = career;
         
         entityDic.Add(uid, role);
         mainRoleGOE = roleGameOE;
@@ -86,29 +88,23 @@ public class RoleMgr
     public Entity AddRole(long uid)
 	{
         GameObjectEntity roleGameOE = m_GameWorld.Spawn<GameObjectEntity>(prefabDic["Role"]);
-        // Debug.Log("add role : "+(roleGameOE!=null).ToString());
         roleGameOE.name = "Role_"+uid;
         roleGameOE.transform.SetParent(RoleContainer);
         Entity role = roleGameOE.Entity;
         InitRole(role, uid, Vector3.zero);
-        // EntityManager.AddSharedComponentData(role, GetLookFromPrototype("Prototype/MainRoleRenderPrototype"));
         entityDic.Add(uid, role);
         return role;
 	}
 
     private void InitRole(Entity role, long uid, Vector3 pos)
     {
-        // EntityManager.AddComponentData(role, new Position {Value = new float3(pos.x, pos.y, pos.z)});
-        EntityManager.AddComponentData(role, new MoveSpeed {Value = 200});
+        EntityManager.AddComponentData(role, new MoveSpeed {Value = 400});
         EntityManager.AddComponentData(role, new TargetPosition {Value = new float3(pos.x, pos.y, pos.z)});
         EntityManager.AddComponentData(role, new LocomotionState {Value = LocomotionState.State.Idle});
         EntityManager.AddComponentData(role, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
-        // EntityManager.AddComponentData(role, new Rotation {Value = quaternion.identity});
-        // EntityManager.AddComponentData(role, new GroundInfo());
-        RoleState roleState = EntityManager.GetComponentObject<RoleState>(role);
-        // roleState.position = pos;
-        roleState.roleUid = uid;
-
+        EntityManager.AddComponentData(role, new UID {Value=uid});
+        EntityManager.AddComponentData(role, new TimelineState {NewStatus=TimelineState.NewState.Allow, InterruptStatus=TimelineState.InterruptState.Allow});
+        
         MoveQuery rmq = EntityManager.GetComponentObject<MoveQuery>(role);
         rmq.Initialize();
     }

@@ -165,6 +165,12 @@ public class SceneMgr : MonoBehaviour
                 detector = mainRoleGOE.GetComponent<SceneDetectorBase>();
             }
             action(1);
+            string navmeshPath = "navmesh_"+scene_id;
+            XLuaFramework.ResourceManager.GetInstance().LoadNavMesh(navmeshPath);
+            AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(navmeshPath, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+            asy.completed += delegate(AsyncOperation asyOp){
+                Debug.Log("load navmesh:"+asyOp.isDone.ToString());
+            };
         });
     }
 
@@ -301,10 +307,12 @@ public class SceneMgr : MonoBehaviour
         CorrectMainRolePos();
     }
 
-    public Entity AddMainRole(long uid, Vector3 pos)
+    public Entity AddMainRole(long uid, string name, int career, Vector3 pos)
 	{
-        Entity role = RoleMgr.GetInstance().AddMainRole(uid, pos);
+        Entity role = RoleMgr.GetInstance().AddMainRole(uid, name, career, pos);
         entityDic.Add(uid, role);
+
+        SkillManager.GetInstance().Init(career);
         return role;
     }
 

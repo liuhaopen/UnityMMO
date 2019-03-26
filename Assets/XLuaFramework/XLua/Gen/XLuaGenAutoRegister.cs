@@ -194,7 +194,22 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(Unity.Entities.World), UnityEntitiesWorldWrap.__Register);
         
         
+            translator.DelayWrapLoader(typeof(Unity.Entities.Entity), UnityEntitiesEntityWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(Unity.Entities.GameObjectEntity), UnityEntitiesGameObjectEntityWrap.__Register);
+        
+        
             translator.DelayWrapLoader(typeof(Unity.Entities.EntityManager), UnityEntitiesEntityManagerWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(UnityMMO.GameInput), UnityMMOGameInputWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(SkillManager), SkillManagerWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(UnityMMO.TimelineManager), UnityMMOTimelineManagerWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(TMPro.TextMeshProUGUI), TMProTextMeshProUGUIWrap.__Register);
