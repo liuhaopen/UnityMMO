@@ -131,7 +131,7 @@ public class AssetBundleInfo {
                 }
             }
             Debug.LogError("GetRealAssetPath Error:>>" + abName);
-            return null;
+            return "";
         }
 
         public void LoadAsset<T>(string file_path, Action<UObject[]> action = null, LuaFunction func = null) where T : UObject {
@@ -177,6 +177,18 @@ public class AssetBundleInfo {
         void LoadAsset<T>(string abName, string[] assetNames, Action<UObject[]> action = null, LuaFunction func = null) where T : UObject {
             // Debug.Log("ResourceManager:LoadAsset() abName : "+abName+" assetNames:"+assetNames[0]);
             abName = GetRealAssetPath(abName);
+            if (abName=="")
+            {
+                if (action != null)
+                    action(null);
+                if (func != null)
+                {
+                    func.Call(null);
+                    func.Dispose();
+                    func = null;
+                }
+                return;
+            }
             // Debug.Log("ResourceManager:LoadAsset() real abName : "+abName);
 
             LoadAssetRequest request = new LoadAssetRequest();
@@ -297,6 +309,8 @@ public class AssetBundleInfo {
         /// <param name="isThorough"></param>
         public void UnloadAssetBundle(string abName, bool isThorough = false) {
             abName = GetRealAssetPath(abName);
+            if (abName=="")
+                return;
             Debug.Log(m_LoadedAssetBundles.Count + " assetbundle(s) in memory before unloading " + abName);
             UnloadAssetBundleInternal(abName, isThorough);
             UnloadDependencies(abName, isThorough);

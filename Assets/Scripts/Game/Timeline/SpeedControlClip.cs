@@ -14,7 +14,6 @@ public class SpeedControlClip : PlayableAsset
         var playable = ScriptPlayable<SpeedControlBehaviour>.Create(graph);
         playable.GetBehaviour().SpeedFactor = SpeedFactor;
         var goe = go.GetComponent<GameObjectEntity>();
-        Debug.Log("go : "+go.ToString()+" "+(goe!=null).ToString());
         if (goe!=null)
         {
             playable.GetBehaviour().SpeedOwner = goe.Entity;

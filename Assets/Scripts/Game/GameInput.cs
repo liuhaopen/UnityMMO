@@ -63,7 +63,7 @@ public class GameInput
 
     public void SetKeyUp(KeyCode key, bool isUp=true)
     {
-        Debug.Log("key code : "+key.ToString()+" isup"+isUp.ToString());
+        // Debug.Log("key code : "+key.ToString()+" isup"+isUp.ToString());
         keyUp[key] = isUp;
     }
 

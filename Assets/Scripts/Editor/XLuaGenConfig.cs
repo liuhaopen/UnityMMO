@@ -73,13 +73,16 @@ public static class XLuaGenConfig
     [LuaCallCSharp]
     public static List<Type> LuaCallCSharpEntities = new List<Type>() {
         typeof(Unity.Entities.World),
-        // typeof(Unity.Entities.Entity),
+        typeof(Unity.Entities.Entity),
+        typeof(Unity.Entities.GameObjectEntity),
         typeof(Unity.Entities.EntityManager)
     };
 
     [LuaCallCSharp]
     public static List<Type> LuaCallCSharpUMMO = new List<Type>() {
-        typeof(GameInput)
+        typeof(GameInput),
+        typeof(SkillManager),
+        typeof(TimelineManager)
     };
 
     // [LuaCallCSharp]

@@ -307,10 +307,12 @@ public class SceneMgr : MonoBehaviour
         CorrectMainRolePos();
     }
 
-    public Entity AddMainRole(long uid, Vector3 pos)
+    public Entity AddMainRole(long uid, string name, int career, Vector3 pos)
 	{
-        Entity role = RoleMgr.GetInstance().AddMainRole(uid, pos);
+        Entity role = RoleMgr.GetInstance().AddMainRole(uid, name, career, pos);
         entityDic.Add(uid, role);
+
+        SkillManager.GetInstance().Init(career);
         return role;
     }
 

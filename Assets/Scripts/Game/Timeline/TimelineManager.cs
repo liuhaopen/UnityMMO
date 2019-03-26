@@ -1,10 +1,19 @@
 using System.Collections.Generic;
+using Unity.Entities;
+using System;
 
 namespace UnityMMO
 {
 public class TimelineInfo
 {
+    public Entity Owner;
     public string ResPath;
+    public enum Event
+    {
+        AfterAdd,
+        StartPlay
+    }
+    public Action<Event> StateChange;
 }
 public class TimelineManager
 {
@@ -24,30 +33,28 @@ public class TimelineManager
         pool = new Dictionary<long, List<TimelineInfo>>();
     }
 
-    public void AddTimeline(long id, TimelineInfo info)
+    public void AddTimeline(long id, TimelineInfo info, EntityManager entityMgr)
     {
+        if (info.Owner == Entity.Null || !entityMgr.HasComponent<TimelineState>(info.Owner))
+            return;
+        var state = entityMgr.GetComponentData<TimelineState>(info.Owner);
+        bool isNeedIgnore = state.NewStatus == TimelineState.NewState.Forbid;
+        if (isNeedIgnore)
+            return;
         if (!pool.ContainsKey(id))
             pool[id] = new List<TimelineInfo>();
+        if (pool[id].Count >= 3)
+            return;
         pool[id].Add(info);
+        if (info.StateChange != null)
+        {
+            info.StateChange(TimelineInfo.Event.AfterAdd);
+        }
     }
 
-    // public TimelineInfo GetTimeline(long id, int index)
-    // {
-    //     TimelineInfo result = null;
-    //     if (pool.ContainsKey(id) && pool[id].Count>index)
-    //         result = pool[id][index];
-    //     return result;
-    // }
-
-    public TimelineInfo PopTimeline(long id)
+    public Dictionary<long, List<TimelineInfo>> GetTimelineDic()
     {
-        TimelineInfo result = null;
-        if (pool.ContainsKey(id) && pool[id].Count>0)
-        {
-            result = pool[id][0];
-            pool[id].Remove(result);
-        }
-        return result;
+        return pool;
     }
 
     private TimelineManager()

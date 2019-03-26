@@ -20,17 +20,6 @@ public class PackRule
             string[] path_parts = sub_path.Split('/');
             if (path_parts.Length>0)
                 return  "ui_"+path_parts[0];
-            // Debug.Log("UIPath : "+UIPath);
-            // ab_name = "ui_";
-            // string sub_path = path.Substring(UIPath.Length);
-            // string[] path_parts = sub_path.Split('/');
-            // for (int i = 1; i < path_parts.Length-1; i++)
-            // {
-            //     ab_name += path_parts[i];
-            //     if (i < path_parts.Length - 2)
-            //         ab_name += "_";
-            // }
-            // return ab_name;
         }
         else if (path.StartsWith(ScenePath))
         {
@@ -38,6 +27,13 @@ public class PackRule
             string[] path_parts = sub_path.Split('/');
             if (path_parts.Length>0)
                 return  "scene_"+path_parts[0];
+        }
+        else if (path.StartsWith(RolePath))
+        {
+            string sub_path = path.Substring(RolePath.Length);
+            string[] path_parts = sub_path.Split('/');
+            if (path_parts.Length>0)
+                return "role_"+path_parts[0];
         }
         else if (path.StartsWith(EffectPath))
         {
@@ -60,7 +56,7 @@ public class PackRule
             if (path_parts.Length>0)
                 return "monster_"+path_parts[0];
         }
-        Debug.Log("PackRule:PathToAssetBundleName : cannot find ab name : " + path);
+        Debug.LogError("PackRule:PathToAssetBundleName : cannot find ab name : " + path);
         return "";
     } 
 }

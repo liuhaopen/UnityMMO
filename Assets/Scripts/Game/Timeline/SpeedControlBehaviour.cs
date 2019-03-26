@@ -12,7 +12,6 @@ public class SpeedControlBehaviour : PlayableBehaviour
     public Entity SpeedOwner;
     public EntityManager EntityMgr;
     private MoveSpeed lastSpeed;
-    bool hadStart = false;
 
     // Called when the owning graph starts playing
     public override void OnGraphStart(Playable playable)

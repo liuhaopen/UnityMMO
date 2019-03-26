@@ -5,17 +5,26 @@ using UnityEngine;
 
 namespace UnityMMO
 {
-    // public struct PlayerInput : IComponentData
-    // {
-    //     public float2 Move;
-    // }
-
-    // public struct MainRoleTag : IComponentData
-    // {
-    // }
     public struct UID : IComponentData
     {
         public long Value;
+    }
+
+    public struct TimelineState : IComponentData
+    {
+        public enum NewState
+        {
+            Allow,//允许新Timeline加进队列
+            Forbid,//禁止新Timeline加进队列
+        }
+        public NewState NewStatus;
+
+        public enum InterruptState
+        {
+            Allow,//可以播放队列里新的Timeline了
+            Forbid,//禁止播放新的Timeline
+        }
+        public InterruptState InterruptStatus;
     }
 
     public struct LocomotionState : IComponentData

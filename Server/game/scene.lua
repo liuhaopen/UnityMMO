@@ -172,7 +172,6 @@ end
 
 function CMD.role_enter_scene(role_id)
 	print('Cat:scene.lua[role_enter_scene] role_id', role_id)
-	print("Cat:scene [175role_enter_scene] : ",debug.traceback())
 	local cur_time = get_cur_time()
 	do 
 		--tell every one a new role enter scene

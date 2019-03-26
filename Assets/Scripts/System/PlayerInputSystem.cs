@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 using XLuaFramework;
+using System;
+
 
 namespace UnityMMO
 {
@@ -37,7 +39,6 @@ namespace UnityMMO
 
         public void SampleInput(ref UserCommand command, float deltaTime)
         {
-            // To accumulate move we store the input with max magnitude and uses that
             Vector2 moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
             float angle = Vector2.Angle(Vector2.up, moveInput);
             if (moveInput.x < 0)
@@ -64,55 +65,44 @@ namespace UnityMMO
 
             command.lookPitch += deltaMousePos.y * configMouseSensitivity;
             command.lookPitch = Mathf.Clamp(command.lookPitch, 0, 180);
-            if (GameInput.GetInstance().GetKeyUp(KeyCode.U))
-                TestSkill1();
-
+            
             command.jump = (command.jump!=0 || Input.GetKeyDown(KeyCode.Space))?1:0; 
             command.sprint = (command.sprint!=0 || Input.GetKey(KeyCode.LeftShift))?1:0;
-            // command.skill = 
+
+            if (GameInput.GetInstance().GetKeyUp(KeyCode.J))
+                CastSkill(-1);
+            else if (GameInput.GetInstance().GetKeyUp(KeyCode.I))
+                CastSkill(0);
+            else if (GameInput.GetInstance().GetKeyUp(KeyCode.O))
+                CastSkill(1);
+            else if (GameInput.GetInstance().GetKeyUp(KeyCode.K))
+                CastSkill(2);
+            else if (GameInput.GetInstance().GetKeyUp(KeyCode.L))
+                CastSkill(3);
         }
 
-        void TestSkill1()
+        void CastSkill(int skillIndex=-1)
         {
-            var mainRole = RoleMgr.GetInstance().GetMainRole();
-            var uid = EntityManager.GetComponentData<UID>(mainRole.Entity);
-            string assetPath = "Assets/AssetBundleRes/role/career_2/skill/timeline/skill_10021.playable";
-            TimelineManager.GetInstance().AddTimeline(uid.Value, new TimelineInfo{ResPath=assetPath});
-            TimelineSpawnRequest.Create(EntityManager, mainRole.Entity, uid.Value);
-            // ResourceManager.GetInstance().LoadAsset<PlayableAsset>(assetPath, delegate(UnityEngine.Object[] objs)
-            // {
-            //     if (objs==null || objs.Length<=0)
-            //         return;
-            //     var mainRole = RoleMgr.GetInstance().GetMainRole();
-            //     var playerDirector = mainRole.GetComponent<PlayableDirector>();
-            //     playerDirector.playableAsset = objs[0] as PlayableAsset;
-            //     var animator = mainRole.GetComponentInChildren<Animator>();
-            //     foreach (var at in playerDirector.playableAsset.outputs)
-            //     {
-            //         if (at.streamName.StartsWith("AnimationTrack"))
-            //         {
-            //             playerDirector.SetGenericBinding(at.sourceObject, animator);
-            //         }
-            //         else if (at.streamName.StartsWith("ParticleTrack"))
-            //         {
-            //             var ct = at.sourceObject as ControlTrack;
-            //             var looksInfo = EntityManager.GetComponentData<LooksInfo>(mainRole.Entity);
-            //             var looksEntity = looksInfo.LooksEntity;
-            //             var looksTrans = EntityManager.GetComponentObject<Transform>(looksEntity);
-            //             var particleParent = looksTrans.Find("root");
-            //             foreach (var info in ct.GetClips())
-            //             {
-            //                 if (info.displayName.StartsWith("particle"))
-            //                 {
-            //                     var cpa = info.asset as ControlPlayableAsset;
-            //                     playerDirector.SetReferenceValue(cpa.sourceGameObject.exposedName, particleParent.gameObject);
-                               
-            //                 }
-            //             }
-            //         }
-            //     }
-            //     playerDirector.Play();
-            // });
+            var roleGameOE = RoleMgr.GetInstance().GetMainRole();
+            var roleInfo = roleGameOE.GetComponent<RoleInfo>();
+            var skillID = SkillManager.GetInstance().GetSkillIDByIndex(skillIndex);
+            string assetPath = GameConst.GetRoleSkillResPath(roleInfo.Career, skillID);
+            bool isNormalAttack = skillIndex == -1;//普通攻击
+            if (!isNormalAttack)
+                SkillManager.GetInstance().ResetCombo();//使用非普攻技能时就重置连击索引
+            var uid = EntityManager.GetComponentData<UID>(roleGameOE.Entity);
+            Action<TimelineInfo.Event> afterAdd = null;
+            if (isNormalAttack)
+            {
+                //普攻的话增加连击索引
+                afterAdd = (TimelineInfo.Event e)=>
+                {
+                    if (e == TimelineInfo.Event.AfterAdd)
+                        SkillManager.GetInstance().IncreaseCombo();
+                };
+            }
+            var timelineInfo = new TimelineInfo{ResPath=assetPath, Owner=roleGameOE.Entity,  StateChange=afterAdd};
+            TimelineManager.GetInstance().AddTimeline(uid.Value, timelineInfo, EntityManager);
         }
       
     }

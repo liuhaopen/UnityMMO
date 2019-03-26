@@ -27,58 +27,48 @@ public struct TimelineSpawnRequest : IComponentData
 public class TimelineSpawnSystem : BaseComponentSystem
 {
     public TimelineSpawnSystem(GameWorld world) : base(world) {}
-
-    ComponentGroup RequestGroup;
-
+    // ComponentGroup RequestGroup;
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        RequestGroup = GetComponentGroup(typeof(TimelineSpawnRequest));
+        // RequestGroup = GetComponentGroup(typeof(TimelineSpawnRequest));
     }
 
     protected override void OnUpdate()
     {
         float dt = Time.deltaTime;
-        var requestArray = RequestGroup.GetComponentDataArray<TimelineSpawnRequest>();
-        if (requestArray.Length == 0)
-            return;
-
-        var requestEntityArray = RequestGroup.GetEntityArray();
-        
-        // Copy requests as spawning will invalidate Group
-        var requests = new TimelineSpawnRequest[requestArray.Length];
-        for (var i = 0; i < requestArray.Length; i++)
+        var dic = TimelineManager.GetInstance().GetTimelineDic();
+        foreach (var item in dic)
         {
-            requests[i] = requestArray[i];
-            PostUpdateCommands.DestroyEntity(requestEntityArray[i]);
-        }
-
-        for(var i = 0; i < requests.Length; i++)
-        {
-            Process(requests[i]);
+            var itemlineList = item.Value;
+            if (itemlineList.Count > 0)
+            {
+                var timelineInfo = item.Value[0];
+                var isOk = Process(timelineInfo);
+                if (isOk)
+                    itemlineList.RemoveAt(0);
+            }
         }
     }
 
-    void Process(TimelineSpawnRequest req)
+    bool Process(TimelineInfo timelineInfo)
     {
-        var _playerDirector = EntityManager.GetComponentObject<PlayableDirector>(req.Owner);
-        if (_playerDirector.state == PlayState.Playing)
-            return;
-        var timelineInfo = TimelineManager.GetInstance().PopTimeline(req.TimelineID);
+        var timelineState = EntityManager.GetComponentData<TimelineState>(timelineInfo.Owner);
+        bool isCanInterrupt = timelineState.InterruptStatus == TimelineState.InterruptState.Allow;
+        if (!isCanInterrupt)
+            return false;
         ResourceManager.GetInstance().LoadAsset<PlayableAsset>(timelineInfo.ResPath, delegate(UnityEngine.Object[] objs)
         {
             if (objs==null || objs.Length<=0)
                 return;
-            var entity = req.Owner;
-            // var mainRole = RoleMgr.GetInstance().GetMainRole();
-            // var playerDirector = mainRole.GetComponent<PlayableDirector>();
+            var entity = timelineInfo.Owner;
             var playerDirector = EntityManager.GetComponentObject<PlayableDirector>(entity);
+            playerDirector.Stop();
             playerDirector.playableAsset = objs[0] as PlayableAsset;
             var looksInfo = EntityManager.GetComponentData<LooksInfo>(entity);
             if (looksInfo.CurState != LooksInfo.State.Loaded)
                 return;
             var looksEntity = looksInfo.LooksEntity;
-            // var animator = mainRole.GetComponentInChildren<Animator>();
             var animator = EntityManager.GetComponentObject<Animator>(looksEntity);
             foreach (var at in playerDirector.playableAsset.outputs)
             {
@@ -104,5 +94,6 @@ public class TimelineSpawnSystem : BaseComponentSystem
             }
             playerDirector.Play();
         });
+        return true;
     }
 }
