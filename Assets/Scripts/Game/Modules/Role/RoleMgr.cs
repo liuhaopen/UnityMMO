@@ -98,11 +98,12 @@ public class RoleMgr
 
     private void InitRole(Entity role, long uid, Vector3 pos)
     {
-        EntityManager.AddComponentData(role, new MoveSpeed {Value = 400});
+        EntityManager.AddComponentData(role, new MoveSpeed {Value = 1200, VerticalSpeed=0});
         EntityManager.AddComponentData(role, new TargetPosition {Value = new float3(pos.x, pos.y, pos.z)});
         EntityManager.AddComponentData(role, new LocomotionState {Value = LocomotionState.State.Idle});
         EntityManager.AddComponentData(role, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
         EntityManager.AddComponentData(role, new UID {Value=uid});
+        EntityManager.AddComponentData(role, new JumpState {JumpStatus=JumpState.State.None, JumpCount=0, LeftAscendHeight=0});
         EntityManager.AddComponentData(role, new TimelineState {NewStatus=TimelineState.NewState.Allow, InterruptStatus=TimelineState.InterruptState.Allow});
         
         MoveQuery rmq = EntityManager.GetComponentObject<MoveQuery>(role);

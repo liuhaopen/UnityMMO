@@ -37,9 +37,10 @@ public class MovementUpdateSystem : BaseComponentSystem
             var moveDir = targetPos-startPos;
             var groundDir = moveDir;
             groundDir.y = 0;
+            groundDir = Vector3.Normalize(groundDir);
             float moveDistance = Vector3.Magnitude(groundDir);
             bool isMoveWanted = moveDistance>0.01f;
-            float3 newPos = new float3();
+            float3 newPos;
             if (moveDistance < speed/GameConst.SpeedFactor*dt)
             {
                 //目标已经离得很近了
@@ -47,10 +48,16 @@ public class MovementUpdateSystem : BaseComponentSystem
             }
             else
             {
-                newPos = startPos+moveDir*speed/GameConst.SpeedFactor*dt;
+                newPos = startPos+groundDir*speed/GameConst.SpeedFactor*dt;
             }
+            //垂直方向有两因素，1是VerticalSpeed，比如跳跃时会设置；2是模仿重力，人物需要贴着地面走，有碰撞检测的所以不怕
+            newPos.y = startPos.y + (speeds[i].VerticalSpeed/GameConst.SpeedFactor)*dt;
+            newPos.y += GameConst.Gravity*dt;
+
             var moveQuery = moveQuerys[i];
             moveQuery.moveQueryStart = startPos;
+            //不能直接设置新坐标，因为需要和地形做碰撞处理什么的，所以利用CharacterController走路，在HandleMovementQueries才设置新坐标
+            moveQuery.moveQueryEnd = newPos;
 
             //new locomotion state
             var newLocoState = LocomotionState.State.StateNum;
@@ -75,13 +82,11 @@ public class MovementUpdateSystem : BaseComponentSystem
                 curLocoStateObj.Value = newLocoState;
                 locoStates[i] = curLocoStateObj;
             }
-            //不能直接设置新坐标，因为需要和地形做碰撞处理什么的，所以利用CharacterController走路，在HandleMovementQueries才设置新坐标
-            moveQuery.moveQueryEnd = newPos;
-
+            
             //change role rotation
             if (isMoveWanted)
             {
-                Vector3 targetDirection = new Vector3(moveDir.x, moveDir.y, moveDir.z);
+                Vector3 targetDirection = new Vector3(groundDir.x, groundDir.y, groundDir.z);
                 Vector3 lookDirection = targetDirection.normalized;
                 Quaternion freeRotation = Quaternion.LookRotation(lookDirection, curTrans.up);
                 var diferenceRotation = freeRotation.eulerAngles.y - curTrans.eulerAngles.y;
@@ -119,17 +124,13 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
         if (userCommandArray.Length==0)
             return;
         var userCommand = userCommandArray[0];
-        // Vector2 input = new Vector2();
         var input = GameInput.GetInstance().JoystickDir;
-        // input.x = Input.GetAxis("Horizontal");
-        // input.y = Input.GetAxis("Vertical");
         bool isJump = Input.GetKeyDown(KeyCode.Space);
         var forward = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.forward);
         forward.y = 0;
         var right = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.right);
         float3 targetDirection = input.x * right + input.y * forward;
-        targetDirection.y = -10;//模仿重力，人物需要贴着地面走，有碰撞检测的所以不怕
-        // Debug.Log("targetDirection : "+targetDirection.x + " "+targetDirection.y+" "+targetDirection.z);
+        targetDirection.y = 0;
         float3 curPos = posArray[0].localPosition;
         var speed = moveSpeedArray[0].Value;
         var newTargetPos = new TargetPosition();
@@ -137,7 +138,7 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
             newTargetPos.Value = curPos+targetDirection*(speed/GameConst.SpeedFactor*0.5f);//延着方向前进0.5秒为目标坐标
         else
             newTargetPos.Value = curPos;
+        newTargetPos.Value.y = targetPosArray[0].Value.y;
         targetPosArray[0] = newTargetPos;
-        // Debug.Log("curPos : "+curPos.x+" "+curPos.y+" "+curPos.z+" dir:"+targetDirection.x+" "+targetDirection.z);
     }
 }

@@ -15,7 +15,7 @@ end
 
 function MainUISkillBtnView:OnLoad(  )
 	local names = {
-		"correct:obj","skill_3:obj","skill_4:obj","jump","skill_1:obj","skill_2:obj","attack:obj",
+		"correct:obj","skill_3:obj","skill_4:obj","jump:obj","skill_1:obj","skill_2:obj","attack:obj",
 	}
 	UI.GetChildren(self, self.transform, names)
 
@@ -38,6 +38,8 @@ function MainUISkillBtnView:AddEvents(  )
     		CS.UnityMMO.GameInput.GetInstance():SetKeyUp(CS.UnityEngine.KeyCode.L, true)
 		elseif click_btn == self.attack_obj then
     		CS.UnityMMO.GameInput.GetInstance():SetKeyUp(CS.UnityEngine.KeyCode.J, true)
+		elseif click_btn == self.jump_obj then
+    		CS.UnityMMO.GameInput.GetInstance():SetKeyUp(CS.UnityEngine.KeyCode.Space, true)
 		end
 	end
 	UIHelper.BindClickEvent(self.correct_obj, on_click)
@@ -46,6 +48,7 @@ function MainUISkillBtnView:AddEvents(  )
 	UIHelper.BindClickEvent(self.skill_3_obj, on_click)
 	UIHelper.BindClickEvent(self.skill_4_obj, on_click)
 	UIHelper.BindClickEvent(self.attack_obj, on_click)
+	UIHelper.BindClickEvent(self.jump_obj, on_click)
 
 end
 

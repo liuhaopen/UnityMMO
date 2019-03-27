@@ -43,7 +43,7 @@ namespace UnityMMO
         public State Value;
     }
 
-    public struct JumpInfo : IComponentData
+    public struct JumpState : IComponentData
     {
         public enum State
         {
@@ -52,8 +52,10 @@ namespace UnityMMO
             InAir = 2,
             EndJump = 3,
         }
-        public State JumpState;
-        public float StartTime;
+        public State JumpStatus;
+        public int JumpCount;
+        public float LeftAscendHeight;
+        // public float StartTime;
     }
 
     public struct ActionInfo : IComponentData
@@ -72,6 +74,7 @@ namespace UnityMMO
     public struct MoveSpeed : IComponentData
     {
         public float Value;
+        public float VerticalSpeed;
     }
     
     public struct TargetPosition : IComponentData

@@ -79,6 +79,28 @@ namespace UnityMMO
                 CastSkill(2);
             else if (GameInput.GetInstance().GetKeyUp(KeyCode.L))
                 CastSkill(3);
+            else if (GameInput.GetInstance().GetKeyUp(KeyCode.Space))
+                DoJump();
+        }
+
+        void DoJump()
+        {
+            Debug.Log("do jump");
+            var roleGameOE = RoleMgr.GetInstance().GetMainRole();
+            // var speed = EntityManager.GetComponentData<MoveSpeed>(roleGameOE.Entity);
+            // speed.VerticalSpeed = 2200;
+            // EntityManager.SetComponentData<MoveSpeed>(roleGameOE.Entity, speed);
+
+            var roleInfo = roleGameOE.GetComponent<RoleInfo>();
+            var assetPath = GameConst.GetRoleJumpResPath(roleInfo.Career, 1);
+            var timelineInfo = new TimelineInfo{ResPath=assetPath, Owner=roleGameOE.Entity, StateChange=null};
+            var uid = EntityManager.GetComponentData<UID>(roleGameOE.Entity);
+            TimelineManager.GetInstance().AddTimeline(uid.Value, timelineInfo, EntityManager);
+
+            // var trans = EntityManager.GetComponentObject<Transform>(roleGameOE.Entity);
+            // var targetPos = EntityManager.GetComponentData<TargetPosition>(roleGameOE.Entity);
+            // targetPos.Value.y = trans.localPosition.y + 10;
+            // EntityManager.SetComponentData<TargetPosition>(roleGameOE.Entity, targetPos);
         }
 
         void CastSkill(int skillIndex=-1)
