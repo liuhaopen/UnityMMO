@@ -14,7 +14,7 @@ public class MovementUpdateSystem : BaseComponentSystem
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(MoveQuery), typeof(LocomotionState));
+        group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(MoveQuery), typeof(LocomotionState), typeof(PosOffset));
     }
 
     protected override void OnUpdate()
@@ -26,10 +26,12 @@ public class MovementUpdateSystem : BaseComponentSystem
         var transforms = group.GetComponentArray<Transform>();
         var moveQuerys = group.GetComponentArray<MoveQuery>();
         var locoStates = group.GetComponentDataArray<LocomotionState>();
+        var posOffsets = group.GetComponentDataArray<PosOffset>();
         for (int i=0; i<targetPositions.Length; i++)
         {
             var targetPos = targetPositions[i].Value;
             var speed = speeds[i].Value;
+            var posOffset = posOffsets[i].Value;
             if (speed<=0)
                 continue;
             var curTrans = transforms[i];
@@ -51,8 +53,10 @@ public class MovementUpdateSystem : BaseComponentSystem
                 newPos = startPos+groundDir*speed/GameConst.SpeedFactor*dt;
             }
             //垂直方向有两因素，1是VerticalSpeed，比如跳跃时会设置；2是模仿重力，人物需要贴着地面走，有碰撞检测的所以不怕
-            newPos.y = startPos.y + (speeds[i].VerticalSpeed/GameConst.SpeedFactor)*dt;
-            newPos.y += GameConst.Gravity*dt;
+            // newPos.y = startPos.y + (speeds[i].VerticalSpeed/GameConst.SpeedFactor)*dt;
+            newPos.y = startPos.y + GameConst.Gravity*dt;
+            // Debug.Log(" posOffset in move : "+posOffset.y);
+            newPos += posOffset;
 
             var moveQuery = moveQuerys[i];
             moveQuery.moveQueryStart = startPos;

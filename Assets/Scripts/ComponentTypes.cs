@@ -43,18 +43,24 @@ namespace UnityMMO
         public State Value;
     }
 
+    public struct PosOffset : IComponentData
+    {
+        public float3 Value;
+    }
+
     public struct JumpState : IComponentData
     {
         public enum State
         {
             None = 0,
-            StartJump = 1,
-            InAir = 2,
-            EndJump = 3,
+            StartJump,
+            InAir,
+            EndJump,
         }
         public State JumpStatus;
         public int JumpCount;
-        public float LeftAscendHeight;
+        public float OriginYPos;
+        public float AscentHeight;
         // public float StartTime;
     }
 

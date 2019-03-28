@@ -103,7 +103,8 @@ public class RoleMgr
         EntityManager.AddComponentData(role, new LocomotionState {Value = LocomotionState.State.Idle});
         EntityManager.AddComponentData(role, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
         EntityManager.AddComponentData(role, new UID {Value=uid});
-        EntityManager.AddComponentData(role, new JumpState {JumpStatus=JumpState.State.None, JumpCount=0, LeftAscendHeight=0});
+        EntityManager.AddComponentData(role, new JumpState {JumpStatus=JumpState.State.None, JumpCount=0, OriginYPos=0, AscentHeight=0});
+        EntityManager.AddComponentData(role, new PosOffset {Value = float3.zero});
         EntityManager.AddComponentData(role, new TimelineState {NewStatus=TimelineState.NewState.Allow, InterruptStatus=TimelineState.InterruptState.Allow});
         
         MoveQuery rmq = EntityManager.GetComponentObject<MoveQuery>(role);
