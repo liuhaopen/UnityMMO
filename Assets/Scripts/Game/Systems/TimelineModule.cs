@@ -72,23 +72,29 @@ public class TimelineSpawnSystem : BaseComponentSystem
             var animator = EntityManager.GetComponentObject<Animator>(looksEntity);
             foreach (var at in playerDirector.playableAsset.outputs)
             {
-                if (at.streamName.StartsWith("AnimationTrack"))
+                if (at.streamName.StartsWith("AnimationTrack") || at.streamName.StartsWith("Animation Track"))
                 {
                     playerDirector.SetGenericBinding(at.sourceObject, animator);
                 }
                 else if (at.streamName.StartsWith("ParticleTrack"))
                 {
+                    var nameParts = at.streamName.Split('_');
+                    var hangPointName = "root";
+                    if (nameParts.Length > 1)
+                    {
+                        hangPointName = nameParts[1];
+                    }
+                    Debug.Log("hangPointName : "+hangPointName);
                     var ct = at.sourceObject as ControlTrack;
                     var looksTrans = EntityManager.GetComponentObject<Transform>(looksEntity);
-                    var particleParent = looksTrans.Find("root");
+                    var particleParent = looksTrans.Find(hangPointName);
                     foreach (var info in ct.GetClips())
                     {
-                        if (info.displayName.StartsWith("particle"))
-                        {
+                        // if (info.displayName.StartsWith("particle"))
+                        // {
                             var cpa = info.asset as ControlPlayableAsset;
                             playerDirector.SetReferenceValue(cpa.sourceGameObject.exposedName, particleParent.gameObject);
-                        
-                        }
+                        // }
                     }
                 }
             }

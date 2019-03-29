@@ -5,7 +5,7 @@ using UnityEngine.Playables;
 using UnityEngine.Timeline;
 using XLuaFramework;
 using System;
-
+using Unity.Mathematics;
 
 namespace UnityMMO
 {
@@ -40,15 +40,11 @@ namespace UnityMMO
         public void SampleInput(ref UserCommand command, float deltaTime)
         {
             Vector2 moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+            // GameInput.GetInstance().JoystickDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
             float angle = Vector2.Angle(Vector2.up, moveInput);
             if (moveInput.x < 0)
                 angle = 360 - angle;
             float magnitude = Mathf.Clamp(moveInput.magnitude, 0, 1);       
-            // if (magnitude > maxMoveMagnitude)
-            // {
-            //     maxMoveYaw = angle;
-            //     maxMoveMagnitude = magnitude;
-            // }
             command.moveYaw = angle;
             command.moveMagnitude = magnitude;
 
@@ -85,22 +81,24 @@ namespace UnityMMO
 
         void DoJump()
         {
-            Debug.Log("do jump");
             var roleGameOE = RoleMgr.GetInstance().GetMainRole();
-            // var speed = EntityManager.GetComponentData<MoveSpeed>(roleGameOE.Entity);
-            // speed.VerticalSpeed = 2200;
-            // EntityManager.SetComponentData<MoveSpeed>(roleGameOE.Entity, speed);
-
+            var jumpState = EntityManager.GetComponentData<JumpState>(roleGameOE.Entity);
+            var isMaxJump = jumpState.JumpCount >= GameConst.MaxJumpCount;
+            if (isMaxJump)
+            {
+                //已经最高跳段了，就不能再跳
+                if (jumpState.JumpStatus != JumpState.State.None)
+                    return;
+                jumpState.JumpCount = 0;
+                EntityManager.SetComponentData<JumpState>(roleGameOE.Entity, jumpState);
+            }
+            var newJumpCount = math.clamp(jumpState.JumpCount+1, 0, GameConst.MaxJumpCount);
+            Debug.Log("newJumpCount : "+newJumpCount);
             var roleInfo = roleGameOE.GetComponent<RoleInfo>();
-            var assetPath = GameConst.GetRoleJumpResPath(roleInfo.Career, 1);
+            var assetPath = GameConst.GetRoleJumpResPath(roleInfo.Career, newJumpCount);
             var timelineInfo = new TimelineInfo{ResPath=assetPath, Owner=roleGameOE.Entity, StateChange=null};
             var uid = EntityManager.GetComponentData<UID>(roleGameOE.Entity);
             TimelineManager.GetInstance().AddTimeline(uid.Value, timelineInfo, EntityManager);
-
-            // var trans = EntityManager.GetComponentObject<Transform>(roleGameOE.Entity);
-            // var targetPos = EntityManager.GetComponentData<TargetPosition>(roleGameOE.Entity);
-            // targetPos.Value.y = trans.localPosition.y + 10;
-            // EntityManager.SetComponentData<TargetPosition>(roleGameOE.Entity, targetPos);
         }
 
         void CastSkill(int skillIndex=-1)

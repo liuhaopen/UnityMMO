@@ -54,7 +54,16 @@ public class MovementUpdateSystem : BaseComponentSystem
             }
             //垂直方向有两因素，1是VerticalSpeed，比如跳跃时会设置；2是模仿重力，人物需要贴着地面走，有碰撞检测的所以不怕
             // newPos.y = startPos.y + (speeds[i].VerticalSpeed/GameConst.SpeedFactor)*dt;
-            newPos.y = startPos.y + GameConst.Gravity*dt;
+            bool isNeedGravity = true;
+            if (EntityManager.HasComponent<JumpState>(entities[i]))
+            {
+                var jumpState = EntityManager.GetComponentData<JumpState>(entities[i]);
+                if (jumpState.JumpStatus != JumpState.State.None)
+                    isNeedGravity = false;
+            }
+            newPos.y = startPos.y;
+            if (isNeedGravity)
+                newPos.y += GameConst.Gravity*dt;
             // Debug.Log(" posOffset in move : "+posOffset.y);
             newPos += posOffset;
 

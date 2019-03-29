@@ -94,6 +94,7 @@ public class SynchFromNet {
                 // Debug.Log("cur_change_info.key : "+cur_change_info.key.ToString()+" scene_obj:"+(scene_obj!=Entity.Null).ToString()+ " ContainsKey:"+changeFuncDic.ContainsKey((SceneInfoKey)cur_change_info.key).ToString()+" uid"+uid.ToString()+" value:"+cur_change_info.value.ToString());
                 if (cur_change_info.key == (int)SceneInfoKey.EnterScene)
                 {
+                    Debug.Log("some one enter scene:uid:"+uid+" scene_obj==null"+(scene_obj==Entity.Null).ToString());
                     if (scene_obj==Entity.Null)
                     {
                         SceneObjectType sceneObjType = (SceneObjectType)Enum.Parse(typeof(SceneObjectType), cur_change_info.value);
@@ -141,7 +142,7 @@ public class SynchFromNet {
     {
         string[] pos_strs = change_info.value.Split(',');
         // Debug.Log("SynchFromNet recieve pos value : "+change_info.value);
-        if (pos_strs.Length != 3)
+        if (pos_strs.Length != 2)
         {
             Debug.Log("SynchFromNet recieve a wrong pos value : "+change_info.value);
             return;

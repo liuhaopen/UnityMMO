@@ -33,6 +33,8 @@ public class TimelineStateCtrlBehaviour : PlayableBehaviour
     // Called when the state of the playable is set to Play
     public override void OnBehaviourPlay(Playable playable, FrameData info)
     {
+        if (!EntityMgr.HasComponent<TimelineState>(Owner))
+            return;
         TimelineState.NewState newState = lastState.NewStatus;
         TimelineState.InterruptState interruptState = lastState.InterruptStatus;
         if (IsControllNewState)

@@ -15,6 +15,7 @@ namespace UnityMMO
         public const int MaxLuaNetSessionID = System.Int32.MaxValue;
         public const int NetResultOk = 0;
         public const int Gravity = -10;
+        public const int MaxJumpCount = 3;
 
         public static string GetRoleResPath()
         {

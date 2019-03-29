@@ -172,13 +172,6 @@ end
 
 function CMD.role_enter_scene(role_id)
 	print('Cat:scene.lua[role_enter_scene] role_id', role_id)
-	local cur_time = get_cur_time()
-	do 
-		--tell every one a new role enter scene
-		for k,v in pairs(this.role_list) do
-			v.change_obj_infos = add_info_item(v.change_obj_infos, v.scene_uid, {key=SceneInfoKey.EnterScene, value=SceneObjectType.Role, time=cur_time})
-		end
-	end
 	if not this.role_list[role_id] then
 		local scene_uid = new_scene_uid(SceneObjectType.Role)
 		local base_info = get_base_info_by_roleid(role_id)
@@ -186,15 +179,27 @@ function CMD.role_enter_scene(role_id)
 		init_pos_info(base_info)
 		this.role_list[role_id] = {scene_uid=scene_uid, base_info=base_info, looks_info=looks_info}
 		this.object_list[scene_uid] = this.role_list[role_id]
+
+		local cur_time = get_cur_time()
 		--tell the new guy who are here
 		for k,v in pairs(this.role_list) do
 			if v.scene_uid ~= scene_uid then
 				this.role_list[role_id].change_obj_infos = add_info_item(this.role_list[role_id].change_obj_infos, v.scene_uid, {key=SceneInfoKey.EnterScene, value=SceneObjectType.Role, time=cur_time})
+				local pos_info_str = this.role_list[role_id].base_info.pos_x..","..this.role_list[role_id].base_info.pos_y..","..this.role_list[role_id].base_info.pos_z
+				this.role_list[role_id].change_obj_infos = add_info_item(this.role_list[role_id].change_obj_infos, v.scene_uid, {key=SceneInfoKey.PosChange, value=pos_info_str, time=cur_time})
 			end
 		end
-		for k,v in pairs(this.npc_list) do
-			this.role_list[role_id].change_obj_infos = add_info_item(this.role_list[role_id].change_obj_infos, v.scene_uid, {key=SceneInfoKey.EnterScene, value=SceneObjectType.NPC, time=0})
+		--tell every one a new role enter scene
+		local pos_info_str = base_info.pos_x..","..base_info.pos_y..","..base_info.pos_z
+		local enter_event_info = {key=SceneInfoKey.EnterScene, value=SceneObjectType.Role, time=cur_time}
+		local pos_change_event_info = {key=SceneInfoKey.PosChange, value=pos_info_str, time=cur_time}
+		for k,v in pairs(this.role_list) do
+			v.change_obj_infos = add_info_item(v.change_obj_infos, scene_uid, enter_event_info)
+			v.change_obj_infos = add_info_item(v.change_obj_infos, scene_uid, pos_change_event_info)
 		end
+		-- for k,v in pairs(this.npc_list) do
+		-- 	this.role_list[role_id].change_obj_infos = add_info_item(this.role_list[role_id].change_obj_infos, v.scene_uid, {key=SceneInfoKey.EnterScene, value=SceneObjectType.NPC, time=0})
+		-- end
 	end
 end
 
@@ -306,7 +311,7 @@ function CMD.scene_walk( user_info, req_data )
 			local role_id = k
 			-- print('Cat:scene.lua[101] role_id, user_info.cur_role_id', role_id, user_info.cur_role_id, v.scene_uid, role_info.scene_uid)
 			if role_id ~= user_info.cur_role_id then
-				-- v.change_obj_infos = add_info_item(v.change_obj_infos, role_info.scene_uid, {key=SceneInfoKey.PosChange, value=pos_info, time= cur_time})
+				v.change_obj_infos = add_info_item(v.change_obj_infos, role_info.scene_uid, {key=SceneInfoKey.PosChange, value=pos_info, time= cur_time})
 				v.change_obj_infos = add_info_item(v.change_obj_infos, role_info.scene_uid, {key=SceneInfoKey.TargetPos, value=target_pos_info, time=cur_time})
 			end
 		end

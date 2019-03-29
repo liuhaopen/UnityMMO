@@ -351,7 +351,7 @@ public class SceneMgr : MonoBehaviour
 
     public Entity GetSceneObject(long uid)
     {
-        Debug.Log("GetSceneObject uid"+uid.ToString()+" ContainsKey:"+entityDic.ContainsKey(uid).ToString());
+        // Debug.Log("GetSceneObject uid : "+uid.ToString()+" ContainsKey:"+entityDic.ContainsKey(uid).ToString());
         if (entityDic.ContainsKey(uid))
             return entityDic[uid];
         return Entity.Null;

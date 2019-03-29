@@ -37,5 +37,6 @@ public class FixedJoystick : Joystick
     {
         inputVector = Vector2.zero;
         handle.anchoredPosition = Vector2.zero;
+        GameInput.GetInstance().JoystickDir = inputVector;
     }
 }
