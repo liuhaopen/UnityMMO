@@ -306,13 +306,14 @@ function CMD.scene_walk( user_info, req_data )
 		local target_pos_info = req_data.end_x..","..req_data.end_z
 		-- print('Cat:scene.lua[116] pos_info', pos_info, role_info.scene_uid)
 		local cur_time = get_cur_time()
+		-- local change_pos_event_info = {key=SceneInfoKey.PosChange, value=pos_info, time= cur_time}
+		local change_target_pos_event_info = {key=SceneInfoKey.TargetPos, value=target_pos_info, time=cur_time}
 		--for test 
 		for k,v in pairs(this.role_list) do
 			local role_id = k
-			-- print('Cat:scene.lua[101] role_id, user_info.cur_role_id', role_id, user_info.cur_role_id, v.scene_uid, role_info.scene_uid)
 			if role_id ~= user_info.cur_role_id then
-				v.change_obj_infos = add_info_item(v.change_obj_infos, role_info.scene_uid, {key=SceneInfoKey.PosChange, value=pos_info, time= cur_time})
-				v.change_obj_infos = add_info_item(v.change_obj_infos, role_info.scene_uid, {key=SceneInfoKey.TargetPos, value=target_pos_info, time=cur_time})
+				-- v.change_obj_infos = add_info_item(v.change_obj_infos, role_info.scene_uid, change_pos_event_info)
+				v.change_obj_infos = add_info_item(v.change_obj_infos, role_info.scene_uid, change_target_pos_event_info)
 			end
 		end
 	end

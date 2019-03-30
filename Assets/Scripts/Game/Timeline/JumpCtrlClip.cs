@@ -17,8 +17,9 @@ public class JumpCtrlClip : PlayableAsset
         var goe = go.GetComponent<GameObjectEntity>();
         if (goe!=null)
         {
-            playable.GetBehaviour().Owner = goe.Entity;
-            playable.GetBehaviour().EntityMgr = goe.EntityManager;
+            playable.GetBehaviour().Init(goe.Entity, goe.EntityManager);
+            // playable.GetBehaviour().Owner = goe.Entity;
+            // playable.GetBehaviour().EntityMgr = goe.EntityManager;
         }
         return playable;
     }

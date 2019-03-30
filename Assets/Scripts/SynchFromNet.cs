@@ -150,7 +150,21 @@ public class SynchFromNet {
         long new_x = Int64.Parse(pos_strs[0]);
         // long new_y = Int64.Parse(pos_strs[1]);
         long new_z = Int64.Parse(pos_strs[1]);
-        SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = new float3(new_x/GameConst.RealToLogic, 0, new_z/GameConst.RealToLogic)});
+        var newTargetPos = new float3(new_x/GameConst.RealToLogic, 0, new_z/GameConst.RealToLogic);
+
+        var trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(entity);
+        var curPos = trans.localPosition;
+        curPos.y = 0;
+        var distance = Vector3.Distance(curPos, newTargetPos);
+        // if (distance > 100)
+        // {
+        //     //如果目标坐标距离人物当前坐标很远就直接设置
+        //     newTargetPos.y = trans.localPosition.y;
+        //     var newPos = SceneMgr.Instance.GetCorrectPos(newTargetPos);
+        //     trans.localPosition = newPos;
+        //     return;
+        // }
+        SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = newTargetPos});
     }
 }
 }

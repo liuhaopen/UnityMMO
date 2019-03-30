@@ -83,17 +83,18 @@ namespace UnityMMO
         {
             var roleGameOE = RoleMgr.GetInstance().GetMainRole();
             var jumpState = EntityManager.GetComponentData<JumpState>(roleGameOE.Entity);
+            if (jumpState.JumpStatus == JumpState.State.None)
+            {
+                jumpState.JumpCount = 0;
+                EntityManager.SetComponentData<JumpState>(roleGameOE.Entity, jumpState);
+            }
             var isMaxJump = jumpState.JumpCount >= GameConst.MaxJumpCount;
             if (isMaxJump)
             {
                 //已经最高跳段了，就不能再跳
-                if (jumpState.JumpStatus != JumpState.State.None)
-                    return;
-                jumpState.JumpCount = 0;
-                EntityManager.SetComponentData<JumpState>(roleGameOE.Entity, jumpState);
+                return;
             }
             var newJumpCount = math.clamp(jumpState.JumpCount+1, 0, GameConst.MaxJumpCount);
-            Debug.Log("newJumpCount : "+newJumpCount);
             var roleInfo = roleGameOE.GetComponent<RoleInfo>();
             var assetPath = GameConst.GetRoleJumpResPath(roleInfo.Career, newJumpCount);
             var timelineInfo = new TimelineInfo{ResPath=assetPath, Owner=roleGameOE.Entity, StateChange=null};

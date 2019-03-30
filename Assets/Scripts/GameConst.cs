@@ -34,12 +34,12 @@ namespace UnityMMO
 
         public static string GetRoleSkillResPath(int career, int skillID)
         {
-            return "Assets/AssetBundleRes/role/career_"+career+"/skill/timeline/skill_"+skillID+".playable";
+            return "Assets/AssetBundleRes/role/career_"+career+"/timeline/skill_"+skillID+".playable";
         }
 
         public static string GetRoleJumpResPath(int career, int jumpID)
         {
-            return "Assets/AssetBundleRes/role/career_"+career+"/skill/timeline/jump_"+jumpID+".playable";
+            return "Assets/AssetBundleRes/role/career_"+career+"/timeline/jump_"+jumpID+".playable";
         }
 
     }

@@ -8,7 +8,7 @@ namespace UnityMMO
 {
 public class RoleMgr
 {
-	public static RoleMgr Instance;
+	static RoleMgr Instance;
     GameWorld m_GameWorld;
     private Transform container;
     Dictionary<long, Entity> entityDic = new Dictionary<long, Entity>();
@@ -85,6 +85,13 @@ public class RoleMgr
         return mainRoleGOE;
     }
 
+    public bool IsMainRoleEntity(Entity entity)
+    {
+        if (mainRoleGOE==null || entity==Entity.Null)
+            return false;
+        return mainRoleGOE.Entity == entity;
+    }
+
     public Entity AddRole(long uid)
 	{
         GameObjectEntity roleGameOE = m_GameWorld.Spawn<GameObjectEntity>(prefabDic["Role"]);
@@ -98,7 +105,7 @@ public class RoleMgr
 
     private void InitRole(Entity role, long uid, Vector3 pos)
     {
-        EntityManager.AddComponentData(role, new MoveSpeed {Value = 1200, VerticalSpeed=0});
+        EntityManager.AddComponentData(role, new MoveSpeed {Value = 1200});
         EntityManager.AddComponentData(role, new TargetPosition {Value = new float3(pos.x, pos.y, pos.z)});
         EntityManager.AddComponentData(role, new LocomotionState {Value = LocomotionState.State.Idle});
         EntityManager.AddComponentData(role, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});

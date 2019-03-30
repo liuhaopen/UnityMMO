@@ -84,7 +84,7 @@ public class TimelineSpawnSystem : BaseComponentSystem
                     {
                         hangPointName = nameParts[1];
                     }
-                    Debug.Log("hangPointName : "+hangPointName);
+                    // Debug.Log("hangPointName : "+hangPointName);
                     var ct = at.sourceObject as ControlTrack;
                     var looksTrans = EntityManager.GetComponentObject<Transform>(looksEntity);
                     var particleParent = looksTrans.Find(hangPointName);
