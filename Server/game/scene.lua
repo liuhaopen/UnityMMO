@@ -99,7 +99,7 @@ function CMD.init(scene_id)
 			Time.deltaTime = curTime-lastUpdateTime
 			lastUpdateTime = curTime
 			ECS.Update()
-			skynet.sleep(10)
+			skynet.sleep(5)
 		end
 	end)
 	skynet.fork(function()
@@ -115,7 +115,7 @@ function CMD.init(scene_id)
 					role_info.ack_scene_get_objs_info_change = nil
 				end
 			end
-			skynet.sleep(10)
+			skynet.sleep(5)
 		end
 	end)
 	skynet.fork(function()
@@ -127,7 +127,7 @@ function CMD.init(scene_id)
 					role_info.ack_scene_listen_fight_event = nil
 				end
 			end
-			skynet.sleep(10)
+			skynet.sleep(5)
 		end
 	end)
 end
@@ -185,7 +185,7 @@ function CMD.role_enter_scene(role_id)
 		for k,v in pairs(this.role_list) do
 			if v.scene_uid ~= scene_uid then
 				this.role_list[role_id].change_obj_infos = add_info_item(this.role_list[role_id].change_obj_infos, v.scene_uid, {key=SceneInfoKey.EnterScene, value=SceneObjectType.Role, time=cur_time})
-				local pos_info_str = this.role_list[role_id].base_info.pos_x..","..this.role_list[role_id].base_info.pos_y..","..this.role_list[role_id].base_info.pos_z
+				local pos_info_str = v.base_info.pos_x..","..v.base_info.pos_y..","..v.base_info.pos_z
 				this.role_list[role_id].change_obj_infos = add_info_item(this.role_list[role_id].change_obj_infos, v.scene_uid, {key=SceneInfoKey.PosChange, value=pos_info_str, time=cur_time})
 			end
 		end
@@ -194,8 +194,10 @@ function CMD.role_enter_scene(role_id)
 		local enter_event_info = {key=SceneInfoKey.EnterScene, value=SceneObjectType.Role, time=cur_time}
 		local pos_change_event_info = {key=SceneInfoKey.PosChange, value=pos_info_str, time=cur_time}
 		for k,v in pairs(this.role_list) do
-			v.change_obj_infos = add_info_item(v.change_obj_infos, scene_uid, enter_event_info)
-			v.change_obj_infos = add_info_item(v.change_obj_infos, scene_uid, pos_change_event_info)
+			if v.scene_uid ~= scene_uid then
+				v.change_obj_infos = add_info_item(v.change_obj_infos, scene_uid, enter_event_info)
+				v.change_obj_infos = add_info_item(v.change_obj_infos, scene_uid, pos_change_event_info)
+			end
 		end
 		-- for k,v in pairs(this.npc_list) do
 		-- 	this.role_list[role_id].change_obj_infos = add_info_item(this.role_list[role_id].change_obj_infos, v.scene_uid, {key=SceneInfoKey.EnterScene, value=SceneObjectType.NPC, time=0})

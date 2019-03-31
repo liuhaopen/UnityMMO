@@ -121,7 +121,7 @@ public class SynchFromNet {
     {
         string[] pos_strs = change_info.value.Split(',');
         // Debug.Log("SynchFromNet recieve pos value : "+change_info.value);
-        if (pos_strs.Length != 3)
+        if (pos_strs.Length < 3)
         {
             Debug.Log("SynchFromNet recieve a wrong pos value : "+change_info.value);
             return;
@@ -134,6 +134,7 @@ public class SynchFromNet {
             Transform trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(entity);
             // Debug.Log("receive new pos"+new_x+" "+new_y+" "+new_z);
             trans.localPosition = new Vector3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic);
+            SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = trans.localPosition});
         }
         // SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = new float3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic)});
     }

@@ -20,7 +20,7 @@ public class UploadMainRolePosSystem : BaseComponentSystem
 
     protected override void OnUpdate()
     {
-        if (Time.time - lastSynchTime < 0.5 || !GameVariable.IsNeedSynchSceneInfo)
+        if (Time.time - lastSynchTime < 0.05 || !GameVariable.IsNeedSynchSceneInfo)
             return;
         var positions = group.GetComponentArray<Transform>();
         var targetPositions = group.GetComponentDataArray<TargetPosition>();
@@ -32,11 +32,11 @@ public class UploadMainRolePosSystem : BaseComponentSystem
             var pos = positions[i].localPosition;
             var synchInfo = synchInfos[i];
             var distance = Vector3.Distance(targetPos, pos);
-            var distance_with_last = Vector3.Distance(synchInfo.LastUploadPos, pos);
+            var distance_with_last = Vector3.Distance(synchInfo.LastUploadPos, targetPos);
             // Debug.Log("distance:"+distance+" distance_with_last:"+distance_with_last+" upload pos"+pos.x+" "+pos.y+" "+pos.z);
             if (distance <= 0.5 && distance_with_last <= 0.5)
                 continue;
-            synchInfo.LastUploadPos = pos;
+            synchInfo.LastUploadPos = targetPos;
             synchInfos[i] = synchInfo;
             scene_walk.request walk = new scene_walk.request();
             walk.start_x = (long)(pos.x*GameConst.RealToLogic);

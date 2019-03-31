@@ -15,6 +15,7 @@ public class JumpCtrlBehaviour : PlayableBehaviour
     private float curTime;
     private float maxTime;
     private int jumpCount;
+    private float startYPos;
     bool isMainRole = false;
 
     public void Init(Entity owner, EntityManager entityMgr)
@@ -55,9 +56,10 @@ public class JumpCtrlBehaviour : PlayableBehaviour
         {
             var jumpState = EntityMgr.GetComponentData<JumpState>(Owner);
             jumpCount = math.clamp(jumpState.JumpCount+1, 1, GameConst.MaxJumpCount);
-            jumpState.OriginYPos = trans.localPosition.y;
+            startYPos = trans.localPosition.y;
             if (jumpState.JumpCount == 0)
             {
+                jumpState.OriginYPos = trans.localPosition.y;
                 jumpState.AscentHeight = 4;
             }
             else if (jumpState.JumpCount == 1)
@@ -78,7 +80,7 @@ public class JumpCtrlBehaviour : PlayableBehaviour
             // Debug.Log("jumpState.JumpCount : "+jumpState.JumpCount);
             EntityMgr.SetComponentData<JumpState>(Owner, jumpState);
         }
-        
+        Debug.Log("start jump");
         // EntityMgr.SetComponentData<TimelineState>(Owner, new TimelineState{NewStatus=newState, InterruptStatus=interruptState});
     }
 
@@ -94,16 +96,16 @@ public class JumpCtrlBehaviour : PlayableBehaviour
         if (isMainRole)
         {
             GameInput.GetInstance().JoystickDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-            if (GameInput.GetInstance().JoystickDir.magnitude<=0)
-            {
-                // var inputDir = new Vector3(trans.forward.x, 0, trans.forward.z);
-                var inputDir = trans.TransformDirection(trans.forward);
-                // var inputDir = new Vector3(Vector3.forward.x, 0, Vector3.forward.z);
-                // trans.Translate(inputDir, Space.Self);
-                // trans.Translate(inputDir, Space.World);
-                GameInput.GetInstance().JoystickDir = new Vector2(inputDir.x, inputDir.z);
-                Debug.Log("GameInput.GetInstance().JoystickDir : "+GameInput.GetInstance().JoystickDir.x+" "+GameInput.GetInstance().JoystickDir.y+" forward:"+trans.forward.x+" "+trans.forward.z);
-            }
+            // if (GameInput.GetInstance().JoystickDir.magnitude<=0)
+            // {
+            //     // var inputDir = new Vector3(trans.forward.x, 0, trans.forward.z);
+            //     var inputDir = trans.TransformDirection(trans.forward);
+            //     // var inputDir = new Vector3(Vector3.forward.x, 0, Vector3.forward.z);
+            //     // trans.Translate(inputDir, Space.Self);
+            //     // trans.Translate(inputDir, Space.World);
+            //     GameInput.GetInstance().JoystickDir = new Vector2(inputDir.x, inputDir.z);
+            //     Debug.Log("GameInput.GetInstance().JoystickDir : "+GameInput.GetInstance().JoystickDir.x+" "+GameInput.GetInstance().JoystickDir.y+" forward:"+trans.forward.x+" "+trans.forward.z);
+            // }
         }
         curTime += info.deltaTime;
         if (EntityMgr.HasComponent<JumpState>(Owner) && trans!=null)
@@ -111,10 +113,11 @@ public class JumpCtrlBehaviour : PlayableBehaviour
             var jumpState = EntityMgr.GetComponentData<JumpState>(Owner);
             var percent = Curve.Evaluate(curTime/ maxTime);
             var targetY = jumpState.OriginYPos + jumpState.AscentHeight*percent;
+            Debug.Log("jump percent "+percent+" targetY:"+targetY);
             if (EntityMgr.HasComponent<PosOffset>(Owner))
             {
-                // var gravity = GameConst.Gravity*Time.deltaTime;//需要抵消重力
-                var offsetY = targetY-trans.localPosition.y;
+                var gravity = GameConst.Gravity*Time.deltaTime;//需要抵消重力
+                var offsetY = targetY-trans.localPosition.y-gravity;
                 var posOffset = new PosOffset{Value=new float3(0, offsetY, 0)};
                 EntityMgr.SetComponentData<PosOffset>(Owner, posOffset);
             }

@@ -40,12 +40,12 @@ public class UpdateRoleAnimatorSystem : BaseComponentSystem
     void UpdateAnimator(Animator animator, LocomotionState.State locoState)
     {
         // Debug.Log("locoState : "+locoState.ToString());
-        if (locoState == LocomotionState.State.Idle)
+        if (locoState == LocomotionState.State.Idle && !animator.GetCurrentAnimatorStateInfo(0).IsName("idle"))
         {
             // animator.CrossFade("idle", 0.2f, 0, Time.deltaTime);
             animator.Play("idle");
         }
-        else if (locoState == LocomotionState.State.Run)
+        else if (locoState == LocomotionState.State.Run && !animator.GetCurrentAnimatorStateInfo(0).IsName("run"))
         {
             // animator.CrossFade("run", 0.2f, 0, Time.deltaTime);
             animator.Play("run");

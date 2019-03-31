@@ -44,6 +44,7 @@ public class MoveQuery : MonoBehaviour
         charController.center = this.center; 
         charController.radius = this.radius; 
         charController.height = this.height;
+        go.layer = gameObject.layer;
 
         // var hitCollision = go.GetComponent<HitCollision>();
         // hitCollision.owner = hitCollOwner;

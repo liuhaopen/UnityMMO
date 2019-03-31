@@ -252,6 +252,7 @@ public class HandleRoleLooksSpawnRequests : BaseComponentSystem
             var hairObj = obj as GameObject;
             hairObj.transform.SetParent(parentNode);
             hairObj.transform.localPosition = Vector3.zero;
+            hairObj.transform.localRotation = Quaternion.identity;
         });
     }
 

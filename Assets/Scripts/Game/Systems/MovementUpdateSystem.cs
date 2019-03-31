@@ -49,23 +49,21 @@ public class MovementUpdateSystem : BaseComponentSystem
             {
                 //目标已经离得很近了
                 newPos = targetPos;
-                newPos.y = startPos.y;
             }
             else
             {
                 newPos = startPos+groundDir*speed/GameConst.SpeedFactor*dt;
-                if (EntityManager.HasComponent<JumpState>(entities[i]))
-                {
-                    var jumpState = EntityManager.GetComponentData<JumpState>(entities[i]);
-                    if (jumpState.JumpStatus != JumpState.State.None)
-                        isNeedGravity = false;
-                }
-                newPos.y = startPos.y;
-                // Debug.Log(" posOffset in move : "+posOffset.y);
-                newPos += posOffset;
             }
-            if (isNeedGravity)
+            newPos.y = startPos.y;
+            // if (EntityManager.HasComponent<JumpState>(entities[i]))
+            // {
+            //     var jumpState = EntityManager.GetComponentData<JumpState>(entities[i]);
+            //     if (jumpState.JumpStatus != JumpState.State.None)
+            //         isNeedGravity = false;
+            // }
+            // if (isNeedGravity)
                 newPos.y += GameConst.Gravity * dt;
+            newPos += posOffset;
             var moveQuery = moveQuerys[i];
             moveQuery.moveQueryStart = startPos;
             //不能直接设置新坐标，因为需要和地形做碰撞处理什么的，所以利用CharacterController走路，在HandleMovementQueries才设置新坐标
@@ -83,11 +81,6 @@ public class MovementUpdateSystem : BaseComponentSystem
                     newLocoState = LocomotionState.State.Run;
                 else
                     newLocoState = LocomotionState.State.Idle;
-            }
-            //jump
-            if (isOnGround)
-            {
-
             }
             if (newLocoState != LocomotionState.State.StateNum && newLocoState != curLocoState)
             {
@@ -122,19 +115,16 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed));
+        group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(PosSynchInfo));
     }
 
     protected override void OnUpdate()
     {
         float dt = Time.deltaTime;
-        // var userCommandArray = group.GetComponentDataArray<UserCommand>();
         var targetPosArray = group.GetComponentDataArray<TargetPosition>();
         var posArray = group.GetComponentArray<Transform>();
         var moveSpeedArray = group.GetComponentDataArray<MoveSpeed>();
-        // if (userCommandArray.Length==0)
-        //     return;
-        // var userCommand = userCommandArray[0];
+        
         var input = GameInput.GetInstance().JoystickDir;
         if (input.sqrMagnitude > 0)
         {
@@ -148,11 +138,11 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
             var speed = moveSpeedArray[0].Value;
             var newTargetPos = new TargetPosition();
             if (speed > 0)
-                newTargetPos.Value = curPos+targetDirection*(speed/GameConst.SpeedFactor*0.5f);//延着方向前进0.5秒为目标坐标
+                newTargetPos.Value = curPos+targetDirection*(speed/GameConst.SpeedFactor*0.10f);//延着方向前进0.10秒为目标坐标
             else
                 newTargetPos.Value = curPos;
             newTargetPos.Value.y = targetPosArray[0].Value.y;
-            Debug.Log("targetDirection : "+newTargetPos.Value.x+" "+newTargetPos.Value.y+" "+newTargetPos.Value.z);
+            // Debug.Log("targetDirection : "+newTargetPos.Value.x+" "+newTargetPos.Value.y+" "+newTargetPos.Value.z);
             targetPosArray[0] = newTargetPos;
         }
         else
