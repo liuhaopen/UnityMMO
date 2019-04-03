@@ -32,7 +32,6 @@ local set_fun = function ( t, k )
 end
 
 local get_len = function ( t )
-	print('Cat:ComponentDataArray.lua[39] t.m_Length', t.m_Length)
 	return t.m_Length
 end
 

@@ -2,19 +2,22 @@ local skynet = require "skynet"
 require "Common.Util.util"
 require "ECS.ECS"
 require "common.helper"
-RequireAllLuaFileInFolder("./game/System")
+RequireAllLuaFileInFolder("./game/system")
 
 local NORET = {}
 local CMD = {}
 local this = {
-	--the scene object includes the role monster npc
 	cur_scene_id = 0,
 	scene_uid = 0,
 	role_list = {},
 	npc_list = {},
 	monster_list = {},
+	--the scene object includes the role monster npc
 	object_list = {},
+	ecs_world = false,
 	entity_mgr = false,
+	monster_mgr = require "game.monster_mgr",
+	ecs_system_mgr = require "game.ecs_system_mgr",
 }
 local SceneObjectType={
 	Role=1,Monster=2,NPC=3,
@@ -73,35 +76,24 @@ end
 
 local init_monster = function (  )
 	if not this.scene_cfg or not this.scene_cfg.monster_list then return end
-	for k,v in pairs(this.scene_cfg.monster_list) do
-		local monster = this.entity_mgr:CreateEntityByArcheType(this.monster_archetype)
-		this.entity_mgr:SetComponentData(monster, "UMO.Position", {x=v.pos_x, y=v.pos_y, z=v.pos_z})
-		this.entity_mgr:SetComponentData(monster, "UMO.UID", {value=new_scene_uid(SceneObjectType.Monster)})
-		this.entity_mgr:SetComponentData(monster, "UMO.TypeID", {value=v.monster_id})
-	end
+	this.monster_mgr:init(this.entity_mgr, this.scene_cfg.monster_list)
 end
 
-function CMD.init(scene_id)
-	ECS.InitWorld("scene_world")
-	this.entity_mgr = ECS.World.Active:GetOrCreateManager(ECS.EntityManager.Name)
-	this.monster_archetype = this.entity_mgr:CreateArchetype({"UMO.Position", "UMO.UID", "UMO.TypeID"})
-	this.npc_archetype = this.entity_mgr:CreateArchetype({"UMO.Position", "UMO.UID", "UMO.TypeID"})
-	this.scene_cfg = require("Config.scene.config_scene_"..scene_id)
-	this.cur_scene_id = scene_id
-	init_npc()
-	init_monster()
-
+local fork_loop_ecs = function (  )
 	Time = {deltaTime=0}
-	lastUpdateTime = os.time()
+	lastUpdateTime = get_cur_time()
 	skynet.fork(function()
 		while true do
-			local curTime = os.time()
-			Time.deltaTime = curTime-lastUpdateTime
+			local curTime = get_cur_time()
+			Time.deltaTime = (curTime-lastUpdateTime)/1000
 			lastUpdateTime = curTime
-			ECS.Update()
+			this.ecs_system_mgr:update()
 			skynet.sleep(5)
 		end
 	end)
+end
+
+local fork_loop_scene_info_change = function (  )
 	skynet.fork(function()
 		while true do
 			--synch info at fixed time
@@ -118,6 +110,9 @@ function CMD.init(scene_id)
 			skynet.sleep(5)
 		end
 	end)
+end
+
+local fork_loop_fight_event = function (  )
 	skynet.fork(function()
 		while true do 
 			for k,role_info in pairs(this.role_list) do
@@ -130,6 +125,21 @@ function CMD.init(scene_id)
 			skynet.sleep(5)
 		end
 	end)
+end
+
+function CMD.init(scene_id)
+	this.ecs_world = ECS.InitWorld("scene_world")
+	this.entity_mgr = ECS.World.Active:GetOrCreateManager(ECS.EntityManager.Name)
+	this.npc_archetype = this.entity_mgr:CreateArchetype({"UMO.Position", "UMO.UID", "UMO.TypeID"})
+	this.scene_cfg = require("Config.scene.config_scene_"..scene_id)
+	this.cur_scene_id = scene_id
+	init_npc()
+	init_monster()
+	this.ecs_system_mgr:init(this.ecs_world)
+
+	fork_loop_ecs()
+	fork_loop_scene_info_change()
+	fork_loop_fight_event()
 end
 
 local get_base_info_by_roleid = function ( role_id )

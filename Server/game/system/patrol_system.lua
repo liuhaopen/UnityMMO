@@ -1,7 +1,7 @@
-local PatrolSystem = BaseClass(ECS.ComponentSystem)
-ECS.TypeManager.RegisterScriptMgr("UMO.PatrolSystem", PatrolSystem)
+local patrol_system = BaseClass(ECS.ComponentSystem)
+ECS.TypeManager.RegisterScriptMgr("umo.patrol_system", patrol_system)
 
-function PatrolSystem:Constructor(  )
+function patrol_system:Constructor(  )
 	local data = {
 		position = "Array:UMO.Position",--当前坐标
 		-- born_pos = "Array:UMO.BornPosition:ReadOnly",--出生点
@@ -15,14 +15,14 @@ function PatrolSystem:Constructor(  )
 end
 
 --Cat_Todo : 使用RecastNavigation读取地形信息，不然发给前端的y坐标肯定对不上地图的
-function PatrolSystem:OnUpdate(  )
-	-- local deltaTime = Time.deltaTime
-	-- print('Cat:PatrolSystem.lua[23] self.m_data.length', self.m_data.length)
+function patrol_system:OnUpdate(  )
+	local deltaTime = Time.deltaTime
+	-- print('Cat:patrol_system.lua[OnUpdate]', deltaTime)
 	for i=1,self.m_data.length do
 		local last_pos = self.m_data.position[i]
-		-- print("Cat:PatrolSystem [start:23] last_pos:", last_pos)
+		-- print("Cat:patrol_system [start:23] last_pos:", last_pos)
 		-- PrintTable(last_pos)
-		-- print("Cat:PatrolSystem [end]")
+		-- print("Cat:patrol_system [end]")
 		
 		-- self.m_data.position:set(i, last_pos)
 		-- local last_pos_x = self.m_data.position:get_field(i, "x")
@@ -41,4 +41,4 @@ function PatrolSystem:OnUpdate(  )
 	end
 end
 
-return PatrolSystem
+return patrol_system
