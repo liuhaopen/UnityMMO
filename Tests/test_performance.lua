@@ -2,7 +2,7 @@ package.path = package.path ..';../?.lua;../../?.lua;Tests/?.lua';
 
 local ECSCore = require("ECSCore")
 
-local test_times = 10000000
+local test_times = 1000000
 local core_cost = 0
 local lua_cost = 0
 

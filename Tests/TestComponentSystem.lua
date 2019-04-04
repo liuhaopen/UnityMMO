@@ -105,9 +105,12 @@ function TestComponentSystem:TestInject(  )
     lu.assertNotNil(flag)
     lu.assertEquals(flag.value, 0)
 
-    self.m_Manager:SetComponentData(entity, "DataForTestInject1", {x=1.23, y=true, z=789})
+    -- self.m_Manager:SetComponentData(entity, "DataForTestInject1", {x=1.23, y=true, z=789})
+    -- sys.m_Data.flag[1] = {value=456}
+    -- 以上两个调用方式是同价的
     self.m_Manager:SetComponentData(entity, "DataForTestInject3", {value=456})
-    
+    sys.m_Data.position[1] = {x=1.23, y=true, z=789}
+
     sys:Update()
     lu.assertEquals(sys.m_Data.len, 1)
     local pos = sys.m_Data.position[1]

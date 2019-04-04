@@ -10,7 +10,7 @@ function ComponentGroup:Constructor( groupData, safetyManager, typeManager, enti
 end
 
 function ComponentGroup:GetComponentDataArray( com_type )
-    local typeIndex = TypeManager.GetTypeIndex(com_type)
+    local typeIndex = ECS.TypeManager.GetTypeIndexByName(com_type)
     local iterator, length = self:GetComponentChunkIterator()
     local indexInComponentGroup = self:GetIndexInComponentGroup(typeIndex)
     local res = self:GetComponentDataArrayByIterator(iterator, indexInComponentGroup, length, com_type)
