@@ -80,23 +80,30 @@ function ChunkDataUtility.ReadComponentFromChunk( chunk_ptr, componentTypeName, 
     return out_data
 end
 
+function ChunkDataUtility.WriteComponentInChunk( chunk_ptr, componentTypeName, componentData, offset )
+    local typeInfo = ECS.TypeManager.GetTypeInfoByName(componentTypeName)
+    assert(typeInfo~=nil, "cannot find type info with : "..componentTypeName)
+    offset = offset or 0
+    for k,v in pairs(typeInfo.FieldInfoList) do
+        local new_field_value = componentData[v.FieldName]
+        if v.FieldType ~= "table" then
+            ECS.CoreHelper.WriteFieldValueInChunk(chunk_ptr, offset+v.Offset, new_field_value, v.FieldType)
+        -- else
+            -- ChunkDataUtility.WriteComponentInChunk(chunk_ptr+v.Offset, new_field_value)
+        end
+    end
+end
+
 function ChunkDataUtility.ReadComponentFromArray( chunk_ptr, index, componentTypeName, out_data )
     local typeInfo = ECS.TypeManager.GetTypeInfoByName(componentTypeName)
     assert(typeInfo~=nil, "cannot find type info with : "..componentTypeName)
     return ChunkDataUtility.ReadComponentFromChunk(chunk_ptr, componentTypeName, out_data, (index-1)*typeInfo.SizeInChunk)
 end
 
-function ChunkDataUtility.WriteComponentInChunk( chunk_ptr, componentTypeName, componentData )
+function ChunkDataUtility.WriteComponentFromArray( chunk_ptr, index, componentTypeName, componentData )
     local typeInfo = ECS.TypeManager.GetTypeInfoByName(componentTypeName)
     assert(typeInfo~=nil, "cannot find type info with : "..componentTypeName)
-    for k,v in pairs(typeInfo.FieldInfoList) do
-        local new_field_value = componentData[v.FieldName]
-        if v.FieldType ~= "table" then
-            ECS.CoreHelper.WriteFieldValueInChunk(chunk_ptr, v.Offset, new_field_value, v.FieldType)
-        -- else
-            -- ChunkDataUtility.WriteComponentInChunk(chunk_ptr+v.Offset, new_field_value)
-        end
-    end
+    return ChunkDataUtility.WriteComponentInChunk(chunk_ptr, componentTypeName, componentData, (index-1)*typeInfo.SizeInChunk)
 end
 
 function ChunkDataUtility.GetComponentDataRO( chunk, index, indexInTypeArray )

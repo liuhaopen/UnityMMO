@@ -3,7 +3,7 @@ ECS.TypeManager.RegisterScriptMgr("umo.patrol_system", patrol_system)
 
 function patrol_system:Constructor(  )
 	local data = {
-		position = "Array:UMO.Position",--当前坐标
+		position = "Array:umo.position",--当前坐标
 		-- born_pos = "Array:UMO.BornPosition:ReadOnly",--出生点
 		-- speed = "Array:UMO.MoveSpeed:ReadOnly",--速度
 		-- radius = "Array:UMO.PatrolRadius:ReadOnly",--巡逻半径
@@ -17,7 +17,7 @@ end
 --Cat_Todo : 使用RecastNavigation读取地形信息，不然发给前端的y坐标肯定对不上地图的
 function patrol_system:OnUpdate(  )
 	local deltaTime = Time.deltaTime
-	-- print('Cat:patrol_system.lua[OnUpdate]', deltaTime)
+	-- print('Cat:patrol_system.lua[OnUpdate]', self.m_data.length)
 	for i=1,self.m_data.length do
 		local last_pos = self.m_data.position[i]
 		-- print("Cat:patrol_system [start:23] last_pos:", last_pos)

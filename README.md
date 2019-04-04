@@ -3,7 +3,6 @@
 
 # 使用方法
 克隆本项目:git clone https://github.com/liuhaopen/UnityMMO.git --recurse  
-要求:Unity2018以上并从菜单Window/Package Manager里下载Entities  
 前端:  
 下载下来后整个目录就是Unity的项目目录,用Unity打开,运行main.unity场景即可进入游戏的登录界面  
 注:由于游戏资源过大且经常变更(每个版本的资源都会保存在.git文件夹里,clone就要好久了),所以放到另外的项目管理,可在[UnityMMO-Resource](https://github.com/liuhaopen/UnityMMO-Resource/tree/master/Assets/AssetBundleRes "UnityMMO-Resource")下载里面的文件并复制到本项目的Assets/AssetBundleRes里(注:有些插件因为版权问题就没上传了,从其中的download-page见购买链接)  
@@ -16,7 +15,7 @@
 )玩法逻辑:使用Unity2018自带的ECS系统(要用Unity的ECS只能用C#)，服务端也用lua实现一套类似的ECS系统  
 )界面逻辑:使用自制的基于组件的UI系统,全lua开发,动画也由lua实现了一份cocos的action  
 )网络协议:使用sproto,玩法用c#版本,界面用lua版本  
-)场景管理:用T2M切割地形为NxN小块,使用四叉树管理场景模型的动态加载  
+)场景管理:因为是自由视角，所以需要预加载场景的base world(几m的简模而已),其它的细节物品就以九宫格动态加载，使用四叉树管理  
 )资源管理:使用Unity新版的AssetBundleBrowser打包资源，以逻辑类型分类（如角色，场景，怪物等），ab包增量更新  
 )数据管理:使用redis,后面再看看要不要加入mysql  
 )同步模式:基于请求回应的状态+差异同步  
@@ -33,19 +32,19 @@
 )导出场景信息（前端json后端lua格式）  
 )九宫格加载场景块  
 )玩家进入退出场景及坐标信息的同步  
+)人物场景漫游-ECS做法  
 
 # Todo
 前端:   
-)人物场景漫游-ECS做法(90%)  
-)场景切割及动态加载(95%)  
+)场景切割及动态加载(98%)  
 )基于组件的UI框架(85%)  
-)战斗系统(40%)    
+)战斗系统(50%)    
 )场景模型LOD,试试UnityGithub上的AutoLOD  
 
 后端:  
-)lua版本的ECS(70%)  
-)人物的移动同步(90%)  
-)NPC与怪物AI(5%)     
+)lua版本的ECS(80%)  
+)人物的移动同步(95%)  
+)NPC与怪物AI(15%)     
 )使用Redis  
 )AOI  
 
