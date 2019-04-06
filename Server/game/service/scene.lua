@@ -65,15 +65,12 @@ end
 local update_interest_objs = function ( role_info )
 	local objs = this.aoi:get_around_offset(role_info.aoi_handle, role_info.radius_short, role_info.radius_long)
 	local cur_time = get_cur_time()
-	for k,v in pairs(objs) do
-		local is_enter = v[1]
-		local aoi_handle = v[2]
+	for aoi_handle,v in pairs(objs) do
+		local is_enter = (v==1)
 		local scene_uid = this.aoi_handle_uid_map[aoi_handle]
-		print('Cat:scene.lua[66] is_enter', is_enter, scene_uid)
 		if is_enter then
 			role_info.interest_objs[scene_uid] = scene_uid
 			local info = this.object_list[scene_uid]
-			print('Cat:scene.lua[69] info', info)
 			if info then
 				role_info.change_obj_infos = scene_helper.add_info_item(role_info.change_obj_infos, scene_uid, {key=SceneInfoKey.EnterView, value=info.scene_type..","..info.pos_x..","..info.pos_y..","..info.pos_z, time=cur_time})
 			end
