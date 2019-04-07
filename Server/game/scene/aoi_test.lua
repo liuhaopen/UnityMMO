@@ -34,21 +34,24 @@ function test_all(  )
 	--地点
 	local pos_library = {x=1,y=2,z=3}
 	local pos_dongguan = {x=1000,y=-2000,z=3000}
+	local pos_lake = {x=-2000,y=1000,z=-4000}
+	local pos_cemetery = {x=-300,y=100,z=500}
 	aoi:init()
 	local girl = aoi:add()
 	local around = aoi:get_around_offset(girl, 100, 120)
-    -- lu.assertEquals(get_tbl_size(around), 0)
     assertNothingChange(around)
 
     --与男主相遇，你中有我，我中有你
 	aoi:set_pos(girl, pos_library.x, pos_library.y, pos_library.z)
+
     local boy = aoi:add()
     aoi:set_pos(boy, pos_library.x-1, pos_library.y+1, pos_library.z-10)
+
 	local around = aoi:get_around_offset(girl, 100, 120)
 	lu.assertEquals(get_tbl_size(around), 1)
 	assertSomeoneEnter(around, boy)
 
-    local around = aoi:get_around_offset(boy, 50, 50)
+    local around = aoi:get_around_offset(boy, 150, 150)
 	assertSomeoneEnter(around, girl)
 
     --男主腻了，于是跑路
@@ -76,8 +79,75 @@ function test_all(  )
     lu.assertEquals(get_tbl_size(around), 2)
 	assertSomeoneEnter(around, boy)
 	assertSomeoneEnter(around, lady)
+    --然后接受不了跑掉了
+    aoi:set_pos(girl, pos_lake.x, pos_lake.y, pos_lake.z)
+    local around = aoi:get_around_offset(girl, 150, 150)
+    lu.assertEquals(get_tbl_size(around), 2)
+	assertSomeoneLeave(around, boy)
+	assertSomeoneLeave(around, lady)
 
+    --女主的备胎出场
+    local bench = aoi:add()
+    aoi:set_pos(bench, pos_lake.x+100, pos_lake.y-100, pos_lake.z+50)
+    local around = aoi:get_around_offset(bench, 150, 150)
+    lu.assertEquals(get_tbl_size(around), 1)
+	assertSomeoneEnter(around, girl)
+	local around = aoi:get_around_offset(girl, 150, 150)
+    lu.assertEquals(get_tbl_size(around), 1)
+	assertSomeoneEnter(around, bench)
+	
+	--备胎跑去告诉第三者说男主是个渣男
+    aoi:set_pos(bench, pos_dongguan.x-30, pos_dongguan.y-18, pos_dongguan.z+25)
+    local around = aoi:get_around_offset(bench, 150, 150)
+    lu.assertEquals(get_tbl_size(around), 3)
+	assertSomeoneEnter(around, boy)
+	assertSomeoneEnter(around, lady)
+	assertSomeoneLeave(around, girl)
 
+	--第三者得知真相后离开男主跑去和女主道歉
+    aoi:set_pos(lady, pos_lake.x+10, pos_lake.y+10, pos_lake.z-50)
+    local around = aoi:get_around_offset(lady, 150, 150)
+    lu.assertEquals(get_tbl_size(around), 2)
+	assertSomeoneEnter(around, girl)
+	assertSomeoneLeave(around, boy)
+
+	--女主和第三者相逢恨晚百合花开
+	local around = aoi:get_around_offset(girl, 150, 150)
+    lu.assertEquals(get_tbl_size(around), 2)
+	assertSomeoneEnter(around, lady)
+	assertSomeoneLeave(around, bench)
+
+    --备胎和男主没了女人后颓废渡日，一起玩游戏培养了深厚的基情
+ 	local around = aoi:get_around_offset(boy, 150, 150)
+    lu.assertEquals(get_tbl_size(around), 1)
+	assertSomeoneEnter(around, bench)
+	local around = aoi:get_around_offset(bench, 150, 150)
+    lu.assertEquals(get_tbl_size(around), 1)
+	assertSomeoneLeave(around, lady)--上次第三者跑去找女主时的离开
+
+    --男主突然被车撞死了
+    aoi:remove(boy)
+    local around = aoi:get_around_offset(boy, 11150, 11150)
+    assertNothingChange(around)
+
+    local around = aoi:get_around_offset(bench, 150, 150)
+    lu.assertEquals(get_tbl_size(around), 1)
+	assertSomeoneLeave(around, boy)
+
+	--剩下的三人出席葬礼后过了上幸福的生活
+    aoi:set_pos(girl, pos_cemetery.x, pos_cemetery.y, pos_cemetery.z)
+    aoi:set_pos(lady, pos_cemetery.x, pos_cemetery.y, pos_cemetery.z)
+    aoi:set_pos(bench, pos_cemetery.x, pos_cemetery.y, pos_cemetery.z)
+    local around = aoi:get_around_offset(girl, 150, 150)
+    lu.assertEquals(get_tbl_size(around), 1)
+	assertSomeoneEnter(around, bench)
+	local around = aoi:get_around_offset(lady, 150, 150)
+    lu.assertEquals(get_tbl_size(around), 1)
+	assertSomeoneEnter(around, bench)
+	local around = aoi:get_around_offset(bench, 150, 150)
+    lu.assertEquals(get_tbl_size(around), 2)
+	assertSomeoneEnter(around, girl)
+	assertSomeoneEnter(around, lady)
 end
 
 os.exit( lu.LuaUnit.run() )
