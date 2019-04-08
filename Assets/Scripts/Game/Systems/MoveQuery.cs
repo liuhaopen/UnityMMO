@@ -6,34 +6,30 @@ using UnityEngine.Profiling;
 
 public class MoveQuery : MonoBehaviour
 {
-    // [Serializable]
-    // public struct Settings
-    // {
-        public float slopeLimit;
-        public float stepOffset;
-        public float skinWidth;
-        public float minMoveDistance;
-        public float3 center;
-        public float radius;
-        public float height;
-    // }
+    public float slopeLimit;
+    public float stepOffset;
+    public float skinWidth;
+    public float minMoveDistance;
+    public float3 center;
+    public float radius;
+    public float height;
 
     [NonSerialized] public int collisionLayer;
     [NonSerialized] public float3 moveQueryStart;
     [NonSerialized] public float3 moveQueryEnd;
     [NonSerialized] public float3 moveQueryResult;
     [NonSerialized] public bool isGrounded;
+    [NonSerialized] public GameObject queryObj;
 
     [NonSerialized] public CharacterController charController;
-    // [NonSerialized] public Settings settings;
     
-    // public void Initialize(Settings settings, Entity hitCollOwner)
     public void Initialize()
     {
         //GameDebug.Log("MoveQuery.Initialize");
         // this.settings = settings;
         // var go = new GameObject("MoveColl_" + name,typeof(CharacterController), typeof(HitCollision));
         var go = new GameObject("MoveColl_" + name,typeof(CharacterController));
+        queryObj = go;
         charController = go.GetComponent<CharacterController>();
         charController.transform.position = transform.position;
         charController.transform.SetParent(transform.parent);
@@ -57,7 +53,6 @@ public class MoveQuery : MonoBehaviour
     }
 }
 
-
 [DisableAutoCreation]
 class HandleMovementQueries : BaseComponentSystem
 {
@@ -74,7 +69,6 @@ class HandleMovementQueries : BaseComponentSystem
     protected override void OnUpdate()
     {
         // Profiler.BeginSample("HandleMovementQueries");
-        
         var queryArray = Group.GetComponentArray<MoveQuery>();
 
         // Debug.Log("queryArray.Length : "+queryArray.Length);

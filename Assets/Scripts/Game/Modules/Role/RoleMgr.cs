@@ -11,7 +11,6 @@ public class RoleMgr
 	static RoleMgr Instance;
     GameWorld m_GameWorld;
     private Transform container;
-    Dictionary<long, Entity> entityDic = new Dictionary<long, Entity>();
     GameObjectEntity mainRoleGOE;
     Dictionary<string, GameObject> prefabDic = new Dictionary<string, GameObject>();
     public EntityManager EntityManager { get => m_GameWorld.GetEntityManager();}
@@ -24,32 +23,13 @@ public class RoleMgr
         Instance = new RoleMgr();
         return Instance;
     }
+    private RoleMgr(){}
 
     public void Init(GameWorld world)
 	{
         m_GameWorld = world;
-
         container = GameObject.Find("SceneObjContainer/RoleContainer").transform;
-
-        LoadPrefab("Assets/AssetBundleRes/role/prefab/MainRole.prefab", "MainRole");
-        LoadPrefab("Assets/AssetBundleRes/role/prefab/Role.prefab", "Role");
 	}
-
-    void LoadPrefab(string path, string storePrefabName)
-    {
-        XLuaFramework.ResourceManager.GetInstance().LoadAsset<GameObject>(path, delegate(UnityEngine.Object[] objs) {
-            if (objs.Length > 0 && (objs[0] as GameObject)!=null)
-            {
-                GameObject prefab = objs[0] as GameObject;
-                if (prefab != null) 
-                {
-                    this.prefabDic[storePrefabName] = prefab;
-                    return;
-                }
-            }
-            Debug.LogError("cannot find prefab in "+path);
-        });
-    }
 
     public void OnDestroy()
 	{
@@ -58,10 +38,9 @@ public class RoleMgr
 
     public Entity AddMainRole(long uid, string name, int career, Vector3 pos)
 	{
-        GameObjectEntity roleGameOE = m_GameWorld.Spawn<GameObjectEntity>(prefabDic["MainRole"]);
+        GameObjectEntity roleGameOE = m_GameWorld.Spawn<GameObjectEntity>(ResMgr.GetInstance().GetPrefab("MainRole"));
         roleGameOE.name = "MainRole_"+uid;
-        roleGameOE.transform.SetParent(RoleContainer);
-        Debug.Log("role mgr pos : "+pos.x+" "+pos.z);
+        roleGameOE.transform.SetParent(container);
         roleGameOE.transform.localPosition = pos;
         Entity role = roleGameOE.Entity;
         InitRole(role, uid, pos);
@@ -71,11 +50,7 @@ public class RoleMgr
         var roleInfo = roleGameOE.GetComponent<RoleInfo>();
         roleInfo.Name = name;
         roleInfo.Career = career;
-        
-        entityDic.Add(uid, role);
         mainRoleGOE = roleGameOE;
-
-        // SceneMgr.Instance.ApplyDetector(roleGameOE.GetComponent<SceneDetectorBase>());
         SceneMgr.Instance.ApplyMainRole(roleGameOE);
         return role;
 	}
@@ -92,14 +67,14 @@ public class RoleMgr
         return mainRoleGOE.Entity == entity;
     }
 
-    public Entity AddRole(long uid)
+    public Entity AddRole(long uid, Vector3 pos)
 	{
-        GameObjectEntity roleGameOE = m_GameWorld.Spawn<GameObjectEntity>(prefabDic["Role"]);
+        GameObjectEntity roleGameOE = m_GameWorld.Spawn<GameObjectEntity>(ResMgr.GetInstance().GetPrefab("Role"));
         roleGameOE.name = "Role_"+uid;
-        roleGameOE.transform.SetParent(RoleContainer);
+        roleGameOE.transform.SetParent(container);
+        roleGameOE.transform.localPosition = pos;
         Entity role = roleGameOE.Entity;
-        InitRole(role, uid, Vector3.zero);
-        entityDic.Add(uid, role);
+        InitRole(role, uid, pos);
         return role;
 	}
 

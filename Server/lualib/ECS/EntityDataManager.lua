@@ -53,21 +53,21 @@ function EntityDataManager:Exists( entity )
     local index = entity.Index
     self:ValidateEntity(entity)
     local versionMatches = self.m_Entities.Version[index] == entity.Version
-    local hasChunk = self.m_Entities.ChunkData[index].Chunk ~= nil
+    local hasChunk = self.m_Entities.ChunkData[index] and self.m_Entities.ChunkData[index].Chunk ~= nil
     return versionMatches and hasChunk
 end
 
 function EntityDataManager:AssertEntityHasComponent( entity, com_type_name )
-    -- if self:HasComponent(entity, componentType) then
-    --     return
+    if not self:Exists(entity) then
+        assert(false, "The Entity does not exist")
+    end
+    if self:HasComponent(entity, com_type_name) then
+        return
+    end
+    -- if not self:HasComponent(entity, com_type_name) then
+        -- assert(false, "The component exists on the entity but the exact type {componentType} does not")
     -- end
-    -- if not self:Exists(entity) then
-    --     assert(false, "The Entity does not exist")
-    -- end
-    -- if self:HasComponent(entity, componentType.TypeIndex) then
-    --     assert(false, "The component exists on the entity but the exact type {componentType} does not")
-    -- end
-    -- assert(false, "component has not been added to the entity.")
+    assert(false, "component has not been added to the entity.")
 end
             
 function EntityDataManager:GetComponentDataWithTypeRO( entity, typeIndex )
@@ -358,11 +358,6 @@ function EntityDataManager:AllocateEntities( arch, chunk, baseIndex, count, outp
         outputEntities[i].Version = entityVersion
 
         ECS.ChunkDataUtility.WriteComponentInChunk(chunk.Buffer + (baseIndex + i - 1)*self.entity_size_in_chunk, ECS.Entity.Name, {Index=self.m_EntitiesFreeIndex, Version=entityVersion})
-        -- ECSCore.WriteNumber(entityInChunkStart, i+0, self.m_EntitiesFreeIndex)
-        -- ECSCore.WriteNumber(entityInChunkStart, i+ECS.CoreHelper.GetIntegerSize(), entityVersion)
-        -- local entityInChunk = entityInChunkStart + i
-        -- entityInChunk.Index = self.m_EntitiesFreeIndex
-        -- entityInChunk.Version = entityVersion
 
         self.m_Entities.ChunkData[self.m_EntitiesFreeIndex].IndexInChunk = baseIndex + i - 1
         self.m_Entities.Archetype[self.m_EntitiesFreeIndex] = arch
@@ -397,16 +392,15 @@ function EntityDataManager:SetCapacity( value )
         return
     end
 
-    local newEntities = self:CreateEntityData(value)
-    CopyEntityData(newEntities, self.m_Entities, self.m_EntitiesCapacity)
-    self.m_Entities = {}
+    -- local newEntities = self:CreateEntityData(value)
+    -- CopyEntityData(newEntities, self.m_Entities, self.m_EntitiesCapacity)
+    -- self.m_Entities = nil
     
-    local startNdx = self.m_EntitiesCapacity - 1
-    self.m_Entities = newEntities
+    -- self.m_Entities = newEntities
+    local startNdx = self.m_EntitiesCapacity
     self.m_EntitiesCapacity = value
-
     self:InitializeAdditionalCapacity(startNdx)
-    self.Capacity = value
+    -- self.Capacity = value
 end
 
 function EntityDataManager:CreateEntityData( newCapacity )

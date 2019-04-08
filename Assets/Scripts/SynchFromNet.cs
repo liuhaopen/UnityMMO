@@ -92,16 +92,22 @@ public class SynchFromNet {
             {
                 var cur_change_info = change_info_list[info_index];
                 // Debug.Log("cur_change_info.key : "+cur_change_info.key.ToString()+" scene_obj:"+(scene_obj!=Entity.Null).ToString()+ " ContainsKey:"+changeFuncDic.ContainsKey((SceneInfoKey)cur_change_info.key).ToString()+" uid"+uid.ToString()+" value:"+cur_change_info.value.ToString());
-                if (cur_change_info.key == (int)SceneInfoKey.EnterScene)
+                if (cur_change_info.key == (int)SceneInfoKey.EnterView)
                 {
-                    Debug.Log("some one enter scene:uid:"+uid+" scene_obj==null"+(scene_obj==Entity.Null).ToString());
+                    Debug.Log("some one enter scene:uid:"+uid+" scene_obj==null:"+(scene_obj==Entity.Null).ToString());
                     if (scene_obj==Entity.Null)
                     {
-                        SceneObjectType sceneObjType = (SceneObjectType)Enum.Parse(typeof(SceneObjectType), cur_change_info.value);
-                        scene_obj = SceneMgr.Instance.AddSceneObject(uid, sceneObjType);
+                        string[] info_strs = cur_change_info.value.Split(',');
+                        SceneObjectType sceneObjType = (SceneObjectType)Enum.Parse(typeof(SceneObjectType), info_strs[0]);
+                        Debug.Log("enter view : sceneObjType : "+sceneObjType);
+                        long new_x = Int64.Parse(info_strs[1]);
+                        long new_y = Int64.Parse(info_strs[2]);
+                        long new_z = Int64.Parse(info_strs[3]);
+                        var new_pos = new Vector3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic);
+                        scene_obj = SceneMgr.Instance.AddSceneObject(uid, sceneObjType, new_pos);
                     }
                 }
-                else if(cur_change_info.key == (int)SceneInfoKey.LeaveScene)
+                else if(cur_change_info.key == (int)SceneInfoKey.LeaveView)
                 {
                     if (scene_obj!=Entity.Null)
                     {
@@ -132,11 +138,9 @@ public class SynchFromNet {
         if (SceneMgr.Instance.EntityManager.HasComponent<Transform>(entity))
         {
             Transform trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(entity);
-            // Debug.Log("receive new pos"+new_x+" "+new_y+" "+new_z);
             trans.localPosition = new Vector3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic);
             SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = trans.localPosition});
         }
-        // SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = new float3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic)});
     }
 
     private void ApplyChangeInfoTargetPos(Entity entity, SprotoType.info_item change_info)

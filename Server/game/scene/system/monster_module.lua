@@ -9,18 +9,18 @@ end
 function monster_nest_system:OnCreateManager(  )
 	ECS.ComponentSystem.OnCreateManager(self)
 
-	self.group = self:GetComponentGroup({"umo.position", "umo.monster_nest"})
-	print('Cat:monster_module.lua[19] self.group', self.group)
+	-- self.group = self:GetComponentGroup({"umo.position", "umo.monster_nest"})
+	-- print('Cat:monster_module.lua[19] self.group', self.group)
 end
 
 function monster_nest_system:OnUpdate(  )
 	local deltaTime = Time.deltaTime
-	local positions = self.group:GetComponentDataArray("umo.position")
-	-- print('Cat:monster_module.lua[25] #positions', #positions)
-	for i=1,#positions do
-		local pos = positions[i]
+	-- local positions = self.group:GetComponentDataArray("umo.position")
+	-- -- print('Cat:monster_module.lua[25] #positions', #positions)
+	-- for i=1,#positions do
+	-- 	local pos = positions[i]
 
-	end
+	-- end
 end
 
 return monster_nest_system

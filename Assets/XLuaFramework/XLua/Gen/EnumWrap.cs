@@ -82,9 +82,9 @@ namespace XLua.CSObjectWrap
             
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "None", UnityMMO.SceneInfoKey.None);
             
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "EnterScene", UnityMMO.SceneInfoKey.EnterScene);
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "EnterView", UnityMMO.SceneInfoKey.EnterView);
             
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "LeaveScene", UnityMMO.SceneInfoKey.LeaveScene);
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "LeaveView", UnityMMO.SceneInfoKey.LeaveView);
             
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "PosChange", UnityMMO.SceneInfoKey.PosChange);
             
@@ -113,13 +113,13 @@ namespace XLua.CSObjectWrap
                 {
                     translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.None);
                 }
-				else if (LuaAPI.xlua_is_eq_str(L, 1, "EnterScene"))
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "EnterView"))
                 {
-                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.EnterScene);
+                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.EnterView);
                 }
-				else if (LuaAPI.xlua_is_eq_str(L, 1, "LeaveScene"))
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "LeaveView"))
                 {
-                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.LeaveScene);
+                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.LeaveView);
                 }
 				else if (LuaAPI.xlua_is_eq_str(L, 1, "PosChange"))
                 {

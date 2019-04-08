@@ -4,8 +4,8 @@ function ecs_system_mgr:init( world )
 	self.ecs_system_mgr_list = {}
 
 	local systems = {
-		"umo.patrol_system",
-		"umo.monster_nest_system"
+		-- "umo.patrol_system",
+		-- "umo.monster_nest_system"
 	}
 	for i,v in ipairs(systems) do
 		table.insert(self.ecs_system_mgr_list, world:GetOrCreateManager(v))

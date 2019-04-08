@@ -12,11 +12,12 @@ local this = {
 	scene_uid = 0,
 	role_list = {},
 	npc_list = {},
-	monster_list = {},
 	object_list = {},--the scene object includes the role monster npc
 	event_list = {},
 	ecs_world = false,
 	entity_mgr = false,
+	uid_entity_map = {},
+	role_mgr = require "game.scene.role_mgr",
 	monster_mgr = require "game.scene.monster_mgr",
 	ecs_system_mgr = require "game.scene.ecs_system_mgr",
 	aoi = require "game.scene.aoi",
@@ -25,11 +26,6 @@ local this = {
 
 local get_cur_time = function (  )
 	return math.floor(skynet.time()*1000+0.5)
-end
-
---enter_radius should be smaller than leave_radius
-local get_around_roles = function ( role_id, enter_radius, leave_radius )
-	return this.role_list
 end
 
 local init_npc = function (  )
@@ -62,20 +58,22 @@ local fork_loop_ecs = function (  )
 end
 
 --更新角色可视区域的感兴趣节点集合（玩家，怪物，NPC)
-local update_interest_objs = function ( role_info )
+local update_around_objs = function ( role_info )
 	local objs = this.aoi:get_around_offset(role_info.aoi_handle, role_info.radius_short, role_info.radius_long)
 	local cur_time = get_cur_time()
-	for aoi_handle,v in pairs(objs) do
-		local is_enter = (v==1)
+	for aoi_handle, flag in pairs(objs) do
 		local scene_uid = this.aoi_handle_uid_map[aoi_handle]
+		local is_enter = flag==1
 		if is_enter then
-			role_info.interest_objs[scene_uid] = scene_uid
-			local info = this.object_list[scene_uid]
-			if info then
-				role_info.change_obj_infos = scene_helper.add_info_item(role_info.change_obj_infos, scene_uid, {key=SceneInfoKey.EnterView, value=info.scene_type..","..info.pos_x..","..info.pos_y..","..info.pos_z, time=cur_time})
+			role_info.around_objs[scene_uid] = scene_uid
+			local entity = this.uid_entity_map[scene_uid]
+			if entity then
+				local pos = this.entity_mgr:GetComponentData(entity, "umo.position")
+				local scene_obj_type = this.entity_mgr:GetComponentData(entity, "umo.scene_obj_type")
+				role_info.change_obj_infos = scene_helper.add_info_item(role_info.change_obj_infos, scene_uid, {key=SceneInfoKey.EnterView, value=scene_obj_type.value..","..pos.x..","..pos.y..","..pos.z, time=cur_time})
 			end
 		else
-			role_info.interest_objs[scene_uid] = nil
+			role_info.around_objs[scene_uid] = nil
 			role_info.change_obj_infos = scene_helper.add_info_item(role_info.change_obj_infos, scene_uid, {key=SceneInfoKey.LeaveView, value="", time=cur_time})
 		end
 	end
@@ -83,8 +81,8 @@ end
 
 local collect_events = function (  )
 	for _,role_info in pairs(this.role_list) do
-		update_interest_objs(role_info)
-		for _,interest_uid in pairs(role_info.interest_objs) do
+		update_around_objs(role_info)
+		for _,interest_uid in pairs(role_info.around_objs) do
 			local event_list = this.event_list[interest_uid]
 			if event_list then
 				for i,event_info in ipairs(event_list) do
@@ -129,15 +127,17 @@ local fork_loop_fight_event = function (  )
 end
 
 function CMD.init(scene_id)
+	this.aoi:init()
 	this.ecs_world = ECS.InitWorld("scene_world")
 	this.entity_mgr = ECS.World.Active:GetOrCreateManager(ECS.EntityManager.Name)
-	this.npc_archetype = this.entity_mgr:CreateArchetype({"umo.position", "umo.uid", "umo.type_id"})
+	-- this.npc_archetype = this.entity_mgr:CreateArchetype({"umo.position", "umo.uid", "umo.type_id"})
 	this.scene_cfg = require("Config.scene.config_scene_"..scene_id)
 	this.cur_scene_id = scene_id
-	init_npc()
-	this.monster_mgr:init(this.entity_mgr, this.scene_cfg.monster_list)
+	-- init_npc()
+	this.role_mgr:init(this)
+	this.monster_mgr:init(this, this.scene_cfg.monster_list)
 	this.ecs_system_mgr:init(this.ecs_world)
-
+	
 	fork_loop_ecs()
 	fork_loop_scene_info_change()
 	fork_loop_fight_event()
@@ -170,7 +170,6 @@ local init_pos_info = function ( base_info )
 	if is_need_reset_pos then
 		local born_list = this.scene_cfg.born_list
 		local door_num = born_list and #born_list or 0
-		-- print('Cat:scene.lua[136] door_num', door_num)
 		if door_num > 0 then
 			local random_index = math.random(1, door_num)
 			local born_info = born_list[random_index]
@@ -181,6 +180,9 @@ local init_pos_info = function ( base_info )
 	end
 end
 
+-- local get_or_create_scene_uid = function ( type, id )
+-- end
+
 function CMD.role_enter_scene(role_id)
 	print('Cat:scene.lua[role_enter_scene] role_id', role_id)
 	if not this.role_list[role_id] then
@@ -188,55 +190,31 @@ function CMD.role_enter_scene(role_id)
 		local base_info = get_base_info_by_roleid(role_id)
 		local looks_info = get_looks_info_by_roleid(role_id)
 		init_pos_info(base_info)
-		this.role_list[role_id] = {scene_uid=scene_uid, base_info=base_info, looks_info=looks_info}
-		this.object_list[scene_uid] = this.role_list[role_id]
 
-		local cur_time = get_cur_time()
-		--tell the new guy who are here
-		for k,v in pairs(this.role_list) do
-			if v.scene_uid ~= scene_uid then
-				this.role_list[role_id].change_obj_infos = scene_helper.add_info_item(this.role_list[role_id].change_obj_infos, v.scene_uid, {key=SceneInfoKey.EnterView, value=SceneObjectType.Role, time=cur_time})
-				local pos_info_str = v.base_info.pos_x..","..v.base_info.pos_y..","..v.base_info.pos_z
-				this.role_list[role_id].change_obj_infos = scene_helper.add_info_item(this.role_list[role_id].change_obj_infos, v.scene_uid, {key=SceneInfoKey.PosChange, value=pos_info_str, time=cur_time})
-			end
-		end
-		--tell every one a new role enter scene
-		local pos_info_str = base_info.pos_x..","..base_info.pos_y..","..base_info.pos_z
-		local enter_event_info = {key=SceneInfoKey.EnterView, value=SceneObjectType.Role, time=cur_time}
-		local pos_change_event_info = {key=SceneInfoKey.PosChange, value=pos_info_str, time=cur_time}
-		for k,v in pairs(this.role_list) do
-			if v.scene_uid ~= scene_uid then
-				v.change_obj_infos = scene_helper.add_info_item(v.change_obj_infos, scene_uid, enter_event_info)
-				v.change_obj_infos = scene_helper.add_info_item(v.change_obj_infos, scene_uid, pos_change_event_info)
-			end
-		end
-		-- for k,v in pairs(this.npc_list) do
-		-- 	this.role_list[role_id].change_obj_infos = scene_helper.add_info_item(this.role_list[role_id].change_obj_infos, v.scene_uid, {key=SceneInfoKey.EnterView, value=SceneObjectType.NPC, time=0})
-		-- end
+		local handle = this.aoi:add()
+		this.role_list[role_id] = {scene_uid=scene_uid, base_info=base_info, looks_info=looks_info, aoi_handle=handle, around_objs={}, radius_short=5000, radius_long=6000}
+		this.object_list[scene_uid] = this.role_list[role_id]
+		this.aoi_handle_uid_map[handle] = scene_uid
+		this.aoi:set_pos(handle, base_info.pos_x, base_info.pos_y, base_info.pos_z)
+
+		local entity = this.role_mgr:create_role(scene_uid, role_id, base_info.pos_x, base_info.pos_y, base_info.pos_z)
+		this.uid_entity_map[scene_uid] = entity
 	end
 end
 
 local save_role_pos = function ( role_id, pos_x, pos_y, pos_z, scene_id )
 	local gameDBServer = skynet.localname(".GameDBServer")
-	-- print('Cat:scene.lua[191] role_id, pos_x, pos_y, pos_z, scene_id', role_id, pos_x, pos_y, pos_z, scene_id)
 	is_succeed = skynet.call(gameDBServer, "lua", "update", "RoleBaseInfo", "role_id", role_id, {pos_x=pos_x, pos_y=pos_y, pos_z=pos_z, scene_id=scene_id})
 end
 
 function CMD.role_leave_scene(role_id)
 	local role_info = this.role_list[role_id]
-	-- print('Cat:scene.lua[role_leave_scene] role_id', role_id, role_info)
+	print('Cat:scene.lua[role_leave_scene] role_id', role_id, role_info)
 	if not role_info then return end
 	
+	this.aoi:remove(role_info.aoi_handle)
 	save_role_pos(role_id, role_info.base_info.pos_x, role_info.base_info.pos_y, role_info.base_info.pos_z, this.cur_scene_id)	
 
-	local cur_time = get_cur_time()
-	--tell every one this role leave scene
-	for k,v in pairs(this.role_list) do
-		local cur_role_id = k
-		if v.cur_role_id ~= role_id then
-			v.change_obj_infos = scene_helper.add_info_item(v.change_obj_infos, role_info.scene_uid, {key=SceneInfoKey.LeaveView, value=SceneObjectType.Role, time=cur_time})
-		end
-	end
 	if role_info.ack_scene_get_objs_info_change then
 		role_info.ack_scene_get_objs_info_change(true, {})
 	end
@@ -315,22 +293,18 @@ function CMD.scene_walk( user_info, req_data )
 		role_info.base_info.pos_x = req_data.start_x
 		role_info.base_info.pos_y = req_data.start_y
 		role_info.base_info.pos_z = req_data.start_z
+		local entity = this.uid_entity_map[role_info.scene_uid]
+		if entity then
+			this.entity_mgr:SetComponentData(entity, "umo.position", {x=req_data.start_x, y=req_data.start_y, z=req_data.start_z})
+		end
+		this.aoi:set_pos(role_info.aoi_handle, role_info.base_info.pos_x, role_info.base_info.pos_y, role_info.base_info.pos_z)
 		local pos_info = role_info.base_info.pos_x..","..role_info.base_info.pos_y..","..role_info.base_info.pos_z
 		local target_pos_info = req_data.end_x..","..req_data.end_z
-		-- print('Cat:scene.lua[116] pos_info', pos_info, role_info.scene_uid)
 		local cur_time = get_cur_time()
 		-- local change_pos_event_info = {key=SceneInfoKey.PosChange, value=pos_info, time= cur_time}
 		local change_target_pos_event_info = {key=SceneInfoKey.TargetPos, value=target_pos_info, time=cur_time}
 		this.event_list[role_info.scene_uid] = this.event_list[role_info.scene_uid] or {}
 		table.insert(this.event_list[role_info.scene_uid], change_target_pos_event_info)
-		--for test 
-		-- for k,v in pairs(this.role_list) do
-		-- 	local role_id = k
-		-- 	if role_id ~= user_info.cur_role_id then
-		-- 		-- v.change_obj_infos = scene_helper.add_info_item(v.change_obj_infos, role_info.scene_uid, change_pos_event_info)
-		-- 		v.change_obj_infos = scene_helper.add_info_item(v.change_obj_infos, role_info.scene_uid, change_target_pos_event_info)
-		-- 	end
-		-- end
 	end
 	return {}
 end

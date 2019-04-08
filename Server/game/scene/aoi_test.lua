@@ -18,21 +18,20 @@ local assertSomeoneEnter = function ( around, someone )
 	lu.assertNotNil(around)
 	local aoi_info = around[someone]
 	lu.assertNotNil(aoi_info)
-    lu.assertEquals(aoi_info[1], true)
-    lu.assertEquals(aoi_info[2], someone)
+    lu.assertEquals(aoi_info, 1)
 end
 
 local assertSomeoneLeave = function ( around, someone )
 	lu.assertNotNil(around)
 	local aoi_info = around[someone]
 	lu.assertNotNil(aoi_info)
-    lu.assertEquals(aoi_info[1], false)
-    lu.assertEquals(aoi_info[2], someone)
+    lu.assertEquals(aoi_info, 2)
 end
 
 function test_all(  )
 	--地点
 	local pos_library = {x=1,y=2,z=3}
+	local pos_hotel = {x=-500,y=-123,z=7800}
 	local pos_dongguan = {x=1000,y=-2000,z=3000}
 	local pos_lake = {x=-2000,y=1000,z=-4000}
 	local pos_cemetery = {x=-300,y=100,z=500}
@@ -40,23 +39,40 @@ function test_all(  )
 	local girl = aoi:add()
 	local around = aoi:get_around_offset(girl, 100, 120)
     assertNothingChange(around)
-
-    --与男主相遇，你中有我，我中有你
+    --女主在图书馆溜达
 	aoi:set_pos(girl, pos_library.x, pos_library.y, pos_library.z)
-
+	local around = aoi:get_around_offset(girl, 100, 120)
+    assertNothingChange(around)
+	aoi:set_pos(girl, pos_library.x+1, pos_library.y-1, pos_library.z+50)
+	local around = aoi:get_around_offset(girl, 100, 120)
+    assertNothingChange(around)
+    
+    --与男主相遇，确定过眼神
     local boy = aoi:add()
     aoi:set_pos(boy, pos_library.x-1, pos_library.y+1, pos_library.z-10)
-
 	local around = aoi:get_around_offset(girl, 100, 120)
 	lu.assertEquals(get_tbl_size(around), 1)
 	assertSomeoneEnter(around, boy)
-
     local around = aoi:get_around_offset(boy, 150, 150)
+	lu.assertEquals(get_tbl_size(around), 1)
 	assertSomeoneEnter(around, girl)
 
-    --男主腻了，于是跑路
+	--两人整天相互了解彼此的生理结构
+	aoi:set_pos(girl, pos_hotel.x-1, pos_hotel.y-1, pos_hotel.z+10)
+    aoi:set_pos(boy, pos_hotel.x-1, pos_hotel.y-1, pos_hotel.z+10)
+	local around = aoi:get_around_offset(girl, 100, 120)
+    assertNothingChange(around)
+	local around = aoi:get_around_offset(boy, 100, 120)
+    assertNothingChange(around)
+	aoi:set_pos(girl, pos_hotel.x-2, pos_hotel.y+1, pos_hotel.z-10)
+    local around = aoi:get_around_offset(girl, 100, 120)
+    assertNothingChange(around)
+    aoi:set_pos(boy, pos_hotel.x-3, pos_hotel.y+1, pos_hotel.z+12)
+	local around = aoi:get_around_offset(boy, 100, 120)
+    assertNothingChange(around)
+
+    --男主腻了，于是跑去东莞
     aoi:set_pos(boy, pos_dongguan.x, pos_dongguan.y, pos_dongguan.z)
-    --男主已经看不见女主了
     local around = aoi:get_around_offset(boy, 150, 150)
 	assertSomeoneLeave(around, girl)
     
@@ -73,20 +89,21 @@ function test_all(  )
     local around = aoi:get_around_offset(lady, 150, 150)
 	assertSomeoneEnter(around, boy)
 
-    --女主捉奸在床
+    --女主去东莞找男主，结果捉奸在床
     aoi:set_pos(girl, pos_dongguan.x-4, pos_dongguan.y+8, pos_dongguan.z-4)
     local around = aoi:get_around_offset(girl, 150, 150)
     lu.assertEquals(get_tbl_size(around), 2)
 	assertSomeoneEnter(around, boy)
 	assertSomeoneEnter(around, lady)
-    --然后接受不了跑掉了
+	
+    --女主接受不了，去湖边准备自杀
     aoi:set_pos(girl, pos_lake.x, pos_lake.y, pos_lake.z)
     local around = aoi:get_around_offset(girl, 150, 150)
     lu.assertEquals(get_tbl_size(around), 2)
 	assertSomeoneLeave(around, boy)
 	assertSomeoneLeave(around, lady)
 
-    --女主的备胎出场
+    --女主的备胎前去安慰
     local bench = aoi:add()
     aoi:set_pos(bench, pos_lake.x+100, pos_lake.y-100, pos_lake.z+50)
     local around = aoi:get_around_offset(bench, 150, 150)
@@ -111,7 +128,7 @@ function test_all(  )
 	assertSomeoneEnter(around, girl)
 	assertSomeoneLeave(around, boy)
 
-	--女主和第三者相逢恨晚百合花开
+	--女主和第三者相逢恨晚，百合花开
 	local around = aoi:get_around_offset(girl, 150, 150)
     lu.assertEquals(get_tbl_size(around), 2)
 	assertSomeoneEnter(around, lady)
@@ -125,11 +142,10 @@ function test_all(  )
     lu.assertEquals(get_tbl_size(around), 1)
 	assertSomeoneLeave(around, lady)--上次第三者跑去找女主时的离开
 
-    --男主突然被车撞死了
+    --男主突然被车撞死了（我也不想这么狗血的，但remove函数必须得测试啊）
     aoi:remove(boy)
     local around = aoi:get_around_offset(boy, 11150, 11150)
     assertNothingChange(around)
-
     local around = aoi:get_around_offset(bench, 150, 150)
     lu.assertEquals(get_tbl_size(around), 1)
 	assertSomeoneLeave(around, boy)

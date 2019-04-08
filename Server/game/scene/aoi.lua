@@ -7,6 +7,7 @@ function aoi:init( )
 end
 
 function aoi:add(  )
+	--Cat_Todo : 需要做成原子操作
 	self.counter = self.counter + 1
 	local node = {
 		handle = self.counter,
@@ -85,30 +86,25 @@ function aoi:set_pos( handle, pos_x, pos_y, pos_z )
 				--新坐标比旧坐标大也往前寻找节点
 				is_find_in_front = new_pos[dimension] > node.pos[dimension]
 			end
+			local test_node = start_node
 			if is_find_in_front then
-				local test_node = start_node
 				while true do
 					if not test_node or not test_node.next[dimension] or test_node.next[dimension].pos[dimension] > new_pos[dimension] then
 						break
 					end
 					test_node = test_node.next[dimension]
 				end
-				if (node.last[dimension] ~= test_node and node ~= test_node) or test_node==nil then
-					self:delete_from_link(node, dimension)
-					self:insert_to_front(node, test_node, dimension)
-				end
 			else
-				local test_node = start_node
 				while true do
 					if not test_node or test_node.pos[dimension] < new_pos[dimension] then
 						break
 					end
 					test_node = test_node.last[dimension]
 				end
-				if (node.last[dimension] ~= test_node and node ~= test_node) or test_node==nil then
-					self:delete_from_link(node, dimension)
-					self:insert_to_front(node, test_node, dimension)
-				end
+			end
+			if (node.last[dimension] ~= test_node and node ~= test_node) or (test_node==nil and node~=self.link_heads[dimension]) then
+				self:delete_from_link(node, dimension)
+				self:insert_to_front(node, test_node, dimension)
 			end
 		else
 			self.link_heads[dimension] = node
@@ -146,8 +142,8 @@ function aoi:find_around_in_link( node, distance )
 			end
 			if is_ok then
 				result[next_node.handle] = next_node
-				next_node = next_node.next[1]
 			end
+			next_node = next_node.next[1]
 		else
 			break
 		end
@@ -164,8 +160,8 @@ function aoi:find_around_in_link( node, distance )
 			end
 			if is_ok then
 				result[last_node.handle] = last_node
-				last_node = last_node.last[1]
 			end
+			last_node = last_node.last[1]
 		else
 			break
 		end
@@ -177,17 +173,16 @@ function aoi:get_around_offset( handle, radius_short, radius_long )
 	local node = self.nodes[handle]
 	if not node then return {} end
 	
+	radius_long = radius_long or radius_short
 	local new_around_maps = self:find_around_in_link(node, radius_short)
 	local result = {}
 	for _,test_node in pairs(node.around_list) do
-		local is_removed = test_node.is_removed
-		if not new_around_maps[test_node.handle] or is_removed then
+		if not new_around_maps[test_node.handle] then
 			--为了防止颠陂，离开可视区域的距离要更大
-			local is_near_long = self:is_near(node.pos, test_node.pos, radius_long)
-			if not is_near_long or is_removed then
+			if test_node.is_removed or not self:is_near(node.pos, test_node.pos, radius_long) then
 				--之前的可视区域节点不见了
 				node.around_list[test_node.handle] = nil
-				result[test_node.handle] = {false, test_node.handle}
+				result[test_node.handle] = 2
 			end
 		end
 	end
@@ -195,7 +190,7 @@ function aoi:get_around_offset( handle, radius_short, radius_long )
 		if not node.around_list[test_node.handle] then
 			--新加入可视区域的节点
 			node.around_list[test_node.handle] = test_node
-			result[test_node.handle] = {true, test_node.handle}
+			result[test_node.handle] = 1
 		end
 	end
 	return result

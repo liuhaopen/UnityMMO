@@ -33,20 +33,23 @@
 )九宫格加载场景块  
 )玩家进入退出场景及坐标信息的同步  
 )人物场景漫游-ECS做法  
+)场景切割及动态加载  
+)人物的移动同步  
+)AOI(lua实现的三维十字链表法)  
 
 # Todo
 前端:   
-)场景切割及动态加载(98%)  
 )基于组件的UI框架(85%)  
-)战斗系统(50%)    
+)战斗系统(50%)  
+)采集  
+)自动任务流程  
 )场景模型LOD,试试UnityGithub上的AutoLOD  
 
 后端:  
 )lua版本的ECS(80%)  
-)人物的移动同步(95%)  
-)NPC与怪物AI(15%)     
+)lua版本的行为树  
+)怪物AI(15%)     
 )使用Redis  
-)AOI  
 
 # 开发笔记
 18.05.17：开始动工，以luaframework和skynet为基础快速搭建一个前后端骨架来。  
@@ -82,3 +85,4 @@
 19.03.17：把人物场景漫游的逻辑换成ECS实现了，不过动作还是用Animator，场景加载还是先改成baseworld加细节物件九宫格加载：![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/run_in_green_scene.gif)   
 19.03.26：用Timeline实现了普攻和技能，省下了开发技能编辑器的功夫。接下来就弄个好看的轻功四段跳和场景同步逻辑了。另外资源方面还没上传最新的，主要是两点原因：1我还在纠结资源命名规范和目录结构等细节，未来会经常变动。2因为懒得在网上找资源所以直接用了公司项目的了，这个不好直接上传，等功能做得差不多了我再找替代资源。
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/cast_skill.gif)   
+19.04.08：用lua实现了aoi模块，用的是十字链表法，因为是3d的所以用3条链表，以后有空再改成c实现吧，终于可以不用全场景广播了。  

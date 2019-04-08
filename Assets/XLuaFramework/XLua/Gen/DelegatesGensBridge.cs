@@ -1099,30 +1099,7 @@ namespace XLua
 #endif
 		}
         
-		public Unity.Entities.Entity __Gen_Delegate_Imp47(object p0, long p1)
-		{
-#if THREAD_SAFE || HOTFIX_ENABLE
-            lock (luaEnv.luaEnvLock)
-            {
-#endif
-                RealStatePtr L = luaEnv.rawL;
-                int errFunc = LuaAPI.pcall_prepare(L, errorFuncRef, luaReference);
-                ObjectTranslator translator = luaEnv.translator;
-                translator.PushAny(L, p0);
-                LuaAPI.lua_pushint64(L, p1);
-                
-                PCall(L, 2, 1, errFunc);
-                
-                
-                Unity.Entities.Entity __gen_ret;translator.Get(L, errFunc + 1, out __gen_ret);
-                LuaAPI.lua_settop(L, errFunc - 1);
-                return  __gen_ret;
-#if THREAD_SAFE || HOTFIX_ENABLE
-            }
-#endif
-		}
-        
-		public Unity.Entities.Entity __Gen_Delegate_Imp48(object p0, long p1, UnityMMO.SceneObjectType p2)
+		public Unity.Entities.Entity __Gen_Delegate_Imp47(object p0, long p1, UnityMMO.SceneObjectType p2, UnityEngine.Vector3 p3)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -1134,8 +1111,9 @@ namespace XLua
                 translator.PushAny(L, p0);
                 LuaAPI.lua_pushint64(L, p1);
                 translator.PushUnityMMOSceneObjectType(L, p2);
+                translator.PushUnityEngineVector3(L, p3);
                 
-                PCall(L, 3, 1, errFunc);
+                PCall(L, 4, 1, errFunc);
                 
                 
                 Unity.Entities.Entity __gen_ret;translator.Get(L, errFunc + 1, out __gen_ret);
@@ -1146,7 +1124,7 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp49(object p0, long p1)
+		public void __Gen_Delegate_Imp48(object p0, long p1)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -1164,6 +1142,29 @@ namespace XLua
                 
                 LuaAPI.lua_settop(L, errFunc - 1);
                 
+#if THREAD_SAFE || HOTFIX_ENABLE
+            }
+#endif
+		}
+        
+		public Unity.Entities.Entity __Gen_Delegate_Imp49(object p0, long p1)
+		{
+#if THREAD_SAFE || HOTFIX_ENABLE
+            lock (luaEnv.luaEnvLock)
+            {
+#endif
+                RealStatePtr L = luaEnv.rawL;
+                int errFunc = LuaAPI.pcall_prepare(L, errorFuncRef, luaReference);
+                ObjectTranslator translator = luaEnv.translator;
+                translator.PushAny(L, p0);
+                LuaAPI.lua_pushint64(L, p1);
+                
+                PCall(L, 2, 1, errFunc);
+                
+                
+                Unity.Entities.Entity __gen_ret;translator.Get(L, errFunc + 1, out __gen_ret);
+                LuaAPI.lua_settop(L, errFunc - 1);
+                return  __gen_ret;
 #if THREAD_SAFE || HOTFIX_ENABLE
             }
 #endif
