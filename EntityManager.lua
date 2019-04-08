@@ -115,7 +115,7 @@ end
 
 function EntityManager:SetComponentData( entity, componentTypeName, componentData )
 	local typeIndex = ECS.TypeManager.GetTypeIndexByName(componentTypeName)
-    -- self.Entities:AssertEntityHasComponent(entity, typeIndex)
+    self.Entities:AssertEntityHasComponent(entity, componentTypeName)
     -- ComponentJobSafetyManager.CompleteReadAndWriteDependency(typeIndex)
     local ptr = self.Entities:GetComponentDataWithTypeRW(entity, typeIndex, self.Entities.GlobalSystemVersion)
     ECS.ChunkDataUtility.WriteComponentInChunk(ptr, componentTypeName, componentData)
@@ -124,7 +124,7 @@ end
 
 function EntityManager:GetComponentData( entity, componentTypeName )
     local typeIndex = ECS.TypeManager.GetTypeIndexByName(componentTypeName)
-    self.Entities:AssertEntityHasComponent(entity, typeIndex)
+    self.Entities:AssertEntityHasComponent(entity, componentTypeName)
     local ptr = self.Entities:GetComponentDataWithTypeRO(entity, typeIndex)
     local data = ECS.ChunkDataUtility.ReadComponentFromChunk(ptr, componentTypeName)
     return data
@@ -160,13 +160,5 @@ end
 function EntityManager:GetArchetypeChunkComponentType( comp_type_name, isReadOnly )
     return ArchetypeChunkComponentType.New(comp_type_name, isReadOnly, self.GlobalSystemVersion)
 end
-
--- local EntityArchetypeQuery = {
--- 	Any = {}, None = {}, All = {}, 
--- }
-
--- local EntityArchetype = {
-	
--- }
 
 return EntityManager
