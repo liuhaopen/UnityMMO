@@ -24,17 +24,6 @@ public struct RoleLooksSpawnRequest : IComponentData
         this.body = body;
         this.hair = hair;
     }
-    
-    // public static void Create(EntityCommandBuffer commandBuffer, int career, Vector3 position, Quaternion rotation, Entity ownerEntity, int body, int hair)
-    // {
-    //     Debug.Log("create 1");
-    //     var data = new RoleLooksSpawnRequest(career, position, rotation, ownerEntity, body, hair);
-    //     Debug.Log("create 2");
-    //     commandBuffer.CreateEntity();
-    //     Debug.Log("create 3");
-    //     commandBuffer.AddComponent(data);
-    //     Debug.Log("create 4");
-    // }
 
     public static void Create(EntityManager entityMgr, int career, Vector3 position, Quaternion rotation, Entity ownerEntity, int body, int hair)
     {
@@ -105,7 +94,7 @@ public class HandleRoleLooksNetRequest : BaseComponentSystem
                     if (hasTrans)
                     {
                         var transform = m_world.GetEntityManager().GetComponentObject<Transform>(owner); 
-                        Debug.Log("roleState.position : "+transform.localPosition.ToString());
+                        // Debug.Log("roleState.position : "+transform.localPosition.ToString());
                         //因为是异步操作，等后端发送信息过来时PostUpdateCommands已经失效了，所以不能这么用
                         // RoleLooksSpawnRequest.Create(PostUpdateCommands, (int)rsp.role_looks_info.career, transform.localPosition, transform.localRotation, owner, (int)rsp.role_looks_info.body, (int)rsp.role_looks_info.hair);
                         RoleLooksSpawnRequest.Create(m_world.GetEntityManager(), (int)rsp.role_looks_info.career, transform.localPosition, transform.localRotation, owner, (int)rsp.role_looks_info.body, (int)rsp.role_looks_info.hair);
@@ -226,12 +215,8 @@ public class HandleRoleLooksSpawnRequests : BaseComponentSystem
                     var parentTrans = EntityManager.GetComponentObject<Transform>(request.ownerEntity);
                     parentTrans.localPosition = request.position;
                     bodyOE.transform.SetParent(parentTrans);
-                    // bodyOE.transform.SetParent(UnityMMO.RoleMgr.GetInstance().RoleContainer);
-                    // bodyOE.transform.localPosition = request.position;
                     bodyOE.transform.localPosition = Vector3.zero;
                     bodyOE.transform.localRotation = Quaternion.identity;
-                    // bodyOE.GetComponent<Rigidbody>().isKinematic = true;
-                    // playerState.looksEntity = bodyOE.Entity;
                     LoadHair(hairPath, bodyOE.transform.Find("head"));
                     Debug.Log("load ok role model");
                     looksInfo.CurState = LooksInfo.State.Loaded;

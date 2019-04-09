@@ -64,13 +64,15 @@ local update_around_objs = function ( role_info )
 	for aoi_handle, flag in pairs(objs) do
 		local scene_uid = this.aoi_handle_uid_map[aoi_handle]
 		local is_enter = flag==1
+		-- print('Cat:scene.lua[67] flag, ', flag, aoi_handle, role_info.aoi_handle, scene_uid)
 		if is_enter then
 			role_info.around_objs[scene_uid] = scene_uid
 			local entity = this.uid_entity_map[scene_uid]
 			if entity then
 				local pos = this.entity_mgr:GetComponentData(entity, "umo.position")
 				local scene_obj_type = this.entity_mgr:GetComponentData(entity, "umo.scene_obj_type")
-				role_info.change_obj_infos = scene_helper.add_info_item(role_info.change_obj_infos, scene_uid, {key=SceneInfoKey.EnterView, value=scene_obj_type.value..","..pos.x..","..pos.y..","..pos.z, time=cur_time})
+				local type_id = this.entity_mgr:GetComponentData(entity, "umo.type_id")
+				role_info.change_obj_infos = scene_helper.add_info_item(role_info.change_obj_infos, scene_uid, {key=SceneInfoKey.EnterView, value=scene_obj_type.value..","..type_id.value..","..pos.x..","..pos.y..","..pos.z, time=cur_time})
 			end
 		else
 			role_info.around_objs[scene_uid] = nil
@@ -213,6 +215,7 @@ function CMD.role_leave_scene(role_id)
 	if not role_info then return end
 	
 	this.aoi:remove(role_info.aoi_handle)
+	this.aoi_handle_uid_map[role_info.aoi_handle] = nil
 	save_role_pos(role_id, role_info.base_info.pos_x, role_info.base_info.pos_y, role_info.base_info.pos_z, this.cur_scene_id)	
 
 	if role_info.ack_scene_get_objs_info_change then

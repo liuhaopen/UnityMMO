@@ -373,11 +373,12 @@ namespace XLua.CSObjectWrap
                 
                 {
                     long _uid = LuaAPI.lua_toint64(L, 2);
-                    string _name = LuaAPI.lua_tostring(L, 3);
-                    int _career = LuaAPI.xlua_tointeger(L, 4);
-                    UnityEngine.Vector3 _pos;translator.Get(L, 5, out _pos);
+                    long _typeID = LuaAPI.lua_toint64(L, 3);
+                    string _name = LuaAPI.lua_tostring(L, 4);
+                    int _career = LuaAPI.xlua_tointeger(L, 5);
+                    UnityEngine.Vector3 _pos;translator.Get(L, 6, out _pos);
                     
-                        Unity.Entities.Entity gen_ret = gen_to_be_invoked.AddMainRole( _uid, _name, _career, _pos );
+                        Unity.Entities.Entity gen_ret = gen_to_be_invoked.AddMainRole( _uid, _typeID, _name, _career, _pos );
                         translator.Push(L, gen_ret);
                     
                     
@@ -405,10 +406,9 @@ namespace XLua.CSObjectWrap
                 
                 {
                     long _uid = LuaAPI.lua_toint64(L, 2);
-                    UnityMMO.SceneObjectType _type;translator.Get(L, 3, out _type);
-                    UnityEngine.Vector3 _pos;translator.Get(L, 4, out _pos);
+                    string _content = LuaAPI.lua_tostring(L, 3);
                     
-                        Unity.Entities.Entity gen_ret = gen_to_be_invoked.AddSceneObject( _uid, _type, _pos );
+                        Unity.Entities.Entity gen_ret = gen_to_be_invoked.AddSceneObject( _uid, _content );
                         translator.Push(L, gen_ret);
                     
                     

@@ -1,4 +1,5 @@
-package.path = package.path ..';../?.lua;../../?.lua;../../lualib/ECS/?.lua';
+package.path = package.path ..';../?.lua;../../?.lua;../../../?.lua;../../lualib/ECS/?.lua';
+require "Lua.Common.Util.util"
 local lu = require('Tests.luaunit')
 local aoi = require('aoi')
 
@@ -46,10 +47,17 @@ function test_all(  )
 	aoi:set_pos(girl, pos_library.x+1, pos_library.y-1, pos_library.z+50)
 	local around = aoi:get_around_offset(girl, 100, 120)
     assertNothingChange(around)
+    aoi:remove(girl)--无聊死了
     
-    --与男主相遇，确定过眼神
+    --男主帅气出场
     local boy = aoi:add()
     aoi:set_pos(boy, pos_library.x-1, pos_library.y+1, pos_library.z-10)
+	local around = aoi:get_around_offset(boy, 100, 120)
+	lu.assertEquals(get_tbl_size(around), 0)
+	--女主嗅到帅哥味，于是复活
+	girl = aoi:add()
+	aoi:set_pos(girl, pos_library.x, pos_library.y, pos_library.z)
+    --与男主相遇，确定过眼神
 	local around = aoi:get_around_offset(girl, 100, 120)
 	lu.assertEquals(get_tbl_size(around), 1)
 	assertSomeoneEnter(around, boy)
@@ -161,6 +169,20 @@ function test_all(  )
     lu.assertEquals(get_tbl_size(around), 1)
 	assertSomeoneEnter(around, bench)
 	local around = aoi:get_around_offset(bench, 150, 150)
+    lu.assertEquals(get_tbl_size(around), 2)
+	assertSomeoneEnter(around, girl)
+	assertSomeoneEnter(around, lady)
+
+	--备胎在996血汗工厂工作了几年后猝死在键盘前
+	aoi:remove(bench)
+	local around = aoi:get_around_offset(girl, 150, 150)
+    lu.assertEquals(get_tbl_size(around), 1)
+	assertSomeoneLeave(around, bench)
+
+	--女主生下了备胎的小轮胎
+	local baby = aoi:add()
+    aoi:set_pos(baby, pos_cemetery.x, pos_cemetery.y, pos_cemetery.z)
+    local around = aoi:get_around_offset(baby, 150, 150)
     lu.assertEquals(get_tbl_size(around), 2)
 	assertSomeoneEnter(around, girl)
 	assertSomeoneEnter(around, lady)

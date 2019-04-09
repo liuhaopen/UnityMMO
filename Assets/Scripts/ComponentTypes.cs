@@ -10,6 +10,12 @@ namespace UnityMMO
         public long Value;
     }
 
+    //Role类型的话对应RoleID，Monster和NPC类型对应TypeID
+    public struct TypeID : IComponentData
+    {
+        public long Value;
+    }
+
     public struct TimelineState : IComponentData
     {
         public enum NewState

@@ -47,7 +47,7 @@ function monster_mgr:create_monster( type_id, pos_x, pos_y, pos_z )
 	local handle = self.aoi:add()
 	self.aoi:set_pos(handle, pos_x, pos_y, pos_z)
 
-	-- print('Cat:monster_mgr.lua[53] scene_uid', scene_uid, monster.Index)
+	-- print('Cat:monster_mgr.lua[53] scene_uid', scene_uid, handle)
 	self.scene_mgr.aoi_handle_uid_map[handle] = scene_uid
 	self.scene_mgr.uid_entity_map[scene_uid] = monster
 

@@ -1,4 +1,8 @@
 local aoi = {}
+
+local aoi_state = {
+	original = 1, inited = 2, removed = 3,
+}
 --先用三维度的十字链表法，以后有空再优化吧
 function aoi:init( )
 	self.counter = 0
@@ -15,13 +19,15 @@ function aoi:add(  )
 		last = {},--三维度，即三个链表指针
 		pos = {},
 		around_list = {},
+		state = aoi_state.original,
 	}
 	self.nodes[self.counter] = node
 	return self.counter
 end
 
 function aoi:delete_from_link( node, dimension )
-	if not node or (not node.next[dimension] and not node.last[dimension]) then return end
+	if not node or node.state==aoi_state.original then return end
+	
 	local next_node = node.next[dimension]
 	local last_node = node.last[dimension]
 	if last_node then
@@ -39,7 +45,7 @@ end
 function aoi:remove( handle )
 	local node = self.nodes[handle]
 	if not node then return end
-	node.is_removed = true
+	node.state = aoi_state.removed
 	for dimension=1,3 do
 		self:delete_from_link(node, dimension)
 	end
@@ -111,6 +117,7 @@ function aoi:set_pos( handle, pos_x, pos_y, pos_z )
 		end
 	end
 	node.pos = new_pos
+	node.state = aoi_state.inited
 end
 
 function aoi:get_pos( handle )
@@ -179,7 +186,7 @@ function aoi:get_around_offset( handle, radius_short, radius_long )
 	for _,test_node in pairs(node.around_list) do
 		if not new_around_maps[test_node.handle] then
 			--为了防止颠陂，离开可视区域的距离要更大
-			if test_node.is_removed or not self:is_near(node.pos, test_node.pos, radius_long) then
+			if test_node.state == aoi_state.removed or not self:is_near(node.pos, test_node.pos, radius_long) then
 				--之前的可视区域节点不见了
 				node.around_list[test_node.handle] = nil
 				result[test_node.handle] = 2

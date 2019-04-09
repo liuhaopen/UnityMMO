@@ -97,14 +97,7 @@ public class SynchFromNet {
                     Debug.Log("some one enter scene:uid:"+uid+" scene_obj==null:"+(scene_obj==Entity.Null).ToString());
                     if (scene_obj==Entity.Null)
                     {
-                        string[] info_strs = cur_change_info.value.Split(',');
-                        SceneObjectType sceneObjType = (SceneObjectType)Enum.Parse(typeof(SceneObjectType), info_strs[0]);
-                        Debug.Log("enter view : sceneObjType : "+sceneObjType);
-                        long new_x = Int64.Parse(info_strs[1]);
-                        long new_y = Int64.Parse(info_strs[2]);
-                        long new_z = Int64.Parse(info_strs[3]);
-                        var new_pos = new Vector3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic);
-                        scene_obj = SceneMgr.Instance.AddSceneObject(uid, sceneObjType, new_pos);
+                        scene_obj = SceneMgr.Instance.AddSceneObject(uid, cur_change_info.value);
                     }
                 }
                 else if(cur_change_info.key == (int)SceneInfoKey.LeaveView)

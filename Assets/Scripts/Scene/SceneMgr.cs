@@ -286,27 +286,33 @@ public class SceneMgr : MonoBehaviour
         CorrectMainRolePos();
     }
 
-    public Entity AddMainRole(long uid, string name, int career, Vector3 pos)
+    public Entity AddMainRole(long uid, long typeID, string name, int career, Vector3 pos)
 	{
-        Entity role = RoleMgr.GetInstance().AddMainRole(uid, name, career, pos);
+        Entity role = RoleMgr.GetInstance().AddMainRole(uid, typeID, name, career, pos);
         entityDic.Add(uid, role);
 
         SkillManager.GetInstance().Init(career);
         return role;
     }
 
-    public Entity AddSceneObject(long uid, SceneObjectType type, Vector3 pos)
+    public Entity AddSceneObject(long uid, string content)
     {
-        pos = GetCorrectPos(pos);
+        string[] info_strs = content.Split(',');
+        SceneObjectType type = (SceneObjectType)Enum.Parse(typeof(SceneObjectType), info_strs[0]);
+        long typeID = Int64.Parse(info_strs[1]);
+        long new_x = Int64.Parse(info_strs[2]);
+        long new_y = Int64.Parse(info_strs[3]);
+        long new_z = Int64.Parse(info_strs[4]);
+        var pos = GetCorrectPos(new Vector3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic));
         if (type == SceneObjectType.Role)
         {
-            Entity role = RoleMgr.GetInstance().AddRole(uid, pos);
+            Entity role = RoleMgr.GetInstance().AddRole(uid, typeID, pos);
             entityDic.Add(uid, role);
             return role;
         }
         else if (type == SceneObjectType.Monster)
         {
-            Entity monster = MonsterMgr.GetInstance().AddMonster(uid, pos);
+            Entity monster = MonsterMgr.GetInstance().AddMonster(uid, typeID, pos);
             entityDic.Add(uid, monster);
             return monster;
         }
