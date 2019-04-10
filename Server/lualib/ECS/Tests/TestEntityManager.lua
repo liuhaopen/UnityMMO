@@ -9,6 +9,7 @@ function TestEntityManager:TestIncreaseEntityCapacity(  )
     local array = self.m_Manager:CreateEntitiesByArcheType(archetype, count)
     for i=1,count do
         lu.assertEquals(array[i].Index, i)
+        lu.assertTrue(self.m_Manager:Exists(array[i]))
     end
 end
 

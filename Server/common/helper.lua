@@ -1,4 +1,5 @@
 function RequireAllLuaFileInFolder( folder, ignore_list )
+	-- print('Cat:helper.lua[2] folder', folder)
 	local s = io.popen("ls "..folder)--for linux
 	-- local s = io.popen("dir /b Tests")--for windows
 	local fileNames = s:read("*all")

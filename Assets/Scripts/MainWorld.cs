@@ -48,6 +48,8 @@ namespace UnityMMO{
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateRoleAnimatorSystem>(m_GameWorld));
 
             // TimelineSpawnRequest.Create(m_GameWorld.GetEntityManager(), Entity.Null, "haha");
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<ResetPosOffsetSystem>(m_GameWorld));
+            
         }
 
         public void StartGame() {
@@ -55,7 +57,7 @@ namespace UnityMMO{
             if (GameVariable.IsSingleMode)
             {
                 //目前只有一个场景（本来就想做成无限大世界的）
-                SceneMgr.Instance.AddMainRole(1, "testRole", 2, Vector3.zero);
+                SceneMgr.Instance.AddMainRole(1, 1, "testRole", 2, Vector3.zero);
                 SceneMgr.Instance.LoadScene(1001);
             }
             else

@@ -14,7 +14,7 @@ public class MovementUpdateSystem : BaseComponentSystem
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(MoveQuery), typeof(LocomotionState));
+        group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(MoveQuery), typeof(LocomotionState), typeof(PosOffset));
     }
 
     protected override void OnUpdate()
@@ -26,11 +26,13 @@ public class MovementUpdateSystem : BaseComponentSystem
         var transforms = group.GetComponentArray<Transform>();
         var moveQuerys = group.GetComponentArray<MoveQuery>();
         var locoStates = group.GetComponentDataArray<LocomotionState>();
+        var posOffsets = group.GetComponentDataArray<PosOffset>();
         for (int i=0; i<targetPositions.Length; i++)
         {
             var targetPos = targetPositions[i].Value;
             var speed = speeds[i].Value;
-            if (speed<=0)
+            var posOffset = posOffsets[i].Value;
+            if (speed <= 0)
                 continue;
             var curTrans = transforms[i];
             float3 startPos = curTrans.localPosition;
@@ -38,8 +40,11 @@ public class MovementUpdateSystem : BaseComponentSystem
             var groundDir = moveDir;
             groundDir.y = 0;
             float moveDistance = Vector3.Magnitude(groundDir);
+            groundDir = Vector3.Normalize(groundDir);
             bool isMoveWanted = moveDistance>0.01f;
-            float3 newPos = new float3();
+            float3 newPos;
+            //模仿重力，人物需要贴着地面走，有碰撞检测的所以不怕
+            bool isNeedGravity = true;
             if (moveDistance < speed/GameConst.SpeedFactor*dt)
             {
                 //目标已经离得很近了
@@ -47,10 +52,22 @@ public class MovementUpdateSystem : BaseComponentSystem
             }
             else
             {
-                newPos = startPos+moveDir*speed/GameConst.SpeedFactor*dt;
+                newPos = startPos+groundDir*speed/GameConst.SpeedFactor*dt;
             }
+            newPos.y = startPos.y;
+            // if (EntityManager.HasComponent<JumpState>(entities[i]))
+            // {
+            //     var jumpState = EntityManager.GetComponentData<JumpState>(entities[i]);
+            //     if (jumpState.JumpStatus != JumpState.State.None)
+            //         isNeedGravity = false;
+            // }
+            // if (isNeedGravity)
+                newPos.y += GameConst.Gravity * dt;
+            newPos += posOffset;
             var moveQuery = moveQuerys[i];
             moveQuery.moveQueryStart = startPos;
+            //不能直接设置新坐标，因为需要和地形做碰撞处理什么的，所以利用CharacterController走路，在HandleMovementQueries才设置新坐标
+            moveQuery.moveQueryEnd = newPos;
 
             //new locomotion state
             var newLocoState = LocomotionState.State.StateNum;
@@ -65,23 +82,15 @@ public class MovementUpdateSystem : BaseComponentSystem
                 else
                     newLocoState = LocomotionState.State.Idle;
             }
-            //jump
-            if (isOnGround)
-            {
-
-            }
             if (newLocoState != LocomotionState.State.StateNum && newLocoState != curLocoState)
             {
                 curLocoStateObj.Value = newLocoState;
                 locoStates[i] = curLocoStateObj;
             }
-            //不能直接设置新坐标，因为需要和地形做碰撞处理什么的，所以利用CharacterController走路，在HandleMovementQueries才设置新坐标
-            moveQuery.moveQueryEnd = newPos;
-
             //change role rotation
             if (isMoveWanted)
             {
-                Vector3 targetDirection = new Vector3(moveDir.x, moveDir.y, moveDir.z);
+                Vector3 targetDirection = new Vector3(groundDir.x, groundDir.y, groundDir.z);
                 Vector3 lookDirection = targetDirection.normalized;
                 Quaternion freeRotation = Quaternion.LookRotation(lookDirection, curTrans.up);
                 var diferenceRotation = freeRotation.eulerAngles.y - curTrans.eulerAngles.y;
@@ -106,38 +115,40 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        group = GetComponentGroup(typeof(UserCommand), typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed));
+        group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(PosSynchInfo));
     }
 
     protected override void OnUpdate()
     {
         float dt = Time.deltaTime;
-        var userCommandArray = group.GetComponentDataArray<UserCommand>();
         var targetPosArray = group.GetComponentDataArray<TargetPosition>();
         var posArray = group.GetComponentArray<Transform>();
         var moveSpeedArray = group.GetComponentDataArray<MoveSpeed>();
-        if (userCommandArray.Length==0)
-            return;
-        var userCommand = userCommandArray[0];
-        // Vector2 input = new Vector2();
+        
         var input = GameInput.GetInstance().JoystickDir;
-        // input.x = Input.GetAxis("Horizontal");
-        // input.y = Input.GetAxis("Vertical");
-        bool isJump = Input.GetKeyDown(KeyCode.Space);
-        var forward = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.forward);
-        forward.y = 0;
-        var right = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.right);
-        float3 targetDirection = input.x * right + input.y * forward;
-        targetDirection.y = -10;//模仿重力，人物需要贴着地面走，有碰撞检测的所以不怕
-        // Debug.Log("targetDirection : "+targetDirection.x + " "+targetDirection.y+" "+targetDirection.z);
-        float3 curPos = posArray[0].localPosition;
-        var speed = moveSpeedArray[0].Value;
-        var newTargetPos = new TargetPosition();
-        if (speed > 0)
-            newTargetPos.Value = curPos+targetDirection*(speed/GameConst.SpeedFactor*0.5f);//延着方向前进0.5秒为目标坐标
+        if (input.sqrMagnitude > 0)
+        {
+            var forward = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.forward);
+            forward.y = 0;
+            var right = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.right);
+            float3 targetDirection = input.x * right + input.y * forward;
+            targetDirection.y = 0;
+            targetDirection = Vector3.Normalize(targetDirection);
+            float3 curPos = posArray[0].localPosition;
+            var speed = moveSpeedArray[0].Value;
+            var newTargetPos = new TargetPosition();
+            if (speed > 0)
+                newTargetPos.Value = curPos+targetDirection*(speed/GameConst.SpeedFactor*0.10f);//延着方向前进0.10秒为目标坐标
+            else
+                newTargetPos.Value = curPos;
+            newTargetPos.Value.y = targetPosArray[0].Value.y;
+            // Debug.Log("targetDirection : "+newTargetPos.Value.x+" "+newTargetPos.Value.y+" "+newTargetPos.Value.z);
+            targetPosArray[0] = newTargetPos;
+        }
         else
-            newTargetPos.Value = curPos;
-        targetPosArray[0] = newTargetPos;
-        // Debug.Log("curPos : "+curPos.x+" "+curPos.y+" "+curPos.z+" dir:"+targetDirection.x+" "+targetDirection.z);
+        {
+            var newTargetPos = new TargetPosition{Value=posArray[0].localPosition};
+            targetPosArray[0] = newTargetPos;
+        }
     }
 }

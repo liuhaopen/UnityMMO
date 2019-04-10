@@ -154,6 +154,7 @@ public class Packager {
 
         HandleSceneBundles();
         HandleNormalBundles("effect");
+        HandleNormalBundles("sound");
         HandleNormalBundles("role");
         HandleNormalBundles("npc");
         HandleNormalBundles("monster");

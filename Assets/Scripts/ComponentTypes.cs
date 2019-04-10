@@ -10,6 +10,12 @@ namespace UnityMMO
         public long Value;
     }
 
+    //Role类型的话对应RoleID，Monster和NPC类型对应TypeID
+    public struct TypeID : IComponentData
+    {
+        public long Value;
+    }
+
     public struct TimelineState : IComponentData
     {
         public enum NewState
@@ -43,17 +49,25 @@ namespace UnityMMO
         public State Value;
     }
 
-    public struct JumpInfo : IComponentData
+    public struct PosOffset : IComponentData
+    {
+        public float3 Value;
+    }
+
+    public struct JumpState : IComponentData
     {
         public enum State
         {
             None = 0,
-            StartJump = 1,
-            InAir = 2,
-            EndJump = 3,
+            StartJump,
+            InAir,
+            EndJump,
         }
-        public State JumpState;
-        public float StartTime;
+        public State JumpStatus;
+        public int JumpCount;
+        public float OriginYPos;
+        public float AscentHeight;
+        // public float StartTime;
     }
 
     public struct ActionInfo : IComponentData

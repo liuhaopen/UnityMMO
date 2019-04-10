@@ -28,17 +28,24 @@ local get_fun = function ( t, index )
     return ECS.ChunkDataUtility.ReadComponentFromArray(t.m_Cache.CachedPtr, index, t.m_ComponentTypeName, t.m_Data)
 end
 
-local set_fun = function ( t, k )
+local set_fun = function ( t, index, value )
+	if index < t.m_Cache.CachedBeginIndex or index >= t.m_Cache.CachedEndIndex then
+        t.m_Iterator:MoveToEntityIndexAndUpdateCache(index, t.m_Cache, true)
+    -- elseif not t.m_Cache.IsWriting then
+    --     t.m_Cache.IsWriting = true;
+    --     t.m_Iterator:UpdateChangeVersion()
+    end
+    ECS.ChunkDataUtility.WriteComponentFromArray(t.m_Cache.CachedPtr, index, t.m_ComponentTypeName, value)
 end
 
 local get_len = function ( t )
-	print('Cat:ComponentDataArray.lua[39] t.m_Length', t.m_Length)
 	return t.m_Length
 end
 
 function ComponentDataArray.InitMetaTable( array )
 	local meta_tbl = {}
 	meta_tbl.__index = get_fun
+	meta_tbl.__newindex = set_fun
 	meta_tbl.__len = get_len
 	setmetatable(array, meta_tbl)
 end

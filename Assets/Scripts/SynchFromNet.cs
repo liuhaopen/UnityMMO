@@ -92,15 +92,15 @@ public class SynchFromNet {
             {
                 var cur_change_info = change_info_list[info_index];
                 // Debug.Log("cur_change_info.key : "+cur_change_info.key.ToString()+" scene_obj:"+(scene_obj!=Entity.Null).ToString()+ " ContainsKey:"+changeFuncDic.ContainsKey((SceneInfoKey)cur_change_info.key).ToString()+" uid"+uid.ToString()+" value:"+cur_change_info.value.ToString());
-                if (cur_change_info.key == (int)SceneInfoKey.EnterScene)
+                if (cur_change_info.key == (int)SceneInfoKey.EnterView)
                 {
+                    Debug.Log("some one enter scene:uid:"+uid+" scene_obj==null:"+(scene_obj==Entity.Null).ToString());
                     if (scene_obj==Entity.Null)
                     {
-                        SceneObjectType sceneObjType = (SceneObjectType)Enum.Parse(typeof(SceneObjectType), cur_change_info.value);
-                        scene_obj = SceneMgr.Instance.AddSceneObject(uid, sceneObjType);
+                        scene_obj = SceneMgr.Instance.AddSceneObject(uid, cur_change_info.value);
                     }
                 }
-                else if(cur_change_info.key == (int)SceneInfoKey.LeaveScene)
+                else if(cur_change_info.key == (int)SceneInfoKey.LeaveView)
                 {
                     if (scene_obj!=Entity.Null)
                     {
@@ -120,7 +120,7 @@ public class SynchFromNet {
     {
         string[] pos_strs = change_info.value.Split(',');
         // Debug.Log("SynchFromNet recieve pos value : "+change_info.value);
-        if (pos_strs.Length != 3)
+        if (pos_strs.Length < 3)
         {
             Debug.Log("SynchFromNet recieve a wrong pos value : "+change_info.value);
             return;
@@ -131,17 +131,16 @@ public class SynchFromNet {
         if (SceneMgr.Instance.EntityManager.HasComponent<Transform>(entity))
         {
             Transform trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(entity);
-            // Debug.Log("receive new pos"+new_x+" "+new_y+" "+new_z);
             trans.localPosition = new Vector3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic);
+            SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = trans.localPosition});
         }
-        // SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = new float3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic)});
     }
 
     private void ApplyChangeInfoTargetPos(Entity entity, SprotoType.info_item change_info)
     {
         string[] pos_strs = change_info.value.Split(',');
         // Debug.Log("SynchFromNet recieve pos value : "+change_info.value);
-        if (pos_strs.Length != 3)
+        if (pos_strs.Length != 2)
         {
             Debug.Log("SynchFromNet recieve a wrong pos value : "+change_info.value);
             return;
@@ -149,7 +148,21 @@ public class SynchFromNet {
         long new_x = Int64.Parse(pos_strs[0]);
         // long new_y = Int64.Parse(pos_strs[1]);
         long new_z = Int64.Parse(pos_strs[1]);
-        SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = new float3(new_x/GameConst.RealToLogic, 0, new_z/GameConst.RealToLogic)});
+        var newTargetPos = new float3(new_x/GameConst.RealToLogic, 0, new_z/GameConst.RealToLogic);
+
+        var trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(entity);
+        var curPos = trans.localPosition;
+        curPos.y = 0;
+        var distance = Vector3.Distance(curPos, newTargetPos);
+        // if (distance > 100)
+        // {
+        //     //如果目标坐标距离人物当前坐标很远就直接设置
+        //     newTargetPos.y = trans.localPosition.y;
+        //     var newPos = SceneMgr.Instance.GetCorrectPos(newTargetPos);
+        //     trans.localPosition = newPos;
+        //     return;
+        // }
+        SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = newTargetPos});
     }
 }
 }

@@ -103,7 +103,7 @@ end
 local ComponentSystem = BaseClass(ECS.ComponentSystemBase)
 ECS.ComponentSystem = ComponentSystem
 
-function ComponentSystem:OnCreateManager( capacity )
+function ComponentSystem:OnCreateManager( )
 	self.PostUpdateCommands = nil
 	--提取需要组件的类型信息
 end

@@ -1,6 +1,7 @@
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityMMO;
 
 [DisableAutoCreation]
@@ -13,7 +14,7 @@ public class UpdateRoleAnimatorSystem : BaseComponentSystem
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        group = GetComponentGroup(typeof(LooksInfo), typeof(LocomotionState));
+        group = GetComponentGroup(typeof(LooksInfo), typeof(LocomotionState), typeof(PlayableDirector));
     }
 
     protected override void OnUpdate()
@@ -22,12 +23,13 @@ public class UpdateRoleAnimatorSystem : BaseComponentSystem
         // var grounds = group.GetComponentDataArray<GroundInfo>();
         var looksInfos = group.GetComponentDataArray<LooksInfo>();
         var locoStates = group.GetComponentDataArray<LocomotionState>();
-        // Debug.Log("states.Length : "+states.Length);
+        var directors = group.GetComponentArray<PlayableDirector>();
         for (int i=0; i<looksInfos.Length; i++)
         {
             var looksInfo = looksInfos[i];
-            // Debug.Log("looksInfo.CurState : "+looksInfo.CurState.ToString());
-            if (looksInfo.CurState!=LooksInfo.State.Loaded)
+            var director = directors[i];
+            // Debug.Log("director.state : "+director.state.ToString());
+            if (looksInfo.CurState!=LooksInfo.State.Loaded || director.state==PlayState.Playing)
                 continue;
             var looksEntity = looksInfo.LooksEntity;
             var animator = m_world.GetEntityManager().GetComponentObject<Animator>(looksEntity);
@@ -40,12 +42,12 @@ public class UpdateRoleAnimatorSystem : BaseComponentSystem
     void UpdateAnimator(Animator animator, LocomotionState.State locoState)
     {
         // Debug.Log("locoState : "+locoState.ToString());
-        if (locoState == LocomotionState.State.Idle)
+        if (locoState == LocomotionState.State.Idle && !animator.GetCurrentAnimatorStateInfo(0).IsName("idle"))
         {
             // animator.CrossFade("idle", 0.2f, 0, Time.deltaTime);
             animator.Play("idle");
         }
-        else if (locoState == LocomotionState.State.Run)
+        else if (locoState == LocomotionState.State.Run && !animator.GetCurrentAnimatorStateInfo(0).IsName("run"))
         {
             // animator.CrossFade("run", 0.2f, 0, Time.deltaTime);
             animator.Play("run");

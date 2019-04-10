@@ -22,8 +22,8 @@ public class SceneMgr : MonoBehaviour
     // public Transform container;
 	// EntityManager entityManager;
     // public EntityArchetype RoleArchetype;
-    public EntityArchetype MonsterArchetype;
-    public EntityArchetype NPCArchetype;
+    // public EntityArchetype MonsterArchetype;
+    // public EntityArchetype NPCArchetype;
     Dictionary<long, Entity> entityDic;
     SceneInfo curSceneInfo;
     Entity mainRole;
@@ -37,8 +37,6 @@ public class SceneMgr : MonoBehaviour
     bool isBaseWorldLoadOk = false;
     public LayerMask groundLayer = 1 << 0;
     float lastCheckMainRolePosTime = 0;
-
-    Dictionary<string, GameObject> prefabDic;
 
     public EntityManager EntityManager { get => m_GameWorld.GetEntityManager();}
     public bool IsLoadingScene { get => isLoadingScene; set => isLoadingScene = value; }
@@ -54,9 +52,7 @@ public class SceneMgr : MonoBehaviour
     void Awake()
 	{
 		Instance = this; // worst singleton ever but it works
-		// EntityManager = World.Active.GetExistingManager<EntityManager>();
         entityDic = new Dictionary<long, Entity>();
-        prefabDic = new Dictionary<string, GameObject>();
         var mainCamera = GameObject.Find("MainCamera");
         mainCameraTrans = mainCamera.transform;
         var camera = GameObject.Find("FreeLookCamera");
@@ -96,27 +92,10 @@ public class SceneMgr : MonoBehaviour
 	{
         m_GameWorld = world;
 
+        ResMgr.GetInstance().Init();
         RoleMgr.GetInstance().Init(world);
-
-        NPCArchetype = EntityManager.CreateArchetype(
-                typeof(Position));
+        MonsterMgr.GetInstance().Init(world);
 	}
-
-    void LoadPrefab(string path, string storePrefabName)
-    {
-        XLuaFramework.ResourceManager.GetInstance().LoadAsset<GameObject>(path, delegate(UnityEngine.Object[] objs) {
-            if (objs.Length > 0 && (objs[0] as GameObject)!=null)
-            {
-                GameObject prefab = objs[0] as GameObject;
-                if (prefab != null) 
-                {
-                    this.prefabDic[storePrefabName] = prefab;
-                    return;
-                }
-            }
-            Debug.LogError("cannot find prefab in "+path);
-        });
-    }
 
 	public void OnDestroy()
 	{
@@ -307,36 +286,36 @@ public class SceneMgr : MonoBehaviour
         CorrectMainRolePos();
     }
 
-    public Entity AddMainRole(long uid, string name, int career, Vector3 pos)
+    public Entity AddMainRole(long uid, long typeID, string name, int career, Vector3 pos)
 	{
-        Entity role = RoleMgr.GetInstance().AddMainRole(uid, name, career, pos);
+        Entity role = RoleMgr.GetInstance().AddMainRole(uid, typeID, name, career, pos);
         entityDic.Add(uid, role);
 
         SkillManager.GetInstance().Init(career);
         return role;
     }
 
-    public Entity AddRole(long uid)
-	{
-        Entity role = RoleMgr.GetInstance().AddRole(uid);
-        entityDic.Add(uid, role);
-        return role;
-    }
-  
-    public Entity AddNPC(long uid)
-	{
-		Entity entity = EntityManager.CreateEntity(NPCArchetype);
-        EntityManager.SetComponentData(entity, new Position {Value = new int3(0, 0, 0)});
-        // EntityManager.AddSharedComponentData(entity, GetLookFromPrototype("Prototype/NPCRenderPrototype"));
-        entityDic.Add(uid, entity);
-        return entity;
-	}
-
-    public Entity AddSceneObject(long uid, SceneObjectType type)
+    public Entity AddSceneObject(long uid, string content)
     {
-        // Debug.Log("add scene obj:"+type.ToString());
+        string[] info_strs = content.Split(',');
+        SceneObjectType type = (SceneObjectType)Enum.Parse(typeof(SceneObjectType), info_strs[0]);
+        long typeID = Int64.Parse(info_strs[1]);
+        long new_x = Int64.Parse(info_strs[2]);
+        long new_y = Int64.Parse(info_strs[3]);
+        long new_z = Int64.Parse(info_strs[4]);
+        var pos = GetCorrectPos(new Vector3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic));
         if (type == SceneObjectType.Role)
-            return AddRole(uid);
+        {
+            Entity role = RoleMgr.GetInstance().AddRole(uid, typeID, pos);
+            entityDic.Add(uid, role);
+            return role;
+        }
+        else if (type == SceneObjectType.Monster)
+        {
+            Entity monster = MonsterMgr.GetInstance().AddMonster(uid, typeID, pos);
+            entityDic.Add(uid, monster);
+            return monster;
+        }
         // else if (type == SceneObjectType.NPC)
             // return AddNPC(uid);
         return Entity.Null;
@@ -346,12 +325,21 @@ public class SceneMgr : MonoBehaviour
     {
         Entity entity = GetSceneObject(uid);
         if (entity!=Entity.Null)
+        {
+            var moveQuery = EntityManager.GetComponentObject<MoveQuery>(entity);
             EntityManager.DestroyEntity(entity);
+            entityDic.Remove(uid);
+            if (moveQuery!=null)
+            {
+                GameObject.Destroy(moveQuery.gameObject);
+                GameObject.Destroy(moveQuery.queryObj);
+            }
+        }
     }
 
     public Entity GetSceneObject(long uid)
     {
-        Debug.Log("GetSceneObject uid"+uid.ToString()+" ContainsKey:"+entityDic.ContainsKey(uid).ToString());
+        // Debug.Log("GetSceneObject uid : "+uid.ToString()+" ContainsKey:"+entityDic.ContainsKey(uid).ToString());
         if (entityDic.ContainsKey(uid))
             return entityDic[uid];
         return Entity.Null;
