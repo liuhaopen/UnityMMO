@@ -15,7 +15,7 @@ namespace U3DExtends
             GameObject testUI = GameObject.Find(Configure.UITestNodeName);
             if (testUI != null)
             {
-                Canvas[] layouts = testUI.GetComponentsInChildren<Canvas>();
+                LayoutInfo[] layouts = testUI.GetComponentsInChildren<LayoutInfo>();
                 if (layouts.Length > 0)
                 {
                     SceneView.lastActiveSceneView.MoveToView(layouts[0].transform);

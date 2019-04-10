@@ -126,6 +126,8 @@ public class SceneEditor {
         //    mouse_abs_pos = sceneView.camera.ScreenToWorldPoint(mouse_abs_pos);
         //    Debug.Log("mouse_abs_pos : " + mouse_abs_pos.ToString());
         //}
+        if (e!=null && Event.current.type == EventType.KeyUp && e.control && e.keyCode==KeyCode.E)
+            LayoutInfo.IsShowLayoutName = !LayoutInfo.IsShowLayoutName;
         if (is_handled)
             Event.current.Use();
     }

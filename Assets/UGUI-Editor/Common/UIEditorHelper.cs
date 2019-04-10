@@ -116,9 +116,10 @@ namespace U3DExtends
             layout.transform.localPosition = new Vector3(last_pos.x, last_pos.y, 0);
             if (!isNeedLayout)
             {
-                Transform child = layout.transform.GetChild(0);
-                layout.transform.DetachChildren();
-                Undo.DestroyObjectImmediate(child.gameObject);
+                Transform child = layout.transform.Find("Layout");
+                // layout.transform.DetachChildren();
+                if (child!=null)
+                    Undo.DestroyObjectImmediate(child.gameObject);
             }
 
             Selection.activeGameObject = layout;
@@ -586,19 +587,28 @@ namespace U3DExtends
                 EditorUtility.DisplayDialog("Warning", "I don't know which prefab you want to save", "Ok");
                 return;
             }
-            Canvas layout = Selection.activeGameObject.GetComponentInParent<Canvas>();
-            for (int i = 0; i < layout.transform.childCount; i++)
+            LayoutInfo layout = Selection.activeGameObject.GetComponentInParent<LayoutInfo>();
+            if (layout != null)
             {
-                Transform child = layout.transform.GetChild(i);
-                if (child.GetComponent<Decorate>() != null)
-                    continue;
-                GameObject child_obj = child.gameObject;
-                //Debug.Log("child type :" + PrefabUtility.GetPrefabType(child_obj));
-
-                //判断选择的物体，是否为预设  
-                PrefabType cur_prefab_type = PrefabUtility.GetPrefabType(child_obj);
-                UIEditorHelper.SaveAnotherLayout(layout, child);
+                GameObject editingView = layout.EditingView;
+                if (editingView != null)
+                {
+                    UIEditorHelper.SaveAnotherLayout(layout.GetComponent<Canvas>(), editingView.transform);
+                }
             }
+            // for (int i = 0; i < layout.transform.childCount; i++)
+            // {
+            //     Transform child = layout.transform.GetChild(i);
+            //     if (child.GetComponent<Decorate>() != null)
+            //         continue;
+            //     GameObject child_obj = child.gameObject;
+            //     //Debug.Log("child type :" + PrefabUtility.GetPrefabType(child_obj));
+
+            //     //判断选择的物体，是否为预设  
+            //     PrefabType cur_prefab_type = PrefabUtility.GetPrefabType(child_obj);
+            //     UIEditorHelper.SaveAnotherLayout(layout, child);
+            //     break;
+            // }
         }
 
         public static void SaveAnotherLayout(Canvas layout, Transform child)
