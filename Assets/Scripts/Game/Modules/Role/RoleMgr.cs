@@ -80,7 +80,7 @@ public class RoleMgr
 
     private void InitRole(Entity role, long uid, long typeID, Vector3 pos)
     {
-        EntityManager.AddComponentData(role, new MoveSpeed {Value = 1000});
+        EntityManager.AddComponentData(role, new MoveSpeed {Value = 3000});
         EntityManager.AddComponentData(role, new TargetPosition {Value = new float3(pos.x, pos.y, pos.z)});
         EntityManager.AddComponentData(role, new LocomotionState {Value = LocomotionState.State.Idle});
         EntityManager.AddComponentData(role, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});

@@ -3,6 +3,7 @@ require "Lua.Common.Util.util"
 local lu = require('Tests.luaunit')
 local aoi = require('aoi')
 
+--在本目录运行本文件即可：lua aoi_test.lua
 local get_tbl_size = function ( tbl )
 	local count = 0
 	for k,v in pairs(tbl) do

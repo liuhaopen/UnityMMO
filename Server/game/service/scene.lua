@@ -14,11 +14,13 @@ local this = {
 	npc_list = {},
 	object_list = {},--the scene object includes the role monster npc
 	event_list = {},
+	fight_events = {},
 	ecs_world = false,
 	entity_mgr = false,
 	uid_entity_map = {},
 	role_mgr = require "game.scene.role_mgr",
 	monster_mgr = require "game.scene.monster_mgr",
+	fight_mgr = require "game.scene.fight_mgr",
 	ecs_system_mgr = require "game.scene.ecs_system_mgr",
 	aoi = require "game.scene.aoi",
 	aoi_handle_uid_map = {}
@@ -52,7 +54,7 @@ local fork_loop_ecs = function (  )
 			Time.deltaTime = (curTime-lastUpdateTime)/1000
 			lastUpdateTime = curTime
 			this.ecs_system_mgr:update()
-			skynet.sleep(5)
+			skynet.sleep(3)
 		end
 	end)
 end
@@ -83,7 +85,6 @@ end
 
 local collect_events = function (  )
 	for _,role_info in pairs(this.role_list) do
-		update_around_objs(role_info)
 		for _,interest_uid in pairs(role_info.around_objs) do
 			local event_list = this.event_list[interest_uid]
 			if event_list then
@@ -113,13 +114,29 @@ local fork_loop_scene_info_change = function (  )
 	end)
 end
 
+local collect_fight_events = function (  )
+	for _,role_info in pairs(this.role_list) do
+		for _,interest_uid in pairs(role_info.around_objs) do
+			local event_list = this.fight_events[interest_uid]
+			if event_list then
+				for i,event_info in ipairs(event_list) do
+					table.insert(role_info.fight_events_in_around, event_info)
+				end
+			end
+		end
+	end
+	this.fight_events = {}
+end
+
+--定时合批发送战斗事件
 local fork_loop_fight_event = function (  )
 	skynet.fork(function()
 		while true do 
+			collect_fight_events()
 			for k,role_info in pairs(this.role_list) do
-				if role_info.fight_events and role_info.ack_scene_listen_fight_event then
-					role_info.ack_scene_listen_fight_event(true, role_info.fight_events)
-					role_info.fight_events = nil
+				if role_info.fight_events_in_around and role_info.ack_scene_listen_fight_event then
+					role_info.ack_scene_listen_fight_event(true, {fight_events=role_info.fight_events_in_around})
+					role_info.fight_events_in_around = {}
 					role_info.ack_scene_listen_fight_event = nil
 				end
 			end
@@ -128,21 +145,33 @@ local fork_loop_fight_event = function (  )
 	end)
 end
 
+--定时更新每个玩家的感兴趣列表
+local fork_loop_update_around = function (  )
+	skynet.fork(function()
+		while true do 
+			for _,role_info in pairs(this.role_list) do
+				update_around_objs(role_info)
+			end
+			skynet.sleep(10)
+		end
+	end)
+end
+
 function CMD.init(scene_id)
 	this.aoi:init()
 	this.ecs_world = ECS.InitWorld("scene_world")
 	this.entity_mgr = ECS.World.Active:GetOrCreateManager(ECS.EntityManager.Name)
-	-- this.npc_archetype = this.entity_mgr:CreateArchetype({"umo.position", "umo.uid", "umo.type_id"})
 	this.scene_cfg = require("Config.scene.config_scene_"..scene_id)
 	this.cur_scene_id = scene_id
-	-- init_npc()
 	this.role_mgr:init(this)
 	this.monster_mgr:init(this, this.scene_cfg.monster_list)
+	this.fight_mgr:init()
 	this.ecs_system_mgr:init(this.ecs_world)
 	
 	fork_loop_ecs()
 	fork_loop_scene_info_change()
 	fork_loop_fight_event()
+	fork_loop_update_around()
 end
 
 local get_base_info_by_roleid = function ( role_id )
@@ -194,7 +223,7 @@ function CMD.role_enter_scene(role_id)
 		init_pos_info(base_info)
 
 		local handle = this.aoi:add()
-		this.role_list[role_id] = {scene_uid=scene_uid, base_info=base_info, looks_info=looks_info, aoi_handle=handle, around_objs={}, radius_short=5000, radius_long=6000}
+		this.role_list[role_id] = {scene_uid=scene_uid, base_info=base_info, looks_info=looks_info, aoi_handle=handle, around_objs={}, radius_short=5000, radius_long=6000, fight_events_in_around={}}
 		this.object_list[scene_uid] = this.role_list[role_id]
 		this.aoi_handle_uid_map[handle] = scene_uid
 		this.aoi:set_pos(handle, base_info.pos_x, base_info.pos_y, base_info.pos_z)
@@ -324,7 +353,8 @@ function CMD.scene_get_objs_info_change( user_info, req_data )
 end
 
 function CMD.scene_cast_skill(user_info, req_data)
-	
+	local result_code = this.fight_mgr:cast_skill(user_info, req_data)
+	return {result=result_code}
 end
 
 function CMD.scene_listen_fight_event(user_info, req_data)

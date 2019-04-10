@@ -243,7 +243,7 @@ public class SceneMgr : MonoBehaviour
         if (Physics.Raycast(ray1, out groundHit, 12000, groundLayer))
         {
             newPos = groundHit.point;
-            newPos.y += 10;
+            newPos.y += 0.5f;
         }
         else
         {

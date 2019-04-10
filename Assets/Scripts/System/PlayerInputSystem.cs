@@ -107,6 +107,7 @@ namespace UnityMMO
             var roleGameOE = RoleMgr.GetInstance().GetMainRole();
             var roleInfo = roleGameOE.GetComponent<RoleInfo>();
             var skillID = SkillManager.GetInstance().GetSkillIDByIndex(skillIndex);
+          
             string assetPath = GameConst.GetRoleSkillResPath(roleInfo.Career, skillID);
             bool isNormalAttack = skillIndex == -1;//普通攻击
             if (!isNormalAttack)
@@ -124,6 +125,12 @@ namespace UnityMMO
             }
             var timelineInfo = new TimelineInfo{ResPath=assetPath, Owner=roleGameOE.Entity,  StateChange=afterAdd};
             TimelineManager.GetInstance().AddTimeline(uid.Value, timelineInfo, EntityManager);
+        }
+
+        void ReqCastSkill(int skillID)
+        {
+            
+
         }
       
     }

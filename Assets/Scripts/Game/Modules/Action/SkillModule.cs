@@ -56,10 +56,31 @@ public class SkillManager
             return skillIDs[skillIndex];
     }
 
-    // public void SetSkillIDs(int[] ids)
-    // {
-    //     skillIDs = ids;
-    // }
+    public string GetSkillResPath(int skillID)
+    {
+        string assetPath;
+        int scene_obj_type = GetSceneObjTypeBySkillID(skillID);
+        if (scene_obj_type == (int)SceneObjectType.Role)
+            assetPath = GameConst.GetRoleSkillResPath(GetCareerBySkillID(skillID), skillID);
+        else if(scene_obj_type == (int)SceneObjectType.Monster)
+            assetPath = GameConst.GetMonsterSkillResPath(skillID);
+        else
+            assetPath = "";
+        return assetPath;
+    }
+
+    public int GetCareerBySkillID(int skillID)
+    {
+        int scene_obj_type = GetSceneObjTypeBySkillID(skillID);
+        if (scene_obj_type == (int)SceneObjectType.Role)
+            return (int)math.floor((skillID%10000)/1000);
+        return 1;
+    }
+
+    public int GetSceneObjTypeBySkillID(int skillID)
+    {
+
+    }
 
     private static int GetAttackID(int career, int comboIndex)
     {

@@ -41,7 +41,7 @@ return [[
 
 .scene_fight_defender_info {
 	uid 0 : integer
-	hp 1 : integer
+	cur_hp 1 : integer
 	hurt 2 : integer
 }
 .scene_fight_event_info {
@@ -54,8 +54,9 @@ return [[
 	target_pos_x 6 : integer
 	target_pos_y 7 : integer
 	target_pos_z 8 : integer
-	time 9 : integer
-	defenders 10 : *scene_fight_defender_info
+	direction 9 : integer
+	time 10 : integer
+	defenders 11 : *scene_fight_defender_info
 }
 
 .scene_npc_info {
@@ -110,9 +111,13 @@ scene_get_role_look_info 104 {
 scene_cast_skill 105 {
 	request {
 		skill_id 0 : integer
-		target_pos_x 1 : integer
-		target_pos_y 2 : integer
-		target_pos_z 3 : integer
+		cur_pos_x 1 : integer
+		cur_pos_y 2 : integer
+		cur_pos_z 3 : integer
+		target_pos_x 4 : integer
+		target_pos_y 5 : integer
+		target_pos_z 6 : integer
+		direction 7 : integer
 	}
 	response {
 		result 0 : integer

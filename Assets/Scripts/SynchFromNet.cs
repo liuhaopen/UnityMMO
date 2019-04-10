@@ -55,7 +55,24 @@ public class SynchFromNet {
         SprotoType.scene_listen_fight_event.response ack = result as SprotoType.scene_listen_fight_event.response;
         if (ack==null)
             return;
-        
+        var len = ack.fight_events.Count;
+        for (int i = 0; i < len; i++)
+        {
+            HandleCastSkill(ack.fight_events[i]);
+        }
+    }
+
+    private void HandleCastSkill(SprotoType.scene_fight_event_info fight_event)
+    {
+        long uid = fight_event.attacker_uid;
+        Entity scene_entity = SceneMgr.Instance.GetSceneObject(uid);
+        if (scene_entity==Entity.Null)
+            return;
+
+        string assetPath = SkillManager.GetInstance().GetSkillResPath((int)fight_event.skill_id);
+        Debug.Log("OnAckFightEvents assetPath : "+assetPath);
+        var timelineInfo = new TimelineInfo{ResPath=assetPath, Owner=scene_entity};
+        TimelineManager.GetInstance().AddTimeline(uid, timelineInfo, SceneMgr.Instance.EntityManager);  
     }
 
     public void ReqSceneObjInfoChange()
