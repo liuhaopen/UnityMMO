@@ -1,3 +1,6 @@
+using System;
+using Cinemachine;
+using Cinemachine.Timeline;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -72,9 +75,28 @@ public class TimelineSpawnSystem : BaseComponentSystem
             var animator = EntityManager.GetComponentObject<Animator>(looksEntity);
             foreach (var at in playerDirector.playableAsset.outputs)
             {
-                if (at.streamName.StartsWith("AnimationTrack") || at.streamName.StartsWith("Animation Track"))
+                if (at.sourceObject.GetType() == typeof(AnimationTrack))
                 {
                     playerDirector.SetGenericBinding(at.sourceObject, animator);
+                }
+                else if (at.sourceObject.GetType() == typeof(CinemachineTrack))
+                {
+                    CinemachineBrain mainCamBrian = SceneMgr.Instance.MainCameraTrans.GetComponent<Cinemachine.CinemachineBrain>();//将主摄像机传入
+                    playerDirector.SetGenericBinding(at.sourceObject, mainCamBrian);
+                    CinemachineTrack cinemachineTrack = (CinemachineTrack)at.sourceObject;
+                    int idx = 0;
+                    try
+                    {
+                        foreach (var c in cinemachineTrack.GetClips())
+                        {
+                            CinemachineShot shot = (CinemachineShot)c.asset;
+                            // playerDirector.SetReferenceValue(shot.VirtualCamera.exposedName, vCams[idx++]);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        Debug.LogError("Clip Num InEqual Cam Num");
+                    }
                 }
                 else if (at.streamName.StartsWith("ParticleTrack"))
                 {
@@ -95,6 +117,30 @@ public class TimelineSpawnSystem : BaseComponentSystem
                             var cpa = info.asset as ControlPlayableAsset;
                             playerDirector.SetReferenceValue(cpa.sourceGameObject.exposedName, particleParent.gameObject);
                         // }
+                    }
+                }
+                Debug.Log("timelineInfo.Param != null : "+(timelineInfo.Param != null).ToString());
+                if (timelineInfo.Param != null)
+                {
+                    var nameParts = at.streamName.Split('_');
+                    Debug.Log("nameParts : "+nameParts[0]);
+                    if (timelineInfo.Param.ContainsKey(nameParts[0]))
+                    {
+                        var ta = at.sourceObject as TrackAsset;
+                        foreach (var info in ta.GetClips())
+                        {
+                            var cpa = info.asset as ParamPlayableAsset;
+                            Debug.Log("cpa != null : "+(cpa != null).ToString());
+                            if (cpa != null)
+                            {
+                                cpa.Param = timelineInfo.Param[nameParts[0]];
+                            }
+                            else
+                            {
+                                Debug.LogError("error : trying to set param with no param playable asset name : "+at.streamName);
+                            }
+                        }
+                        
                     }
                 }
             }

@@ -79,7 +79,7 @@ public class SkillManager
 
     public int GetSceneObjTypeBySkillID(int skillID)
     {
-
+        return (int)math.floor((skillID/10000));
     }
 
     private static int GetAttackID(int career, int comboIndex)

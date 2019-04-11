@@ -14,6 +14,7 @@ public class TimelineInfo
         StartPlay
     }
     public Action<Event> StateChange;
+    public Dictionary<string, object> Param;
 }
 public class TimelineManager
 {

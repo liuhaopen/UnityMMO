@@ -11,13 +11,13 @@ public class CastSkillBehaviour : PlayableBehaviour
 {
     public Entity Owner;
     public EntityManager EntityMgr;
-    private int skillID;
+    private int SkillID;
     
     public void Init(Entity owner, EntityManager entityMgr, int skillID)
     {
         Owner = owner;
         EntityMgr = entityMgr;
-        skillID = skillID;
+        this.SkillID = skillID;
     }
     
     // Called when the owning graph starts playing
@@ -41,7 +41,7 @@ public class CastSkillBehaviour : PlayableBehaviour
             if (trans != null)
             {
                 SprotoType.scene_cast_skill.request req = new SprotoType.scene_cast_skill.request();
-                req.skill_id = skillID;
+                req.skill_id = SkillID;
                 req.cur_pos_x = (long)(trans.localPosition.x * GameConst.RealToLogic);
                 req.cur_pos_y = (long)(trans.localPosition.y * GameConst.RealToLogic);
                 req.cur_pos_z = (long)(trans.localPosition.z * GameConst.RealToLogic);
@@ -49,11 +49,30 @@ public class CastSkillBehaviour : PlayableBehaviour
                 req.target_pos_y = (long)(trans.localPosition.y * GameConst.RealToLogic);
                 req.target_pos_z = (long)(trans.localPosition.z * GameConst.RealToLogic);
                 req.direction = (long)(trans.eulerAngles.y * GameConst.RealToLogic);
-                Debug.Log("req.direction : "+req.direction);
-                NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_cast_skill>(req);
+                Debug.Log("req.direction : "+req.direction+" skillID "+SkillID);
+                NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_cast_skill>(req, delegate(Sproto.SprotoTypeBase result){
+                    SprotoType.scene_cast_skill.response ack = result as SprotoType.scene_cast_skill.response;
+                    Debug.Log("ack : "+(ack!=null).ToString());
+                    if (ack==null)
+                        return;
+                    Debug.Log("playable : "+(Playable.Equals(playable, Playable.Null)).ToString());
+                    var graph = PlayableExtensions.GetGraph(playable);
+                    if (!graph.IsDone())
+                    {
+                        // PlayableGraph
+                    }
+                });
             }
         }
     }
+
+    // public void OnAckFightEvents(Sproto.SprotoTypeBase result)
+    // {
+    //     SprotoType.scene_listen_fight_event.response ack = result as SprotoType.scene_listen_fight_event.response;
+    //     if (ack==null)
+    //         return;
+        
+    // }
 
     // Called when the state of the playable is set to Paused
     public override void OnBehaviourPause(Playable playable, FrameData info)

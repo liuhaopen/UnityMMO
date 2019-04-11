@@ -737,7 +737,7 @@ namespace SprotoType {
 
 
 		public class response : SprotoTypeBase {
-			private static int max_field_count = 1;
+			private static int max_field_count = 2;
 			
 			
 			private Int64 _result; // tag 0
@@ -747,6 +747,15 @@ namespace SprotoType {
 			}
 			public bool HasResult {
 				get { return base.has_field.has_field (0); }
+			}
+
+			private scene_fight_event_info _fight_event; // tag 1
+			public scene_fight_event_info fight_event {
+				get { return _fight_event; }
+				set { base.has_field.set_field (1, true); _fight_event = value; }
+			}
+			public bool HasFight_event {
+				get { return base.has_field.has_field (1); }
 			}
 
 			public response () : base(max_field_count) {}
@@ -762,6 +771,9 @@ namespace SprotoType {
 					case 0:
 						this.result = base.deserialize.read_integer ();
 						break;
+					case 1:
+						this.fight_event = base.deserialize.read_obj<scene_fight_event_info> ();
+						break;
 					default:
 						base.deserialize.read_unknow_data ();
 						break;
@@ -774,6 +786,10 @@ namespace SprotoType {
 
 				if (base.has_field.has_field (0)) {
 					base.serialize.write_integer (this.result, 0);
+				}
+
+				if (base.has_field.has_field (1)) {
+					base.serialize.write_obj (this.fight_event, 1);
 				}
 
 				return base.serialize.close ();
@@ -835,7 +851,7 @@ namespace SprotoType {
 
 
 	public class scene_fight_defender_info : SprotoTypeBase {
-		private static int max_field_count = 3;
+		private static int max_field_count = 4;
 		
 		
 		private Int64 _uid; // tag 0
@@ -865,6 +881,15 @@ namespace SprotoType {
 			get { return base.has_field.has_field (2); }
 		}
 
+		private Int64 _hurt_type; // tag 3
+		public Int64 hurt_type {
+			get { return _hurt_type; }
+			set { base.has_field.set_field (3, true); _hurt_type = value; }
+		}
+		public bool HasHurt_type {
+			get { return base.has_field.has_field (3); }
+		}
+
 		public scene_fight_defender_info () : base(max_field_count) {}
 
 		public scene_fight_defender_info (byte[] buffer) : base(max_field_count, buffer) {
@@ -883,6 +908,9 @@ namespace SprotoType {
 					break;
 				case 2:
 					this.hurt = base.deserialize.read_integer ();
+					break;
+				case 3:
+					this.hurt_type = base.deserialize.read_integer ();
 					break;
 				default:
 					base.deserialize.read_unknow_data ();
@@ -904,6 +932,10 @@ namespace SprotoType {
 
 			if (base.has_field.has_field (2)) {
 				base.serialize.write_integer (this.hurt, 2);
+			}
+
+			if (base.has_field.has_field (3)) {
+				base.serialize.write_integer (this.hurt_type, 3);
 			}
 
 			return base.serialize.close ();

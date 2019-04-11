@@ -2,6 +2,7 @@ local skynet = require "skynet"
 require "Common.Util.util"
 require "ECS.ECS"
 require "common.helper"
+local time = require "game.scene.time"
 local scene_helper = require "game.scene.scene_helper"
 RequireAllLuaFileInFolder("./game/scene/system")
 
@@ -26,9 +27,6 @@ local this = {
 	aoi_handle_uid_map = {}
 }
 
-local get_cur_time = function (  )
-	return math.floor(skynet.time()*1000+0.5)
-end
 
 local init_npc = function (  )
 	if not this.scene_cfg or not this.scene_cfg.npc_list then return end
@@ -47,10 +45,10 @@ end
 
 local fork_loop_ecs = function (  )
 	Time = {deltaTime=0}
-	lastUpdateTime = get_cur_time()
+	lastUpdateTime = time:get_cur_time()
 	skynet.fork(function()
 		while true do
-			local curTime = get_cur_time()
+			local curTime = time:get_cur_time()
 			Time.deltaTime = (curTime-lastUpdateTime)/1000
 			lastUpdateTime = curTime
 			this.ecs_system_mgr:update()
@@ -62,7 +60,7 @@ end
 --更新角色可视区域的感兴趣节点集合（玩家，怪物，NPC)
 local update_around_objs = function ( role_info )
 	local objs = this.aoi:get_around_offset(role_info.aoi_handle, role_info.radius_short, role_info.radius_long)
-	local cur_time = get_cur_time()
+	local cur_time = time:get_cur_time()
 	for aoi_handle, flag in pairs(objs) do
 		local scene_uid = this.aoi_handle_uid_map[aoi_handle]
 		local is_enter = flag==1
@@ -134,7 +132,7 @@ local fork_loop_fight_event = function (  )
 		while true do 
 			collect_fight_events()
 			for k,role_info in pairs(this.role_list) do
-				if role_info.fight_events_in_around and role_info.ack_scene_listen_fight_event then
+				if role_info.fight_events_in_around and #role_info.fight_events_in_around>0 and role_info.ack_scene_listen_fight_event then
 					role_info.ack_scene_listen_fight_event(true, {fight_events=role_info.fight_events_in_around})
 					role_info.fight_events_in_around = {}
 					role_info.ack_scene_listen_fight_event = nil
@@ -165,7 +163,7 @@ function CMD.init(scene_id)
 	this.cur_scene_id = scene_id
 	this.role_mgr:init(this)
 	this.monster_mgr:init(this, this.scene_cfg.monster_list)
-	this.fight_mgr:init()
+	this.fight_mgr:init(this)
 	this.ecs_system_mgr:init(this.ecs_world)
 	
 	fork_loop_ecs()
@@ -332,7 +330,7 @@ function CMD.scene_walk( user_info, req_data )
 		this.aoi:set_pos(role_info.aoi_handle, role_info.base_info.pos_x, role_info.base_info.pos_y, role_info.base_info.pos_z)
 		local pos_info = role_info.base_info.pos_x..","..role_info.base_info.pos_y..","..role_info.base_info.pos_z
 		local target_pos_info = req_data.end_x..","..req_data.end_z
-		local cur_time = get_cur_time()
+		local cur_time = time:get_cur_time()
 		-- local change_pos_event_info = {key=SceneInfoKey.PosChange, value=pos_info, time= cur_time}
 		local change_target_pos_event_info = {key=SceneInfoKey.TargetPos, value=target_pos_info, time=cur_time}
 		this.event_list[role_info.scene_uid] = this.event_list[role_info.scene_uid] or {}
@@ -353,8 +351,15 @@ function CMD.scene_get_objs_info_change( user_info, req_data )
 end
 
 function CMD.scene_cast_skill(user_info, req_data)
-	local result_code = this.fight_mgr:cast_skill(user_info, req_data)
-	return {result=result_code}
+	local result_code, fight_event = this.fight_mgr:cast_skill(user_info, req_data)
+	print("Cat:scene [start:355] fight_event, result_code:", fight_event, result_code)
+	PrintTable(fight_event)
+	print("Cat:scene [end]")
+	do
+		--test
+		table.insert(this.role_list[user_info.cur_role_id].fight_events_in_around, fight_event)
+	end
+	return {result=result_code, fight_event=fight_event}
 end
 
 function CMD.scene_listen_fight_event(user_info, req_data)
