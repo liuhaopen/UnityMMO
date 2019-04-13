@@ -69,7 +69,7 @@ public class SynchFromNet {
         long uid = fight_event.attacker_uid;
         Entity scene_entity = SceneMgr.Instance.GetSceneObject(uid);
         var isMainRole = RoleMgr.GetInstance().IsMainRoleEntity(scene_entity);
-        isMainRole = false;//test
+        // isMainRole = false;//test
         if (scene_entity==Entity.Null || isMainRole)
             return;
 

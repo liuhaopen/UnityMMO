@@ -106,29 +106,26 @@ public class TimelineSpawnSystem : BaseComponentSystem
                     {
                         hangPointName = nameParts[1];
                     }
-                    // Debug.Log("hangPointName : "+hangPointName);
                     var ct = at.sourceObject as ControlTrack;
                     var looksTrans = EntityManager.GetComponentObject<Transform>(looksEntity);
                     var particleParent = looksTrans.Find(hangPointName);
                     foreach (var info in ct.GetClips())
                     {
-                        // if (info.displayName.StartsWith("particle"))
-                        // {
-                            var cpa = info.asset as ControlPlayableAsset;
-                            playerDirector.SetReferenceValue(cpa.sourceGameObject.exposedName, particleParent.gameObject);
-                        // }
+                        var cpa = info.asset as ControlPlayableAsset;
+                        playerDirector.SetReferenceValue(cpa.sourceGameObject.exposedName, particleParent.gameObject);
                     }
                 }
-                Debug.Log("timelineInfo.Param != null : "+(timelineInfo.Param != null).ToString());
+                // Debug.Log("timelineInfo.Param != null : "+(timelineInfo.Param != null).ToString());
                 if (timelineInfo.Param != null)
                 {
                     var nameParts = at.streamName.Split('_');
-                    Debug.Log("nameParts : "+nameParts[0]);
+                    // Debug.Log("nameParts : "+nameParts[0]);
                     if (timelineInfo.Param.ContainsKey(nameParts[0]))
                     {
                         var ta = at.sourceObject as TrackAsset;
                         foreach (var info in ta.GetClips())
                         {
+                            // var cpa = info.asset as ScriptPlayable<>;
                             var cpa = info.asset as ParamPlayableAsset;
                             Debug.Log("cpa != null : "+(cpa != null).ToString());
                             if (cpa != null)

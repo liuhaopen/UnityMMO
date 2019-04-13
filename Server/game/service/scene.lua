@@ -357,7 +357,7 @@ function CMD.scene_cast_skill(user_info, req_data)
 	print("Cat:scene [end]")
 	do
 		--test
-		table.insert(this.role_list[user_info.cur_role_id].fight_events_in_around, fight_event)
+		-- table.insert(this.role_list[user_info.cur_role_id].fight_events_in_around, fight_event)
 	end
 	return {result=result_code, fight_event=fight_event}
 end

@@ -57,9 +57,38 @@ public class CastSkillBehaviour : PlayableBehaviour
                         return;
                     Debug.Log("playable : "+(Playable.Equals(playable, Playable.Null)).ToString());
                     var graph = PlayableExtensions.GetGraph(playable);
+                    Debug.Log("graph.IsDone() : "+graph.IsDone().ToString());
                     if (!graph.IsDone())
                     {
-                        // PlayableGraph
+                        var outputNum = graph.GetOutputCount();
+                        Debug.Log("outputNum : "+outputNum);
+                        for (int i = 0; i < outputNum; i++)
+                        {
+                            var isScriptOutput = graph.GetOutput(i) is ScriptPlayableOutput;
+                            bool isFlyWord = (graph.GetOutput(i) is ScriptPlayable<FlyHurtWordBehaviour>);
+                            Debug.Log("isScriptOutput : "+isScriptOutput.ToString()+" isFlyWord:"+isFlyWord.ToString());
+                        }
+                        // var playableNum = graph.GetRootPlayableCount();
+                        // Debug.Log("playableNum : "+playableNum);
+                        // for (int i = 0; i < playableNum; i++)
+                        // {
+                        //     var rootPlayable = graph.GetRootPlayable(i);
+                        //     var inputCount = rootPlayable.GetInputCount();
+                        //     Debug.Log("inputCount : "+inputCount);
+                        //     for (int ii = 0; ii < inputCount; ii++)
+                        //     {
+                        //         var inputCount2 = rootPlayable.GetInput(ii).GetInputCount();
+                        //         Debug.Log("inputCount2 : "+inputCount2);
+                        //         for (int iii = 0; iii < inputCount2; iii++)
+                        //         {
+                        //             bool isFlyWord = (rootPlayable.GetInput(ii).GetInput(iii) is ScriptPlayable<FlyHurtWordBehaviour>);
+                        //             Debug.Log("isFlyWord : "+isFlyWord.ToString());
+                        //         }
+                        //         // bool isFlyWord = (rootPlayable.GetInput(i) is ScriptPlayable<FlyHurtWordBehaviour>);
+                        //         // Debug.Log("isFlyWord : "+isFlyWord.ToString());
+                        //         // if (isFlyWord)
+                        //     }
+                        // }
                     }
                 });
             }

@@ -21,13 +21,16 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(SkillManager);
-			Utils.BeginObjectRegister(type, L, translator, 0, 5, 0, 0);
+			Utils.BeginObjectRegister(type, L, translator, 0, 8, 0, 0);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Init", _m_Init);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetCurAttackID", _m_GetCurAttackID);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "ResetCombo", _m_ResetCombo);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "IncreaseCombo", _m_IncreaseCombo);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetSkillIDByIndex", _m_GetSkillIDByIndex);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetSkillResPath", _m_GetSkillResPath);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetCareerBySkillID", _m_GetCareerBySkillID);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetSceneObjTypeBySkillID", _m_GetSceneObjTypeBySkillID);
 			
 			
 			
@@ -212,6 +215,93 @@ namespace XLua.CSObjectWrap
                     int _skillIndex = LuaAPI.xlua_tointeger(L, 2);
                     
                         int gen_ret = gen_to_be_invoked.GetSkillIDByIndex( _skillIndex );
+                        LuaAPI.xlua_pushinteger(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_GetSkillResPath(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                SkillManager gen_to_be_invoked = (SkillManager)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    int _skillID = LuaAPI.xlua_tointeger(L, 2);
+                    
+                        string gen_ret = gen_to_be_invoked.GetSkillResPath( _skillID );
+                        LuaAPI.lua_pushstring(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_GetCareerBySkillID(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                SkillManager gen_to_be_invoked = (SkillManager)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    int _skillID = LuaAPI.xlua_tointeger(L, 2);
+                    
+                        int gen_ret = gen_to_be_invoked.GetCareerBySkillID( _skillID );
+                        LuaAPI.xlua_pushinteger(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_GetSceneObjTypeBySkillID(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                SkillManager gen_to_be_invoked = (SkillManager)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    int _skillID = LuaAPI.xlua_tointeger(L, 2);
+                    
+                        int gen_ret = gen_to_be_invoked.GetSceneObjTypeBySkillID( _skillID );
                         LuaAPI.xlua_pushinteger(L, gen_ret);
                     
                     
