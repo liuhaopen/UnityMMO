@@ -69,7 +69,7 @@ public class SceneMgr : MonoBehaviour
         if (detector != null && m_Controller != null)
             m_Controller.RefreshDetector(detector);
         
-        CheckMainRolePos();
+        // CheckMainRolePos();
     }
 
     public void CheckMainRolePos()

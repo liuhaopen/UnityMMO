@@ -55,21 +55,13 @@ public class MovementUpdateSystem : BaseComponentSystem
                 newPos = startPos+groundDir*speed/GameConst.SpeedFactor*dt;
             }
             newPos.y = startPos.y;
-            // if (EntityManager.HasComponent<JumpState>(entities[i]))
-            // {
-            //     var jumpState = EntityManager.GetComponentData<JumpState>(entities[i]);
-            //     if (jumpState.JumpStatus != JumpState.State.None)
-            //         isNeedGravity = false;
-            // }
-            // if (isNeedGravity)
-                newPos.y += GameConst.Gravity * dt;
+            newPos.y += GameConst.Gravity * dt;
             newPos += posOffset;
             var moveQuery = moveQuerys[i];
             moveQuery.moveQueryStart = startPos;
             //不能直接设置新坐标，因为需要和地形做碰撞处理什么的，所以利用CharacterController走路，在HandleMovementQueries才设置新坐标
             moveQuery.moveQueryEnd = newPos;
 
-            //new locomotion state
             var newLocoState = LocomotionState.State.StateNum;
             var curLocoStateObj = locoStates[i];
             var curLocoState = curLocoStateObj.Value;

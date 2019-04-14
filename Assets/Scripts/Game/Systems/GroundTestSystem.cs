@@ -12,21 +12,23 @@ public class GroundTestSystem : BaseComponentSystem
     public GroundTestSystem(GameWorld gameWorld) : base(gameWorld)
     {
         m_defaultLayer = LayerMask.NameToLayer("Default");
-        m_playerLayer = LayerMask.NameToLayer("collision_player");
-        m_platformLayer = LayerMask.NameToLayer("Platform");
+        m_playerLayer = LayerMask.NameToLayer("Role");
+        m_monsterLayer = LayerMask.NameToLayer("Monster");
+        m_npcLayer = LayerMask.NameToLayer("NPC");
+        m_platformLayer = LayerMask.NameToLayer("Ground");
 
-        m_mask = 1 << m_defaultLayer | 1 << m_playerLayer | 1 << m_platformLayer;
+        m_mask = 1 << m_defaultLayer | 1 << m_playerLayer | 1 << m_platformLayer | 1 << m_monsterLayer | 1 << m_npcLayer;
     }
 
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        Group = GetComponentGroup(typeof(Position), typeof(GroundInfo));
+        Group = GetComponentGroup(typeof(Transform), typeof(GroundInfo));
     }
 
     protected override void OnUpdate()
     {        
-        var posArray = Group.GetComponentDataArray<Position>();
+        var posArray = Group.GetComponentArray<Transform>();
         var groundArray = Group.GetComponentDataArray<GroundInfo>();
         
         var startOffset = 1f;
@@ -38,7 +40,7 @@ public class GroundTestSystem : BaseComponentSystem
         for (var i = 0; i < posArray.Length; i++)
         {
             // var charPredictedState = charPredictedStateArray[i];
-            Vector3 curPos = posArray[i].Value;
+            Vector3 curPos = posArray[i].localPosition;
             var origin = curPos + Vector3.up * startOffset;
             rayCommands[i] = new RaycastCommand(origin, Vector3.down, distance, m_mask);
         }
@@ -50,10 +52,11 @@ public class GroundTestSystem : BaseComponentSystem
         {
             var groundInfo = groundArray[i];
             // groundInfo.groundCollider = rayResults[i].collider;
-            groundInfo.altitude = rayResults[i].collider != null ? rayResults[i].distance - startOffset : distance - startOffset;
+            groundInfo.Altitude = rayResults[i].collider != null ? rayResults[i].distance - startOffset : distance - startOffset;
+            // Debug.Log("groundInfo.altitude : "+groundInfo.Altitude+" rayResults[i].collider != null+"+(rayResults[i].collider != null).ToString());
 
             if (rayResults[i].collider != null)
-                groundInfo.groundNormal = rayResults[i].normal;
+                groundInfo.GroundNormal = rayResults[i].normal;
         }
         
         rayCommands.Dispose();
@@ -62,6 +65,8 @@ public class GroundTestSystem : BaseComponentSystem
     
     readonly int m_defaultLayer;
     readonly int m_playerLayer;
+    readonly int m_npcLayer;
+    readonly int m_monsterLayer;
     readonly int m_platformLayer;
     readonly int m_mask;
 }

@@ -29,7 +29,7 @@ function fight_mgr:cast_skill( user_info, req_data )
 			time = time:get_cur_time(),
 			defenders = nil,
 		}
-		fight_event.defenders = self:cal_defender_list(fight_event)
+		fight_event.defenders = self:cal_defender_list(fight_event, role_info)
 
 		self.scene_mgr.fight_events[role_info.scene_uid] = self.scene_mgr.fight_events[role_info.scene_uid] or {}
 		table.insert(self.scene_mgr.fight_events[role_info.scene_uid], fight_event)
@@ -38,9 +38,9 @@ function fight_mgr:cast_skill( user_info, req_data )
 end
 
 --计算受击者列表
-function fight_mgr:cal_defender_list( fight_info )
+function fight_mgr:cal_defender_list( fight_info, role_info )
 	local cfg = skill_cfg[fight_info.skill_id]
-	if not cfg then return end
+	if not cfg or not role_info then return end
 	
 	local skill_bomb = self.aoi:add()
 	self.aoi:set_pos(skill_bomb, fight_info.target_pos_x, fight_info.target_pos_y, fight_info.target_pos_z)
@@ -51,12 +51,14 @@ function fight_mgr:cal_defender_list( fight_info )
 	if around then
 		defenders = {}
 		for aoi_handle,v in pairs(around) do
-			local uid = self.scene_mgr.aoi_handle_uid_map[aoi_handle]
-			local entity = self.scene_mgr.uid_entity_map[uid]
-			if entity then
-				local hp = self.entity_mgr:GetComponentData(entity, "umo.hp")
-				local hurt_value = self:cal_hurt(fight_info, entity)
-				table.insert(defenders, {uid=uid, cur_hp=hp.cur, hurt=hurt_value, hurt_type=0})
+			if aoi_handle ~= role_info.aoi_handle then
+				local uid = self.scene_mgr.aoi_handle_uid_map[aoi_handle]
+				local entity = self.scene_mgr.uid_entity_map[uid]
+				if entity then
+					local hp = self.entity_mgr:GetComponentData(entity, "umo.hp")
+					local hurt_value = self:cal_hurt(fight_info, entity)
+					table.insert(defenders, {uid=uid, cur_hp=hp.cur, hurt=hurt_value, hurt_type=0})
+				end
 			end
 		end
 	end

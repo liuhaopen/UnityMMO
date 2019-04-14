@@ -51,7 +51,7 @@ public class SynchFromNet {
     public void OnAckFightEvents(SprotoTypeBase result)
     {
         SprotoType.scene_listen_fight_event.request req = new SprotoType.scene_listen_fight_event.request();
-        NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_listen_fight_event>(req, OnAckSceneObjInfoChange);
+        NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_listen_fight_event>(req, OnAckFightEvents);
         SprotoType.scene_listen_fight_event.response ack = result as SprotoType.scene_listen_fight_event.response;
         Debug.Log("ack : "+(ack!=null).ToString()+" fightevents:"+(ack.fight_events!=null).ToString());
         if (ack==null || ack.fight_events==null)

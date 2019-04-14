@@ -59,8 +59,8 @@ monster_list = {{
 		pos_y = 16538,
 		pos_z = 116869,
 		monster_type_id = 2000,
-		monster_num = 5,
-		radius = 5000,
+		monster_num = 10,
+		radius = 1000,
 },
 {
 		pos_x = 84990,
@@ -68,15 +68,15 @@ monster_list = {{
 		pos_z = 116869,
 		monster_type_id = 2001,
 		monster_num = 1,
-		radius = 2000,
+		radius = 800,
 },
 {
 		pos_x = 69300,
 		pos_y = 16450,
 		pos_z = 124200,
 		monster_type_id = 2002,
-		monster_num = 6,
-		radius = 3000,
+		monster_num = 12,
+		radius = 1200,
 },
 {
 		pos_x = 69300,
@@ -92,7 +92,7 @@ monster_list = {{
 		pos_z = 108900,
 		monster_type_id = 2004,
 		monster_num = 7,
-		radius = 4000,
+		radius = 1400,
 },
 {
 		pos_x = 63300,
@@ -100,7 +100,7 @@ monster_list = {{
 		pos_z = 108900,
 		monster_type_id = 2005,
 		monster_num = 1,
-		radius = 1000,
+		radius = 1200,
 },
 },
 }

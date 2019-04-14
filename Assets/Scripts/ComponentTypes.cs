@@ -114,8 +114,8 @@ namespace UnityMMO
     public struct GroundInfo : IComponentData
     {
         // public Collider groundCollider;
-        public Vector3 groundNormal;
-        public float altitude; 
+        public Vector3 GroundNormal;
+        public float Altitude; 
         // public GroundInfo(){}
     }
 

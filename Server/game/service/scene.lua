@@ -75,7 +75,9 @@ local update_around_objs = function ( role_info )
 				role_info.change_obj_infos = scene_helper.add_info_item(role_info.change_obj_infos, scene_uid, {key=SceneInfoKey.EnterView, value=scene_obj_type.value..","..type_id.value..","..pos.x..","..pos.y..","..pos.z, time=cur_time})
 			end
 		else
-			role_info.around_objs[scene_uid] = nil
+			if scene_uid then
+				role_info.around_objs[scene_uid] = nil
+			end
 			role_info.change_obj_infos = scene_helper.add_info_item(role_info.change_obj_infos, scene_uid, {key=SceneInfoKey.LeaveView, value="", time=cur_time})
 		end
 	end
@@ -133,6 +135,9 @@ local fork_loop_fight_event = function (  )
 			collect_fight_events()
 			for k,role_info in pairs(this.role_list) do
 				if role_info.fight_events_in_around and #role_info.fight_events_in_around>0 and role_info.ack_scene_listen_fight_event then
+					print("Cat:scene [start:138] role_info.fight_events_in_around:", role_info.fight_events_in_around)
+					PrintTable(role_info.fight_events_in_around)
+					print("Cat:scene [end]")
 					role_info.ack_scene_listen_fight_event(true, {fight_events=role_info.fight_events_in_around})
 					role_info.fight_events_in_around = {}
 					role_info.ack_scene_listen_fight_event = nil
@@ -242,7 +247,7 @@ function CMD.role_leave_scene(role_id)
 	if not role_info then return end
 	
 	this.aoi:remove(role_info.aoi_handle)
-	this.aoi_handle_uid_map[role_info.aoi_handle] = nil
+	-- this.aoi_handle_uid_map[role_info.aoi_handle] = nil --角色离开后还需要通过aoi_handle获取ta的uid
 	save_role_pos(role_id, role_info.base_info.pos_x, role_info.base_info.pos_y, role_info.base_info.pos_z, this.cur_scene_id)	
 
 	if role_info.ack_scene_get_objs_info_change then
@@ -355,10 +360,10 @@ function CMD.scene_cast_skill(user_info, req_data)
 	print("Cat:scene [start:355] fight_event, result_code:", fight_event, result_code)
 	PrintTable(fight_event)
 	print("Cat:scene [end]")
-	do
+	-- do
 		--test
 		-- table.insert(this.role_list[user_info.cur_role_id].fight_events_in_around, fight_event)
-	end
+	-- end
 	return {result=result_code, fight_event=fight_event}
 end
 
