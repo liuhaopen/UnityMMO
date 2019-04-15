@@ -52,7 +52,7 @@ public class FlyHurtWordBehaviour : PlayableBehaviour
         for (int i=0; i<Defenders.Count; i++)
         {
             var defender = Defenders[i];
-            Debug.Log("defender uid : "+defender.uid+" hurt:"+defender.hurt+" hp:"+defender.cur_hp+" hurttype:"+defender.hurt_type);
+            Debug.Log("defender uid : "+defender.uid+" damage:"+defender.damage+" hp:"+defender.cur_hp+" damagetype:"+defender.damage_type);
         }
         leftShowCount--;
     }

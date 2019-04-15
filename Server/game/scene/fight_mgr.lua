@@ -7,6 +7,7 @@ function fight_mgr:init( scene )
 	self.scene_mgr = scene
 	self.entity_mgr = scene.entity_mgr
 	self.aoi = scene.aoi
+	self.damage_events = {}
 end
 
 function fight_mgr:cast_skill( user_info, req_data )
@@ -30,6 +31,8 @@ function fight_mgr:cast_skill( user_info, req_data )
 			defenders = nil,
 		}
 		fight_event.defenders = self:cal_defender_list(fight_event, role_info)
+
+		self:add_damage_event_for_defenders(fight_event)
 
 		self.scene_mgr.fight_events[role_info.scene_uid] = self.scene_mgr.fight_events[role_info.scene_uid] or {}
 		table.insert(self.scene_mgr.fight_events[role_info.scene_uid], fight_event)
@@ -56,8 +59,8 @@ function fight_mgr:cal_defender_list( fight_info, role_info )
 				local entity = self.scene_mgr.uid_entity_map[uid]
 				if entity then
 					local hp = self.entity_mgr:GetComponentData(entity, "umo.hp")
-					local hurt_value = self:cal_hurt(fight_info, entity)
-					table.insert(defenders, {uid=uid, cur_hp=hp.cur, hurt=hurt_value, hurt_type=0})
+					local damage_value = self:cal_damage(fight_info, entity)
+					table.insert(defenders, {uid=uid, cur_hp=hp.cur, damage=damage_value, damage_type=0})
 				end
 			end
 		end
@@ -66,7 +69,31 @@ function fight_mgr:cal_defender_list( fight_info, role_info )
 	return defenders
 end
 
-function fight_mgr:cal_hurt( fight_info, entity )
+function fight_mgr:add_damage_event_for_defenders( fight_event )
+	if not fight_event.defenders then return end
+	for k,v in pairs(fight_event.defenders) do
+		self.damage_events[v.uid] = self.damage_events[v.uid] or {}
+		local damage_event = {
+			-- instigator_uid = fight_event.attacker_uid,
+			damage = v.damage,
+			-- damage_time = --技能不一定中了就马上扣血的
+		}
+		table.insert(self.damage_events[v.uid], damage_event)
+	end
+end
+
+function fight_mgr:get_damage_events( scene_uid )
+	if not scene_uid then return end
+	return self.damage_events[scene_uid]
+end
+
+function fight_mgr:clear_damage_events( scene_uid )
+	if not scene_uid or not self.damage_events[scene_uid] then return end
+
+	self.damage_events[scene_uid] = nil
+end
+
+function fight_mgr:cal_damage( fight_info, entity )
 	return 100
 end
 

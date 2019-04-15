@@ -5,6 +5,7 @@ function ecs_system_mgr:init( world )
 
 	local systems = {
 		-- "umo.patrol_system",
+		"umo.damage_system",
 		-- "umo.monster_nest_system"
 	}
 	for i,v in ipairs(systems) do

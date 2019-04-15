@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.Timeline;
 using UnityMMO;
 
 // A behaviour that is attached to a playable
@@ -49,59 +51,48 @@ public class CastSkillBehaviour : PlayableBehaviour
                 req.target_pos_y = (long)(trans.localPosition.y * GameConst.RealToLogic);
                 req.target_pos_z = (long)(trans.localPosition.z * GameConst.RealToLogic);
                 req.direction = (long)(trans.eulerAngles.y * GameConst.RealToLogic);
-                Debug.Log("req.direction : "+req.direction+" skillID "+SkillID);
+                // Debug.Log("req.direction : "+req.direction+" skillID "+SkillID);
                 NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_cast_skill>(req, delegate(Sproto.SprotoTypeBase result){
                     SprotoType.scene_cast_skill.response ack = result as SprotoType.scene_cast_skill.response;
-                    Debug.Log("ack : "+(ack!=null).ToString());
+                    // Debug.Log("ack : "+(ack!=null).ToString());
                     if (ack==null)
                         return;
-                    Debug.Log("playable : "+(Playable.Equals(playable, Playable.Null)).ToString());
+                    // Debug.Log("playable : "+(Playable.Equals(playable, Playable.Null)).ToString());
                     var graph = PlayableExtensions.GetGraph(playable);
-                    Debug.Log("graph.IsDone() : "+graph.IsDone().ToString());
+                    // Debug.Log("graph.IsDone() : "+graph.IsDone().ToString());
                     if (!graph.IsDone())
                     {
-                        var outputNum = graph.GetOutputCount();
-                        Debug.Log("outputNum : "+outputNum);
-                        for (int i = 0; i < outputNum; i++)
-                        {
-                            var isScriptOutput = graph.GetOutput(i) is ScriptPlayableOutput;
-                            bool isFlyWord = (graph.GetOutput(i) is ScriptPlayable<FlyHurtWordBehaviour>);
-                            Debug.Log("isScriptOutput : "+isScriptOutput.ToString()+" isFlyWord:"+isFlyWord.ToString());
-                        }
-                        // var playableNum = graph.GetRootPlayableCount();
+                        var playableNum = graph.GetRootPlayableCount();
                         // Debug.Log("playableNum : "+playableNum);
-                        // for (int i = 0; i < playableNum; i++)
-                        // {
-                        //     var rootPlayable = graph.GetRootPlayable(i);
-                        //     var inputCount = rootPlayable.GetInputCount();
-                        //     Debug.Log("inputCount : "+inputCount);
-                        //     for (int ii = 0; ii < inputCount; ii++)
-                        //     {
-                        //         var inputCount2 = rootPlayable.GetInput(ii).GetInputCount();
-                        //         Debug.Log("inputCount2 : "+inputCount2);
-                        //         for (int iii = 0; iii < inputCount2; iii++)
-                        //         {
-                        //             bool isFlyWord = (rootPlayable.GetInput(ii).GetInput(iii) is ScriptPlayable<FlyHurtWordBehaviour>);
-                        //             Debug.Log("isFlyWord : "+isFlyWord.ToString());
-                        //         }
-                        //         // bool isFlyWord = (rootPlayable.GetInput(i) is ScriptPlayable<FlyHurtWordBehaviour>);
-                        //         // Debug.Log("isFlyWord : "+isFlyWord.ToString());
-                        //         // if (isFlyWord)
-                        //     }
-                        // }
+                        for (int i = 0; i < playableNum; i++)
+                        {
+                            var rootPlayable = graph.GetRootPlayable(i);
+                            FindFlyWord(rootPlayable, ack.fight_event.defenders, 0);
+                        }
                     }
                 });
             }
         }
     }
 
-    // public void OnAckFightEvents(Sproto.SprotoTypeBase result)
-    // {
-    //     SprotoType.scene_listen_fight_event.response ack = result as SprotoType.scene_listen_fight_event.response;
-    //     if (ack==null)
-    //         return;
-        
-    // }
+    void FindFlyWord(Playable playable, object obj, int level=0)
+    {
+        var inputCount = playable.GetInputCount();
+        for (int i = 0; i < inputCount; i++)
+        {
+            Type playableType = playable.GetInput(i).GetPlayableType();
+            var isFlyWord = playableType == typeof(FlyHurtWordBehaviour);
+            if (isFlyWord)
+            {
+                var flyWordPlayable = (ScriptPlayable<FlyHurtWordBehaviour>)(playable.GetInput(i));
+                var behaviour = flyWordPlayable.GetBehaviour();
+                if (behaviour != null)
+                    behaviour.Defenders = obj as List<SprotoType.scene_fight_defender_info>;
+                // Debug.Log("isFlyWord : "+isFlyWord.ToString()+" flyWordPlayable:"+flyWordPlayable.ToString()+" behaviour:"+(behaviour!=null).ToString()+" level:"+level+" i:"+i+" inputCount:"+inputCount+" playableType:"+playableType.FullName);
+            }
+            FindFlyWord(playable.GetInput(i), obj, level+1);
+        }
+    }
 
     // Called when the state of the playable is set to Paused
     public override void OnBehaviourPause(Playable playable, FrameData info)

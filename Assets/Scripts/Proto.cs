@@ -872,21 +872,21 @@ namespace SprotoType {
 			get { return base.has_field.has_field (1); }
 		}
 
-		private Int64 _hurt; // tag 2
-		public Int64 hurt {
-			get { return _hurt; }
-			set { base.has_field.set_field (2, true); _hurt = value; }
+		private Int64 _damage; // tag 2
+		public Int64 damage {
+			get { return _damage; }
+			set { base.has_field.set_field (2, true); _damage = value; }
 		}
-		public bool HasHurt {
+		public bool HasDamage {
 			get { return base.has_field.has_field (2); }
 		}
 
-		private Int64 _hurt_type; // tag 3
-		public Int64 hurt_type {
-			get { return _hurt_type; }
-			set { base.has_field.set_field (3, true); _hurt_type = value; }
+		private Int64 _damage_type; // tag 3
+		public Int64 damage_type {
+			get { return _damage_type; }
+			set { base.has_field.set_field (3, true); _damage_type = value; }
 		}
-		public bool HasHurt_type {
+		public bool HasDamage_type {
 			get { return base.has_field.has_field (3); }
 		}
 
@@ -907,10 +907,10 @@ namespace SprotoType {
 					this.cur_hp = base.deserialize.read_integer ();
 					break;
 				case 2:
-					this.hurt = base.deserialize.read_integer ();
+					this.damage = base.deserialize.read_integer ();
 					break;
 				case 3:
-					this.hurt_type = base.deserialize.read_integer ();
+					this.damage_type = base.deserialize.read_integer ();
 					break;
 				default:
 					base.deserialize.read_unknow_data ();
@@ -931,11 +931,11 @@ namespace SprotoType {
 			}
 
 			if (base.has_field.has_field (2)) {
-				base.serialize.write_integer (this.hurt, 2);
+				base.serialize.write_integer (this.damage, 2);
 			}
 
 			if (base.has_field.has_field (3)) {
-				base.serialize.write_integer (this.hurt_type, 3);
+				base.serialize.write_integer (this.damage_type, 3);
 			}
 
 			return base.serialize.close ();

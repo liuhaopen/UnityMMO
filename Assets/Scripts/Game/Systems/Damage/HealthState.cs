@@ -3,23 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
 
-public class HealthState : MonoBehaviour, INetSerialized      
+public struct HealthStateData : IComponentData 
 {
-    [NonSerialized] public float health = 100;
-    [NonSerialized] public float maxHealth = 100;     
-    [NonSerialized] public int deathTick;
-    [NonSerialized] public Entity killedBy;
-
-
-    // public void Serialize(ref NetworkWriter writer, IEntityReferenceSerializer refSerializer)
-    // {
-    //     writer.WriteFloat("health", health);
-    // }
-
-    // public void Deserialize(ref NetworkReader reader, IEntityReferenceSerializer refSerializer, int tick)
-    // {
-    //     health = reader.ReadFloat();
-    // }
+    public float health;
+    public float maxHealth;     
+    public int deathTick;
+    public Entity killedBy;
 
     public void SetMaxHealth(float maxHealth)
     {
