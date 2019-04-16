@@ -1,0 +1,229 @@
+﻿#if USE_UNI_LUA
+using LuaAPI = UniLua.Lua;
+using RealStatePtr = UniLua.ILuaState;
+using LuaCSFunction = UniLua.CSharpFunctionDelegate;
+#else
+using LuaAPI = XLua.LuaDLL.Lua;
+using RealStatePtr = System.IntPtr;
+using LuaCSFunction = XLua.LuaDLL.lua_CSFunction;
+#endif
+
+using XLua;
+using System.Collections.Generic;
+
+
+namespace XLua.CSObjectWrap
+{
+    using Utils = XLua.Utils;
+    public class UnityMMOMonsterMgrWrap 
+    {
+        public static void __Register(RealStatePtr L)
+        {
+			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			System.Type type = typeof(UnityMMO.MonsterMgr);
+			Utils.BeginObjectRegister(type, L, translator, 0, 3, 2, 1);
+			
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Init", _m_Init);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "OnDestroy", _m_OnDestroy);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "AddMonster", _m_AddMonster);
+			
+			
+			Utils.RegisterFunc(L, Utils.GETTER_IDX, "EntityManager", _g_get_EntityManager);
+            Utils.RegisterFunc(L, Utils.GETTER_IDX, "MonsterContainer", _g_get_MonsterContainer);
+            
+			Utils.RegisterFunc(L, Utils.SETTER_IDX, "MonsterContainer", _s_set_MonsterContainer);
+            
+			
+			Utils.EndObjectRegister(type, L, translator, null, null,
+			    null, null, null);
+
+		    Utils.BeginClassRegister(type, L, __CreateInstance, 2, 0, 0);
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "GetInstance", _m_GetInstance_xlua_st_);
+            
+			
+            
+			
+			
+			
+			Utils.EndClassRegister(type, L, translator);
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int __CreateInstance(RealStatePtr L)
+        {
+            return LuaAPI.luaL_error(L, "UnityMMO.MonsterMgr does not have a constructor!");
+        }
+        
+		
+        
+		
+        
+        
+        
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_GetInstance_xlua_st_(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+            
+                
+                {
+                    
+                        UnityMMO.MonsterMgr gen_ret = UnityMMO.MonsterMgr.GetInstance(  );
+                        translator.Push(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_Init(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                UnityMMO.MonsterMgr gen_to_be_invoked = (UnityMMO.MonsterMgr)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    GameWorld _world = (GameWorld)translator.GetObject(L, 2, typeof(GameWorld));
+                    
+                    gen_to_be_invoked.Init( _world );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_OnDestroy(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                UnityMMO.MonsterMgr gen_to_be_invoked = (UnityMMO.MonsterMgr)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    
+                    gen_to_be_invoked.OnDestroy(  );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_AddMonster(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                UnityMMO.MonsterMgr gen_to_be_invoked = (UnityMMO.MonsterMgr)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    long _uid = LuaAPI.lua_toint64(L, 2);
+                    long _typeID = LuaAPI.lua_toint64(L, 3);
+                    UnityEngine.Vector3 _pos;translator.Get(L, 4, out _pos);
+                    
+                        Unity.Entities.Entity gen_ret = gen_to_be_invoked.AddMonster( _uid, _typeID, _pos );
+                        translator.Push(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        
+        
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_EntityManager(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.MonsterMgr gen_to_be_invoked = (UnityMMO.MonsterMgr)translator.FastGetCSObj(L, 1);
+                translator.Push(L, gen_to_be_invoked.EntityManager);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_MonsterContainer(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.MonsterMgr gen_to_be_invoked = (UnityMMO.MonsterMgr)translator.FastGetCSObj(L, 1);
+                translator.Push(L, gen_to_be_invoked.MonsterContainer);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
+        
+        
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _s_set_MonsterContainer(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.MonsterMgr gen_to_be_invoked = (UnityMMO.MonsterMgr)translator.FastGetCSObj(L, 1);
+                gen_to_be_invoked.MonsterContainer = (UnityEngine.Transform)translator.GetObject(L, 2, typeof(UnityEngine.Transform));
+            
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 0;
+        }
+        
+		
+		
+		
+		
+    }
+}

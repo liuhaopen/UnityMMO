@@ -15,26 +15,27 @@ using System.Collections.Generic;
 namespace XLua.CSObjectWrap
 {
     using Utils = XLua.Utils;
-    public class SkillManagerWrap 
+    public class UnityMMORoleMgrWrap 
     {
         public static void __Register(RealStatePtr L)
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-			System.Type type = typeof(SkillManager);
-			Utils.BeginObjectRegister(type, L, translator, 0, 8, 0, 0);
+			System.Type type = typeof(UnityMMO.RoleMgr);
+			Utils.BeginObjectRegister(type, L, translator, 0, 6, 2, 1);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Init", _m_Init);
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetCurAttackID", _m_GetCurAttackID);
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "ResetCombo", _m_ResetCombo);
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "IncreaseCombo", _m_IncreaseCombo);
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetSkillIDByIndex", _m_GetSkillIDByIndex);
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetSkillResPath", _m_GetSkillResPath);
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetCareerBySkillID", _m_GetCareerBySkillID);
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetSceneObjTypeBySkillID", _m_GetSceneObjTypeBySkillID);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "OnDestroy", _m_OnDestroy);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "AddMainRole", _m_AddMainRole);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetMainRole", _m_GetMainRole);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "IsMainRoleEntity", _m_IsMainRoleEntity);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "AddRole", _m_AddRole);
 			
 			
-			
-			
+			Utils.RegisterFunc(L, Utils.GETTER_IDX, "EntityManager", _g_get_EntityManager);
+            Utils.RegisterFunc(L, Utils.GETTER_IDX, "RoleContainer", _g_get_RoleContainer);
+            
+			Utils.RegisterFunc(L, Utils.SETTER_IDX, "RoleContainer", _s_set_RoleContainer);
+            
 			
 			Utils.EndObjectRegister(type, L, translator, null, null,
 			    null, null, null);
@@ -53,7 +54,7 @@ namespace XLua.CSObjectWrap
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         static int __CreateInstance(RealStatePtr L)
         {
-            return LuaAPI.luaL_error(L, "SkillManager does not have a constructor!");
+            return LuaAPI.luaL_error(L, "UnityMMO.RoleMgr does not have a constructor!");
         }
         
 		
@@ -75,7 +76,7 @@ namespace XLua.CSObjectWrap
                 
                 {
                     
-                        SkillManager gen_ret = SkillManager.GetInstance(  );
+                        UnityMMO.RoleMgr gen_ret = UnityMMO.RoleMgr.GetInstance(  );
                         translator.Push(L, gen_ret);
                     
                     
@@ -97,14 +98,14 @@ namespace XLua.CSObjectWrap
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
             
             
-                SkillManager gen_to_be_invoked = (SkillManager)translator.FastGetCSObj(L, 1);
+                UnityMMO.RoleMgr gen_to_be_invoked = (UnityMMO.RoleMgr)translator.FastGetCSObj(L, 1);
             
             
                 
                 {
-                    int _career = LuaAPI.xlua_tointeger(L, 2);
+                    GameWorld _world = (GameWorld)translator.GetObject(L, 2, typeof(GameWorld));
                     
-                    gen_to_be_invoked.Init( _career );
+                    gen_to_be_invoked.Init( _world );
                     
                     
                     
@@ -118,48 +119,20 @@ namespace XLua.CSObjectWrap
         }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_GetCurAttackID(RealStatePtr L)
+        static int _m_OnDestroy(RealStatePtr L)
         {
 		    try {
             
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
             
             
-                SkillManager gen_to_be_invoked = (SkillManager)translator.FastGetCSObj(L, 1);
+                UnityMMO.RoleMgr gen_to_be_invoked = (UnityMMO.RoleMgr)translator.FastGetCSObj(L, 1);
             
             
                 
                 {
                     
-                        int gen_ret = gen_to_be_invoked.GetCurAttackID(  );
-                        LuaAPI.xlua_pushinteger(L, gen_ret);
-                    
-                    
-                    
-                    return 1;
-                }
-                
-            } catch(System.Exception gen_e) {
-                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
-            }
-            
-        }
-        
-        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_ResetCombo(RealStatePtr L)
-        {
-		    try {
-            
-                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-            
-            
-                SkillManager gen_to_be_invoked = (SkillManager)translator.FastGetCSObj(L, 1);
-            
-            
-                
-                {
-                    
-                    gen_to_be_invoked.ResetCombo(  );
+                    gen_to_be_invoked.OnDestroy(  );
                     
                     
                     
@@ -173,49 +146,26 @@ namespace XLua.CSObjectWrap
         }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_IncreaseCombo(RealStatePtr L)
+        static int _m_AddMainRole(RealStatePtr L)
         {
 		    try {
             
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
             
             
-                SkillManager gen_to_be_invoked = (SkillManager)translator.FastGetCSObj(L, 1);
+                UnityMMO.RoleMgr gen_to_be_invoked = (UnityMMO.RoleMgr)translator.FastGetCSObj(L, 1);
             
             
                 
                 {
+                    long _uid = LuaAPI.lua_toint64(L, 2);
+                    long _typeID = LuaAPI.lua_toint64(L, 3);
+                    string _name = LuaAPI.lua_tostring(L, 4);
+                    int _career = LuaAPI.xlua_tointeger(L, 5);
+                    UnityEngine.Vector3 _pos;translator.Get(L, 6, out _pos);
                     
-                    gen_to_be_invoked.IncreaseCombo(  );
-                    
-                    
-                    
-                    return 0;
-                }
-                
-            } catch(System.Exception gen_e) {
-                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
-            }
-            
-        }
-        
-        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_GetSkillIDByIndex(RealStatePtr L)
-        {
-		    try {
-            
-                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-            
-            
-                SkillManager gen_to_be_invoked = (SkillManager)translator.FastGetCSObj(L, 1);
-            
-            
-                
-                {
-                    int _skillIndex = LuaAPI.xlua_tointeger(L, 2);
-                    
-                        int gen_ret = gen_to_be_invoked.GetSkillIDByIndex( _skillIndex );
-                        LuaAPI.xlua_pushinteger(L, gen_ret);
+                        Unity.Entities.Entity gen_ret = gen_to_be_invoked.AddMainRole( _uid, _typeID, _name, _career, _pos );
+                        translator.Push(L, gen_ret);
                     
                     
                     
@@ -229,22 +179,21 @@ namespace XLua.CSObjectWrap
         }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_GetSkillResPath(RealStatePtr L)
+        static int _m_GetMainRole(RealStatePtr L)
         {
 		    try {
             
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
             
             
-                SkillManager gen_to_be_invoked = (SkillManager)translator.FastGetCSObj(L, 1);
+                UnityMMO.RoleMgr gen_to_be_invoked = (UnityMMO.RoleMgr)translator.FastGetCSObj(L, 1);
             
             
                 
                 {
-                    int _skillID = LuaAPI.xlua_tointeger(L, 2);
                     
-                        string gen_ret = gen_to_be_invoked.GetSkillResPath( _skillID );
-                        LuaAPI.lua_pushstring(L, gen_ret);
+                        Unity.Entities.GameObjectEntity gen_ret = gen_to_be_invoked.GetMainRole(  );
+                        translator.Push(L, gen_ret);
                     
                     
                     
@@ -258,22 +207,22 @@ namespace XLua.CSObjectWrap
         }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_GetCareerBySkillID(RealStatePtr L)
+        static int _m_IsMainRoleEntity(RealStatePtr L)
         {
 		    try {
             
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
             
             
-                SkillManager gen_to_be_invoked = (SkillManager)translator.FastGetCSObj(L, 1);
+                UnityMMO.RoleMgr gen_to_be_invoked = (UnityMMO.RoleMgr)translator.FastGetCSObj(L, 1);
             
             
                 
                 {
-                    int _skillID = LuaAPI.xlua_tointeger(L, 2);
+                    Unity.Entities.Entity _entity;translator.Get(L, 2, out _entity);
                     
-                        int gen_ret = gen_to_be_invoked.GetCareerBySkillID( _skillID );
-                        LuaAPI.xlua_pushinteger(L, gen_ret);
+                        bool gen_ret = gen_to_be_invoked.IsMainRoleEntity( _entity );
+                        LuaAPI.lua_pushboolean(L, gen_ret);
                     
                     
                     
@@ -287,22 +236,24 @@ namespace XLua.CSObjectWrap
         }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_GetSceneObjTypeBySkillID(RealStatePtr L)
+        static int _m_AddRole(RealStatePtr L)
         {
 		    try {
             
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
             
             
-                SkillManager gen_to_be_invoked = (SkillManager)translator.FastGetCSObj(L, 1);
+                UnityMMO.RoleMgr gen_to_be_invoked = (UnityMMO.RoleMgr)translator.FastGetCSObj(L, 1);
             
             
                 
                 {
-                    int _skillID = LuaAPI.xlua_tointeger(L, 2);
+                    long _uid = LuaAPI.lua_toint64(L, 2);
+                    long _type_id = LuaAPI.lua_toint64(L, 3);
+                    UnityEngine.Vector3 _pos;translator.Get(L, 4, out _pos);
                     
-                        int gen_ret = gen_to_be_invoked.GetSceneObjTypeBySkillID( _skillID );
-                        LuaAPI.xlua_pushinteger(L, gen_ret);
+                        Unity.Entities.Entity gen_ret = gen_to_be_invoked.AddRole( _uid, _type_id, _pos );
+                        translator.Push(L, gen_ret);
                     
                     
                     
@@ -318,7 +269,50 @@ namespace XLua.CSObjectWrap
         
         
         
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_EntityManager(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.RoleMgr gen_to_be_invoked = (UnityMMO.RoleMgr)translator.FastGetCSObj(L, 1);
+                translator.Push(L, gen_to_be_invoked.EntityManager);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
         
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_RoleContainer(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.RoleMgr gen_to_be_invoked = (UnityMMO.RoleMgr)translator.FastGetCSObj(L, 1);
+                translator.Push(L, gen_to_be_invoked.RoleContainer);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
+        
+        
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _s_set_RoleContainer(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.RoleMgr gen_to_be_invoked = (UnityMMO.RoleMgr)translator.FastGetCSObj(L, 1);
+                gen_to_be_invoked.RoleContainer = (UnityEngine.Transform)translator.GetObject(L, 2, typeof(UnityEngine.Transform));
+            
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 0;
+        }
         
 		
 		

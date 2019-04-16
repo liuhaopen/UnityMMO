@@ -382,4 +382,514 @@ namespace XLua.CSObjectWrap
 		}
 	}
     
+    public class UnityMMOTimelineStateNewStateWrap
+    {
+		public static void __Register(RealStatePtr L)
+        {
+		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+		    Utils.BeginObjectRegister(typeof(UnityMMO.TimelineState.NewState), L, translator, 0, 0, 0, 0);
+			Utils.EndObjectRegister(typeof(UnityMMO.TimelineState.NewState), L, translator, null, null, null, null, null);
+			
+			Utils.BeginClassRegister(typeof(UnityMMO.TimelineState.NewState), L, null, 3, 0, 0);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Allow", UnityMMO.TimelineState.NewState.Allow);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Forbid", UnityMMO.TimelineState.NewState.Forbid);
+            
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
+            
+            Utils.EndClassRegister(typeof(UnityMMO.TimelineState.NewState), L, translator);
+        }
+		
+		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int __CastFrom(RealStatePtr L)
+		{
+			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
+            if (lua_type == LuaTypes.LUA_TNUMBER)
+            {
+                translator.PushUnityMMOTimelineStateNewState(L, (UnityMMO.TimelineState.NewState)LuaAPI.xlua_tointeger(L, 1));
+            }
+			
+            else if(lua_type == LuaTypes.LUA_TSTRING)
+            {
+			    if (LuaAPI.xlua_is_eq_str(L, 1, "Allow"))
+                {
+                    translator.PushUnityMMOTimelineStateNewState(L, UnityMMO.TimelineState.NewState.Allow);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Forbid"))
+                {
+                    translator.PushUnityMMOTimelineStateNewState(L, UnityMMO.TimelineState.NewState.Forbid);
+                }
+				else
+                {
+                    return LuaAPI.luaL_error(L, "invalid string for UnityMMO.TimelineState.NewState!");
+                }
+            }
+			
+            else
+            {
+                return LuaAPI.luaL_error(L, "invalid lua type for UnityMMO.TimelineState.NewState! Expect number or string, got + " + lua_type);
+            }
+
+            return 1;
+		}
+	}
+    
+    public class UnityMMOTimelineStateInterruptStateWrap
+    {
+		public static void __Register(RealStatePtr L)
+        {
+		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+		    Utils.BeginObjectRegister(typeof(UnityMMO.TimelineState.InterruptState), L, translator, 0, 0, 0, 0);
+			Utils.EndObjectRegister(typeof(UnityMMO.TimelineState.InterruptState), L, translator, null, null, null, null, null);
+			
+			Utils.BeginClassRegister(typeof(UnityMMO.TimelineState.InterruptState), L, null, 3, 0, 0);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Allow", UnityMMO.TimelineState.InterruptState.Allow);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Forbid", UnityMMO.TimelineState.InterruptState.Forbid);
+            
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
+            
+            Utils.EndClassRegister(typeof(UnityMMO.TimelineState.InterruptState), L, translator);
+        }
+		
+		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int __CastFrom(RealStatePtr L)
+		{
+			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
+            if (lua_type == LuaTypes.LUA_TNUMBER)
+            {
+                translator.PushUnityMMOTimelineStateInterruptState(L, (UnityMMO.TimelineState.InterruptState)LuaAPI.xlua_tointeger(L, 1));
+            }
+			
+            else if(lua_type == LuaTypes.LUA_TSTRING)
+            {
+			    if (LuaAPI.xlua_is_eq_str(L, 1, "Allow"))
+                {
+                    translator.PushUnityMMOTimelineStateInterruptState(L, UnityMMO.TimelineState.InterruptState.Allow);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Forbid"))
+                {
+                    translator.PushUnityMMOTimelineStateInterruptState(L, UnityMMO.TimelineState.InterruptState.Forbid);
+                }
+				else
+                {
+                    return LuaAPI.luaL_error(L, "invalid string for UnityMMO.TimelineState.InterruptState!");
+                }
+            }
+			
+            else
+            {
+                return LuaAPI.luaL_error(L, "invalid lua type for UnityMMO.TimelineState.InterruptState! Expect number or string, got + " + lua_type);
+            }
+
+            return 1;
+		}
+	}
+    
+    public class UnityMMOLocomotionStateStateWrap
+    {
+		public static void __Register(RealStatePtr L)
+        {
+		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+		    Utils.BeginObjectRegister(typeof(UnityMMO.LocomotionState.State), L, translator, 0, 0, 0, 0);
+			Utils.EndObjectRegister(typeof(UnityMMO.LocomotionState.State), L, translator, null, null, null, null, null);
+			
+			Utils.BeginClassRegister(typeof(UnityMMO.LocomotionState.State), L, null, 9, 0, 0);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Idle", UnityMMO.LocomotionState.State.Idle);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Run", UnityMMO.LocomotionState.State.Run);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Sprint", UnityMMO.LocomotionState.State.Sprint);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Jump", UnityMMO.LocomotionState.State.Jump);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "DoubleJump", UnityMMO.LocomotionState.State.DoubleJump);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "TrebleJump", UnityMMO.LocomotionState.State.TrebleJump);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "InAir", UnityMMO.LocomotionState.State.InAir);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "StateNum", UnityMMO.LocomotionState.State.StateNum);
+            
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
+            
+            Utils.EndClassRegister(typeof(UnityMMO.LocomotionState.State), L, translator);
+        }
+		
+		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int __CastFrom(RealStatePtr L)
+		{
+			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
+            if (lua_type == LuaTypes.LUA_TNUMBER)
+            {
+                translator.PushUnityMMOLocomotionStateState(L, (UnityMMO.LocomotionState.State)LuaAPI.xlua_tointeger(L, 1));
+            }
+			
+            else if(lua_type == LuaTypes.LUA_TSTRING)
+            {
+			    if (LuaAPI.xlua_is_eq_str(L, 1, "Idle"))
+                {
+                    translator.PushUnityMMOLocomotionStateState(L, UnityMMO.LocomotionState.State.Idle);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Run"))
+                {
+                    translator.PushUnityMMOLocomotionStateState(L, UnityMMO.LocomotionState.State.Run);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Sprint"))
+                {
+                    translator.PushUnityMMOLocomotionStateState(L, UnityMMO.LocomotionState.State.Sprint);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Jump"))
+                {
+                    translator.PushUnityMMOLocomotionStateState(L, UnityMMO.LocomotionState.State.Jump);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "DoubleJump"))
+                {
+                    translator.PushUnityMMOLocomotionStateState(L, UnityMMO.LocomotionState.State.DoubleJump);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "TrebleJump"))
+                {
+                    translator.PushUnityMMOLocomotionStateState(L, UnityMMO.LocomotionState.State.TrebleJump);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "InAir"))
+                {
+                    translator.PushUnityMMOLocomotionStateState(L, UnityMMO.LocomotionState.State.InAir);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "StateNum"))
+                {
+                    translator.PushUnityMMOLocomotionStateState(L, UnityMMO.LocomotionState.State.StateNum);
+                }
+				else
+                {
+                    return LuaAPI.luaL_error(L, "invalid string for UnityMMO.LocomotionState.State!");
+                }
+            }
+			
+            else
+            {
+                return LuaAPI.luaL_error(L, "invalid lua type for UnityMMO.LocomotionState.State! Expect number or string, got + " + lua_type);
+            }
+
+            return 1;
+		}
+	}
+    
+    public class UnityMMOJumpStateStateWrap
+    {
+		public static void __Register(RealStatePtr L)
+        {
+		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+		    Utils.BeginObjectRegister(typeof(UnityMMO.JumpState.State), L, translator, 0, 0, 0, 0);
+			Utils.EndObjectRegister(typeof(UnityMMO.JumpState.State), L, translator, null, null, null, null, null);
+			
+			Utils.BeginClassRegister(typeof(UnityMMO.JumpState.State), L, null, 5, 0, 0);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "None", UnityMMO.JumpState.State.None);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "StartJump", UnityMMO.JumpState.State.StartJump);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "InAir", UnityMMO.JumpState.State.InAir);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "EndJump", UnityMMO.JumpState.State.EndJump);
+            
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
+            
+            Utils.EndClassRegister(typeof(UnityMMO.JumpState.State), L, translator);
+        }
+		
+		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int __CastFrom(RealStatePtr L)
+		{
+			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
+            if (lua_type == LuaTypes.LUA_TNUMBER)
+            {
+                translator.PushUnityMMOJumpStateState(L, (UnityMMO.JumpState.State)LuaAPI.xlua_tointeger(L, 1));
+            }
+			
+            else if(lua_type == LuaTypes.LUA_TSTRING)
+            {
+			    if (LuaAPI.xlua_is_eq_str(L, 1, "None"))
+                {
+                    translator.PushUnityMMOJumpStateState(L, UnityMMO.JumpState.State.None);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "StartJump"))
+                {
+                    translator.PushUnityMMOJumpStateState(L, UnityMMO.JumpState.State.StartJump);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "InAir"))
+                {
+                    translator.PushUnityMMOJumpStateState(L, UnityMMO.JumpState.State.InAir);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "EndJump"))
+                {
+                    translator.PushUnityMMOJumpStateState(L, UnityMMO.JumpState.State.EndJump);
+                }
+				else
+                {
+                    return LuaAPI.luaL_error(L, "invalid string for UnityMMO.JumpState.State!");
+                }
+            }
+			
+            else
+            {
+                return LuaAPI.luaL_error(L, "invalid lua type for UnityMMO.JumpState.State! Expect number or string, got + " + lua_type);
+            }
+
+            return 1;
+		}
+	}
+    
+    public class UnityMMOActionInfoTypeWrap
+    {
+		public static void __Register(RealStatePtr L)
+        {
+		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+		    Utils.BeginObjectRegister(typeof(UnityMMO.ActionInfo.Type), L, translator, 0, 0, 0, 0);
+			Utils.EndObjectRegister(typeof(UnityMMO.ActionInfo.Type), L, translator, null, null, null, null, null);
+			
+			Utils.BeginClassRegister(typeof(UnityMMO.ActionInfo.Type), L, null, 6, 0, 0);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "None", UnityMMO.ActionInfo.Type.None);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Skill1", UnityMMO.ActionInfo.Type.Skill1);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Skill2", UnityMMO.ActionInfo.Type.Skill2);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Skill3", UnityMMO.ActionInfo.Type.Skill3);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Skill4", UnityMMO.ActionInfo.Type.Skill4);
+            
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
+            
+            Utils.EndClassRegister(typeof(UnityMMO.ActionInfo.Type), L, translator);
+        }
+		
+		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int __CastFrom(RealStatePtr L)
+		{
+			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
+            if (lua_type == LuaTypes.LUA_TNUMBER)
+            {
+                translator.PushUnityMMOActionInfoType(L, (UnityMMO.ActionInfo.Type)LuaAPI.xlua_tointeger(L, 1));
+            }
+			
+            else if(lua_type == LuaTypes.LUA_TSTRING)
+            {
+			    if (LuaAPI.xlua_is_eq_str(L, 1, "None"))
+                {
+                    translator.PushUnityMMOActionInfoType(L, UnityMMO.ActionInfo.Type.None);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Skill1"))
+                {
+                    translator.PushUnityMMOActionInfoType(L, UnityMMO.ActionInfo.Type.Skill1);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Skill2"))
+                {
+                    translator.PushUnityMMOActionInfoType(L, UnityMMO.ActionInfo.Type.Skill2);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Skill3"))
+                {
+                    translator.PushUnityMMOActionInfoType(L, UnityMMO.ActionInfo.Type.Skill3);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Skill4"))
+                {
+                    translator.PushUnityMMOActionInfoType(L, UnityMMO.ActionInfo.Type.Skill4);
+                }
+				else
+                {
+                    return LuaAPI.luaL_error(L, "invalid string for UnityMMO.ActionInfo.Type!");
+                }
+            }
+			
+            else
+            {
+                return LuaAPI.luaL_error(L, "invalid lua type for UnityMMO.ActionInfo.Type! Expect number or string, got + " + lua_type);
+            }
+
+            return 1;
+		}
+	}
+    
+    public class UnityMMOLooksInfoStateWrap
+    {
+		public static void __Register(RealStatePtr L)
+        {
+		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+		    Utils.BeginObjectRegister(typeof(UnityMMO.LooksInfo.State), L, translator, 0, 0, 0, 0);
+			Utils.EndObjectRegister(typeof(UnityMMO.LooksInfo.State), L, translator, null, null, null, null, null);
+			
+			Utils.BeginClassRegister(typeof(UnityMMO.LooksInfo.State), L, null, 4, 0, 0);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "None", UnityMMO.LooksInfo.State.None);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Loading", UnityMMO.LooksInfo.State.Loading);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Loaded", UnityMMO.LooksInfo.State.Loaded);
+            
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
+            
+            Utils.EndClassRegister(typeof(UnityMMO.LooksInfo.State), L, translator);
+        }
+		
+		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int __CastFrom(RealStatePtr L)
+		{
+			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
+            if (lua_type == LuaTypes.LUA_TNUMBER)
+            {
+                translator.PushUnityMMOLooksInfoState(L, (UnityMMO.LooksInfo.State)LuaAPI.xlua_tointeger(L, 1));
+            }
+			
+            else if(lua_type == LuaTypes.LUA_TSTRING)
+            {
+			    if (LuaAPI.xlua_is_eq_str(L, 1, "None"))
+                {
+                    translator.PushUnityMMOLooksInfoState(L, UnityMMO.LooksInfo.State.None);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Loading"))
+                {
+                    translator.PushUnityMMOLooksInfoState(L, UnityMMO.LooksInfo.State.Loading);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Loaded"))
+                {
+                    translator.PushUnityMMOLooksInfoState(L, UnityMMO.LooksInfo.State.Loaded);
+                }
+				else
+                {
+                    return LuaAPI.luaL_error(L, "invalid string for UnityMMO.LooksInfo.State!");
+                }
+            }
+			
+            else
+            {
+                return LuaAPI.luaL_error(L, "invalid lua type for UnityMMO.LooksInfo.State! Expect number or string, got + " + lua_type);
+            }
+
+            return 1;
+		}
+	}
+    
+    public class UnityMMOSceneObjectDataTypeWrap
+    {
+		public static void __Register(RealStatePtr L)
+        {
+		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+		    Utils.BeginObjectRegister(typeof(UnityMMO.SceneObjectData.Type), L, translator, 0, 0, 0, 0);
+			Utils.EndObjectRegister(typeof(UnityMMO.SceneObjectData.Type), L, translator, null, null, null, null, null);
+			
+			Utils.BeginClassRegister(typeof(UnityMMO.SceneObjectData.Type), L, null, 4, 0, 0);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Role", UnityMMO.SceneObjectData.Type.Role);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Monster", UnityMMO.SceneObjectData.Type.Monster);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "NPC", UnityMMO.SceneObjectData.Type.NPC);
+            
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
+            
+            Utils.EndClassRegister(typeof(UnityMMO.SceneObjectData.Type), L, translator);
+        }
+		
+		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int __CastFrom(RealStatePtr L)
+		{
+			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
+            if (lua_type == LuaTypes.LUA_TNUMBER)
+            {
+                translator.PushUnityMMOSceneObjectDataType(L, (UnityMMO.SceneObjectData.Type)LuaAPI.xlua_tointeger(L, 1));
+            }
+			
+            else if(lua_type == LuaTypes.LUA_TSTRING)
+            {
+			    if (LuaAPI.xlua_is_eq_str(L, 1, "Role"))
+                {
+                    translator.PushUnityMMOSceneObjectDataType(L, UnityMMO.SceneObjectData.Type.Role);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Monster"))
+                {
+                    translator.PushUnityMMOSceneObjectDataType(L, UnityMMO.SceneObjectData.Type.Monster);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "NPC"))
+                {
+                    translator.PushUnityMMOSceneObjectDataType(L, UnityMMO.SceneObjectData.Type.NPC);
+                }
+				else
+                {
+                    return LuaAPI.luaL_error(L, "invalid string for UnityMMO.SceneObjectData.Type!");
+                }
+            }
+			
+            else
+            {
+                return LuaAPI.luaL_error(L, "invalid lua type for UnityMMO.SceneObjectData.Type! Expect number or string, got + " + lua_type);
+            }
+
+            return 1;
+		}
+	}
+    
+    public class UnityMMOTimelineInfoEventWrap
+    {
+		public static void __Register(RealStatePtr L)
+        {
+		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+		    Utils.BeginObjectRegister(typeof(UnityMMO.TimelineInfo.Event), L, translator, 0, 0, 0, 0);
+			Utils.EndObjectRegister(typeof(UnityMMO.TimelineInfo.Event), L, translator, null, null, null, null, null);
+			
+			Utils.BeginClassRegister(typeof(UnityMMO.TimelineInfo.Event), L, null, 3, 0, 0);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "AfterAdd", UnityMMO.TimelineInfo.Event.AfterAdd);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "StartPlay", UnityMMO.TimelineInfo.Event.StartPlay);
+            
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
+            
+            Utils.EndClassRegister(typeof(UnityMMO.TimelineInfo.Event), L, translator);
+        }
+		
+		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int __CastFrom(RealStatePtr L)
+		{
+			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
+            if (lua_type == LuaTypes.LUA_TNUMBER)
+            {
+                translator.PushUnityMMOTimelineInfoEvent(L, (UnityMMO.TimelineInfo.Event)LuaAPI.xlua_tointeger(L, 1));
+            }
+			
+            else if(lua_type == LuaTypes.LUA_TSTRING)
+            {
+			    if (LuaAPI.xlua_is_eq_str(L, 1, "AfterAdd"))
+                {
+                    translator.PushUnityMMOTimelineInfoEvent(L, UnityMMO.TimelineInfo.Event.AfterAdd);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "StartPlay"))
+                {
+                    translator.PushUnityMMOTimelineInfoEvent(L, UnityMMO.TimelineInfo.Event.StartPlay);
+                }
+				else
+                {
+                    return LuaAPI.luaL_error(L, "invalid string for UnityMMO.TimelineInfo.Event!");
+                }
+            }
+			
+            else
+            {
+                return LuaAPI.luaL_error(L, "invalid lua type for UnityMMO.TimelineInfo.Event! Expect number or string, got + " + lua_type);
+            }
+
+            return 1;
+		}
+	}
+    
 }

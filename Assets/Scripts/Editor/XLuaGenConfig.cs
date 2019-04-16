@@ -15,6 +15,7 @@ using UnityEngine.UI;
 using static XLuaManager;
 using System.Reflection;
 using UnityMMO;
+using System.Linq;
 //using System.Reflection;
 //using System.Linq;
 
@@ -79,25 +80,18 @@ public static class XLuaGenConfig
     };
 
     [LuaCallCSharp]
-    public static List<Type> LuaCallCSharpUMMO = new List<Type>() {
-        typeof(GameInput),
-        typeof(SkillManager),
-        typeof(TimelineManager)
-    };
-
-    // [LuaCallCSharp]
-    // public static List<Type> LuaCallCSharp
-    // {
-    //     get
-    //     {
-    //         Assembly.GetExecutingAssembly().GetTypes()
-    //         List<Type> list = Assembly.Load("UnityMMO").GetExportedTypes().Concat(customTypes)
-    //              .Where(type => !type.IsGenericTypeDefinition)//去除泛型
-    //             .Where(type => !type.IsNested);//去除嵌套类型
-    //             // .Where(type => !isExcluded(type)).ToList();
-    //         return list;
-    //     }
-    // }
+    [CSharpCallLua]
+    public static List<Type> CSharpCallLuaUnityMMO
+    {
+        get
+        {
+            Type[] types = Assembly.Load("Assembly-CSharp").GetTypes();
+            List<Type> list = (from type in types
+                               where type.Namespace == "UnityMMO" 
+                               select type).ToList();
+            return list;
+        }
+    }
 
     [LuaCallCSharp]
     public static List<Type> LuaCallCSharpTextMeshPro = new List<Type>() {
