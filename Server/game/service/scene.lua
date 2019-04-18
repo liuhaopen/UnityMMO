@@ -214,9 +214,6 @@ local init_pos_info = function ( base_info )
 	end
 end
 
--- local get_or_create_scene_uid = function ( type, id )
--- end
-
 function CMD.role_enter_scene(role_id)
 	print('Cat:scene.lua[role_enter_scene] role_id', role_id)
 	if not this.role_list[role_id] then

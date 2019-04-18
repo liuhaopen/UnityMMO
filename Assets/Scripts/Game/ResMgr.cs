@@ -21,6 +21,7 @@ public class ResMgr
         LoadPrefab("Assets/AssetBundleRes/role/prefab/MainRole.prefab", "MainRole");    
         LoadPrefab("Assets/AssetBundleRes/role/prefab/Role.prefab", "Role");
         LoadPrefab("Assets/AssetBundleRes/monster/prefab/Monster.prefab", "Monster");
+        LoadPrefab("Assets/AssetBundleRes/ui/common/Nameboard.prefab", "Nameboard");
 	}
 
     public void LoadPrefab(string path, string storePrefabName)

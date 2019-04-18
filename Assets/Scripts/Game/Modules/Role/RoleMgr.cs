@@ -85,6 +85,8 @@ public class RoleMgr
         EntityManager.AddComponentData(role, new LocomotionState {Value = LocomotionState.State.Idle});
         EntityManager.AddComponentData(role, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
         EntityManager.AddComponentData(role, new UID {Value=uid});
+        EntityManager.AddComponentData(role, new SceneObjectTypeData {Value=SceneObjectType.Role});
+        EntityManager.AddComponentData(role, new NameboardData {UIResState=NameboardData.ResState.WaitLoad});
         EntityManager.AddComponentData(role, new TypeID {Value=typeID});
         EntityManager.AddComponentData(role, new GroundInfo {GroundNormal=Vector3.zero, Altitude=0});
         EntityManager.AddComponentData(role, new JumpState {JumpStatus=JumpState.State.None, JumpCount=0, OriginYPos=0, AscentHeight=0});
