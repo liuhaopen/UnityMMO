@@ -50,9 +50,8 @@ namespace UnityMMO{
             // TimelineSpawnRequest.Create(m_GameWorld.GetEntityManager(), Entity.Null, "haha");
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<ResetPosOffsetSystem>(m_GameWorld));
             
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<NameboardSpawnRequestSystem>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<NameboardSystem>(m_GameWorld));
-            
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<NameboardSpawnRequestSystem>(m_GameWorld));
         }
 
         public void StartGame() {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -13,6 +14,7 @@ public class RoleMgr
     private Transform container;
     GameObjectEntity mainRoleGOE;
     Dictionary<string, GameObject> prefabDic = new Dictionary<string, GameObject>();
+    Dictionary<long, string> names = new Dictionary<long, string>();
     public EntityManager EntityManager { get => m_GameWorld.GetEntityManager();}
     public Transform RoleContainer { get => container; set => container = value; }
 
@@ -43,6 +45,7 @@ public class RoleMgr
         roleGameOE.transform.SetParent(container);
         roleGameOE.transform.localPosition = pos;
         Entity role = roleGameOE.Entity;
+        RoleMgr.GetInstance().SetName(uid, name);
         InitRole(role, uid, typeID, pos);
         EntityManager.AddComponentData(role, new PosSynchInfo {LastUploadPos = float3.zero});
         EntityManager.AddComponent(role, ComponentType.Create<UserCommand>());
@@ -95,6 +98,18 @@ public class RoleMgr
         
         MoveQuery rmq = EntityManager.GetComponentObject<MoveQuery>(role);
         rmq.Initialize();
+    }
+
+    public string GetName(long uid)
+    {
+        string name = "";
+        names.TryGetValue(uid, out name);
+        return name;
+    }
+
+    public void SetName(long uid, string name)
+    {
+        names[uid] = name;
     }
 }
 

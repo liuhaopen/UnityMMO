@@ -89,6 +89,12 @@ public class MonsterMgr
             }
         });
     }
+
+    public string GetName(Entity entity)
+    {
+        var typeIDData = EntityManager.GetComponentData<TypeID>(entity);
+        return "monster"+typeIDData.Value;
+    }
 }
 
 }

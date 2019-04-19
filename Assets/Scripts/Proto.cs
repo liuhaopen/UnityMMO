@@ -2028,7 +2028,7 @@ namespace SprotoType {
 
 
 	public class scene_role_looks_info : SprotoTypeBase {
-		private static int max_field_count = 6;
+		private static int max_field_count = 9;
 		
 		
 		private Int64 _career; // tag 0
@@ -2085,6 +2085,33 @@ namespace SprotoType {
 			get { return base.has_field.has_field (5); }
 		}
 
+		private string _name; // tag 6
+		public string name {
+			get { return _name; }
+			set { base.has_field.set_field (6, true); _name = value; }
+		}
+		public bool HasName {
+			get { return base.has_field.has_field (6); }
+		}
+
+		private Int64 _hp; // tag 7
+		public Int64 hp {
+			get { return _hp; }
+			set { base.has_field.set_field (7, true); _hp = value; }
+		}
+		public bool HasHp {
+			get { return base.has_field.has_field (7); }
+		}
+
+		private Int64 _max_hp; // tag 8
+		public Int64 max_hp {
+			get { return _max_hp; }
+			set { base.has_field.set_field (8, true); _max_hp = value; }
+		}
+		public bool HasMax_hp {
+			get { return base.has_field.has_field (8); }
+		}
+
 		public scene_role_looks_info () : base(max_field_count) {}
 
 		public scene_role_looks_info (byte[] buffer) : base(max_field_count, buffer) {
@@ -2112,6 +2139,15 @@ namespace SprotoType {
 					break;
 				case 5:
 					this.horse = base.deserialize.read_integer ();
+					break;
+				case 6:
+					this.name = base.deserialize.read_string ();
+					break;
+				case 7:
+					this.hp = base.deserialize.read_integer ();
+					break;
+				case 8:
+					this.max_hp = base.deserialize.read_integer ();
 					break;
 				default:
 					base.deserialize.read_unknow_data ();
@@ -2145,6 +2181,18 @@ namespace SprotoType {
 
 			if (base.has_field.has_field (5)) {
 				base.serialize.write_integer (this.horse, 5);
+			}
+
+			if (base.has_field.has_field (6)) {
+				base.serialize.write_string (this.name, 6);
+			}
+
+			if (base.has_field.has_field (7)) {
+				base.serialize.write_integer (this.hp, 7);
+			}
+
+			if (base.has_field.has_field (8)) {
+				base.serialize.write_integer (this.max_hp, 8);
 			}
 
 			return base.serialize.close ();

@@ -90,13 +90,19 @@ public class HandleRoleLooksNetRequest : BaseComponentSystem
                 Debug.Log("rsp.result : "+rsp.result.ToString()+" owner:"+owner.ToString());
                 if (rsp.result == UnityMMO.GameConst.NetResultOk)
                 {
+                    RoleMgr.GetInstance().SetName(req.uid, rsp.role_looks_info.name);
+                    if (m_world.GetEntityManager().HasComponent<HealthStateData>(owner))
+                    {
+                        var hpData = m_world.GetEntityManager().GetComponentData<HealthStateData>(owner);
+                        hpData.health = rsp.role_looks_info.hp;
+                        hpData.maxHealth = rsp.role_looks_info.max_hp;
+                        m_world.GetEntityManager().SetComponentData<HealthStateData>(owner, hpData);
+                    }
                     bool hasTrans = m_world.GetEntityManager().HasComponent<Transform>(owner);
                     if (hasTrans)
                     {
                         var transform = m_world.GetEntityManager().GetComponentObject<Transform>(owner); 
-                        // Debug.Log("roleState.position : "+transform.localPosition.ToString());
                         //因为是异步操作，等后端发送信息过来时PostUpdateCommands已经失效了，所以不能这么用
-                        // RoleLooksSpawnRequest.Create(PostUpdateCommands, (int)rsp.role_looks_info.career, transform.localPosition, transform.localRotation, owner, (int)rsp.role_looks_info.body, (int)rsp.role_looks_info.hair);
                         RoleLooksSpawnRequest.Create(m_world.GetEntityManager(), (int)rsp.role_looks_info.career, transform.localPosition, transform.localRotation, owner, (int)rsp.role_looks_info.body, (int)rsp.role_looks_info.hair);
                     }
                 }

@@ -258,11 +258,16 @@ function CMD.scene_get_role_look_info( user_info, req_data )
 	local role_info = this.object_list[req_data.uid]
 	-- print('Cat:scene.lua[211] role_info', role_info, req_data.uid, this.object_list[req_data.uid])
 	local looks_info
-	if role_info then
+	local entity = this.uid_entity_map[req_data.uid]
+	if role_info and entity then
+		local hpData = this.entity_mgr:GetComponentData(entity, "umo.hp")
 		looks_info = {
 			result = 0,
 			role_looks_info = {
 				career = role_info.base_info.career or 1,
+				name = role_info.name,
+				hp = hpData.cur,
+				max_hp = hpData.max,
 				body = 0,
 				hair = 0,
 				weapon = 0,

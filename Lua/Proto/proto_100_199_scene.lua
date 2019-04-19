@@ -40,6 +40,9 @@ return [[
 	weapon 3 : integer
 	wing 4 : integer
 	horse 5 : integer
+	name 6 : string
+	hp 7 : integer
+	max_hp 8 : integer
 }
 .scene_monster_info {
 	monster_id 0 : integer

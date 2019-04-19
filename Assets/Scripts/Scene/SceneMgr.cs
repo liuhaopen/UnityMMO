@@ -321,6 +321,41 @@ public class SceneMgr : MonoBehaviour
         return Entity.Null;
     }
 
+    public string GetNameByUID(long uid)
+    {
+        SceneObjectType type = GetSceneObjTypeByUID(uid);
+        string name;
+        switch (type)
+        {
+            case SceneObjectType.Role:
+                name = RoleMgr.GetInstance().GetName(uid);
+                break;
+            case SceneObjectType.Monster:
+                name = MonsterMgr.GetInstance().GetName(GetSceneObject(uid));
+                break;
+            default:
+                name = "";
+                break;
+        }
+        return name;
+    }
+
+    public SceneObjectType GetSceneObjTypeByUID(long uid)
+    {
+        int value = (int)math.floor(uid/10000000000);
+        switch (value)
+        {
+            case 1:
+                return SceneObjectType.Role;
+            case 2:
+                return SceneObjectType.Monster;
+            case 3:
+                return SceneObjectType.NPC;
+            default:
+                return SceneObjectType.None;
+        }
+    }
+
     public void RemoveSceneObject(long uid)
     {
         Entity entity = GetSceneObject(uid);

@@ -27,8 +27,8 @@ public class NameboardSystem : BaseComponentSystem
 
         for (var i = 0; i < nameboardArray.Length; i++)
         {
-            var entity = entityArray[i];
             var nameboard = nameboardArray[i];
+            var entity = entityArray[i];
             UpdateNameboard(posArray[i], nameboard, entity);
         }
     }
@@ -43,22 +43,22 @@ public class NameboardSystem : BaseComponentSystem
                 Vector3 BloodSlotWorldPos = target.position + new Vector3 (0f, 1.8f, 0f);
                 Vector3 BloodSlotToCamera = Camera.main.transform.position - BloodSlotWorldPos;
                 float BloodSlotDIs = BloodSlotToCamera.magnitude;
-                float maxVisualDis = 50;
+                float maxVisualDis = 20;
                 float scaleFactor = Mathf.Clamp(1-(BloodSlotDIs-maxVisualDis)/maxVisualDis, 0, 1);
-
+                // Debug.Log("scaleFactor : "+scaleFactor+" dis:"+BloodSlotDIs);
                 if (EntityManager.HasComponent<RectTransform>(nameboardData.UIEntity))
                 {
                     var transform = EntityManager.GetComponentObject<RectTransform>(nameboardData.UIEntity);
                     transform.position = Camera.main.WorldToScreenPoint(BloodSlotWorldPos);
                     transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
-                     if (player2DPosition.x > Screen.width || player2DPosition.x < 0 || player2DPosition.y > Screen.height || player2DPosition.y < 0)
-                    {
-                        transform.gameObject.SetActive(false);
-                    }
-                    else
-                    {
-                        transform.gameObject.SetActive(true);
-                    }
+                    // if (player2DPosition.x > Screen.width || player2DPosition.x < 0 || player2DPosition.y > Screen.height || player2DPosition.y < 0)
+                    // {
+                    //     transform.gameObject.SetActive(false);
+                    // }
+                    // else
+                    // {
+                    //     transform.gameObject.SetActive(true);
+                    // }
                 }
             }
         }
@@ -85,6 +85,16 @@ public struct NameboardSpawnRequest : IComponentData
         commandBuffer.CreateEntity();
         commandBuffer.AddComponent(data);
     }
+
+    // public static void Create(EntityManager entityMgr, Entity Owner)
+    // {
+    //     var data = new NameboardSpawnRequest()
+    //     {
+    //         Owner = Owner,
+    //     };
+    //     Entity entity = entityMgr.CreateEntity(typeof(NameboardSpawnRequest));
+    //     entityMgr.SetComponentData(entity, data);
+    // }
 }
 
 [DisableAutoCreation]
@@ -121,9 +131,16 @@ public class NameboardSpawnRequestSystem : BaseComponentSystem
             var request = spawnRequests[i];
             GameObjectEntity nameboardGOE = m_world.Spawn<GameObjectEntity>(ResMgr.GetInstance().GetPrefab("Nameboard"));
             nameboardGOE.transform.SetParent(nameboardCanvas);
+            var nameboardBehav = nameboardGOE.GetComponent<Nameboard>();
+            var uid = EntityManager.GetComponentData<UID>(request.Owner);
+            string name = SceneMgr.Instance.GetNameByUID(uid.Value);
+            nameboardBehav.Name = name;
             if (EntityManager.HasComponent<NameboardData>(request.Owner))
             {
-                EntityManager.SetComponentData(request.Owner, new NameboardData{UIEntity=nameboardGOE.Entity, UIResState=NameboardData.ResState.Loaded});
+                var nameboardData = EntityManager.GetComponentData<NameboardData>(request.Owner);
+                nameboardData.UIEntity = nameboardGOE.Entity;
+                nameboardData.UIResState = NameboardData.ResState.Loaded;
+                EntityManager.SetComponentData(request.Owner, nameboardData);
             }
         }
     }
