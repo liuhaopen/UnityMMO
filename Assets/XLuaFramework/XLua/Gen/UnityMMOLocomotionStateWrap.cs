@@ -81,7 +81,7 @@ namespace XLua.CSObjectWrap
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			
                 UnityMMO.LocomotionState gen_to_be_invoked;translator.Get(L, 1, out gen_to_be_invoked);
-                translator.PushUnityMMOLocomotionStateState(L, gen_to_be_invoked.Value);
+                translator.PushUnityMMOLocomotionStateState(L, gen_to_be_invoked.LocoState);
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }
@@ -98,7 +98,7 @@ namespace XLua.CSObjectWrap
 			
                 UnityMMO.LocomotionState gen_to_be_invoked;translator.Get(L, 1, out gen_to_be_invoked);
                 UnityMMO.LocomotionState.State gen_value;translator.Get(L, 2, out gen_value);
-				gen_to_be_invoked.Value = gen_value;
+				gen_to_be_invoked.LocoState = gen_value;
             
                 translator.Update(L, 1, gen_to_be_invoked);
             

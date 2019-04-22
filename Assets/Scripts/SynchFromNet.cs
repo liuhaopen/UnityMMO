@@ -26,6 +26,7 @@ public class SynchFromNet {
         changeFuncDic = new Dictionary<SceneInfoKey, Action<Entity, SprotoType.info_item>>();
         changeFuncDic[SceneInfoKey.PosChange] = ApplyChangeInfoPos;
         changeFuncDic[SceneInfoKey.TargetPos] = ApplyChangeInfoTargetPos;
+        changeFuncDic[SceneInfoKey.JumpState] = ApplyChangeInfoJumpState;
     }
 
     public void StartSynchFromNet()
@@ -191,5 +192,13 @@ public class SynchFromNet {
         // }
         SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = newTargetPos});
     }
+
+    private void ApplyChangeInfoJumpState(Entity entity, SprotoType.info_item change_info)
+    {
+        var actionData = SceneMgr.Instance.EntityManager.GetComponentData<ActionData>(entity);
+        actionData.Jump = 1;
+        SceneMgr.Instance.EntityManager.SetComponentData(entity, actionData);
+    }
+    
 }
 }

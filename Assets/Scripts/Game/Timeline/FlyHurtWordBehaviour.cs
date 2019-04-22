@@ -53,6 +53,14 @@ public class FlyHurtWordBehaviour : PlayableBehaviour
         {
             var defender = Defenders[i];
             Debug.Log("defender uid : "+defender.uid+" damage:"+defender.damage+" hp:"+defender.cur_hp+" damagetype:"+defender.damage_type);
+            var defenderEntity = SceneMgr.Instance.GetSceneObject(defender.uid);
+            if (EntityMgr.HasComponent<LocomotionState>(defenderEntity))
+            {
+                Debug.Log("slhow ");
+                var locomotionState = EntityMgr.GetComponentData<LocomotionState>(defenderEntity);
+                locomotionState.LocoState = LocomotionState.State.BeHit;
+                EntityMgr.SetComponentData<LocomotionState>(defenderEntity, locomotionState);
+            }
         }
         leftShowCount--;
     }

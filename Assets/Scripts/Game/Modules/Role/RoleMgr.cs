@@ -85,7 +85,7 @@ public class RoleMgr
     {
         EntityManager.AddComponentData(role, new MoveSpeed {Value = 1200});
         EntityManager.AddComponentData(role, new TargetPosition {Value = new float3(pos.x, pos.y, pos.z)});
-        EntityManager.AddComponentData(role, new LocomotionState {Value = LocomotionState.State.Idle});
+        EntityManager.AddComponentData(role, new LocomotionState {LocoState = LocomotionState.State.Idle});
         EntityManager.AddComponentData(role, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
         EntityManager.AddComponentData(role, new UID {Value=uid});
         EntityManager.AddComponentData(role, new SceneObjectTypeData {Value=SceneObjectType.Role});
@@ -93,6 +93,7 @@ public class RoleMgr
         EntityManager.AddComponentData(role, new TypeID {Value=typeID});
         EntityManager.AddComponentData(role, new GroundInfo {GroundNormal=Vector3.zero, Altitude=0});
         EntityManager.AddComponentData(role, new JumpState {JumpStatus=JumpState.State.None, JumpCount=0, OriginYPos=0, AscentHeight=0});
+        EntityManager.AddComponentData(role, ActionData.Empty);
         EntityManager.AddComponentData(role, new PosOffset {Value = float3.zero});
         EntityManager.AddComponentData(role, new TimelineState {NewStatus=TimelineState.NewState.Allow, InterruptStatus=TimelineState.InterruptState.Allow});
         

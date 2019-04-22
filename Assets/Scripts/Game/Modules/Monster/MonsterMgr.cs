@@ -49,10 +49,11 @@ public class MonsterMgr
     {
         EntityManager.AddComponentData(monster, new MoveSpeed {Value = 1000});
         EntityManager.AddComponentData(monster, new TargetPosition {Value = new float3(pos.x, pos.y, pos.z)});
-        EntityManager.AddComponentData(monster, new LocomotionState {Value = LocomotionState.State.Idle});
+        EntityManager.AddComponentData(monster, new LocomotionState {LocoState = LocomotionState.State.Idle});
         EntityManager.AddComponentData(monster, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
         EntityManager.AddComponentData(monster, new UID {Value=uid});
         EntityManager.AddComponentData(monster, new TypeID {Value=typeID});
+        EntityManager.AddComponentData(monster, ActionData.Empty);
         EntityManager.AddComponentData(monster, new SceneObjectTypeData {Value=SceneObjectType.Monster});
         EntityManager.AddComponentData(monster, new NameboardData {UIResState=NameboardData.ResState.WaitLoad});
         // EntityManager.AddComponentData(monster, new JumpState {JumpStatus=JumpState.State.None, JumpCount=0, OriginYPos=0, AscentHeight=0});

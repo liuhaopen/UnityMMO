@@ -7,4 +7,5 @@ SceneInfoKey = {
     LeaveView=2,
     PosChange=3,
     TargetPos=4,
+    JumpState=5,
 }

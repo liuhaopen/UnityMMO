@@ -36,6 +36,7 @@ namespace UnityMMO{
 
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<MovementUpdateSystem>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleMovementQueries>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<MovementHandleGroundCollision>(m_GameWorld));
 
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<GroundTestSystem>(m_GameWorld));
 
@@ -52,6 +53,9 @@ namespace UnityMMO{
             
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<NameboardSystem>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<NameboardSpawnRequestSystem>(m_GameWorld));
+
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<ActionDataResetSystem>(m_GameWorld));
+            
         }
 
         public void StartGame() {

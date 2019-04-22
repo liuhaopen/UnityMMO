@@ -14,7 +14,7 @@ public class MovementUpdateSystem : BaseComponentSystem
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(MoveQuery), typeof(LocomotionState), typeof(PosOffset));
+        group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(MoveQuery), typeof(LocomotionState), typeof(PosOffset), typeof(ActionData), typeof(PosSynchInfo));
     }
 
     protected override void OnUpdate()
@@ -42,9 +42,63 @@ public class MovementUpdateSystem : BaseComponentSystem
             float moveDistance = Vector3.Magnitude(groundDir);
             groundDir = Vector3.Normalize(groundDir);
             bool isMoveWanted = moveDistance>0.01f;
+            
+            var newLocoState = LocomotionState.State.StateNum;
+            var curLocoStateObj = locoStates[i];
+            var phaseDuration = Time.time - curLocoStateObj.StartTime;
+            var curLocoState = curLocoStateObj.LocoState;
+            // bool isOnGround = curLocoState == LocomotionState.State.Idle || curLocoState == LocomotionState.State.Run || curLocoState == LocomotionState.State.Sprint;
+            bool isOnGround = curLocoStateObj.IsOnGround();
+            // Debug.Log("isOnGround : "+isOnGround.ToString()+" movewanted:"+isMoveWanted.ToString());
+            if (isOnGround)
+            {
+                if (isMoveWanted)
+                    newLocoState = LocomotionState.State.Run;
+                else
+                    newLocoState = LocomotionState.State.Idle;
+            }
+            float ySpeed = 0;
+            bool isClickJump = false;
+            if (EntityManager.HasComponent<ActionData>(entities[i]))
+            {
+                var actionData = EntityManager.GetComponentData<ActionData>(entities[i]);
+                isClickJump = actionData.Jump == 1;
+            }
+            // Jump
+            if (isOnGround)
+                curLocoStateObj.JumpCount = 0;
+
+            if (isClickJump && isOnGround)
+            {
+                curLocoStateObj.JumpCount = 1;
+                newLocoState = LocomotionState.State.Jump;
+            }
+
+            if (isClickJump && curLocoStateObj.IsInJump() && curLocoStateObj.JumpCount < 3)
+            {
+                curLocoStateObj.JumpCount = curLocoStateObj.JumpCount + 1;
+                newLocoState = curLocoStateObj.JumpCount==2?LocomotionState.State.DoubleJump:LocomotionState.State.TrebleJump;
+            }
+
+            if (curLocoStateObj.LocoState == LocomotionState.State.Jump || curLocoStateObj.LocoState == LocomotionState.State.DoubleJump || curLocoStateObj.LocoState == LocomotionState.State.TrebleJump)
+            {
+                if (phaseDuration >= GameConst.JumpAscentDuration[curLocoStateObj.LocoState-LocomotionState.State.Jump])
+                    newLocoState = LocomotionState.State.InAir;
+            }
+            // Debug.Log("newLocoState ; "+newLocoState.ToString()+" curLocoStateObj:"+curLocoStateObj.LocoState.ToString()+" jumpcount:"+curLocoStateObj.JumpCount);
+            if (newLocoState != LocomotionState.State.StateNum && newLocoState != curLocoState)
+            {
+                curLocoStateObj.LocoState = newLocoState;
+                curLocoStateObj.StartTime = Time.time;
+            }
+            if (curLocoStateObj.LocoState == LocomotionState.State.Jump || curLocoStateObj.LocoState == LocomotionState.State.DoubleJump || curLocoStateObj.LocoState == LocomotionState.State.TrebleJump)
+            {
+                ySpeed = GameConst.JumpAscentHeight[curLocoStateObj.LocoState-LocomotionState.State.Jump] / GameConst.JumpAscentDuration[curLocoStateObj.LocoState-LocomotionState.State.Jump] - GameConst.Gravity;
+            }
+            locoStates[i] = curLocoStateObj;
+
+            // Debug.Log("ySpeed : "+ySpeed+" state :"+newLocoState.ToString());
             float3 newPos;
-            //模仿重力，人物需要贴着地面走，有碰撞检测的所以不怕
-            bool isNeedGravity = true;
             if (moveDistance < speed/GameConst.SpeedFactor*dt)
             {
                 //目标已经离得很近了
@@ -55,30 +109,14 @@ public class MovementUpdateSystem : BaseComponentSystem
                 newPos = startPos+groundDir*speed/GameConst.SpeedFactor*dt;
             }
             newPos.y = startPos.y;
-            newPos.y += GameConst.Gravity * dt;
+            //模仿重力，人物需要贴着地面走，有碰撞检测的所以不怕
+            newPos.y += (GameConst.Gravity+ySpeed) * dt;
             newPos += posOffset;
             var moveQuery = moveQuerys[i];
             moveQuery.moveQueryStart = startPos;
             //不能直接设置新坐标，因为需要和地形做碰撞处理什么的，所以利用CharacterController走路，在HandleMovementQueries才设置新坐标
             moveQuery.moveQueryEnd = newPos;
 
-            var newLocoState = LocomotionState.State.StateNum;
-            var curLocoStateObj = locoStates[i];
-            var curLocoState = curLocoStateObj.Value;
-            bool isOnGround = curLocoState == LocomotionState.State.Idle || curLocoState == LocomotionState.State.Run || curLocoState == LocomotionState.State.Sprint;
-            // Debug.Log("isOnGround : "+isOnGround.ToString()+" movewanted:"+isMoveWanted.ToString());
-            if (isOnGround)
-            {
-                if (isMoveWanted)
-                    newLocoState = LocomotionState.State.Run;
-                else
-                    newLocoState = LocomotionState.State.Idle;
-            }
-            if (newLocoState != LocomotionState.State.StateNum && newLocoState != curLocoState)
-            {
-                curLocoStateObj.Value = newLocoState;
-                locoStates[i] = curLocoStateObj;
-            }
             //change role rotation
             if (isMoveWanted)
             {
@@ -92,6 +130,72 @@ public class MovementUpdateSystem : BaseComponentSystem
                 var euler = new Vector3(0, eulerY, 0);
                 curTrans.rotation = Quaternion.Slerp(curTrans.rotation, Quaternion.Euler(euler), Time.deltaTime*50);
             }
+        }
+    }
+}
+
+
+[DisableAutoCreation]
+class MovementHandleGroundCollision : BaseComponentSystem
+{
+    public MovementHandleGroundCollision(GameWorld world) : base(world)
+    {
+    }
+
+    ComponentGroup group;
+    protected override void OnCreateManager()
+    {
+        base.OnCreateManager();
+        group = GetComponentGroup(typeof(Transform), typeof(MoveQuery), typeof(LocomotionState), typeof(TargetPosition));
+    }
+
+    protected override void OnUpdate()
+    {
+        var locoStates = group.GetComponentDataArray<LocomotionState>();
+        var targets = group.GetComponentDataArray<TargetPosition>();
+        var querys = group.GetComponentArray<MoveQuery>();
+        var transforms = group.GetComponentArray<Transform>();
+        for (int i = 0; i < locoStates.Length; i++)
+        {
+            var locoState = locoStates[i];
+            var query = querys[i];
+            // Check for ground change (hitting ground or leaving ground)  
+            var isOnGround = locoState.IsOnGround();
+            // Debug.Log("isOnGround : "+isOnGround.ToString()+" query:"+query.isGrounded);
+            if (isOnGround != query.isGrounded)
+            {
+                if (query.isGrounded)
+                {
+                    Vector3 startPos = transforms[i].localPosition;
+                    Vector3 targetPos = targets[i].Value;
+                    var groundDir = targetPos-startPos;
+                    bool isMoveWanted = Vector3.Magnitude(groundDir)>0.01f;
+                    if (isMoveWanted)
+                    {
+                        locoState.LocoState = LocomotionState.State.Run;  
+                    }
+                    else
+                    {
+                        locoState.LocoState = LocomotionState.State.Idle;    
+                    }
+                }
+                else
+                {
+                    locoState.LocoState = LocomotionState.State.InAir;                    
+                }
+                
+                locoState.StartTime = Time.time;
+                locoStates[i] = locoState;
+            }
+        
+            // Manually calculate resulting velocity as characterController.velocity is linked to Time.deltaTime
+            // var newPos = query.moveQueryResult;
+            // var oldPos = query.moveQueryStart;
+            // var velocity = (newPos - oldPos) / Time.deltaTime;
+        
+            // locoState.velocity = velocity;
+            // locoState.position = query.moveQueryResult;
+            // EntityManager.SetComponentData(charAbility.character, locoState);
         }
     }
 }

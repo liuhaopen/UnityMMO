@@ -38,49 +38,49 @@ public class JumpCtrlBehaviour : PlayableBehaviour
             // if (curInput.magnitude <= 0)
                 GameInput.GetInstance().JoystickDir = Vector2.zero;
         }
-        if (EntityMgr.HasComponent<JumpState>(Owner))
-        {
-            var jumpState = EntityMgr.GetComponentData<JumpState>(Owner);
-            // jumpState.JumpCount = 0;
-            jumpState.JumpStatus = JumpState.State.None;
-            EntityMgr.SetComponentData<JumpState>(Owner, jumpState);
-        }
+        // if (EntityMgr.HasComponent<JumpState>(Owner))
+        // {
+        //     var jumpState = EntityMgr.GetComponentData<JumpState>(Owner);
+        //     // jumpState.JumpCount = 0;
+        //     jumpState.JumpStatus = JumpState.State.None;
+        //     EntityMgr.SetComponentData<JumpState>(Owner, jumpState);
+        // }
     }
 
     // Called when the state of the playable is set to Play
     public override void OnBehaviourPlay(Playable playable, FrameData info)
     {
-        maxTime= (float)PlayableExtensions.GetDuration(playable);
-        var trans = EntityMgr.GetComponentObject<Transform>(Owner);
-        if (EntityMgr.HasComponent<JumpState>(Owner) && trans!=null)
-        {
-            var jumpState = EntityMgr.GetComponentData<JumpState>(Owner);
-            jumpCount = math.clamp(jumpState.JumpCount+1, 1, GameConst.MaxJumpCount);
-            startYPos = trans.localPosition.y;
-            if (jumpState.JumpCount == 0)
-            {
-                jumpState.OriginYPos = trans.localPosition.y;
-                jumpState.AscentHeight = 4;
-            }
-            else if (jumpState.JumpCount == 1)
-            {
-                jumpState.AscentHeight = 2.6f;
+        // maxTime= (float)PlayableExtensions.GetDuration(playable);
+        // var trans = EntityMgr.GetComponentObject<Transform>(Owner);
+        // if (EntityMgr.HasComponent<JumpState>(Owner) && trans!=null)
+        // {
+        //     var jumpState = EntityMgr.GetComponentData<JumpState>(Owner);
+        //     jumpCount = math.clamp(jumpState.JumpCount+1, 1, GameConst.MaxJumpCount);
+        //     startYPos = trans.localPosition.y;
+        //     if (jumpState.JumpCount == 0)
+        //     {
+        //         jumpState.OriginYPos = trans.localPosition.y;
+        //         jumpState.AscentHeight = 4;
+        //     }
+        //     else if (jumpState.JumpCount == 1)
+        //     {
+        //         jumpState.AscentHeight = 2.6f;
                 
-            }
-            else if (jumpState.JumpCount == 2)
-            {
-                //第三段跳只是前进
-                jumpState.AscentHeight = 0;
-            }
-            else
-            {   
-            }
-            jumpState.JumpCount = jumpCount;
-            jumpState.JumpStatus = JumpState.State.StartJump;
-            // Debug.Log("jumpState.JumpCount : "+jumpState.JumpCount);
-            EntityMgr.SetComponentData<JumpState>(Owner, jumpState);
-        }
-        Debug.Log("start jump");
+        //     }
+        //     else if (jumpState.JumpCount == 2)
+        //     {
+        //         //第三段跳只是前进
+        //         jumpState.AscentHeight = 0;
+        //     }
+        //     else
+        //     {   
+        //     }
+        //     jumpState.JumpCount = jumpCount;
+        //     jumpState.JumpStatus = JumpState.State.StartJump;
+        //     // Debug.Log("jumpState.JumpCount : "+jumpState.JumpCount);
+        //     EntityMgr.SetComponentData<JumpState>(Owner, jumpState);
+        // }
+        // Debug.Log("start jump");
         // EntityMgr.SetComponentData<TimelineState>(Owner, new TimelineState{NewStatus=newState, InterruptStatus=interruptState});
     }
 
@@ -107,20 +107,20 @@ public class JumpCtrlBehaviour : PlayableBehaviour
             //     Debug.Log("GameInput.GetInstance().JoystickDir : "+GameInput.GetInstance().JoystickDir.x+" "+GameInput.GetInstance().JoystickDir.y+" forward:"+trans.forward.x+" "+trans.forward.z);
             // }
         }
-        curTime += info.deltaTime;
-        if (EntityMgr.HasComponent<JumpState>(Owner) && trans!=null)
-        {
-            var jumpState = EntityMgr.GetComponentData<JumpState>(Owner);
-            var percent = Curve.Evaluate(curTime/ maxTime);
-            var targetY = jumpState.OriginYPos + jumpState.AscentHeight*percent;
-            Debug.Log("jump percent "+percent+" targetY:"+targetY);
-            if (EntityMgr.HasComponent<PosOffset>(Owner))
-            {
-                var gravity = GameConst.Gravity*Time.deltaTime;//需要抵消重力
-                var offsetY = targetY-trans.localPosition.y-gravity;
-                var posOffset = new PosOffset{Value=new float3(0, offsetY, 0)};
-                EntityMgr.SetComponentData<PosOffset>(Owner, posOffset);
-            }
-        }
+        // curTime += info.deltaTime;
+        // if (EntityMgr.HasComponent<JumpState>(Owner) && trans!=null)
+        // {
+        //     var jumpState = EntityMgr.GetComponentData<JumpState>(Owner);
+        //     var percent = Curve.Evaluate(curTime/ maxTime);
+        //     var targetY = jumpState.OriginYPos + jumpState.AscentHeight*percent;
+        //     Debug.Log("jump percent "+percent+" targetY:"+targetY);
+        //     if (EntityMgr.HasComponent<PosOffset>(Owner))
+        //     {
+        //         var gravity = GameConst.Gravity*Time.deltaTime;//需要抵消重力
+        //         var offsetY = targetY-trans.localPosition.y-gravity;
+        //         var posOffset = new PosOffset{Value=new float3(0, offsetY, 0)};
+        //         EntityMgr.SetComponentData<PosOffset>(Owner, posOffset);
+        //     }
+        // }
     }
 }

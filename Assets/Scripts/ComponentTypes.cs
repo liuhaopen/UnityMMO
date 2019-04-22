@@ -49,9 +49,27 @@ namespace UnityMMO
             DoubleJump,
             TrebleJump,
             InAir,
+            BeHit,
             StateNum,
         }
-        public State Value;
+        public State LocoState;
+
+        public bool IsOnGround()
+        {
+            return LocoState == LocomotionState.State.Idle || LocoState == LocomotionState.State.Run;
+        }
+        public bool IsInJump()
+        {
+            return LocoState == LocomotionState.State.Jump || LocoState == LocomotionState.State.DoubleJump || LocoState == LocomotionState.State.TrebleJump || LocoState == LocomotionState.State.InAir;
+        }
+        public float StartTime;
+        public int JumpCount;
+    }
+
+    public struct ActionData : IComponentData
+    {
+        public int Jump;
+        public static ActionData Empty = new ActionData{Jump=0};
     }
 
     public struct NameboardData : IComponentData

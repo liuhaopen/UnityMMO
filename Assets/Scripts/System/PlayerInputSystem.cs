@@ -48,6 +48,9 @@ namespace UnityMMO
             command.moveYaw = angle;
             command.moveMagnitude = magnitude;
 
+            var roleGameOE = RoleMgr.GetInstance().GetMainRole();
+            EntityManager.SetComponentData<ActionData>(roleGameOE.Entity, ActionData.Empty);
+
             float invertY = 1.0f;
 
             Vector2 deltaMousePos = new Vector2(0, 0);
@@ -82,18 +85,17 @@ namespace UnityMMO
         void DoJump()
         {
             var roleGameOE = RoleMgr.GetInstance().GetMainRole();
-            var jumpState = EntityManager.GetComponentData<JumpState>(roleGameOE.Entity);
-            if (jumpState.JumpStatus == JumpState.State.None)
-            {
-                jumpState.JumpCount = 0;
-                EntityManager.SetComponentData<JumpState>(roleGameOE.Entity, jumpState);
-            }
+            var jumpState = EntityManager.GetComponentData<LocomotionState>(roleGameOE.Entity);
             var isMaxJump = jumpState.JumpCount >= GameConst.MaxJumpCount;
             if (isMaxJump)
             {
                 //已经最高跳段了，就不能再跳
                 return;
             }
+            var actionData = EntityManager.GetComponentData<ActionData>(roleGameOE.Entity);
+            actionData.Jump = 1;
+            EntityManager.SetComponentData<ActionData>(roleGameOE.Entity, actionData);
+            //这里的timeline只作跳跃中的表现，如加粒子加女主尾巴等，状态和高度控制还是放在MovementUpdateSystem里，因为跳跃这个动作什么时候结束是未知的，你可能跳崖了，这时跳跃状态会一直维持至到碰到地面，所以不方便放在timeline里。
             var newJumpCount = math.clamp(jumpState.JumpCount+1, 0, GameConst.MaxJumpCount);
             var roleInfo = roleGameOE.GetComponent<RoleInfo>();
             var assetPath = GameConst.GetRoleJumpResPath(roleInfo.Career, newJumpCount);
@@ -127,11 +129,5 @@ namespace UnityMMO
             TimelineManager.GetInstance().AddTimeline(uid.Value, timelineInfo, EntityManager);
         }
 
-        void ReqCastSkill(int skillID)
-        {
-            
-
-        }
-      
     }
 }

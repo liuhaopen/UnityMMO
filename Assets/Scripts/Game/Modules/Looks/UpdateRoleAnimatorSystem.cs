@@ -19,8 +19,6 @@ public class UpdateRoleAnimatorSystem : BaseComponentSystem
 
     protected override void OnUpdate()
     {
-        // var states = group.GetComponentArray<RoleState>();
-        // var grounds = group.GetComponentDataArray<GroundInfo>();
         var looksInfos = group.GetComponentDataArray<LooksInfo>();
         var locoStates = group.GetComponentDataArray<LocomotionState>();
         var directors = group.GetComponentArray<PlayableDirector>();
@@ -29,13 +27,12 @@ public class UpdateRoleAnimatorSystem : BaseComponentSystem
             var looksInfo = looksInfos[i];
             var director = directors[i];
             // Debug.Log("director.state : "+director.state.ToString());
-            if (looksInfo.CurState!=LooksInfo.State.Loaded || director.state==PlayState.Playing)
+            if (looksInfo.CurState!=LooksInfo.State.Loaded)
                 continue;
             var looksEntity = looksInfo.LooksEntity;
             var animator = m_world.GetEntityManager().GetComponentObject<Animator>(looksEntity);
-            // Debug.Log("animator : "+(animator!=null).ToString());
             if (animator!=null)
-                UpdateAnimator(animator, locoStates[i].Value);
+                UpdateAnimator(animator, locoStates[i].LocoState);
         }
     }
 
@@ -51,6 +48,22 @@ public class UpdateRoleAnimatorSystem : BaseComponentSystem
         {
             // animator.CrossFade("run", 0.2f, 0, Time.deltaTime);
             animator.Play("run");
+        }
+        else if (locoState == LocomotionState.State.BeHit && !animator.GetCurrentAnimatorStateInfo(0).IsName("behit"))
+        {
+            animator.Play("behit");
+        }
+        else if (locoState == LocomotionState.State.Jump && !animator.GetCurrentAnimatorStateInfo(0).IsName("jump"))
+        {
+            animator.Play("jump");
+        }
+        else if (locoState == LocomotionState.State.DoubleJump && !animator.GetCurrentAnimatorStateInfo(0).IsName("jump2"))
+        {
+            animator.Play("jump2");
+        }
+        else if (locoState == LocomotionState.State.TrebleJump && !animator.GetCurrentAnimatorStateInfo(0).IsName("jump3"))
+        {
+            animator.Play("jump3");
         }
     }
 }

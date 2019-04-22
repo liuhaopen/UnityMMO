@@ -342,6 +342,10 @@ function CMD.scene_walk( user_info, req_data )
 		local change_target_pos_event_info = {key=SceneInfoKey.TargetPos, value=target_pos_info, time=cur_time}
 		this.event_list[role_info.scene_uid] = this.event_list[role_info.scene_uid] or {}
 		table.insert(this.event_list[role_info.scene_uid], change_target_pos_event_info)
+
+		if req_data.jump_state ~= 0 then
+			table.insert(this.event_list[role_info.scene_uid], {key=SceneInfoKey.JumpState, value="1", time=cur_time})
+		end
 	end
 	return {}
 end
