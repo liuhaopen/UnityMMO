@@ -498,7 +498,7 @@ namespace XLua.CSObjectWrap
 		    Utils.BeginObjectRegister(typeof(UnityMMO.LocomotionState.State), L, translator, 0, 0, 0, 0);
 			Utils.EndObjectRegister(typeof(UnityMMO.LocomotionState.State), L, translator, null, null, null, null, null);
 			
-			Utils.BeginClassRegister(typeof(UnityMMO.LocomotionState.State), L, null, 9, 0, 0);
+			Utils.BeginClassRegister(typeof(UnityMMO.LocomotionState.State), L, null, 10, 0, 0);
             
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Idle", UnityMMO.LocomotionState.State.Idle);
             
@@ -513,6 +513,8 @@ namespace XLua.CSObjectWrap
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "TrebleJump", UnityMMO.LocomotionState.State.TrebleJump);
             
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "InAir", UnityMMO.LocomotionState.State.InAir);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "BeHit", UnityMMO.LocomotionState.State.BeHit);
             
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "StateNum", UnityMMO.LocomotionState.State.StateNum);
             
@@ -561,6 +563,10 @@ namespace XLua.CSObjectWrap
                 {
                     translator.PushUnityMMOLocomotionStateState(L, UnityMMO.LocomotionState.State.InAir);
                 }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "BeHit"))
+                {
+                    translator.PushUnityMMOLocomotionStateState(L, UnityMMO.LocomotionState.State.BeHit);
+                }
 				else if (LuaAPI.xlua_is_eq_str(L, 1, "StateNum"))
                 {
                     translator.PushUnityMMOLocomotionStateState(L, UnityMMO.LocomotionState.State.StateNum);
@@ -574,6 +580,72 @@ namespace XLua.CSObjectWrap
             else
             {
                 return LuaAPI.luaL_error(L, "invalid lua type for UnityMMO.LocomotionState.State! Expect number or string, got + " + lua_type);
+            }
+
+            return 1;
+		}
+	}
+    
+    public class UnityMMONameboardDataResStateWrap
+    {
+		public static void __Register(RealStatePtr L)
+        {
+		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+		    Utils.BeginObjectRegister(typeof(UnityMMO.NameboardData.ResState), L, translator, 0, 0, 0, 0);
+			Utils.EndObjectRegister(typeof(UnityMMO.NameboardData.ResState), L, translator, null, null, null, null, null);
+			
+			Utils.BeginClassRegister(typeof(UnityMMO.NameboardData.ResState), L, null, 5, 0, 0);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "WaitLoad", UnityMMO.NameboardData.ResState.WaitLoad);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Loading", UnityMMO.NameboardData.ResState.Loading);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Loaded", UnityMMO.NameboardData.ResState.Loaded);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "DontLoad", UnityMMO.NameboardData.ResState.DontLoad);
+            
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
+            
+            Utils.EndClassRegister(typeof(UnityMMO.NameboardData.ResState), L, translator);
+        }
+		
+		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int __CastFrom(RealStatePtr L)
+		{
+			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
+            if (lua_type == LuaTypes.LUA_TNUMBER)
+            {
+                translator.PushUnityMMONameboardDataResState(L, (UnityMMO.NameboardData.ResState)LuaAPI.xlua_tointeger(L, 1));
+            }
+			
+            else if(lua_type == LuaTypes.LUA_TSTRING)
+            {
+			    if (LuaAPI.xlua_is_eq_str(L, 1, "WaitLoad"))
+                {
+                    translator.PushUnityMMONameboardDataResState(L, UnityMMO.NameboardData.ResState.WaitLoad);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Loading"))
+                {
+                    translator.PushUnityMMONameboardDataResState(L, UnityMMO.NameboardData.ResState.Loading);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Loaded"))
+                {
+                    translator.PushUnityMMONameboardDataResState(L, UnityMMO.NameboardData.ResState.Loaded);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "DontLoad"))
+                {
+                    translator.PushUnityMMONameboardDataResState(L, UnityMMO.NameboardData.ResState.DontLoad);
+                }
+				else
+                {
+                    return LuaAPI.luaL_error(L, "invalid string for UnityMMO.NameboardData.ResState!");
+                }
+            }
+			
+            else
+            {
+                return LuaAPI.luaL_error(L, "invalid lua type for UnityMMO.NameboardData.ResState! Expect number or string, got + " + lua_type);
             }
 
             return 1;
@@ -886,6 +958,66 @@ namespace XLua.CSObjectWrap
             else
             {
                 return LuaAPI.luaL_error(L, "invalid lua type for UnityMMO.TimelineInfo.Event! Expect number or string, got + " + lua_type);
+            }
+
+            return 1;
+		}
+	}
+    
+    public class UnityMMONameboardColorStyleWrap
+    {
+		public static void __Register(RealStatePtr L)
+        {
+		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+		    Utils.BeginObjectRegister(typeof(UnityMMO.Nameboard.ColorStyle), L, translator, 0, 0, 0, 0);
+			Utils.EndObjectRegister(typeof(UnityMMO.Nameboard.ColorStyle), L, translator, null, null, null, null, null);
+			
+			Utils.BeginClassRegister(typeof(UnityMMO.Nameboard.ColorStyle), L, null, 4, 0, 0);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Green", UnityMMO.Nameboard.ColorStyle.Green);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Red", UnityMMO.Nameboard.ColorStyle.Red);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Blue", UnityMMO.Nameboard.ColorStyle.Blue);
+            
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
+            
+            Utils.EndClassRegister(typeof(UnityMMO.Nameboard.ColorStyle), L, translator);
+        }
+		
+		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int __CastFrom(RealStatePtr L)
+		{
+			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
+            if (lua_type == LuaTypes.LUA_TNUMBER)
+            {
+                translator.PushUnityMMONameboardColorStyle(L, (UnityMMO.Nameboard.ColorStyle)LuaAPI.xlua_tointeger(L, 1));
+            }
+			
+            else if(lua_type == LuaTypes.LUA_TSTRING)
+            {
+			    if (LuaAPI.xlua_is_eq_str(L, 1, "Green"))
+                {
+                    translator.PushUnityMMONameboardColorStyle(L, UnityMMO.Nameboard.ColorStyle.Green);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Red"))
+                {
+                    translator.PushUnityMMONameboardColorStyle(L, UnityMMO.Nameboard.ColorStyle.Red);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Blue"))
+                {
+                    translator.PushUnityMMONameboardColorStyle(L, UnityMMO.Nameboard.ColorStyle.Blue);
+                }
+				else
+                {
+                    return LuaAPI.luaL_error(L, "invalid string for UnityMMO.Nameboard.ColorStyle!");
+                }
+            }
+			
+            else
+            {
+                return LuaAPI.luaL_error(L, "invalid lua type for UnityMMO.Nameboard.ColorStyle! Expect number or string, got + " + lua_type);
             }
 
             return 1;

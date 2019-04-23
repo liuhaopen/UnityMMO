@@ -21,7 +21,7 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(TMPro.TMP_Text);
-			Utils.BeginObjectRegister(type, L, translator, 0, 15, 84, 61);
+			Utils.BeginObjectRegister(type, L, translator, 0, 15, 85, 62);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "ForceMeshUpdate", _m_ForceMeshUpdate);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "UpdateGeometry", _m_UpdateGeometry);
@@ -96,6 +96,7 @@ namespace XLua.CSObjectWrap
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "mappingUvLineOffset", _g_get_mappingUvLineOffset);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "renderMode", _g_get_renderMode);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "geometrySortingOrder", _g_get_geometrySortingOrder);
+            Utils.RegisterFunc(L, Utils.GETTER_IDX, "vertexBufferAutoSizeReduction", _g_get_vertexBufferAutoSizeReduction);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "firstVisibleCharacter", _g_get_firstVisibleCharacter);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "maxVisibleCharacters", _g_get_maxVisibleCharacters);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "maxVisibleWords", _g_get_maxVisibleWords);
@@ -175,6 +176,7 @@ namespace XLua.CSObjectWrap
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "mappingUvLineOffset", _s_set_mappingUvLineOffset);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "renderMode", _s_set_renderMode);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "geometrySortingOrder", _s_set_geometrySortingOrder);
+            Utils.RegisterFunc(L, Utils.SETTER_IDX, "vertexBufferAutoSizeReduction", _s_set_vertexBufferAutoSizeReduction);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "firstVisibleCharacter", _s_set_firstVisibleCharacter);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "maxVisibleCharacters", _s_set_maxVisibleCharacters);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "maxVisibleWords", _s_set_maxVisibleWords);
@@ -1112,7 +1114,7 @@ namespace XLua.CSObjectWrap
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			
                 TMPro.TMP_Text gen_to_be_invoked = (TMPro.TMP_Text)translator.FastGetCSObj(L, 1);
-                LuaAPI.xlua_pushinteger(L, gen_to_be_invoked.fontWeight);
+                translator.Push(L, gen_to_be_invoked.fontWeight);
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }
@@ -1603,6 +1605,20 @@ namespace XLua.CSObjectWrap
 			
                 TMPro.TMP_Text gen_to_be_invoked = (TMPro.TMP_Text)translator.FastGetCSObj(L, 1);
                 translator.Push(L, gen_to_be_invoked.geometrySortingOrder);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_vertexBufferAutoSizeReduction(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                TMPro.TMP_Text gen_to_be_invoked = (TMPro.TMP_Text)translator.FastGetCSObj(L, 1);
+                LuaAPI.lua_pushboolean(L, gen_to_be_invoked.vertexBufferAutoSizeReduction);
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }
@@ -2299,7 +2315,8 @@ namespace XLua.CSObjectWrap
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			
                 TMPro.TMP_Text gen_to_be_invoked = (TMPro.TMP_Text)translator.FastGetCSObj(L, 1);
-                gen_to_be_invoked.fontWeight = LuaAPI.xlua_tointeger(L, 2);
+                TMPro.FontWeight gen_value;translator.Get(L, 2, out gen_value);
+				gen_to_be_invoked.fontWeight = gen_value;
             
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
@@ -2757,6 +2774,21 @@ namespace XLua.CSObjectWrap
                 TMPro.TMP_Text gen_to_be_invoked = (TMPro.TMP_Text)translator.FastGetCSObj(L, 1);
                 TMPro.VertexSortingOrder gen_value;translator.Get(L, 2, out gen_value);
 				gen_to_be_invoked.geometrySortingOrder = gen_value;
+            
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 0;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _s_set_vertexBufferAutoSizeReduction(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                TMPro.TMP_Text gen_to_be_invoked = (TMPro.TMP_Text)translator.FastGetCSObj(L, 1);
+                gen_to_be_invoked.vertexBufferAutoSizeReduction = LuaAPI.lua_toboolean(L, 2);
             
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);

@@ -881,12 +881,12 @@ namespace SprotoType {
 			get { return base.has_field.has_field (2); }
 		}
 
-		private Int64 _damage_type; // tag 3
-		public Int64 damage_type {
-			get { return _damage_type; }
-			set { base.has_field.set_field (3, true); _damage_type = value; }
+		private Int64 _flag; // tag 3
+		public Int64 flag {
+			get { return _flag; }
+			set { base.has_field.set_field (3, true); _flag = value; }
 		}
-		public bool HasDamage_type {
+		public bool HasFlag {
 			get { return base.has_field.has_field (3); }
 		}
 
@@ -910,7 +910,7 @@ namespace SprotoType {
 					this.damage = base.deserialize.read_integer ();
 					break;
 				case 3:
-					this.damage_type = base.deserialize.read_integer ();
+					this.flag = base.deserialize.read_integer ();
 					break;
 				default:
 					base.deserialize.read_unknow_data ();
@@ -935,7 +935,7 @@ namespace SprotoType {
 			}
 
 			if (base.has_field.has_field (3)) {
-				base.serialize.write_integer (this.damage_type, 3);
+				base.serialize.write_integer (this.flag, 3);
 			}
 
 			return base.serialize.close ();

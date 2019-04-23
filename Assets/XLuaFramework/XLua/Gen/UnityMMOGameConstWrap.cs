@@ -31,7 +31,7 @@ namespace XLua.CSObjectWrap
 			Utils.EndObjectRegister(type, L, translator, null, null,
 			    null, null, null);
 
-		    Utils.BeginClassRegister(type, L, __CreateInstance, 15, 0, 0);
+		    Utils.BeginClassRegister(type, L, __CreateInstance, 18, 0, 0);
 			Utils.RegisterFunc(L, Utils.CLS_IDX, "GetRoleResPath", _m_GetRoleResPath_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetUIResPath", _m_GetUIResPath_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetRoleCareerResPath", _m_GetRoleCareerResPath_xlua_st_);
@@ -48,6 +48,9 @@ namespace XLua.CSObjectWrap
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "NetResultOk", UnityMMO.GameConst.NetResultOk);
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Gravity", UnityMMO.GameConst.Gravity);
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "MaxJumpCount", UnityMMO.GameConst.MaxJumpCount);
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "JumpAscentDuration", UnityMMO.GameConst.JumpAscentDuration);
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "JumpAscentHeight", UnityMMO.GameConst.JumpAscentHeight);
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "MaxFallVelocity", UnityMMO.GameConst.MaxFallVelocity);
             
 			
 			

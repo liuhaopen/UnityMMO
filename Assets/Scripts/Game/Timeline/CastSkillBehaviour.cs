@@ -81,10 +81,10 @@ public class CastSkillBehaviour : PlayableBehaviour
         for (int i = 0; i < inputCount; i++)
         {
             Type playableType = playable.GetInput(i).GetPlayableType();
-            var isFlyWord = playableType == typeof(FlyHurtWordBehaviour);
+            var isFlyWord = playableType == typeof(ApplyDamageBehaviour);
             if (isFlyWord)
             {
-                var flyWordPlayable = (ScriptPlayable<FlyHurtWordBehaviour>)(playable.GetInput(i));
+                var flyWordPlayable = (ScriptPlayable<ApplyDamageBehaviour>)(playable.GetInput(i));
                 var behaviour = flyWordPlayable.GetBehaviour();
                 if (behaviour != null)
                     behaviour.Defenders = obj as List<SprotoType.scene_fight_defender_info>;

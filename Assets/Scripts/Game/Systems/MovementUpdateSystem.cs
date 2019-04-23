@@ -14,7 +14,8 @@ public class MovementUpdateSystem : BaseComponentSystem
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(MoveQuery), typeof(LocomotionState), typeof(PosOffset), typeof(ActionData), typeof(PosSynchInfo));
+        // group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(MoveQuery), typeof(LocomotionState), typeof(PosOffset), typeof(PosSynchInfo));
+        group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(MoveQuery), typeof(LocomotionState), typeof(PosOffset));
     }
 
     protected override void OnUpdate()
@@ -50,7 +51,7 @@ public class MovementUpdateSystem : BaseComponentSystem
             // bool isOnGround = curLocoState == LocomotionState.State.Idle || curLocoState == LocomotionState.State.Run || curLocoState == LocomotionState.State.Sprint;
             bool isOnGround = curLocoStateObj.IsOnGround();
             // Debug.Log("isOnGround : "+isOnGround.ToString()+" movewanted:"+isMoveWanted.ToString());
-            if (isOnGround)
+            if (isOnGround && curLocoStateObj.LocoState!=LocomotionState.State.BeHit)
             {
                 if (isMoveWanted)
                     newLocoState = LocomotionState.State.Run;
@@ -187,12 +188,10 @@ class MovementHandleGroundCollision : BaseComponentSystem
                 locoState.StartTime = Time.time;
                 locoStates[i] = locoState;
             }
-        
             // Manually calculate resulting velocity as characterController.velocity is linked to Time.deltaTime
             // var newPos = query.moveQueryResult;
             // var oldPos = query.moveQueryStart;
             // var velocity = (newPos - oldPos) / Time.deltaTime;
-        
             // locoState.velocity = velocity;
             // locoState.position = query.moveQueryResult;
             // EntityManager.SetComponentData(charAbility.character, locoState);

@@ -8,7 +8,7 @@ using UnityEngine.Playables;
 using UnityMMO;
 
 // A behaviour that is attached to a playable
-public class FlyHurtWordBehaviour : PlayableBehaviour
+public class ApplyDamageBehaviour : PlayableBehaviour
 {
     public List<scene_fight_defender_info> Defenders;
     public Entity Owner;
@@ -52,14 +52,23 @@ public class FlyHurtWordBehaviour : PlayableBehaviour
         for (int i=0; i<Defenders.Count; i++)
         {
             var defender = Defenders[i];
-            Debug.Log("defender uid : "+defender.uid+" damage:"+defender.damage+" hp:"+defender.cur_hp+" damagetype:"+defender.damage_type);
+            Debug.Log("defender uid : "+defender.uid+" damage:"+defender.damage+" hp:"+defender.cur_hp+" damagetype:"+defender.flag);
             var defenderEntity = SceneMgr.Instance.GetSceneObject(defender.uid);
             if (EntityMgr.HasComponent<LocomotionState>(defenderEntity))
             {
                 Debug.Log("slhow ");
+                //进入受击状态
                 var locomotionState = EntityMgr.GetComponentData<LocomotionState>(defenderEntity);
                 locomotionState.LocoState = LocomotionState.State.BeHit;
+                locomotionState.StartTime = Time.time;
                 EntityMgr.SetComponentData<LocomotionState>(defenderEntity, locomotionState);
+                //显示战斗飘字
+                var defenderTrans = EntityMgr.GetComponentObject<Transform>(defenderEntity);
+                var flyWordObj = ResMgr.GetInstance().SpawnGameObject("FightFlyWord");
+                FightFlyWord flyWord = flyWordObj.GetComponent<FightFlyWord>();
+                flyWord.SetData(defender.damage, defender.flag);
+                flyWord.transform.localPosition = defenderTrans.localPosition;
+                flyWord.StartFly();
             }
         }
         leftShowCount--;

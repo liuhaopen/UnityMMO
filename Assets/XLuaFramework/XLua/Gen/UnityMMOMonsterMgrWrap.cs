@@ -21,11 +21,12 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(UnityMMO.MonsterMgr);
-			Utils.BeginObjectRegister(type, L, translator, 0, 3, 2, 1);
+			Utils.BeginObjectRegister(type, L, translator, 0, 4, 2, 1);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Init", _m_Init);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "OnDestroy", _m_OnDestroy);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "AddMonster", _m_AddMonster);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetName", _m_GetName);
 			
 			
 			Utils.RegisterFunc(L, Utils.GETTER_IDX, "EntityManager", _g_get_EntityManager);
@@ -161,6 +162,35 @@ namespace XLua.CSObjectWrap
                     
                         Unity.Entities.Entity gen_ret = gen_to_be_invoked.AddMonster( _uid, _typeID, _pos );
                         translator.Push(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_GetName(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                UnityMMO.MonsterMgr gen_to_be_invoked = (UnityMMO.MonsterMgr)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    Unity.Entities.Entity _entity;translator.Get(L, 2, out _entity);
+                    
+                        string gen_ret = gen_to_be_invoked.GetName( _entity );
+                        LuaAPI.lua_pushstring(L, gen_ret);
                     
                     
                     

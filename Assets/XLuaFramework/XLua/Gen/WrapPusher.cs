@@ -42,11 +42,13 @@ namespace XLua
 				translator.RegisterPushAndGetAndUpdate<UnityMMO.TimelineState.NewState>(translator.PushUnityMMOTimelineStateNewState, translator.Get, translator.UpdateUnityMMOTimelineStateNewState);
 				translator.RegisterPushAndGetAndUpdate<UnityMMO.TimelineState.InterruptState>(translator.PushUnityMMOTimelineStateInterruptState, translator.Get, translator.UpdateUnityMMOTimelineStateInterruptState);
 				translator.RegisterPushAndGetAndUpdate<UnityMMO.LocomotionState.State>(translator.PushUnityMMOLocomotionStateState, translator.Get, translator.UpdateUnityMMOLocomotionStateState);
+				translator.RegisterPushAndGetAndUpdate<UnityMMO.NameboardData.ResState>(translator.PushUnityMMONameboardDataResState, translator.Get, translator.UpdateUnityMMONameboardDataResState);
 				translator.RegisterPushAndGetAndUpdate<UnityMMO.JumpState.State>(translator.PushUnityMMOJumpStateState, translator.Get, translator.UpdateUnityMMOJumpStateState);
 				translator.RegisterPushAndGetAndUpdate<UnityMMO.ActionInfo.Type>(translator.PushUnityMMOActionInfoType, translator.Get, translator.UpdateUnityMMOActionInfoType);
 				translator.RegisterPushAndGetAndUpdate<UnityMMO.LooksInfo.State>(translator.PushUnityMMOLooksInfoState, translator.Get, translator.UpdateUnityMMOLooksInfoState);
 				translator.RegisterPushAndGetAndUpdate<UnityMMO.SceneObjectData.Type>(translator.PushUnityMMOSceneObjectDataType, translator.Get, translator.UpdateUnityMMOSceneObjectDataType);
 				translator.RegisterPushAndGetAndUpdate<UnityMMO.TimelineInfo.Event>(translator.PushUnityMMOTimelineInfoEvent, translator.Get, translator.UpdateUnityMMOTimelineInfoEvent);
+				translator.RegisterPushAndGetAndUpdate<UnityMMO.Nameboard.ColorStyle>(translator.PushUnityMMONameboardColorStyle, translator.Get, translator.UpdateUnityMMONameboardColorStyle);
 			
 			}
         }
@@ -1255,6 +1257,90 @@ namespace XLua
             }
         }
         
+        int UnityMMONameboardDataResState_TypeID = -1;
+		int UnityMMONameboardDataResState_EnumRef = -1;
+        
+        public void PushUnityMMONameboardDataResState(RealStatePtr L, UnityMMO.NameboardData.ResState val)
+        {
+            if (UnityMMONameboardDataResState_TypeID == -1)
+            {
+			    bool is_first;
+                UnityMMONameboardDataResState_TypeID = getTypeId(L, typeof(UnityMMO.NameboardData.ResState), out is_first);
+				
+				if (UnityMMONameboardDataResState_EnumRef == -1)
+				{
+				    Utils.LoadCSTable(L, typeof(UnityMMO.NameboardData.ResState));
+				    UnityMMONameboardDataResState_EnumRef = LuaAPI.luaL_ref(L, LuaIndexes.LUA_REGISTRYINDEX);
+				}
+				
+            }
+			
+			if (LuaAPI.xlua_tryget_cachedud(L, (int)val, UnityMMONameboardDataResState_EnumRef) == 1)
+            {
+			    return;
+			}
+			
+            IntPtr buff = LuaAPI.xlua_pushstruct(L, 4, UnityMMONameboardDataResState_TypeID);
+            if (!CopyByValue.Pack(buff, 0, (int)val))
+            {
+                throw new Exception("pack fail fail for UnityMMO.NameboardData.ResState ,value="+val);
+            }
+			
+			LuaAPI.lua_getref(L, UnityMMONameboardDataResState_EnumRef);
+			LuaAPI.lua_pushvalue(L, -2);
+			LuaAPI.xlua_rawseti(L, -2, (int)val);
+			LuaAPI.lua_pop(L, 1);
+			
+        }
+		
+        public void Get(RealStatePtr L, int index, out UnityMMO.NameboardData.ResState val)
+        {
+		    LuaTypes type = LuaAPI.lua_type(L, index);
+            if (type == LuaTypes.LUA_TUSERDATA )
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != UnityMMONameboardDataResState_TypeID)
+				{
+				    throw new Exception("invalid userdata for UnityMMO.NameboardData.ResState");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+				int e;
+                if (!CopyByValue.UnPack(buff, 0, out e))
+                {
+                    throw new Exception("unpack fail for UnityMMO.NameboardData.ResState");
+                }
+				val = (UnityMMO.NameboardData.ResState)e;
+                
+            }
+            else
+            {
+                val = (UnityMMO.NameboardData.ResState)objectCasters.GetCaster(typeof(UnityMMO.NameboardData.ResState))(L, index, null);
+            }
+        }
+		
+        public void UpdateUnityMMONameboardDataResState(RealStatePtr L, int index, UnityMMO.NameboardData.ResState val)
+        {
+		    
+            if (LuaAPI.lua_type(L, index) == LuaTypes.LUA_TUSERDATA)
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != UnityMMONameboardDataResState_TypeID)
+				{
+				    throw new Exception("invalid userdata for UnityMMO.NameboardData.ResState");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+                if (!CopyByValue.Pack(buff, 0,  (int)val))
+                {
+                    throw new Exception("pack fail for UnityMMO.NameboardData.ResState ,value="+val);
+                }
+            }
+			
+            else
+            {
+                throw new Exception("try to update a data with lua type:" + LuaAPI.lua_type(L, index));
+            }
+        }
+        
         int UnityMMOJumpStateState_TypeID = -1;
 		int UnityMMOJumpStateState_EnumRef = -1;
         
@@ -1675,6 +1761,90 @@ namespace XLua
             }
         }
         
+        int UnityMMONameboardColorStyle_TypeID = -1;
+		int UnityMMONameboardColorStyle_EnumRef = -1;
+        
+        public void PushUnityMMONameboardColorStyle(RealStatePtr L, UnityMMO.Nameboard.ColorStyle val)
+        {
+            if (UnityMMONameboardColorStyle_TypeID == -1)
+            {
+			    bool is_first;
+                UnityMMONameboardColorStyle_TypeID = getTypeId(L, typeof(UnityMMO.Nameboard.ColorStyle), out is_first);
+				
+				if (UnityMMONameboardColorStyle_EnumRef == -1)
+				{
+				    Utils.LoadCSTable(L, typeof(UnityMMO.Nameboard.ColorStyle));
+				    UnityMMONameboardColorStyle_EnumRef = LuaAPI.luaL_ref(L, LuaIndexes.LUA_REGISTRYINDEX);
+				}
+				
+            }
+			
+			if (LuaAPI.xlua_tryget_cachedud(L, (int)val, UnityMMONameboardColorStyle_EnumRef) == 1)
+            {
+			    return;
+			}
+			
+            IntPtr buff = LuaAPI.xlua_pushstruct(L, 4, UnityMMONameboardColorStyle_TypeID);
+            if (!CopyByValue.Pack(buff, 0, (int)val))
+            {
+                throw new Exception("pack fail fail for UnityMMO.Nameboard.ColorStyle ,value="+val);
+            }
+			
+			LuaAPI.lua_getref(L, UnityMMONameboardColorStyle_EnumRef);
+			LuaAPI.lua_pushvalue(L, -2);
+			LuaAPI.xlua_rawseti(L, -2, (int)val);
+			LuaAPI.lua_pop(L, 1);
+			
+        }
+		
+        public void Get(RealStatePtr L, int index, out UnityMMO.Nameboard.ColorStyle val)
+        {
+		    LuaTypes type = LuaAPI.lua_type(L, index);
+            if (type == LuaTypes.LUA_TUSERDATA )
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != UnityMMONameboardColorStyle_TypeID)
+				{
+				    throw new Exception("invalid userdata for UnityMMO.Nameboard.ColorStyle");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+				int e;
+                if (!CopyByValue.UnPack(buff, 0, out e))
+                {
+                    throw new Exception("unpack fail for UnityMMO.Nameboard.ColorStyle");
+                }
+				val = (UnityMMO.Nameboard.ColorStyle)e;
+                
+            }
+            else
+            {
+                val = (UnityMMO.Nameboard.ColorStyle)objectCasters.GetCaster(typeof(UnityMMO.Nameboard.ColorStyle))(L, index, null);
+            }
+        }
+		
+        public void UpdateUnityMMONameboardColorStyle(RealStatePtr L, int index, UnityMMO.Nameboard.ColorStyle val)
+        {
+		    
+            if (LuaAPI.lua_type(L, index) == LuaTypes.LUA_TUSERDATA)
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != UnityMMONameboardColorStyle_TypeID)
+				{
+				    throw new Exception("invalid userdata for UnityMMO.Nameboard.ColorStyle");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+                if (!CopyByValue.Pack(buff, 0,  (int)val))
+                {
+                    throw new Exception("pack fail for UnityMMO.Nameboard.ColorStyle ,value="+val);
+                }
+            }
+			
+            else
+            {
+                throw new Exception("try to update a data with lua type:" + LuaAPI.lua_type(L, index));
+            }
+        }
+        
         
 		// table cast optimze
 		
@@ -1782,6 +1952,12 @@ namespace XLua
 				translator.PushUnityMMOLocomotionStateState(L, array[index]);
 				return true;
 			}
+			else if (type == typeof(UnityMMO.NameboardData.ResState[]))
+			{
+			    UnityMMO.NameboardData.ResState[] array = obj as UnityMMO.NameboardData.ResState[];
+				translator.PushUnityMMONameboardDataResState(L, array[index]);
+				return true;
+			}
 			else if (type == typeof(UnityMMO.JumpState.State[]))
 			{
 			    UnityMMO.JumpState.State[] array = obj as UnityMMO.JumpState.State[];
@@ -1810,6 +1986,12 @@ namespace XLua
 			{
 			    UnityMMO.TimelineInfo.Event[] array = obj as UnityMMO.TimelineInfo.Event[];
 				translator.PushUnityMMOTimelineInfoEvent(L, array[index]);
+				return true;
+			}
+			else if (type == typeof(UnityMMO.Nameboard.ColorStyle[]))
+			{
+			    UnityMMO.Nameboard.ColorStyle[] array = obj as UnityMMO.Nameboard.ColorStyle[];
+				translator.PushUnityMMONameboardColorStyle(L, array[index]);
 				return true;
 			}
             return false;
@@ -1914,6 +2096,12 @@ namespace XLua
 				translator.Get(L, obj_idx, out array[array_idx]);
 				return true;
 			}
+			else if (type == typeof(UnityMMO.NameboardData.ResState[]))
+			{
+			    UnityMMO.NameboardData.ResState[] array = obj as UnityMMO.NameboardData.ResState[];
+				translator.Get(L, obj_idx, out array[array_idx]);
+				return true;
+			}
 			else if (type == typeof(UnityMMO.JumpState.State[]))
 			{
 			    UnityMMO.JumpState.State[] array = obj as UnityMMO.JumpState.State[];
@@ -1941,6 +2129,12 @@ namespace XLua
 			else if (type == typeof(UnityMMO.TimelineInfo.Event[]))
 			{
 			    UnityMMO.TimelineInfo.Event[] array = obj as UnityMMO.TimelineInfo.Event[];
+				translator.Get(L, obj_idx, out array[array_idx]);
+				return true;
+			}
+			else if (type == typeof(UnityMMO.Nameboard.ColorStyle[]))
+			{
+			    UnityMMO.Nameboard.ColorStyle[] array = obj as UnityMMO.Nameboard.ColorStyle[];
 				translator.Get(L, obj_idx, out array[array_idx]);
 				return true;
 			}

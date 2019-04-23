@@ -1190,7 +1190,53 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp51(object p0, long p1)
+		public string __Gen_Delegate_Imp51(object p0, long p1)
+		{
+#if THREAD_SAFE || HOTFIX_ENABLE
+            lock (luaEnv.luaEnvLock)
+            {
+#endif
+                RealStatePtr L = luaEnv.rawL;
+                int errFunc = LuaAPI.pcall_prepare(L, errorFuncRef, luaReference);
+                ObjectTranslator translator = luaEnv.translator;
+                translator.PushAny(L, p0);
+                LuaAPI.lua_pushint64(L, p1);
+                
+                PCall(L, 2, 1, errFunc);
+                
+                
+                string __gen_ret = LuaAPI.lua_tostring(L, errFunc + 1);
+                LuaAPI.lua_settop(L, errFunc - 1);
+                return  __gen_ret;
+#if THREAD_SAFE || HOTFIX_ENABLE
+            }
+#endif
+		}
+        
+		public UnityMMO.SceneObjectType __Gen_Delegate_Imp52(object p0, long p1)
+		{
+#if THREAD_SAFE || HOTFIX_ENABLE
+            lock (luaEnv.luaEnvLock)
+            {
+#endif
+                RealStatePtr L = luaEnv.rawL;
+                int errFunc = LuaAPI.pcall_prepare(L, errorFuncRef, luaReference);
+                ObjectTranslator translator = luaEnv.translator;
+                translator.PushAny(L, p0);
+                LuaAPI.lua_pushint64(L, p1);
+                
+                PCall(L, 2, 1, errFunc);
+                
+                
+                UnityMMO.SceneObjectType __gen_ret;translator.Get(L, errFunc + 1, out __gen_ret);
+                LuaAPI.lua_settop(L, errFunc - 1);
+                return  __gen_ret;
+#if THREAD_SAFE || HOTFIX_ENABLE
+            }
+#endif
+		}
+        
+		public void __Gen_Delegate_Imp53(object p0, long p1)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -1213,7 +1259,7 @@ namespace XLua
 #endif
 		}
         
-		public Unity.Entities.Entity __Gen_Delegate_Imp52(object p0, long p1)
+		public Unity.Entities.Entity __Gen_Delegate_Imp54(object p0, long p1)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)

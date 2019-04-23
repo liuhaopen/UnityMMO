@@ -56,7 +56,7 @@ namespace UnityMMO
 
         public bool IsOnGround()
         {
-            return LocoState == LocomotionState.State.Idle || LocoState == LocomotionState.State.Run;
+            return LocoState == LocomotionState.State.Idle || LocoState == LocomotionState.State.Run || LocoState == LocomotionState.State.Sprint || LocoState == LocomotionState.State.BeHit;
         }
         public bool IsInJump()
         {

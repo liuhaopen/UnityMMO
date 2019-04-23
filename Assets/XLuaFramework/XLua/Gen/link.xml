@@ -18,9 +18,12 @@
 		<type fullname="UnityMMO.SceneMgr" preserve="all"/>
 		<type fullname="CircleRawImage" preserve="all"/>
 		<type fullname="UnityMMO.UID" preserve="all"/>
+		<type fullname="UnityMMO.SceneObjectTypeData" preserve="all"/>
 		<type fullname="UnityMMO.TypeID" preserve="all"/>
 		<type fullname="UnityMMO.TimelineState" preserve="all"/>
 		<type fullname="UnityMMO.LocomotionState" preserve="all"/>
+		<type fullname="UnityMMO.ActionData" preserve="all"/>
+		<type fullname="UnityMMO.NameboardData" preserve="all"/>
 		<type fullname="UnityMMO.PosOffset" preserve="all"/>
 		<type fullname="UnityMMO.JumpState" preserve="all"/>
 		<type fullname="UnityMMO.ActionInfo" preserve="all"/>
@@ -55,16 +58,19 @@
 		<type fullname="UnityMMO.SynchFromNet" preserve="all"/>
 		<type fullname="UnityMMO.PlayerInputSystem" preserve="all"/>
 		<type fullname="UnityMMO.TestManager" preserve="all"/>
+		<type fullname="UnityMMO.Nameboard" preserve="all"/>
 		<type fullname="UnityMMO.Timer" preserve="all"/>
 		<type fullname="UnityMMO.TimerExtensions" preserve="all"/>
 		<type fullname="UnityMMO.TimelineState+NewState" preserve="all"/>
 		<type fullname="UnityMMO.TimelineState+InterruptState" preserve="all"/>
 		<type fullname="UnityMMO.LocomotionState+State" preserve="all"/>
+		<type fullname="UnityMMO.NameboardData+ResState" preserve="all"/>
 		<type fullname="UnityMMO.JumpState+State" preserve="all"/>
 		<type fullname="UnityMMO.ActionInfo+Type" preserve="all"/>
 		<type fullname="UnityMMO.LooksInfo+State" preserve="all"/>
 		<type fullname="UnityMMO.SceneObjectData+Type" preserve="all"/>
 		<type fullname="UnityMMO.TimelineInfo+Event" preserve="all"/>
+		<type fullname="UnityMMO.Nameboard+ColorStyle" preserve="all"/>
 		
 	</assembly>
 

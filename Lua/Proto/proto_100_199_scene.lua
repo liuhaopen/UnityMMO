@@ -51,12 +51,12 @@ return [[
 	maxhp 3 : integer
 }
 
-#damage_type: 0普通扣血 1暴击 2Miss 3穿刺
+#flag: 0普通扣血 1暴击 2Miss 3穿刺
 .scene_fight_defender_info {
 	uid 0 : integer
 	cur_hp 1 : integer
 	damage 2 : integer
-	damage_type 3 : integer 
+	flag 3 : integer 
 }
 
 .scene_fight_event_info {

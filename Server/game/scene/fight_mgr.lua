@@ -60,7 +60,7 @@ function fight_mgr:cal_defender_list( fight_info, role_info )
 				if entity then
 					local hp = self.entity_mgr:GetComponentData(entity, "umo.hp")
 					local damage_value = self:cal_damage(fight_info, entity)
-					table.insert(defenders, {uid=uid, cur_hp=hp.cur, damage=damage_value, damage_type=0})
+					table.insert(defenders, {uid=uid, cur_hp=hp.cur, damage=damage_value, flag=0})
 				end
 			end
 		end
