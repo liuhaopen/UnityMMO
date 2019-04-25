@@ -8,6 +8,9 @@ namespace Cocos
     {
         protected Transform originalTarget = null;
         protected Transform target = null;
+
+        public Transform Target { get => target; set => target = value; }
+
         protected Action()
         {
         }

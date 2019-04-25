@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cocos;
 
 //随便创建一个cube然后挂上本脚本，运行就可以了。
 public class TestActions : MonoBehaviour
@@ -21,6 +22,9 @@ public class TestActions : MonoBehaviour
         func.Add("FadeTo", TestFadeTo);
         func.Add("Repeat", TestRepeat);
         func.Add("RepeatForever", TestRepeatForever);
+        func.Add("CallFunc", TestCallFunc);
+        func.Add("CallFuncWithTarget", TestCallFuncWithTarget);
+        func.Add("RemoveSelf", TestRemoveSelf);
     }
 
     void TestMoveBy()
@@ -85,6 +89,29 @@ public class TestActions : MonoBehaviour
         var repeatAction = Cocos.RepeatForever.Create(sequenceAction);
         runner.PlayAction(repeatAction);
     }
+
+    void TestCallFunc()
+    {
+        runner.PlayAction(Cocos.CallFunc.Create(()=>{
+            Debug.Log("call func ok");
+        }));
+    }
+
+    void TestCallFuncWithTarget()
+    {
+        runner.PlayAction(Cocos.CallFuncWithTarget.Create((Transform trans)=>{
+            if (trans == transform)
+                Debug.Log("call func with target ok");
+            else
+                Debug.Log("call func with target faild");
+        }));
+    }
+
+    void TestRemoveSelf()
+    {
+        runner.PlayAction(Cocos.RemoveSelf.Create());
+    }
+    
 
     float BtnWidth = 80;
     float BtnHeight = 40;

@@ -5,6 +5,13 @@ using UnityEngine.UI;
 
 namespace Cocos
 {
+    //因为需要为各种不同的组件获取或设置颜色，所以FadeIn等action支持传入实现过本接口的实例，可以参考ColorAttrCatcherTextMeshPro.cs实现你自己的组件
+    public interface IColorAttrCatcher
+    {
+        System.Func<Action, Color> GetColor{get;}
+        System.Action<Action, Color> SetColor{get;}
+    }
+
     //
     // FadeTo
     //
@@ -14,19 +21,22 @@ namespace Cocos
         protected Graphic graphic;
         protected float toOpacity;
         public float fromOpacity;
-        public static FadeTo Create(float d, float opacity)
+        protected IColorAttrCatcher attrCatcher;
+        
+        public static FadeTo Create(float d, float opacity, IColorAttrCatcher attrCatcher=null)
         {
             FadeTo action = new FadeTo();
-            if (action != null && action.InitWithDuration(d, opacity))
+            if (action != null && action.InitWithDuration(d, opacity, attrCatcher))
                 return action;
             return null;
         }
         
-        public bool InitWithDuration(float duration, float opacity)
+        public bool InitWithDuration(float duration, float opacity, IColorAttrCatcher attrCatcher=null)
         {
             if (base.InitWithDuration(duration))
             {
-                toOpacity = opacity;
+                this.toOpacity = opacity;
+                this.attrCatcher = attrCatcher;
                 return true;
             }
             return false;
@@ -48,40 +58,55 @@ namespace Cocos
             base.StartWithTarget(target);
             if (target != null)
             {
-                var renderer = target.GetComponent<MeshRenderer>();
-                if (renderer != null)
-                    material = renderer.material;
-                if (material != null)
+                if (attrCatcher == null)
                 {
-                    fromOpacity = material.color.a * 255.0f;
+                    var renderer = target.GetComponent<MeshRenderer>();
+                    if (renderer != null)
+                        material = renderer.material;
+                    if (material != null)
+                    {
+                        fromOpacity = material.color.a * 255.0f;
+                    }
+                    else
+                    {
+                        graphic = target.GetComponent<Image>();
+                        if (graphic == null)
+                            graphic = target.GetComponent<Text>();
+                        if (graphic != null)
+                            fromOpacity = graphic.color.a * 255.0f;
+                    }
                 }
                 else
                 {
-                    graphic = target.GetComponent<Image>();
-                    if (graphic == null)
-                        graphic = target.GetComponent<Text>();
-                    if (graphic != null)
-                        fromOpacity = graphic.color.a * 255.0f;
+                    var color = attrCatcher.GetColor(this);
+                    fromOpacity = color.a * 255.0f;
                 }
-                
             }
         }
 
         public override void Update(float time)
         {
             Color color;
-            if (material != null)
+            if (attrCatcher == null)
             {
-                color = material.color;
-                color.a = (fromOpacity + (toOpacity - fromOpacity)*time)/255.0f;
-                Debug.Log("color.a : "+color.a);
-                material.color = color;
+                if (material != null)
+                {
+                    color = material.color;
+                    color.a = (fromOpacity + (toOpacity - fromOpacity)*time)/255.0f;
+                    material.color = color;
+                }
+                else if (graphic != null)
+                {
+                    color = graphic.color;
+                    color.a = (fromOpacity + (toOpacity - fromOpacity)*time)/255.0f;
+                    graphic.color = color;
+                }
             }
-            else if (graphic != null)
+            else
             {
-                color = graphic.color;
+                color = attrCatcher.GetColor(this);
                 color.a = (fromOpacity + (toOpacity - fromOpacity)*time)/255.0f;
-                graphic.color = color;
+                attrCatcher.SetColor(this, color);
             }
         }
     }
@@ -92,10 +117,10 @@ namespace Cocos
     public class FadeIn : FadeTo
     {
         FadeTo reverseAction;
-        public static FadeIn Create(float d)
+        public static FadeIn Create(float d, IColorAttrCatcher attrCatcher=null)
         {
             FadeIn action = new FadeIn();
-            if (action != null && action.InitWithDuration(d, 255.0f))
+            if (action != null && action.InitWithDuration(d, 255.0f, attrCatcher))
                 return action;
             return null;
         }
@@ -124,10 +149,6 @@ namespace Cocos
                 toOpacity = reverseAction.fromOpacity;
             else
                 toOpacity = 255.0f;
-            if (material != null)
-                fromOpacity = material.color.a * 255.0f;
-            else if (graphic != null)
-                fromOpacity = graphic.color.a * 255.0f;
         }
     }
     
@@ -137,10 +158,10 @@ namespace Cocos
     public class FadeOut : FadeTo
     {
         FadeTo reverseAction;
-        public static FadeOut Create(float d)
+        public static FadeOut Create(float d, IColorAttrCatcher attrCatcher=null)
         {
             FadeOut action = new FadeOut();
-            if (action != null && action.InitWithDuration(d, 0.0f))
+            if (action != null && action.InitWithDuration(d, 0.0f, attrCatcher))
                 return action;
             return null;
         }
@@ -169,10 +190,37 @@ namespace Cocos
                 toOpacity = reverseAction.fromOpacity;
             else
                 toOpacity = 0.0f;
-            if (material != null)
-                fromOpacity = material.color.a * 255.0f;
-            else if (graphic != null)
-                fromOpacity = graphic.color.a * 255.0f;
+        }
+    }
+
+    //仅作例子参考用
+    public class ColorAttrCatcherGraphic : IColorAttrCatcher
+    {
+        public Func<Action, Color> GetColor { get => GetColorFunc; }
+        public System.Action<Action, Color> SetColor { get => SetColorFunc; }
+        public static ColorAttrCatcherGraphic Ins = new ColorAttrCatcherGraphic();
+
+        public static Color GetColorFunc(Action action)
+        {
+            if (action.Target != null)
+            {
+                var graphic = action.Target.GetComponent<Graphic>();
+                if (graphic != null)
+                    return graphic.color;
+                Debug.LogError("action target has no Graphic component, please don't use ColorAttrCatcherGraphic!" + new System.Diagnostics.StackTrace().ToString());
+            }
+            return Color.white;
+        }
+        public static void SetColorFunc(Action action, Color color)
+        {
+            if (action.Target != null)
+            {
+                var graphic = action.Target.GetComponent<Graphic>();
+                if (graphic != null)
+                    graphic.color = color;
+                else
+                    Debug.LogError("action target has no Graphic component, please don't use ColorAttrCatcherGraphic!" + new System.Diagnostics.StackTrace().ToString());
+            }
         }
     }
     
