@@ -87,3 +87,5 @@
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/cast_skill.gif)   
 19.04.08：用lua实现了aoi模块，用的是十字链表法，因为是3d的所以用3条链表，以后有空再改成c实现吧，终于可以不用全场景广播了。  
 19.04.22：增加了一些怪物逻辑，但还缺AI部分（还在考虑用哪种行为树方案，还是自己弄一套算了？）。另外角色控制方面由于跳跃状态不是定长的，比如跳崖后就会一直处于跳跃状态中，所以还是不适合使用timeline，所以改成代码计算高度并控制动作状态。  
+19.04.25：做战斗飘字时需要针对该艺术字节点做动画，虽然有现成的TweenLite可以用，但感觉还是cocos action的接口更好用，所以又实现了一个c#版本：  
+[UnityCocosAction](https://github.com/liuhaopen/UnityCocosAction "UnityCocosAction")  

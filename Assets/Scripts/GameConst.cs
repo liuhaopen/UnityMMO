@@ -55,5 +55,26 @@ namespace UnityMMO
             return "Assets/AssetBundleRes/role/career_"+career+"/timeline/jump_"+jumpID+".playable";
         }
 
+        public static string GetBloodResPath(Nameboard.ColorStyle style)
+        {
+            switch (style)
+            {
+                case Nameboard.ColorStyle.Red:
+                {
+                    return "Assets/AssetBundleRes/ui/common/com_blood_red.png";
+                }
+                case Nameboard.ColorStyle.Green:
+                {
+                    return "Assets/AssetBundleRes/ui/common/com_blood_green.png";
+                }
+                case Nameboard.ColorStyle.Blue:
+                {
+                    return "Assets/AssetBundleRes/ui/common/com_blood_blue.png";
+                }
+                default:
+                    return "";
+            }
+        }
+
     }
 }

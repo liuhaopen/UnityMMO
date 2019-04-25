@@ -51,6 +51,7 @@ public class NameboardSystem : BaseComponentSystem
                     var transform = EntityManager.GetComponentObject<RectTransform>(nameboardData.UIEntity);
                     transform.position = Camera.main.WorldToScreenPoint(BloodSlotWorldPos);
                     transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+                    //TODO: DeSpawnRequest.Create
                     // if (player2DPosition.x > Screen.width || player2DPosition.x < 0 || player2DPosition.y > Screen.height || player2DPosition.y < 0)
                     // {
                     //     transform.gameObject.SetActive(false);
@@ -85,16 +86,6 @@ public struct NameboardSpawnRequest : IComponentData
         commandBuffer.CreateEntity();
         commandBuffer.AddComponent(data);
     }
-
-    // public static void Create(EntityManager entityMgr, Entity Owner)
-    // {
-    //     var data = new NameboardSpawnRequest()
-    //     {
-    //         Owner = Owner,
-    //     };
-    //     Entity entity = entityMgr.CreateEntity(typeof(NameboardSpawnRequest));
-    //     entityMgr.SetComponentData(entity, data);
-    // }
 }
 
 [DisableAutoCreation]
@@ -135,6 +126,8 @@ public class NameboardSpawnRequestSystem : BaseComponentSystem
             var uid = EntityManager.GetComponentData<UID>(request.Owner);
             string name = SceneMgr.Instance.GetNameByUID(uid.Value);
             nameboardBehav.Name = name;
+            var isMainRole = RoleMgr.GetInstance().IsMainRoleEntity(request.Owner);
+            nameboardBehav.CurColorStyle = isMainRole ? Nameboard.ColorStyle.Green : Nameboard.ColorStyle.Red;
             if (EntityManager.HasComponent<NameboardData>(request.Owner))
             {
                 var nameboardData = EntityManager.GetComponentData<NameboardData>(request.Owner);
