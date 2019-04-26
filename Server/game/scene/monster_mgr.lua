@@ -1,6 +1,7 @@
 local monster_cfg = require "Config.scene.config_monster"
 local scene_helper = require "game.scene.scene_helper"
 local scene_const = require "game.scene.scene_const"
+local monster_const = require "game.scene.monster_const"
 
 local monster_mgr = {}
 
@@ -17,7 +18,7 @@ end
 
 function monster_mgr:init_archetype(  )
 	self.monster_archetype = self.entity_mgr:CreateArchetype({
-		"umo.position", "umo.uid", "umo.type_id", "umo.hp", "umo.scene_obj_type"
+		"umo.position", "umo.target_pos", "umo.uid", "umo.type_id", "umo.hp", "umo.scene_obj_type", "umo.monster_ai", "umo.monster_state"
 	})
 end
 
@@ -38,11 +39,14 @@ function monster_mgr:create_monster( type_id, pos_x, pos_y, pos_z )
 	
 	local monster = self.entity_mgr:CreateEntityByArcheType(self.monster_archetype)
 	self.entity_mgr:SetComponentData(monster, "umo.position", {x=pos_x, y=pos_y, z=pos_z})
+	self.entity_mgr:SetComponentData(monster, "umo.target_pos", {x=pos_x, y=pos_y, z=pos_z})
 	local scene_uid = scene_helper:new_scene_uid(SceneObjectType.Monster)
 	self.entity_mgr:SetComponentData(monster, "umo.uid", {value=scene_uid})
 	self.entity_mgr:SetComponentData(monster, "umo.type_id", {value=type_id})
 	self.entity_mgr:SetComponentData(monster, "umo.hp", {cur=cfg.max_hp, max=cfg.max_hp})
 	self.entity_mgr:SetComponentData(monster, "umo.scene_obj_type", {value=SceneObjectType.Monster})
+	self.entity_mgr:SetComponentData(monster, "umo.monster_ai", {ai_id=scene_uid})
+	self.entity_mgr:SetComponentData(monster, "umo.monster_state", {state=monster_const.monster_state.patrol, sub_state=monster_const.monster_sub_state.enter})
 
 	local handle = self.aoi:add()
 	self.aoi:set_pos(handle, pos_x, pos_y, pos_z)

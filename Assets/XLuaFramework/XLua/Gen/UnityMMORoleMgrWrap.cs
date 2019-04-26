@@ -251,10 +251,11 @@ namespace XLua.CSObjectWrap
                 
                 {
                     long _uid = LuaAPI.lua_toint64(L, 2);
-                    long _type_id = LuaAPI.lua_toint64(L, 3);
+                    long _typeID = LuaAPI.lua_toint64(L, 3);
                     UnityEngine.Vector3 _pos;translator.Get(L, 4, out _pos);
+                    UnityEngine.Vector3 _targetPos;translator.Get(L, 5, out _targetPos);
                     
-                        Unity.Entities.Entity gen_ret = gen_to_be_invoked.AddRole( _uid, _type_id, _pos );
+                        Unity.Entities.Entity gen_ret = gen_to_be_invoked.AddRole( _uid, _typeID, _pos, _targetPos );
                         translator.Push(L, gen_ret);
                     
                     

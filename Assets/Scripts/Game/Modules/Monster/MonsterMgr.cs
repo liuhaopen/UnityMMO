@@ -34,21 +34,21 @@ public class MonsterMgr
 		Instance = null;
 	}
 
-    public Entity AddMonster(long uid, long typeID, Vector3 pos)
+    public Entity AddMonster(long uid, long typeID, Vector3 pos, Vector3 targetPos)
 	{
         GameObjectEntity monsterGameOE = m_world.Spawn<GameObjectEntity>(ResMgr.GetInstance().GetPrefab("Monster"));
         monsterGameOE.name = "Monster_"+uid;
         monsterGameOE.transform.SetParent(container);
         monsterGameOE.transform.localPosition = pos;
         Entity monster = monsterGameOE.Entity;
-        InitMonster(monster, uid, typeID, pos);
+        InitMonster(monster, uid, typeID, pos, targetPos);
         return monster;
 	}
 
-    private void InitMonster(Entity monster, long uid, long typeID, Vector3 pos)
+    private void InitMonster(Entity monster, long uid, long typeID, Vector3 pos, Vector3 targetPos)
     {
         EntityManager.AddComponentData(monster, new MoveSpeed {Value = 1000});
-        EntityManager.AddComponentData(monster, new TargetPosition {Value = new float3(pos.x, pos.y, pos.z)});
+        EntityManager.AddComponentData(monster, new TargetPosition {Value = targetPos});
         EntityManager.AddComponentData(monster, new LocomotionState {LocoState = LocomotionState.State.Idle});
         EntityManager.AddComponentData(monster, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
         EntityManager.AddComponentData(monster, new UID {Value=uid});

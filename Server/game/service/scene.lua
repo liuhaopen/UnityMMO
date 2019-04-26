@@ -70,9 +70,10 @@ local update_around_objs = function ( role_info )
 			local entity = this.uid_entity_map[scene_uid]
 			if entity then
 				local pos = this.entity_mgr:GetComponentData(entity, "umo.position")
+				local target_pos = this.entity_mgr:GetComponentData(entity, "umo.target_pos")
 				local scene_obj_type = this.entity_mgr:GetComponentData(entity, "umo.scene_obj_type")
 				local type_id = this.entity_mgr:GetComponentData(entity, "umo.type_id")
-				role_info.change_obj_infos = scene_helper.add_info_item(role_info.change_obj_infos, scene_uid, {key=SceneInfoKey.EnterView, value=scene_obj_type.value..","..type_id.value..","..pos.x..","..pos.y..","..pos.z, time=cur_time})
+				role_info.change_obj_infos = scene_helper.add_info_item(role_info.change_obj_infos, scene_uid, {key=SceneInfoKey.EnterView, value=scene_obj_type.value..","..type_id.value..","..pos.x..","..pos.y..","..pos.z..","..target_pos.x..","..target_pos.y..","..target_pos.z, time=cur_time})
 			end
 		else
 			if scene_uid then
@@ -333,6 +334,7 @@ function CMD.scene_walk( user_info, req_data )
 		local entity = this.uid_entity_map[role_info.scene_uid]
 		if entity then
 			this.entity_mgr:SetComponentData(entity, "umo.position", {x=req_data.start_x, y=req_data.start_y, z=req_data.start_z})
+			this.entity_mgr:SetComponentData(entity, "umo.target_pos", {x=req_data.end_x, y=req_data.end_y, z=req_data.end_z})
 		end
 		this.aoi:set_pos(role_info.aoi_handle, role_info.base_info.pos_x, role_info.base_info.pos_y, role_info.base_info.pos_z)
 		local pos_info = role_info.base_info.pos_x..","..role_info.base_info.pos_y..","..role_info.base_info.pos_z

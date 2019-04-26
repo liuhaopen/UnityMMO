@@ -972,13 +972,15 @@ namespace XLua.CSObjectWrap
 		    Utils.BeginObjectRegister(typeof(UnityMMO.Nameboard.ColorStyle), L, translator, 0, 0, 0, 0);
 			Utils.EndObjectRegister(typeof(UnityMMO.Nameboard.ColorStyle), L, translator, null, null, null, null, null);
 			
-			Utils.BeginClassRegister(typeof(UnityMMO.Nameboard.ColorStyle), L, null, 4, 0, 0);
+			Utils.BeginClassRegister(typeof(UnityMMO.Nameboard.ColorStyle), L, null, 5, 0, 0);
             
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Green", UnityMMO.Nameboard.ColorStyle.Green);
             
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Red", UnityMMO.Nameboard.ColorStyle.Red);
             
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Blue", UnityMMO.Nameboard.ColorStyle.Blue);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "None", UnityMMO.Nameboard.ColorStyle.None);
             
 			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
             
@@ -1008,6 +1010,10 @@ namespace XLua.CSObjectWrap
 				else if (LuaAPI.xlua_is_eq_str(L, 1, "Blue"))
                 {
                     translator.PushUnityMMONameboardColorStyle(L, UnityMMO.Nameboard.ColorStyle.Blue);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "None"))
+                {
+                    translator.PushUnityMMONameboardColorStyle(L, UnityMMO.Nameboard.ColorStyle.None);
                 }
 				else
                 {

@@ -52,11 +52,10 @@ public class ApplyDamageBehaviour : PlayableBehaviour
         for (int i=0; i<Defenders.Count; i++)
         {
             var defender = Defenders[i];
-            Debug.Log("defender uid : "+defender.uid+" damage:"+defender.damage+" hp:"+defender.cur_hp+" damagetype:"+defender.flag);
+            // Debug.Log("defender uid : "+defender.uid+" damage:"+defender.damage+" hp:"+defender.cur_hp+" damagetype:"+defender.flag);
             var defenderEntity = SceneMgr.Instance.GetSceneObject(defender.uid);
             if (EntityMgr.HasComponent<LocomotionState>(defenderEntity))
             {
-                Debug.Log("slhow ");
                 //进入受击状态
                 var locomotionState = EntityMgr.GetComponentData<LocomotionState>(defenderEntity);
                 locomotionState.LocoState = LocomotionState.State.BeHit;
@@ -67,7 +66,9 @@ public class ApplyDamageBehaviour : PlayableBehaviour
                 var flyWordObj = ResMgr.GetInstance().SpawnGameObject("FightFlyWord");
                 FightFlyWord flyWord = flyWordObj.GetComponent<FightFlyWord>();
                 flyWord.SetData(defender.damage, defender.flag);
-                flyWord.transform.localPosition = defenderTrans.localPosition;
+                var pos = defenderTrans.position;
+                pos += Vector3.up * 1;
+                flyWord.transform.position = pos;
                 flyWord.StartFly();
             }
         }

@@ -28,7 +28,7 @@ function PrintTable( tbl, level, return_counter )
 	end
 	return_counter = return_counter or 5 --剩下多少层就返回,防止无限打印
 	if return_counter <= 0 then
-		print('Cat:util.lua PrintTable return_counter empty')
+		-- print('Cat:util.lua PrintTable return_counter empty')
 		return 
 	end
 	return_counter = return_counter - 1

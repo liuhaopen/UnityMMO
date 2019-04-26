@@ -31,7 +31,7 @@ namespace XLua.CSObjectWrap
 			Utils.EndObjectRegister(type, L, translator, null, null,
 			    null, null, null);
 
-		    Utils.BeginClassRegister(type, L, __CreateInstance, 18, 0, 0);
+		    Utils.BeginClassRegister(type, L, __CreateInstance, 19, 0, 0);
 			Utils.RegisterFunc(L, Utils.CLS_IDX, "GetRoleResPath", _m_GetRoleResPath_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetUIResPath", _m_GetUIResPath_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetRoleCareerResPath", _m_GetRoleCareerResPath_xlua_st_);
@@ -39,6 +39,7 @@ namespace XLua.CSObjectWrap
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetRoleSkillResPath", _m_GetRoleSkillResPath_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetMonsterSkillResPath", _m_GetMonsterSkillResPath_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetRoleJumpResPath", _m_GetRoleJumpResPath_xlua_st_);
+            Utils.RegisterFunc(L, Utils.CLS_IDX, "GetBloodResPath", _m_GetBloodResPath_xlua_st_);
             
 			
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "RealToLogic", UnityMMO.GameConst.RealToLogic);
@@ -250,6 +251,33 @@ namespace XLua.CSObjectWrap
                     int _jumpID = LuaAPI.xlua_tointeger(L, 2);
                     
                         string gen_ret = UnityMMO.GameConst.GetRoleJumpResPath( _career, _jumpID );
+                        LuaAPI.lua_pushstring(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_GetBloodResPath_xlua_st_(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+            
+                
+                {
+                    UnityMMO.Nameboard.ColorStyle _style;translator.Get(L, 1, out _style);
+                    
+                        string gen_ret = UnityMMO.GameConst.GetBloodResPath( _style );
                         LuaAPI.lua_pushstring(L, gen_ret);
                     
                     

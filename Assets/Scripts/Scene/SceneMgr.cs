@@ -303,16 +303,20 @@ public class SceneMgr : MonoBehaviour
         long new_x = Int64.Parse(info_strs[2]);
         long new_y = Int64.Parse(info_strs[3]);
         long new_z = Int64.Parse(info_strs[4]);
+        long target_x = Int64.Parse(info_strs[5]);
+        long target_y = Int64.Parse(info_strs[6]);
+        long target_z = Int64.Parse(info_strs[7]);
         var pos = GetCorrectPos(new Vector3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic));
+        var targetPos = GetCorrectPos(new Vector3(target_x/GameConst.RealToLogic, target_y/GameConst.RealToLogic, target_z/GameConst.RealToLogic));
         if (type == SceneObjectType.Role)
         {
-            Entity role = RoleMgr.GetInstance().AddRole(uid, typeID, pos);
+            Entity role = RoleMgr.GetInstance().AddRole(uid, typeID, pos, targetPos);
             entityDic.Add(uid, role);
             return role;
         }
         else if (type == SceneObjectType.Monster)
         {
-            Entity monster = MonsterMgr.GetInstance().AddMonster(uid, typeID, pos);
+            Entity monster = MonsterMgr.GetInstance().AddMonster(uid, typeID, pos, targetPos);
             entityDic.Add(uid, monster);
             return monster;
         }

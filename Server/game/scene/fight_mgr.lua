@@ -60,7 +60,7 @@ function fight_mgr:cal_defender_list( fight_info, role_info )
 				if entity then
 					local hp = self.entity_mgr:GetComponentData(entity, "umo.hp")
 					local damage_value = self:cal_damage(fight_info, entity)
-					table.insert(defenders, {uid=uid, cur_hp=hp.cur, damage=damage_value, flag=0})
+					table.insert(defenders, {uid=uid, cur_hp=hp.cur, damage=damage_value, flag=math.random(0, 2)})
 				end
 			end
 		end
@@ -94,7 +94,7 @@ function fight_mgr:clear_damage_events( scene_uid )
 end
 
 function fight_mgr:cal_damage( fight_info, entity )
-	return 100
+	return math.random(50, 1234)
 end
 
 return fight_mgr

@@ -394,9 +394,9 @@ RectTransform:
   m_Father: {fileID: 1073357480002947904}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: -12.06}
   m_SizeDelta: {x: 0, y: 24.12}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2859186389003921488
@@ -502,7 +502,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: role name
+  m_text: role name 12342
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2bb2b7af699b34547b97ba34835faab9, type: 2}
   m_sharedMaterial: {fileID: 21581098704008832, guid: 2bb2b7af699b34547b97ba34835faab9,
@@ -545,7 +545,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 1
+  m_enableWordWrapping: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_firstOverflowCharacterIndex: -1
@@ -572,10 +572,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 5244773750133870421}
-    characterCount: 9
+    characterCount: 15
     spriteCount: 0
-    spaceCount: 1
-    wordCount: 2
+    spaceCount: 2
+    wordCount: 3
     linkCount: 0
     lineCount: 1
     pageCount: 1

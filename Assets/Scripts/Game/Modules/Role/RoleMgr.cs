@@ -46,7 +46,7 @@ public class RoleMgr
         roleGameOE.transform.localPosition = pos;
         Entity role = roleGameOE.Entity;
         RoleMgr.GetInstance().SetName(uid, name);
-        InitRole(role, uid, typeID, pos);
+        InitRole(role, uid, typeID, pos, pos);
         EntityManager.AddComponentData(role, new PosSynchInfo {LastUploadPos = float3.zero});
         EntityManager.AddComponent(role, ComponentType.Create<UserCommand>());
         
@@ -70,21 +70,21 @@ public class RoleMgr
         return mainRoleGOE.Entity == entity;
     }
 
-    public Entity AddRole(long uid, long type_id, Vector3 pos)
+    public Entity AddRole(long uid, long typeID, Vector3 pos, Vector3 targetPos)
 	{
         GameObjectEntity roleGameOE = m_GameWorld.Spawn<GameObjectEntity>(ResMgr.GetInstance().GetPrefab("Role"));
         roleGameOE.name = "Role_"+uid;
         roleGameOE.transform.SetParent(container);
         roleGameOE.transform.localPosition = pos;
         Entity role = roleGameOE.Entity;
-        InitRole(role, uid, type_id, pos);
+        InitRole(role, uid, typeID, pos, targetPos);
         return role;
 	}
 
-    private void InitRole(Entity role, long uid, long typeID, Vector3 pos)
+    private void InitRole(Entity role, long uid, long typeID, Vector3 pos, Vector3 targetPos)
     {
         EntityManager.AddComponentData(role, new MoveSpeed {Value = 1200});
-        EntityManager.AddComponentData(role, new TargetPosition {Value = new float3(pos.x, pos.y, pos.z)});
+        EntityManager.AddComponentData(role, new TargetPosition {Value = targetPos});
         EntityManager.AddComponentData(role, new LocomotionState {LocoState = LocomotionState.State.Idle});
         EntityManager.AddComponentData(role, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
         EntityManager.AddComponentData(role, new UID {Value=uid});

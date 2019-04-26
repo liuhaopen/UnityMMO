@@ -21,11 +21,12 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(UnityMMO.ResMgr);
-			Utils.BeginObjectRegister(type, L, translator, 0, 4, 0, 0);
+			Utils.BeginObjectRegister(type, L, translator, 0, 5, 0, 0);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Init", _m_Init);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "LoadPrefab", _m_LoadPrefab);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetPrefab", _m_GetPrefab);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "SpawnGameObject", _m_SpawnGameObject);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "OnDestroy", _m_OnDestroy);
 			
 			
@@ -184,6 +185,64 @@ namespace XLua.CSObjectWrap
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_SpawnGameObject(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                UnityMMO.ResMgr gen_to_be_invoked = (UnityMMO.ResMgr)translator.FastGetCSObj(L, 1);
+            
+            
+			    int gen_param_count = LuaAPI.lua_gettop(L);
+            
+                if(gen_param_count == 4&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)&& translator.Assignable<UnityEngine.Vector3>(L, 3)&& translator.Assignable<UnityEngine.Quaternion>(L, 4)) 
+                {
+                    string _prefabName = LuaAPI.lua_tostring(L, 2);
+                    UnityEngine.Vector3 _position;translator.Get(L, 3, out _position);
+                    UnityEngine.Quaternion _rotation;translator.Get(L, 4, out _rotation);
+                    
+                        UnityEngine.GameObject gen_ret = gen_to_be_invoked.SpawnGameObject( _prefabName, _position, _rotation );
+                        translator.Push(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                if(gen_param_count == 3&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)&& translator.Assignable<UnityEngine.Vector3>(L, 3)) 
+                {
+                    string _prefabName = LuaAPI.lua_tostring(L, 2);
+                    UnityEngine.Vector3 _position;translator.Get(L, 3, out _position);
+                    
+                        UnityEngine.GameObject gen_ret = gen_to_be_invoked.SpawnGameObject( _prefabName, _position );
+                        translator.Push(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                if(gen_param_count == 2&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)) 
+                {
+                    string _prefabName = LuaAPI.lua_tostring(L, 2);
+                    
+                        UnityEngine.GameObject gen_ret = gen_to_be_invoked.SpawnGameObject( _prefabName );
+                        translator.Push(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+            return LuaAPI.luaL_error(L, "invalid arguments to UnityMMO.ResMgr.SpawnGameObject!");
             
         }
         
