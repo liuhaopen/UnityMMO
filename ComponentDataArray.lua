@@ -7,7 +7,7 @@ function ComponentDataArray.Create( iterator, length, componentName )
 	assert(componentName~=nil, "componentName should not be nil!")
 	local array = {
 		m_Iterator=iterator, 
-		m_Length=length,
+		Length=length,
 		m_ComponentTypeName=componentName,
 		m_Data = {},
 		m_Cache = {
@@ -19,7 +19,7 @@ function ComponentDataArray.Create( iterator, length, componentName )
 end
 
 local get_fun = function ( t, index )
-	if index < 1 or index > t.m_Length then
+	if index < 1 or index > t.Length then
 		return nil
 	end
 	if index < t.m_Cache.CachedBeginIndex or index >= t.m_Cache.CachedEndIndex then
@@ -38,15 +38,16 @@ local set_fun = function ( t, index, value )
     ECS.ChunkDataUtility.WriteComponentFromArray(t.m_Cache.CachedPtr, index, t.m_ComponentTypeName, value)
 end
 
-local get_len = function ( t )
-	return t.m_Length
-end
+-- local get_len = function ( t )
+-- 	return t.Length
+-- end
 
+local meta_tbl = {
+	__index = get_fun,
+	__newindex = set_fun,
+	-- __len = get_len
+}
 function ComponentDataArray.InitMetaTable( array )
-	local meta_tbl = {}
-	meta_tbl.__index = get_fun
-	meta_tbl.__newindex = set_fun
-	meta_tbl.__len = get_len
 	setmetatable(array, meta_tbl)
 end
 

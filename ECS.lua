@@ -26,6 +26,7 @@ require "InjectFromEntityData"
 require "InjectComponentGroupData"
 require "ComponentChunkIterator"
 require "ComponentDataArray"
+require "EntityArray"
 
 local function InitWorld( worldName )
 	local world = ECS.World.New(worldName)

@@ -357,8 +357,7 @@ function EntityDataManager:AllocateEntities( arch, chunk, baseIndex, count, outp
         outputEntities[i].Index = self.m_EntitiesFreeIndex
         outputEntities[i].Version = entityVersion
 
-        ECS.ChunkDataUtility.WriteComponentInChunk(chunk.Buffer + (baseIndex + i - 1)*self.entity_size_in_chunk, ECS.Entity.Name, {Index=self.m_EntitiesFreeIndex, Version=entityVersion})
-
+        ECS.ChunkDataUtility.WriteComponentInChunk(chunk.Buffer + (baseIndex + i - 2)*self.entity_size_in_chunk, ECS.Entity.Name, {Index=self.m_EntitiesFreeIndex, Version=entityVersion})
         self.m_Entities.ChunkData[self.m_EntitiesFreeIndex].IndexInChunk = baseIndex + i - 1
         self.m_Entities.Archetype[self.m_EntitiesFreeIndex] = arch
         self.m_Entities.ChunkData[self.m_EntitiesFreeIndex].Chunk = chunk

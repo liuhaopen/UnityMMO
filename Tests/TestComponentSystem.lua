@@ -123,3 +123,95 @@ function TestComponentSystem:TestInject(  )
     lu.assertNotNil(flag)
     lu.assertEquals(flag.value, 456)
 end
+
+local TestComponentDataArraySystem = BaseClass(ECS.ComponentSystem)
+ECS.TypeManager.RegisterScriptMgr("TestComponentDataArraySystem", TestComponentDataArraySystem)
+
+function TestComponentDataArraySystem:OnCreateManager(  )
+    ECS.ComponentSystem.OnCreateManager(self)
+    self.group = self:GetComponentGroup({"DataForTestComponentDataArray3", "DataForTestComponentDataArray2"})
+end
+function TestComponentDataArraySystem:OnUpdate(  )
+end
+function TestComponentSystem:TestComponentDataArray(  )
+    ECS.TypeManager.RegisterType("DataForTestComponentDataArray1", {x="number", y="boolean", z="integer"})
+    ECS.TypeManager.RegisterType("DataForTestComponentDataArray2", {x="boolean", b="boolean"})
+    ECS.TypeManager.RegisterType("DataForTestComponentDataArray3", {value="integer"})
+    
+    local sys = ECS.World.Active:GetOrCreateManager("TestComponentDataArraySystem")
+    sys:Update()
+    lu.assertNotNil(sys.group)
+    local entities = sys.group:GetComponentDataArray("DataForTestComponentDataArray3")
+    lu.assertNotNil(entities)
+    lu.assertEquals(#entities, 0)
+
+    local archetype = self.m_Manager:CreateArchetype({"DataForTestComponentDataArray1", "DataForTestComponentDataArray2", "DataForTestComponentDataArray3"})
+    local entity = self.m_Manager:CreateEntityByArcheType(archetype)
+    self.m_Manager:SetComponentData(entity, "DataForTestComponentDataArray3", {value=123546})
+    self.m_Manager:SetComponentData(entity, "DataForTestComponentDataArray2", {x=false, b=true})
+    sys:Update()
+    local entities = sys.group:GetComponentDataArray("DataForTestComponentDataArray3")
+    lu.assertNotNil(entities)
+    lu.assertEquals(entities.Length, 1)
+    local compData = self.m_Manager:GetComponentData(entity, "DataForTestComponentDataArray3")
+    lu.assertEquals(entities[1], compData)
+    lu.assertEquals(entities[1].value, compData.value)
+
+    local entities = sys.group:GetComponentDataArray("DataForTestComponentDataArray2")
+    lu.assertNotNil(entities)
+    lu.assertEquals(entities.Length, 1)
+    local compData = self.m_Manager:GetComponentData(entity, "DataForTestComponentDataArray2")
+    lu.assertEquals(entities[1], compData)
+    lu.assertEquals(entities[1].x, compData.x)
+    lu.assertEquals(entities[1].b, compData.b)
+
+    local entity = self.m_Manager:CreateEntityByArcheType(archetype)
+    self.m_Manager:SetComponentData(entity, "DataForTestComponentDataArray2", {x=true, b=false})
+    self.m_Manager:SetComponentData(entity, "DataForTestComponentDataArray3", {value=53212})
+    sys:Update()
+    local entities = sys.group:GetComponentDataArray("DataForTestComponentDataArray3")
+    lu.assertNotNil(entities)
+    lu.assertEquals(entities.Length, 2)
+    local compData = self.m_Manager:GetComponentData(entity, "DataForTestComponentDataArray3")
+    lu.assertEquals(entities[2], compData)
+    lu.assertEquals(entities[2].value, compData.value)
+
+    local entities = sys.group:GetComponentDataArray("DataForTestComponentDataArray2")
+    lu.assertNotNil(entities)
+    lu.assertEquals(entities.Length, 2)
+    local compData = self.m_Manager:GetComponentData(entity, "DataForTestComponentDataArray2")
+    lu.assertEquals(entities[2], compData)
+    lu.assertEquals(entities[2].x, compData.x)
+    lu.assertEquals(entities[2].b, compData.b)
+end
+
+
+local TestEntityArraySystem = BaseClass(ECS.ComponentSystem)
+ECS.TypeManager.RegisterScriptMgr("TestEntityArraySystem", TestEntityArraySystem)
+
+function TestEntityArraySystem:OnCreateManager(  )
+    ECS.ComponentSystem.OnCreateManager(self)
+    self.group = self:GetComponentGroup({"DataForTestEntityArray3", "DataForTestEntityArray2"})
+end
+function TestEntityArraySystem:OnUpdate(  )
+end
+function TestComponentSystem:TestEntityArray(  )
+    ECS.TypeManager.RegisterType("DataForTestEntityArray1", {x="number", y="boolean", z="integer"})
+    ECS.TypeManager.RegisterType("DataForTestEntityArray2", {x="boolean", b="boolean"})
+    ECS.TypeManager.RegisterType("DataForTestEntityArray3", {value="integer"})
+    
+    local sys = ECS.World.Active:GetOrCreateManager("TestEntityArraySystem")
+    sys:Update()
+    lu.assertNotNil(sys.group)
+    local entities = sys.group:GetEntityArray()
+    lu.assertNotNil(entities)
+    lu.assertEquals(#entities, 0)
+
+    local archetype = self.m_Manager:CreateArchetype({"DataForTestEntityArray1", "DataForTestEntityArray2", "DataForTestEntityArray3"})
+    local entity = self.m_Manager:CreateEntityByArcheType(archetype)
+    sys:Update()
+    local entities = sys.group:GetEntityArray()
+    lu.assertNotNil(entities)
+    lu.assertEquals(entities.Length, 1)
+    lu.assertEquals(entities[1], entity)
+end

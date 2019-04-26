@@ -41,9 +41,9 @@ end
 
 function ComponentGroup:GetEntityArray(  )
     local iterator, length = self:GetComponentChunkIterator()
-    local res
-    self:GetEntityArray(iterator, length, res)
-    return res
+    iterator:SetIndexInComponentGroup(1)
+    local data = ECS.EntityArray.Create(iterator, length)
+    return data
 end
 
 function ComponentGroup:GetComponentChunkIterator(  )
