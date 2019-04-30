@@ -25,16 +25,16 @@ function TestBlueprintGraph:TestGraph(  )
 		--该蓝图的所有线段，表示了哪两个节点相连
 		wires = {
 			{
-				source = 1,
-				source_name = "out",
-				target = 2,
-				target_name = "in",
+				sourceID = 1,
+				sourceSlotName = "out",
+				targetID = 2,
+				targetSlotName = "in",
 			},
 		},
 	}
 	local graph = BP.Graph.Create(data)
     lu.assertNotNil(graph)
-
+    lu.assertEquals(TableSize(graph.nodes), 2)
     graph:Start()
 
     graph:Update()

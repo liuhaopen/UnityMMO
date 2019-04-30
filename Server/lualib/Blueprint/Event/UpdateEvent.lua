@@ -1,13 +1,17 @@
 local UpdateEvent = BP.BaseClass(BP.Node)
 
-UpdateEvent.is_updatable_bp_node = true
-function UpdateEvent:Constructor( graph )
-	self.graph = graph
-	print('Cat:UpdateEvent.lua[5] graph', graph)
+function UpdateEvent:Constructor(  )
+	self.is_updatable_bp_node = true
+	self.typeName = "UpdateEvent"
+end
+
+function UpdateEvent:OnValidate(  )
+	self.outNode = self.outSlots["out"]
+	assert(self.outNode, "empty out node!")
 end
 
 function UpdateEvent:Update( deltaTime )
-	print('Cat:UpdateEvent.lua[8] update')
+	self.outNode:Run()
 end
 
 return UpdateEvent

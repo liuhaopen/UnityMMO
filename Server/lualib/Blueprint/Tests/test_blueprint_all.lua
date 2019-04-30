@@ -22,6 +22,24 @@ function Split(szFullString, szSeparator, start_pos)
 	return nSplitArray
 end
 
+-- 检查table是否为空
+function IsTableEmpty(tbl)
+    return not tbl or _G.next( tbl ) == nil
+end
+
+-- 获取table长度，当数据不连续时不能用#
+function TableSize(tbl)
+	if IsTableEmpty(tbl) then
+		return 0
+	end
+
+	local len = 0
+	for _ in pairs(tbl) do
+		len = len + 1
+	end
+	return len
+end
+
 function PrintTable( tbl, level, return_counter )
 	if tbl == nil or type(tbl) ~= "table" then
 		return

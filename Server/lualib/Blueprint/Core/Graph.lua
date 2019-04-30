@@ -1,14 +1,12 @@
 local Graph = BP.BaseClass()
 
-function Graph:DefaultVar(  )
-	return {
-		name = "unkown",
-		category = "Graph",
-		nodes = {},
-		variable = {},
-		updatable_nodes = {},
-		is_inited = false,
-	}
+function Graph:Constructor(  )
+	self.name = "unkown"
+	self.category = "Graph"
+	self.nodes = {}--key为节点id，value为节点引用
+	self.variable = {}
+	self.updatable_nodes = {}
+	self.is_inited = false
 end
 
 function Graph.Create( luaData )
@@ -40,32 +38,41 @@ function Graph:Update( deltaTime )
 end
 
 function Graph:LoadFromLuaData( luaData )
-	self.nodes = self:CreateNodes(luaData.nodes)
-	self.wires = luaData.wires
+	self:InitNodes(luaData.nodes)
+	self:InitWires(luaData.wires)
 	self:Validate()
 	return true
 end
 
-function Graph:CreateNodes( nodesData )
-	local ret = {}
+function Graph:InitNodes( nodesData )
+	self.nodes = {}
 	for i,v in ipairs(nodesData) do
 		local classTbl = v.type and BP.TypeManager:GetType(v.type)
 		if classTbl then 
-			table.insert(ret, classTbl.New(self))
+			-- table.insert(self.nodes, classTbl.New(self))
+			self.nodes[v.id] = classTbl.New()
 		else
 			print("try to get an unexist type name : "..v.type)
 		end
 	end
-	return ret
 end
 
-function Graph:CreateWires( wiresData )
+function Graph:InitWires( wiresData )
+	if not wiresData then return end
 	
+	for i,v in ipairs(wiresData) do
+		local sourceNode = self.nodes[v.sourceID]
+		assert(sourceNode, "cannot find node by id:"..v.sourceID)
+		local targetNode = self.nodes[v.targetID]
+		assert(targetNode, "cannot find node by id:"..v.targetID)
+		targetNode:SetInSlot(v.targetSlotName, inNode)
+		sourceNode:SetOutSlot(v.sourceSlotName, targetNode)
+	end
 end
 
 function Graph:Validate(  )
 	for k,v in pairs(self.nodes) do
-		v.OnValidate(self)
+		v:OnValidate()
 	end
 
 	self:OnGraphValidate()
@@ -76,7 +83,11 @@ function Graph:OnGraphValidate(  )
 end
 
 function Graph:Stop()
-	
+	for k,v in pairs(self.nodes) do
+		if v.OnStop then
+			v.OnStop()
+		end
+	end
 end
 
 return Graph

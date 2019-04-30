@@ -14,11 +14,11 @@ local function BaseClass(super)
 				c.Constructor(obj,...)
 			end
 		end
-		if class_type.DefaultVar then
-			obj = class_type.DefaultVar(obj)
-		else
+		-- if class_type.DefaultVar then
+		-- 	obj = class_type.DefaultVar(obj)
+		-- else
 			obj = {}
-		end
+		-- end
 		local function meta_func(t, k)
 			local ret = class_type[k]
 			obj[k] = ret
