@@ -17,8 +17,8 @@ setmetatable(BPEnv, {
 
 
 BP.BaseClass = importer.require("Blueprint.Core.BaseClass", BPEnv)
-BP.Graph = importer.require("Blueprint.Core.Graph", BPEnv)
 BP.Node = importer.require("Blueprint.Core.Node", BPEnv)
+BP.Graph = importer.require("Blueprint.Core.Graph", BPEnv)
 
 BP.UpdateEvent = importer.require("Blueprint.Event.UpdateEvent", BPEnv)
 

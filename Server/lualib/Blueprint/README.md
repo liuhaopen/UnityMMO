@@ -1,1 +1,4 @@
 前方正在施工....
+
+本项目为lua实现的FlowCanvas,BehaviourTree,StateMachine集合，支持此三大类的相互嵌套。可以在unity的FlowCanvas+NodeCanvas插件编辑后导出lua脚本直接在本项目使用，当然需要用到本项目提供的导出脚本。尽管项目名叫blueprint（参考UE的蓝图blueprint），但和UE没半毛钱关系。
+实现上只是命名和FlowCanvas插件差不多，因为语言差异和动态语言的便利，lua可以少许多中间类。比如行为树就是相当于把n个逻辑函数拆分成n个节点（类，在lua里就是table）然后分别调用，这样就为了可视化编程而牺牲了性能，本来就几个函数调用的，偏要弄成几个table，这尤其在服务端是不可接受的，几百只怪身上都挂次一个实例。所以本项目会尽量实现为不产生额外table。

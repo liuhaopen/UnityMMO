@@ -8,7 +8,7 @@ end
 function TestBlueprintGraph:tearDown(  )
 end
 
-function TestBlueprintGraph:TestGraph(  )
+function TestBlueprintGraph:TestFlowGraph(  )
 	local data = {
 		--该蓝图的所有节点
 		nodes = {
@@ -18,8 +18,81 @@ function TestBlueprintGraph:TestGraph(  )
 			},
 			{
 				id = 2,
-				type = "BP.Node",
-				arge = {name="a", value=3},
+				type = "BP.GetVariable",
+				arge = {
+					key = "value",
+					value = 123
+				},
+			},
+		},
+		--该蓝图的所有线段，表示了哪两个节点相连
+		wires = {
+			{
+				sourceID = 1,
+				sourceSlotName = "out",
+				targetID = 2,
+				targetSlotName = "in",
+			},
+		},
+	}
+	local graph = BP.Graph.Create(data)
+    lu.assertNotNil(graph)
+    lu.assertEquals(TableSize(graph.nodes), 2)
+    graph:Start()
+
+    graph:Update()
+end
+
+function TestBlueprintGraph:TestFSMGraph(  )
+	local data = {
+		--该蓝图的所有节点
+		nodes = {
+			{
+				id = 1,
+				type = "BP.State",
+				name = "idle",
+			},
+			{
+				id = 3,
+				type = "BP.GetVariable",
+				arge = {
+					key = "value",
+					value = 123
+				},
+			},
+		},
+		--该蓝图的所有线段，表示了哪两个节点相连
+		wires = {
+			{
+				sourceID = 1,
+				sourceSlotName = "out",
+				targetID = 2,
+				targetSlotName = "in",
+			},
+		},
+	}
+	local graph = BP.Graph.Create(data)
+    lu.assertNotNil(graph)
+    lu.assertEquals(TableSize(graph.nodes), 2)
+    graph:Start()
+
+    graph:Update()
+end
+
+function TestBlueprintGraph:TestBTGraph(  )
+	local data = {
+		--该蓝图的所有节点
+		nodes = {
+			{
+				id = 1,
+				type = "BP.BT.ConditionNode",
+				arge = {
+					
+				},
+			},
+			{
+				id = 3,
+				type = "BP.BT.Sequencer",
 			},
 		},
 		--该蓝图的所有线段，表示了哪两个节点相连

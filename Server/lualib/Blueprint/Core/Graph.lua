@@ -1,4 +1,4 @@
-local Graph = BP.BaseClass()
+local Graph = BP.BaseClass(BP.Node)
 
 function Graph:Constructor(  )
 	self.name = "unkown"
@@ -16,6 +16,10 @@ function Graph.Create( luaData )
 		return graph
 	end
 	return nil
+end
+
+function Graph:SetOwner( owner )
+	self.owner = owner
 end
 
 function Graph:Start()
@@ -52,7 +56,7 @@ function Graph:InitNodes( nodesData )
 			-- table.insert(self.nodes, classTbl.New(self))
 			self.nodes[v.id] = classTbl.New()
 		else
-			print("try to get an unexist type name : "..v.type)
+			error("try to get an unexist type name : "..v.type, 2)
 		end
 	end
 end
