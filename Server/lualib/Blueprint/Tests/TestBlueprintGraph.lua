@@ -14,11 +14,11 @@ function TestBlueprintGraph:TestFlowGraph(  )
 		nodes = {
 			{
 				id = 1,
-				type = "BP.UpdateEvent",
+				type = "BP.Flow.UpdateEvent",
 			},
 			{
 				id = 2,
-				type = "BP.GetVariable",
+				type = "BP.Flow.GetVariable",
 				arge = {
 					key = "value",
 					value = 123
@@ -49,12 +49,12 @@ function TestBlueprintGraph:TestFSMGraph(  )
 		nodes = {
 			{
 				id = 1,
-				type = "BP.State",
+				type = "BP.FSM.State",
 				name = "idle",
 			},
 			{
-				id = 3,
-				type = "BP.GetVariable",
+				id = 2,
+				type = "BP.FSM.ActionState",
 				arge = {
 					key = "value",
 					value = 123
@@ -91,7 +91,7 @@ function TestBlueprintGraph:TestBTGraph(  )
 				},
 			},
 			{
-				id = 3,
+				id = 2,
 				type = "BP.BT.Sequencer",
 			},
 		},

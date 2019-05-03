@@ -20,7 +20,9 @@ BP.BaseClass = importer.require("Blueprint.Core.BaseClass", BPEnv)
 BP.Node = importer.require("Blueprint.Core.Node", BPEnv)
 BP.Graph = importer.require("Blueprint.Core.Graph", BPEnv)
 
-BP.UpdateEvent = importer.require("Blueprint.Event.UpdateEvent", BPEnv)
+BP.Flow.UpdateEvent = importer.require("Blueprint.Event.UpdateEvent", BPEnv)
+BP.Flow.Delay = importer.require("Blueprint.Event.Delay", BPEnv)
+BP.Flow.GetVariable = importer.require("Blueprint.Event.GetVariable", BPEnv)
 
 
 BP.TypeManager = importer.require("Blueprint.Core.TypeManager", BPEnv)
