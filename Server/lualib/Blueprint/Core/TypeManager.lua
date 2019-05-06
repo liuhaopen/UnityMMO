@@ -19,9 +19,13 @@ function TypeManager:InitDefaultTypes(  )
 	--以下是默认的一些node
 	self:RegisterType("BP.Node", BP.Node)
 	
+	self:RegisterType("BP.FSM.FSMGraph", BP.FSM.FSMGraph)
+	self:RegisterType("BP.FSM.FSMState", BP.FSM.FSMState)
+
+
 	self:RegisterType("BP.Flow.UpdateEvent", BP.Flow.UpdateEvent)
-	self:RegisterType("BP.Flow.GetVariable", BP.Flow.GetVariable)
-	self:RegisterType("BP.Flow.Delay", BP.Flow.Delay)
+	-- self:RegisterType("BP.Flow.GetVariable", BP.Flow.GetVariable)
+	-- self:RegisterType("BP.Flow.Delay", BP.Flow.Delay)
 	
 end
 

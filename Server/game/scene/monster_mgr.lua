@@ -2,6 +2,7 @@ local monster_cfg = require "Config.scene.config_monster"
 local scene_helper = require "game.scene.scene_helper"
 local scene_const = require "game.scene.scene_const"
 local monster_const = require "game.scene.monster_const"
+local monster_fsm_cfg = require "game.scene.monster_fsm_cfg"
 local BP = require("Blueprint")
 local monster_mgr = {}
 
@@ -11,9 +12,14 @@ function monster_mgr:init( scene, cfg )
 	self.aoi = scene.aoi
 	self.nest_cfg = cfg
 	self.monster_entities = {}
+	self.graphs_owners = {}
 
 	self:init_archetype()
 	self:init_monster()
+end
+
+function monster_mgr:getInstance()
+	return monster_mgr
 end
 
 function monster_mgr:init_archetype(  )
@@ -55,8 +61,31 @@ function monster_mgr:create_monster( type_id, pos_x, pos_y, pos_z )
 	self.scene_mgr.aoi_handle_uid_map[handle] = scene_uid
 	self.scene_mgr.uid_entity_map[scene_uid] = monster
 
+    self:init_graphs_for_mon(scene_uid, monster, self.entity_mgr, handle, self.aoi)
+
 	table.insert(self.monster_entities, monster)
 	return monster
+end
+
+function monster_mgr:init_graphs_for_mon( scene_uid, entity, entityMgr, aoi_handle, aoi )
+	--此graph会在monster_ai_system.lua里update
+	local owner = BP.GraphsOwner.Create()
+	self.graphs_owners[scene_uid] = owner
+	local graph = BP.Graph.Create(monster_fsm_cfg)
+	owner:AddGraph(graph)
+	owner:Start()
+
+	local blackboard = owner:GetBlackboard()
+	blackboard:SetVariable("entity", entity)
+	blackboard:SetVariable("entityMgr", entityMgr)
+	blackboard:SetVariable("aoi_handle", aoi_handle)
+	blackboard:SetVariable("aoi", aoi)
+	blackboard:SetVariable("aoi_area", 250)
+
+end
+
+function monster_mgr:get_graphs_owner( uid )
+	return self.graphs_owners[uid]
 end
 
 return monster_mgr

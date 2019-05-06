@@ -1,5 +1,5 @@
 local BP = require("Blueprint")
-
+do return {} end
 TestBlueprintGraph = {}
 
 function TestBlueprintGraph:setUp(  )

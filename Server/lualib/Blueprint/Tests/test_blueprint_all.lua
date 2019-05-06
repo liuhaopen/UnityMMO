@@ -3,6 +3,7 @@ local BP = require('Blueprint')
 lu = require('Tests.luaunit')
 
 --在上级目录运行本文件即可：lua Tests/test_all.lua
+--目前只支持lua5.2及以上版本，如果你在windows系统的话可以自己编译最新的lua库并生成exe用来运行本测试
 
 --将 szFullString 对象拆分为一个子字符串表
 function Split(szFullString, szSeparator, start_pos)
@@ -68,12 +69,18 @@ function PrintTable( tbl, level, return_counter )
 	print(indent_str .. "}")
 	
 end
+
+local ignore_files = {
+	["test_blueprint_all.lua"]=true, 
+	["luaunit.lua"]=true,
+	["FSMSampleState.lua"]=true,
+}
 -- local s = io.popen("ls ./Tests")--for linux
 local s = io.popen("dir /b Tests")--for windows
 local fileNames = s:read("*all")
 fileNames = Split(fileNames, "\n")
 for k,v in pairs(fileNames or {}) do
-	if v~="" and v~="test_blueprint_all.lua" and v~="luaunit.lua" then
+	if v~="" and not ignore_files[v] then
 		local dot_index = string.find(v, ".", 1, true)
     	local is_lua_file = string.find(v, ".lua", -4, true)
     	if dot_index ~= nil and is_lua_file then

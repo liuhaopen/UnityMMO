@@ -17,13 +17,19 @@ setmetatable(BPEnv, {
 
 
 BP.BaseClass = importer.require("Blueprint.Core.BaseClass", BPEnv)
+BP.Blackboard = importer.require("Blueprint.Core.Blackboard", BPEnv)
+BP.GraphsOwner = importer.require("Blueprint.Core.GraphsOwner", BPEnv)
 BP.Node = importer.require("Blueprint.Core.Node", BPEnv)
 BP.Graph = importer.require("Blueprint.Core.Graph", BPEnv)
 
-BP.Flow.UpdateEvent = importer.require("Blueprint.Event.UpdateEvent", BPEnv)
-BP.Flow.Delay = importer.require("Blueprint.Event.Delay", BPEnv)
-BP.Flow.GetVariable = importer.require("Blueprint.Event.GetVariable", BPEnv)
+BP.FSM = BP.FSM or {}
+BP.FSM.FSMState = importer.require("Blueprint.FSM.FSMState", BPEnv)
+BP.FSM.FSMGraph = importer.require("Blueprint.FSM.FSMGraph", BPEnv)
 
+BP.Flow = BP.Flow or {}
+BP.Flow.UpdateEvent = importer.require("Blueprint.Flow.Event.UpdateEvent", BPEnv)
+-- BP.Flow.Delay = importer.require("Blueprint.Flow.Control.Delay", BPEnv)
+-- BP.Flow.GetVariable = importer.require("Blueprint.Flow.Variables.GetVariable", BPEnv)
 
 BP.TypeManager = importer.require("Blueprint.Core.TypeManager", BPEnv)
 BP.TypeManager:InitDefaultTypes()

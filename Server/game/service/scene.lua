@@ -50,6 +50,7 @@ local fork_loop_ecs = function (  )
 		while true do
 			local curTime = time:get_cur_time()
 			Time.deltaTime = (curTime-lastUpdateTime)/1000
+			Time.time = curTime
 			lastUpdateTime = curTime
 			this.ecs_system_mgr:update()
 			skynet.sleep(3)
