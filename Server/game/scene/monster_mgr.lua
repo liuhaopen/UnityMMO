@@ -2,7 +2,7 @@ local monster_cfg = require "Config.scene.config_monster"
 local scene_helper = require "game.scene.scene_helper"
 local scene_const = require "game.scene.scene_const"
 local monster_const = require "game.scene.monster_const"
-local monster_fsm_cfg = require "game.scene.monster_fsm_cfg"
+local monster_fsm_cfg = require "game.scene.ai.monster_fsm_cfg"
 local BP = require("Blueprint")
 local monster_mgr = {}
 

@@ -1,4 +1,4 @@
-local Graph = BP.BaseClass(BP.Node)
+local Graph = BP.BaseClass()
 
 function Graph:Constructor(  )
 	self.name = "unkown"
@@ -7,6 +7,9 @@ function Graph:Constructor(  )
 	self.variable = {}
 	self.updatable_nodes = {}
 	self.is_inited = false
+	self.requiresPrimeNode = true
+	self.isRunning = false
+	self.isPaused = false
 end
 
 function Graph.Create( luaData )
@@ -18,27 +21,91 @@ function Graph.Create( luaData )
 	return nil
 end
 
-function Graph:SetOwner( owner )
+-- function Graph:SetOwner( owner )
+-- 	self.owner = owner
+-- 	self.blackboard = owner:GetBlackboard()
+-- end
+
+function Graph:StartGraph( owner )
+	if self.isRunning then
+        print("Graph is already Active.")
+        return
+    end
+    local primeNode = self:GetPrimeNode()
+    if primeNode == nil and self.requiresPrimeNode then
+        print("You've tried to start graph without a 'Start' node.")
+        return
+    end
 	self.owner = owner
-end
+	self.blackboard = owner:GetBlackboard()
+	self.isRunning = true
+	if not self.isPaused then
+        -- self.timeStarted = Time.time
+        self:OnGraphStarted()
+    else
+        self:OnGraphUnpaused()
+    end
 
-function Graph:Start()
-	if self.is_inited then return end
-	for k,v in pairs(self.nodes) do
-		if v.is_updatable_bp_node then
-			table.insert(self.updatable_nodes, v)
-		end
-		if v.OnStart then
-			v.OnStart()
+    for k,v in pairs(self.nodes) do
+    	if not self.isPaused then
+			v:OnGraphStarted()
+		else
+			v:OnGraphUnpaused()
 		end
 	end
-	self.is_inited = true
+    self.isPaused = false
 end
 
-function Graph:Update( deltaTime )
-	for i,v in ipairs(self.updatable_nodes) do
-		v:Update(deltaTime)
+function Graph:OnGraphStarted(  )
+	--override me
+end
+
+function Graph:OnGraphUnpaused(  )
+	--override me
+end
+
+function Graph:GetPrimeNode(  )
+	if not self.primeNode then
+		local maxNum = 99999999
+		local minID = maxNum
+		local hadFind = false
+		for k,v in pairs(self.nodes or {}) do
+			if k < minID then
+				minID = k
+				hadFind = true
+			end
+		end
+		if minID < maxNum then
+			self.primeNode = self.nodes[minID]
+		else
+			error("has no prime node!", 2)
+		end
 	end
+	return self.primeNode
+end
+
+function Graph:UpdateGraph( deltaTime )
+	if self.isRunning then
+		self:OnGraphUpdate()
+	end
+	-- for i,v in ipairs(self.updatable_nodes) do
+	-- 	v:OnGraphUpdate(deltaTime)
+	-- end
+end
+
+function Graph:Pause(  )
+	if not self.isRunning then
+        return
+    end
+
+    self.isRunning = false
+    self.isPaused = true
+
+    for k,v in pairs(self.nodes) do
+    	v:OnGraphPaused()
+    end
+
+    self:OnGraphPaused()
 end
 
 function Graph:LoadFromLuaData( luaData )
@@ -51,10 +118,11 @@ end
 function Graph:InitNodes( nodesData )
 	self.nodes = {}
 	for i,v in ipairs(nodesData) do
-		local classTbl = v.type and BP.TypeManager:GetType(v.type)
-		if classTbl then 
-			-- table.insert(self.nodes, classTbl.New(self))
-			self.nodes[v.id] = classTbl.New()
+		local newNode = BP.Node.Create(self, v.type)
+		if newNode then 
+			newNode.name = v.name
+			newNode.id = v.id
+			self.nodes[v.id] = newNode
 		else
 			error("try to get an unexist type name : "..v.type, 2)
 		end
@@ -86,12 +154,34 @@ function Graph:OnGraphValidate(  )
 	--wait for override
 end
 
-function Graph:Stop()
-	for k,v in pairs(self.nodes) do
-		if v.OnStop then
-			v.OnStop()
-		end
-	end
+function Graph:OnGraphUpdate(  )
+	--wait for override
+end
+
+function Graph:OnGraphPaused(  )
+	--wait for override
+end
+
+function Graph:OnGraphStoped(  )
+	--wait for override
+end
+
+function Graph:Stop(success)
+	-- if success == nil then
+	-- 	success = true
+	-- end
+	if not self.isRunning and not self.isPaused then
+        return
+    end
+    self.isRunning = false
+    self.isPaused = false
+
+    for k,v in pairs(self.nodes) do
+    	v:Reset(false)
+    	v:OnGraphStoped()
+    end
+
+    self:OnGraphStoped()
 end
 
 return Graph

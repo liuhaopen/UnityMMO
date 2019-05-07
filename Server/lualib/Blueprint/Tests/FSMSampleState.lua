@@ -2,7 +2,7 @@ local BP = require("Blueprint")
 local FSMSampleState = BP.BaseClass(BP.FSM.FSMState)
 
 function FSMSampleState:OnInit(  )
-	print('Cat:patrol_state.lua[OnInit]')
+	print('Cat:FSMSampleState.lua[OnInit]')
 end
 
 function FSMSampleState:OnEnter(  )
@@ -14,11 +14,11 @@ function FSMSampleState:OnUpdate( deltaTime )
 end
 
 function FSMSampleState:OnExit(  )
-	print('Cat:patrol_state.lua[OnExit]')
+	print('Cat:FSMSampleState.lua[OnExit]')
 end
 
 function FSMSampleState:OnPause(  )
-	print('Cat:patrol_state.lua[OnPause]')
+	print('Cat:FSMSampleState.lua[OnPause]')
 end
 
 return FSMSampleState
