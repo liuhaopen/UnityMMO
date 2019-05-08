@@ -1,5 +1,5 @@
-local skill_cfg = require "Config.config_skill"
-local time = require "game.scene.time"
+local skill_cfg = require "game.config.scene.config_skill"
+local Time = require "game.scene.time"
 
 local fight_mgr = {}
 
@@ -27,15 +27,16 @@ function fight_mgr:cast_skill( user_info, req_data )
 			target_pos_y = req_data.target_pos_y,
 			target_pos_z = req_data.target_pos_z,
 			direction = req_data.direction,
-			time = time:get_cur_time(),
+			time = Time.timeMS,
 			defenders = nil,
 		}
 		fight_event.defenders = self:cal_defender_list(fight_event, role_info)
 
 		self:add_damage_event_for_defenders(fight_event)
 
-		self.scene_mgr.fight_events[role_info.scene_uid] = self.scene_mgr.fight_events[role_info.scene_uid] or {}
-		table.insert(self.scene_mgr.fight_events[role_info.scene_uid], fight_event)
+		-- self.scene_mgr.fight_events[role_info.scene_uid] = self.scene_mgr.fight_events[role_info.scene_uid] or {}
+		-- table.insert(self.scene_mgr.fight_events[role_info.scene_uid], fight_event)
+		self.scene_mgr.event_mgr:AddFightEvent(role_info.scene_uid, fight_event)
 	end
 	return is_can_cast and 0 or 1, fight_event
 end

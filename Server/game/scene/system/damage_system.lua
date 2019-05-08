@@ -1,4 +1,5 @@
 ECS.TypeManager.RegisterType("umo.damage_event", {id="integer"})
+local Time = require "game.scene.time"
 
 local damage_system = BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr("umo.damage_system", damage_system)

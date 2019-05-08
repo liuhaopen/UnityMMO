@@ -1,5 +1,6 @@
 ECS.TypeManager.RegisterType("umo.monster_ai", {ai_id="integer"})
 ECS.TypeManager.RegisterType("umo.monster_state", {state="integer", sub_state="integer"})
+local Time = require "game.scene.time"
 
 local monster_const = require "game.scene.monster_const"
 
@@ -26,8 +27,7 @@ function monster_ai_system:OnUpdate(  )
 	local deltaTime = Time.deltaTime
 	local entities = self.group:GetEntityArray()
 	local uids = self.group:GetComponentDataArray("umo.uid")
-	print('Cat:monster_module.lua[25] #uids', #uids)
-	for i=1,#uids do
+	for i=1,uids.Length do
 		local graphsowner = self.monster_mgr:get_graphs_owner(uids[i].value)
 		graphsowner:Update(deltaTime)
 	end

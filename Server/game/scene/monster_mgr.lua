@@ -1,10 +1,13 @@
-local monster_cfg = require "Config.scene.config_monster"
+local monster_cfg = require "game.config.scene.config_monster"
 local scene_helper = require "game.scene.scene_helper"
 local scene_const = require "game.scene.scene_const"
 local monster_const = require "game.scene.monster_const"
 local monster_fsm_cfg = require "game.scene.ai.monster_fsm_cfg"
 local BP = require("Blueprint")
 local monster_mgr = {}
+local test_info = {
+	-- create_num = 1,--只创建1只怪物，方便调试
+}
 
 function monster_mgr:init( scene, cfg )
 	self.scene_mgr = scene
@@ -24,25 +27,33 @@ end
 
 function monster_mgr:init_archetype(  )
 	self.monster_archetype = self.entity_mgr:CreateArchetype({
-		"umo.position", "umo.target_pos", "umo.uid", "umo.type_id", "umo.hp", "umo.scene_obj_type", "umo.monster_ai", "umo.monster_state"
+		"umo.position", "umo.target_pos", "umo.uid", "umo.type_id", "umo.hp", "umo.scene_obj_type", "umo.monster_ai", "umo.monster_state", "umo.patrol_info", "umo.move_speed", "umo.aoi_handle", 
 	})
 end
 
 function monster_mgr:init_monster(  )
+	local create_num = 0
 	for i,v in ipairs(self.nest_cfg) do
+		local patrolInfo = {x=v.pos_x, y=v.pos_y, z=v.pos_z, radius=v.radius}
 		for ii=1,v.monster_num do
-			local random_pos_x = v.pos_x + math.random(-v.radius/2, v.radius/2)
-			local random_pos_y = v.pos_y + math.random(-v.radius/2, v.radius/2)
-			local random_pos_z = v.pos_z + math.random(-v.radius/2, v.radius/2)
-			self:create_monster(v.monster_type_id, random_pos_x, random_pos_y, random_pos_z)
+			self:create_monster(v.monster_type_id, patrolInfo, v)
+			create_num = create_num + 1
+			if test_info.create_num and create_num >= test_info.create_num then
+				return
+			end
 		end
 	end
 end
 
-function monster_mgr:create_monster( type_id, pos_x, pos_y, pos_z )
+function monster_mgr:create_monster( type_id, patrolInfo )
 	local cfg = monster_cfg[type_id]
 	if not cfg then return end
 	
+	local radius = patrolInfo.radius/2
+	local pos_x = patrolInfo.x + math.random(-radius, radius)
+	local pos_y = patrolInfo.y + math.random(-radius, radius)
+	local pos_z = patrolInfo.z + math.random(-radius, radius)
+
 	local monster = self.entity_mgr:CreateEntityByArcheType(self.monster_archetype)
 	self.entity_mgr:SetComponentData(monster, "umo.position", {x=pos_x, y=pos_y, z=pos_z})
 	self.entity_mgr:SetComponentData(monster, "umo.target_pos", {x=pos_x, y=pos_y, z=pos_z})
@@ -53,9 +64,12 @@ function monster_mgr:create_monster( type_id, pos_x, pos_y, pos_z )
 	self.entity_mgr:SetComponentData(monster, "umo.scene_obj_type", {value=SceneObjectType.Monster})
 	self.entity_mgr:SetComponentData(monster, "umo.monster_ai", {ai_id=scene_uid})
 	self.entity_mgr:SetComponentData(monster, "umo.monster_state", {state=monster_const.monster_state.patrol, sub_state=monster_const.monster_sub_state.enter})
+	self.entity_mgr:SetComponentData(monster, "umo.patrol_info", patrolInfo)
+	self.entity_mgr:SetComponentData(monster, "umo.move_speed", {value=cfg.move_speed})
 
 	local handle = self.aoi:add()
 	self.aoi:set_pos(handle, pos_x, pos_y, pos_z)
+	self.entity_mgr:SetComponentData(monster, "umo.aoi_handle", {value=handle})
 
 	-- print('Cat:monster_mgr.lua[53] scene_uid', scene_uid, handle)
 	self.scene_mgr.aoi_handle_uid_map[handle] = scene_uid
@@ -71,9 +85,8 @@ function monster_mgr:init_graphs_for_mon( scene_uid, entity, entityMgr, aoi_hand
 	--此graph会在monster_ai_system.lua里update
 	local owner = BP.GraphsOwner.Create()
 	self.graphs_owners[scene_uid] = owner
-	local graph = BP.Graph.Create(monster_fsm_cfg)
+	local graph = BP.FSM.FSMGraph.Create(monster_fsm_cfg)
 	owner:AddGraph(graph)
-	owner:Start()
 
 	local blackboard = owner:GetBlackboard()
 	blackboard:SetVariable("entity", entity)
@@ -81,11 +94,19 @@ function monster_mgr:init_graphs_for_mon( scene_uid, entity, entityMgr, aoi_hand
 	blackboard:SetVariable("aoi_handle", aoi_handle)
 	blackboard:SetVariable("aoi", aoi)
 	blackboard:SetVariable("aoi_area", 250)
-
+	blackboard:SetVariable("monsterMgr", self)
+	owner:Start()
 end
 
 function monster_mgr:get_graphs_owner( uid )
 	return self.graphs_owners[uid]
+end
+
+function monster_mgr:change_target_pos( entity, pos )
+	self.entity_mgr:SetComponentData(entity, "umo.target_pos", pos)
+	local uid = self.entity_mgr:GetComponentData(entity, "umo.uid")
+	local change_target_pos_event_info = {key=SceneInfoKey.TargetPos, value=pos.x..","..pos.z, time=Time.timeMS}
+	self.scene_mgr.event_mgr:AddSceneEvent(uid.value, change_target_pos_event_info)
 end
 
 return monster_mgr

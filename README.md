@@ -37,11 +37,12 @@
 )人物的移动同步  
 )AOI(lua实现的三维十字链表法)  
 )战斗协议同步  
+)lua状态机
 
 # Todo
 前端:   
 )基于组件的UI框架(85%)  
-)战斗系统(70%)  
+)战斗系统(80%)  
 )采集  
 )自动任务流程  
 )场景模型LOD,试试UnityGithub上的AutoLOD  
@@ -49,7 +50,7 @@
 后端:  
 )lua版本的ECS(84%)  
 )lua版本的行为树  
-)怪物AI(15%)     
+)怪物AI(55%)     
 )使用Redis  
 
 # 开发笔记
@@ -83,10 +84,11 @@
 19.01.23：初步完成了可运行的lua版本ecs框架了（因为公司游戏上线忙死了所以基本上没什么时间弄），开始做后端的NPC和怪物逻辑吧，边做功能边给lua ecs补特性吧。后端的寻路就用recastnavigation库吧，要先导出接口给lua，其次是unity-navmesh导出的数据不能直接用的，所以还要写个脚本把unity生成的navmesh导出成recast支持的格式  
 19.02.03：前端的寻路资源流程确定为大世界的navmesh分块打包（需要划分到不同的scene把所有节点删光，这样就只有navmesh数据了），然后运行时可以Additive模式加载该Scene，当然导出navmesh前还需要拉几个OffMeshLink，这样加载多个scene时会就自动把多个navmesh关联起来。  
 19.02.13：终于把unity的navmesh导出成recastnavigation可以使用的数据了，主要思路是利用unity的NavMesh.CalculateTriangulation方法返回的三角形数据转化为recast里的rcPolyMesh对象然后再参照RecastDemo那样创建出dtNavMesh对象，详细见[Navigator](https://github.com/liuhaopen/Navigator "Navigator")  
-19.03.17：把人物场景漫游的逻辑换成ECS实现了，不过动作还是用Animator，场景加载还是先改成baseworld加细节物件九宫格加载：![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/run_in_green_scene.gif)   
+19.03.17：把人物场景漫游的逻辑换成ECS实现了，不过动作还是用Animator，场景加载还是先改成baseworld加细节物件九宫格加载。   
 19.03.26：用Timeline实现了普攻和技能，省下了开发技能编辑器的功夫。接下来就弄个好看的轻功四段跳和场景同步逻辑了。另外资源方面还没上传最新的，主要是两点原因：1我还在纠结资源命名规范和目录结构等细节，未来会经常变动。2因为懒得在网上找资源所以直接用了公司项目的了，这个不好直接上传，等功能做得差不多了我再找替代资源。  
 19.04.08：用lua实现了aoi模块，用的是十字链表法，因为是3d的所以用3条链表，以后有空再改成c实现吧，终于可以不用全场景广播了。  
 19.04.22：增加了一些怪物逻辑，但还缺AI部分（还在考虑用哪种行为树方案，还是自己弄一套算了？）。另外角色控制方面由于跳跃状态不是定长的，比如跳崖后就会一直处于跳跃状态中，所以还是不适合使用timeline，所以改成代码计算高度并控制动作状态。  
 19.04.25：做战斗飘字时需要针对该艺术字节点做动画，虽然有现成的TweenLite可以用，但感觉还是cocos action的接口更好用，所以又实现了一个c#版本：  
 [UnityCocosAction](https://github.com/liuhaopen/UnityCocosAction "UnityCocosAction")    
-![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/fight_fly_words.gif)     
+19.05.08：实现了个简单的状态机并完成了怪物的巡逻状态逻辑，现在怪物终于会跑了：  
+![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/monster_patrol.gif)     
