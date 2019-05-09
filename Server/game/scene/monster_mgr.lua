@@ -68,20 +68,22 @@ function monster_mgr:create_monster( type_id, patrolInfo )
 	self.entity_mgr:SetComponentData(monster, "umo.move_speed", {value=cfg.move_speed})
 
 	local handle = self.aoi:add()
+	self.aoi:set_user_data(handle, "uid", scene_uid)
+	self.aoi:set_user_data(handle, "entity", monster)
 	self.aoi:set_pos(handle, pos_x, pos_y, pos_z)
 	self.entity_mgr:SetComponentData(monster, "umo.aoi_handle", {value=handle})
 
 	-- print('Cat:monster_mgr.lua[53] scene_uid', scene_uid, handle)
-	self.scene_mgr.aoi_handle_uid_map[handle] = scene_uid
+	-- self.scene_mgr.aoi_handle_uid_map[handle] = scene_uid
 	self.scene_mgr.uid_entity_map[scene_uid] = monster
 
-    self:init_graphs_for_mon(scene_uid, monster, self.entity_mgr, handle, self.aoi)
+    self:init_graphs_for_mon(scene_uid, monster, self.entity_mgr, handle, self.aoi, cfg)
 
 	table.insert(self.monster_entities, monster)
 	return monster
 end
 
-function monster_mgr:init_graphs_for_mon( scene_uid, entity, entityMgr, aoi_handle, aoi )
+function monster_mgr:init_graphs_for_mon( scene_uid, entity, entityMgr, aoi_handle, aoi, cfg )
 	--此graph会在monster_ai_system.lua里update
 	local owner = BP.GraphsOwner.Create()
 	self.graphs_owners[scene_uid] = owner
@@ -93,8 +95,9 @@ function monster_mgr:init_graphs_for_mon( scene_uid, entity, entityMgr, aoi_hand
 	blackboard:SetVariable("entityMgr", entityMgr)
 	blackboard:SetVariable("aoi_handle", aoi_handle)
 	blackboard:SetVariable("aoi", aoi)
-	blackboard:SetVariable("aoi_area", 250)
 	blackboard:SetVariable("monsterMgr", self)
+	blackboard:SetVariable("sceneMgr", self.scene_mgr)
+	blackboard:SetVariable("cfg", cfg)
 	owner:Start()
 end
 

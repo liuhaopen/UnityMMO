@@ -47,7 +47,7 @@ public class MonsterMgr
 
     private void InitMonster(Entity monster, long uid, long typeID, Vector3 pos, Vector3 targetPos)
     {
-        EntityManager.AddComponentData(monster, new MoveSpeed {Value = 500});
+        EntityManager.AddComponentData(monster, new MoveSpeed {Value = ConfigMonster.GetInstance().GetMoveSpeed(typeID)});
         EntityManager.AddComponentData(monster, new TargetPosition {Value = targetPos});
         EntityManager.AddComponentData(monster, new LocomotionState {LocoState = LocomotionState.State.Idle});
         EntityManager.AddComponentData(monster, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});

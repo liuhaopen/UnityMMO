@@ -10,36 +10,45 @@ detail.damage_rate：伤害比率
 detail.area：攻击范围--shape为圆形时即半径，直线时即为距离
 ]]--
 local config = {
-	[12000] = {
-		skill_id = 12000, shape = 1, duration = 1000, detail = {
+	--人物技能
+	[120000] = {
+		skill_id = 120000, shape = 1, duration = 1000, detail = {
 			[1] = {
 				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 5000,
 			},
 		},	
 	},
-	[12001] = {
-		skill_id = 12001, shape = 1, duration = 1000, detail = {
+	[120001] = {
+		skill_id = 120001, shape = 1, duration = 1000, detail = {
 			[1] = {
 				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 5000,
 			},
 		},	
 	},
-	[12002] = {
-		skill_id = 12002, shape = 1, duration = 1000, detail = {
+	[120002] = {
+		skill_id = 120002, shape = 1, duration = 1000, detail = {
 			[1] = {
 				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 5000,
 			},
 		},	
 	},
-	[12003] = {
-		skill_id = 12003, shape = 1, duration = 1000, detail = {
+	[120003] = {
+		skill_id = 120003, shape = 1, duration = 1000, detail = {
 			[1] = {
 				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 5000,
 			},
 		},	
 	},
-	[12013] = {
-		skill_id = 12013, shape = 1, duration = 1000, detail = {
+	[120013] = {
+		skill_id = 120013, shape = 1, duration = 1000, detail = {
+			[1] = {
+				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 5000,
+			},
+		},	
+	},
+	--怪物技能
+	[200000] = {
+		skill_id = 200000, shape = 1, duration = 1000, detail = {
 			[1] = {
 				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 5000,
 			},

@@ -20,7 +20,7 @@ function fight_mgr:cast_skill( user_info, req_data )
 			attacker_uid = role_info.scene_uid,
 			skill_id = req_data.skill_id,
 			skill_lv = 1,
-			attacker_pos_x = req_data.cur_pos_x,--Cat_Todo : 有空记得做校验
+			attacker_pos_x = req_data.cur_pos_x,--Cat_Todo : 记得做校验
 			attacker_pos_y = req_data.cur_pos_y,
 			attacker_pos_z = req_data.cur_pos_z,
 			target_pos_x = req_data.target_pos_x,
@@ -30,21 +30,19 @@ function fight_mgr:cast_skill( user_info, req_data )
 			time = Time.timeMS,
 			defenders = nil,
 		}
-		fight_event.defenders = self:cal_defender_list(fight_event, role_info)
+		fight_event.defenders = self:cal_defender_list(fight_event, role_info.aoi_handle)
 
 		self:add_damage_event_for_defenders(fight_event)
 
-		-- self.scene_mgr.fight_events[role_info.scene_uid] = self.scene_mgr.fight_events[role_info.scene_uid] or {}
-		-- table.insert(self.scene_mgr.fight_events[role_info.scene_uid], fight_event)
 		self.scene_mgr.event_mgr:AddFightEvent(role_info.scene_uid, fight_event)
 	end
 	return is_can_cast and 0 or 1, fight_event
 end
 
 --计算受击者列表
-function fight_mgr:cal_defender_list( fight_info, role_info )
+function fight_mgr:cal_defender_list( fight_info, attacker_aoi_handle )
 	local cfg = skill_cfg[fight_info.skill_id]
-	if not cfg or not role_info then return end
+	if not cfg or not attacker_aoi_handle then return end
 	
 	local skill_bomb = self.aoi:add()
 	self.aoi:set_pos(skill_bomb, fight_info.target_pos_x, fight_info.target_pos_y, fight_info.target_pos_z)
@@ -55,8 +53,9 @@ function fight_mgr:cal_defender_list( fight_info, role_info )
 	if around then
 		defenders = {}
 		for aoi_handle,v in pairs(around) do
-			if aoi_handle ~= role_info.aoi_handle then
-				local uid = self.scene_mgr.aoi_handle_uid_map[aoi_handle]
+			if aoi_handle ~= attacker_aoi_handle then
+				-- local uid = self.scene_mgr.aoi_handle_uid_map[aoi_handle]
+				local uid = self.aoi:get_user_data(aoi_handle, "uid")
 				local entity = self.scene_mgr.uid_entity_map[uid]
 				if entity then
 					local hp = self.entity_mgr:GetComponentData(entity, "umo.hp")

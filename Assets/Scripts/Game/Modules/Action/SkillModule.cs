@@ -20,13 +20,12 @@ public class SkillManager
 
     public void Init(int career)
     {
-        Debug.Log("career : "+career);
         this.career = career;
         this.curComboIndex = 0;
         //just for test
         for (int i = 0; i < 4; i++)
         {
-            skillIDs[i] = 10000+career*1000+10+i;
+            skillIDs[i] = 100000+career*10000+10+i;
         }
     }
 
@@ -79,13 +78,13 @@ public class SkillManager
 
     public int GetSceneObjTypeBySkillID(int skillID)
     {
-        return (int)math.floor((skillID/10000));
+        return (int)math.floor((skillID/100000));
     }
 
     private static int GetAttackID(int career, int comboIndex)
     {
-        //技能id：万位是类型1角色，2怪物，3NPC，千位为职业，个十百位随便用
-        return 10000+career*1000+comboIndex;
+        //技能id：十万位是类型1角色，2怪物，3NPC，万位为职业，个十百位随便用
+        return 100000+career*10000+comboIndex;
     }
 
     private SkillManager()

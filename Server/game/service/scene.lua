@@ -27,7 +27,7 @@ local this = {
 	ecs_system_mgr = require "game.scene.ecs_system_mgr",
 	event_mgr = require "game.scene.event_mgr",
 	aoi = require "game.scene.aoi",
-	aoi_handle_uid_map = {}
+	-- aoi_handle_uid_map = {}
 }
 
 
@@ -71,7 +71,9 @@ local update_around_objs = function ( role_info )
 	local objs = this.aoi:get_around_offset(role_info.aoi_handle, role_info.radius_short, role_info.radius_long)
 	local cur_time = Time.timeMS
 	for aoi_handle, flag in pairs(objs) do
-		local scene_uid = this.aoi_handle_uid_map[aoi_handle]
+		-- local scene_uid = this.aoi_handle_uid_map[aoi_handle]
+		local scene_uid = this.aoi:get_user_data(aoi_handle, "uid")
+		print('Cat:scene.lua[76] scene_uid', scene_uid)
 		local is_enter = flag==1
 		-- print('Cat:scene.lua[67] flag, ', flag, aoi_handle, role_info.aoi_handle, scene_uid)
 		if is_enter then
@@ -232,7 +234,6 @@ local init_pos_info = function ( base_info )
 end
 
 function CMD.role_enter_scene(role_id)
-	print('Cat:scene.lua[role_enter_scene] role_id', role_id)
 	if not this.role_list[role_id] then
 		local scene_uid = scene_helper:new_scene_uid(SceneObjectType.Role)
 		local base_info = get_base_info_by_roleid(role_id)
@@ -240,13 +241,15 @@ function CMD.role_enter_scene(role_id)
 		init_pos_info(base_info)
 
 		local handle = this.aoi:add()
+		this.aoi:set_user_data(handle, "uid", scene_uid)
 		this.role_list[role_id] = {scene_uid=scene_uid, base_info=base_info, looks_info=looks_info, aoi_handle=handle, around_objs={}, radius_short=5000, radius_long=6000, fight_events_in_around={}}
 		this.object_list[scene_uid] = this.role_list[role_id]
-		this.aoi_handle_uid_map[handle] = scene_uid
+		-- this.aoi_handle_uid_map[handle] = scene_uid
 		this.aoi:set_pos(handle, base_info.pos_x, base_info.pos_y, base_info.pos_z)
 
 		local entity = this.role_mgr:create_role(scene_uid, role_id, base_info.pos_x, base_info.pos_y, base_info.pos_z, handle)
 		this.uid_entity_map[scene_uid] = entity
+		this.aoi:set_user_data(handle, "entity", entity)
 	end
 end
 
@@ -359,9 +362,6 @@ function CMD.scene_walk( user_info, req_data )
 		-- local change_pos_event_info = {key=SceneInfoKey.PosChange, value=pos_info, time= cur_time}
 		local change_target_pos_event_info = {key=SceneInfoKey.TargetPos, value=target_pos_info, time=cur_time}
 		this.event_mgr:AddSceneEvent(role_info.scene_uid, change_target_pos_event_info)
-		-- this.event_list[role_info.scene_uid] = this.event_list[role_info.scene_uid] or {}
-		-- table.insert(this.event_list[role_info.scene_uid], change_target_pos_event_info)
-
 		if req_data.jump_state ~= 0 then
 			-- table.insert(this.event_list[role_info.scene_uid], {key=SceneInfoKey.JumpState, value="1", time=cur_time})
 			this.event_mgr:AddSceneEvent(role_info.scene_uid, {key=SceneInfoKey.JumpState, value="1", time=cur_time})

@@ -5,6 +5,12 @@ function scene_helper:new_scene_uid( scene_obj_type )
 	return scene_obj_type*10000000000 + self.scene_uid_counter[scene_obj_type]
 end
 
+--返回SceneObjectType枚举类型
+function scene_helper:get_type_by_uid( scene_uid )
+    local type = math.floor(scene_uid/10000000000)
+    return type
+end
+
 scene_helper.add_info_item = function ( change_obj_infos, scene_uid, info_item )
 	change_obj_infos = change_obj_infos or {obj_infos={}}
 	local cur_info = nil
