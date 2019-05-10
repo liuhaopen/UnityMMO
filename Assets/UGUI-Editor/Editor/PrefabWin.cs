@@ -11,7 +11,9 @@ public class PrefabWin : EditorWindow
     [MenuItem("Window/PrefabWin", false, 9)]
     static public void OpenPrefabTool()
     {
-        EditorWindow.GetWindow<PrefabWin>(false, "Prefab Win", true).Show();
+        PrefabWin prefabWin = (PrefabWin)EditorWindow.GetWindow<PrefabWin>(false, "Prefab Win", true);
+		prefabWin.autoRepaintOnSceneChange = true;
+		prefabWin.Show();
     }
 
     static public PrefabWin instance;
@@ -270,7 +272,7 @@ public class PrefabWin : EditorWindow
 	{
 		if (item != null && item.dynamicTex && item.tex != null)
 		{
-			DestroyImmediate(item.tex);
+            DestroyImmediate(item.tex);
 			item.dynamicTex = false;
 			item.tex = null;
 		}
@@ -324,7 +326,6 @@ public class PrefabWin : EditorWindow
                     UIEditorHelper.SaveTextureToPNG(Tex, preview_path);
                 }
             }
-
             item.dynamicTex = false;
 			return;
 		}
@@ -581,7 +582,11 @@ public class PrefabWin : EditorWindow
 
 				if (ent != null)
 				{
-
+                    if (ent.tex == null)
+					{
+                        //texture may be destroy after exit game
+						GeneratePreview(ent, false);
+					}
 					if (ent.tex != null)
 					{
 						GUI.DrawTexture(inner, ent.tex);
