@@ -1,4 +1,4 @@
-local ComponentTypeInArchetype = BaseClass()
+local ComponentTypeInArchetype = ECS.BaseClass()
 ECS.ComponentTypeInArchetype = ComponentTypeInArchetype
 
 function ComponentTypeInArchetype:Constructor( type )

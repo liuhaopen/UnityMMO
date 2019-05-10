@@ -1,5 +1,5 @@
-local IComponentData = BaseClass()
+local IComponentData = ECS.BaseClass()
 ECS.IComponentData = IComponentData
 
-local ISharedComponentData = BaseClass()
+local ISharedComponentData = ECS.BaseClass()
 ECS.ISharedComponentData = ISharedComponentData

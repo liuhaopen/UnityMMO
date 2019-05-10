@@ -1,4 +1,4 @@
-local ComponentType = BaseClass()
+local ComponentType = ECS.BaseClass()
 ECS.ComponentType = ComponentType
 
 ComponentType.AccessMode = {

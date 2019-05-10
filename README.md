@@ -5,7 +5,7 @@ Lua版本的话基本上和Unity实现是一样的。
 
 # 用例
 ```  
-ECS = require "ECS"
+local ECS = require "ECS"
 --ComponentType
 ECS.TypeManager.RegisterType("ECS.Position", {x="number", y="number", z="integer"})
 
@@ -17,7 +17,7 @@ entity_mgr:SetComponentData(entity, "ECS.Position", {x=1.1, y=2.2, z=3})
 local comp_data = entity_mgr:GetComponentData(entity, "ECS.Position")
 
 --ComponentSystem
-local TestInjectSystem = BaseClass(ECS.ComponentSystem)
+local TestInjectSystem = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr("TestInjectSystem", TestInjectSystem)
 function TestInjectSystem:Constructor(  )
 	local data = {
@@ -40,7 +40,7 @@ end
 lua ./Tests/test_all.lua -v  
 
 # Todo
-)优化ECSCore读写性能  
+)优化ECSCore读写性能(现在性能测试里c实现比lua原生实现要慢好几倍！)  
 )整理目录结构  
 )补全测试用例  
 )增加字符串和引用类型  

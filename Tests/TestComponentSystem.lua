@@ -1,4 +1,5 @@
-local TestSystem = BaseClass(ECS.ComponentSystem)
+local ECS = require "ECS"
+local TestSystem = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr("TestSystem", TestSystem)
 
 function TestSystem:Constructor(  )
@@ -13,7 +14,7 @@ function TestSystem:OnDestroyManager(  )
 	self.Created = false
 end
 
-TestComponentSystem = BaseClass(require("TestBaseClass"))
+TestComponentSystem = ECS.BaseClass(require("TestBaseClass"))
 	
 function TestComponentSystem:TestCreate(  )
 	local system = ECS.World.Active:CreateManager("TestSystem")
@@ -42,7 +43,7 @@ function TestComponentSystem:TestCreateTwoSystemsOfSameType()
     lu.assertEquals(systemA, ECS.World.Active:GetOrCreateManager("TestSystem"))
 end
 
-local EmptySystem = BaseClass(ECS.ComponentSystem)
+local EmptySystem = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr("EmptySystem", EmptySystem)
 function TestComponentSystem:TestGetComponentGroup()
     local empty_sys = ECS.World.Active:GetOrCreateManager("EmptySystem")
@@ -65,7 +66,7 @@ function TestComponentSystem:TestGetComponentGroup()
     lu.assertEquals(3, #empty_sys.m_ComponentGroups)
 end
 
-local TestInjectSystem = BaseClass(ECS.ComponentSystem)
+local TestInjectSystem = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr("TestInjectSystem", TestInjectSystem)
 
 function TestInjectSystem:Constructor(  )
@@ -124,7 +125,7 @@ function TestComponentSystem:TestInject(  )
     lu.assertEquals(flag.value, 456)
 end
 
-local TestComponentDataArraySystem = BaseClass(ECS.ComponentSystem)
+local TestComponentDataArraySystem = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr("TestComponentDataArraySystem", TestComponentDataArraySystem)
 
 function TestComponentDataArraySystem:OnCreateManager(  )
@@ -186,7 +187,7 @@ function TestComponentSystem:TestComponentDataArray(  )
 end
 
 
-local TestEntityArraySystem = BaseClass(ECS.ComponentSystem)
+local TestEntityArraySystem = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr("TestEntityArraySystem", TestEntityArraySystem)
 
 function TestEntityArraySystem:OnCreateManager(  )

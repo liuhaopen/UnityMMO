@@ -1,10 +1,10 @@
-local EntityGroupData = BaseClass()
+local EntityGroupData = ECS.BaseClass()
 ECS.EntityGroupData = EntityGroupData
 
-local MatchingArchetypes = BaseClass()
+local MatchingArchetypes = ECS.BaseClass()
 ECS.MatchingArchetypes = MatchingArchetypes
 
-local EntityGroupManager = BaseClass()
+local EntityGroupManager = ECS.BaseClass()
 ECS.EntityGroupManager = EntityGroupManager
 
 function EntityGroupManager:Constructor( safetyManager )

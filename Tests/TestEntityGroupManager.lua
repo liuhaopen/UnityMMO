@@ -1,4 +1,5 @@
-TestEntityGroupManager = BaseClass(require("TestBaseClass"))
+local ECS = require "ECS"
+TestEntityGroupManager = ECS.BaseClass(require("TestBaseClass"))
 
 function TestEntityGroupManager:TestCreateEntityGroup()
 	ECS.TypeManager.RegisterType("ECSTestCompType1", {x="number", y="boolean", z="integer"})

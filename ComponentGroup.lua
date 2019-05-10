@@ -1,4 +1,4 @@
-local ComponentGroup = BaseClass()
+local ComponentGroup = ECS.BaseClass()
 ECS.ComponentGroup = ComponentGroup
 
 function ComponentGroup:Constructor( groupData, safetyManager, typeManager, entityDataManager )

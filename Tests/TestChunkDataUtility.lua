@@ -1,10 +1,11 @@
-TestChunkDataUtility = BaseClass(require("TestBaseClass"))
+local ECS = require "ECS"
+TestChunkDataUtility = ECS.BaseClass(require("TestBaseClass"))
 
 function TestChunkDataUtility:TestReadWriteComponentInChunk()
 	local test_comp_name = "TestComponent"
 	local type_info = ECS.TypeManager.RegisterType(test_comp_name, {n="number", i="integer", b="boolean", b2="boolean"})
 
-	local chunk = ECSCore.CreateChunk(32)
+	local chunk = ECS.Core.CreateChunk(32)
 	local comp_data = {}
 	ECS.ChunkDataUtility.ReadComponentFromChunk(chunk, test_comp_name, comp_data)
 	lu.assertEquals(comp_data.n, 0)

@@ -4,9 +4,9 @@ ECS.CoreHelper = CoreHelper
 function CoreHelper.Init(  )
 	if not CoreHelper.NativeTypeSize then
 		CoreHelper.NativeTypeSize = {
-		["number"] = ECSCore.GetNumberSize(),
-		["integer"] = ECSCore.GetIntegerSize(),
-		["boolean"] = ECSCore.GetBooleanSize(),
+		["number"] = ECS.Core.GetNumberSize(),
+		["integer"] = ECS.Core.GetIntegerSize(),
+		["boolean"] = ECS.Core.GetBooleanSize(),
 	}
 	end
 end
@@ -31,11 +31,11 @@ function CoreHelper.WriteFieldValueInChunk( chunk_ptr, offset, field_value, fiel
 	if not field_type then return end
 	
 	if field_type == "number" then
-        ECSCore.WriteNumber(chunk_ptr, offset, field_value)
+        ECS.Core.WriteNumber(chunk_ptr, offset, field_value)
     elseif field_type == "integer" then
-        ECSCore.WriteInteger(chunk_ptr, offset, field_value)
+        ECS.Core.WriteInteger(chunk_ptr, offset, field_value)
     elseif field_type == "boolean" then
-        ECSCore.WriteBoolean(chunk_ptr, offset, field_value and 1 or 0)
+        ECS.Core.WriteBoolean(chunk_ptr, offset, field_value and 1 or 0)
     else
     	assert(false, "wrong field type : "..field_type)
     end
@@ -46,11 +46,11 @@ function CoreHelper.ReadFieldValueInChunk( chunk_ptr, offset, field_type )
 	
 	local value = nil
 	if field_type == "number" then
-        value = ECSCore.ReadNumber(chunk_ptr, offset)
+        value = ECS.Core.ReadNumber(chunk_ptr, offset)
     elseif field_type == "integer" then
-        value = ECSCore.ReadInteger(chunk_ptr, offset)
+        value = ECS.Core.ReadInteger(chunk_ptr, offset)
     elseif field_type == "boolean" then
-        value = ECSCore.ReadBoolean(chunk_ptr, offset)
+        value = ECS.Core.ReadBoolean(chunk_ptr, offset)
     else
     	assert(false, "wrong field type : "..field_type)
     end

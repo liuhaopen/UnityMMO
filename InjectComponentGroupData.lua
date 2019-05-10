@@ -1,4 +1,4 @@
-local InjectComponentGroupData = BaseClass()
+local InjectComponentGroupData = ECS.BaseClass()
 ECS.InjectComponentGroupData = InjectComponentGroupData
 
 function InjectComponentGroupData:Constructor( system, injectGroupName, componentRequirements, componentDataInjections, lengthFieldInfo )
@@ -63,4 +63,4 @@ function InjectComponentGroupData:PatchGetIndexInComponentGroup( componentInject
     end
 end
 
-            
+return InjectComponentGroupData

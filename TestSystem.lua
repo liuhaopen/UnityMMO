@@ -1,4 +1,4 @@
-local TestSystem = BaseClass(ECS.ComponentSystem)
+local TestSystem = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr(TestSystem, "TestSystem")
 TestSystem.UpdateAfter = {"LastSystem"}
 TestSystem.UpdateBefore = {"FirstSystem"}

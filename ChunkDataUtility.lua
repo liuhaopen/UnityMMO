@@ -1,5 +1,4 @@
 local ChunkDataUtility = {}
-ECS.ChunkDataUtility = ChunkDataUtility
 
 function ChunkDataUtility.GetIndexInTypeArray( archetype, typeIndex )
 	local types = archetype.Types
@@ -163,7 +162,7 @@ function ChunkDataUtility.InitializeComponents( dstChunk, dstIndex, count )
         --         dst = dst + sizeOf
         --     end
         -- else
-            ECSCore.MemClear(dst, sizeOf * count)
+            ECS.Core.MemClear(dst, sizeOf * count)
         -- end
     end
 end
@@ -233,11 +232,11 @@ function ChunkDataUtility.Convert( srcChunk, srcIndex, dstChunk, dstIndex )
             if dstArch.Types[dstI].IsBuffer then
                 BufferHeader.Initialize(dst, dstArch.Types[dstI].BufferCapacity)
             else
-                ECSCore.MemClear(dst, dstArch.SizeOfs[dstI])
+                ECS.Core.MemClear(dst, dstArch.SizeOfs[dstI])
             end
             dstI = dstI + 1
         else
-            ECSCore.MemCpy(dst, src, srcArch.SizeOfs[srcI])
+            ECS.Core.MemCpy(dst, src, srcArch.SizeOfs[srcI])
             -- Poison source buffer to make sure there is no aliasing.
             if (srcArch.Types[srcI].IsBuffer) then
                 BufferHeader.Initialize(src, srcArch.Types[srcI].BufferCapacity)
@@ -261,7 +260,7 @@ function ChunkDataUtility.Convert( srcChunk, srcIndex, dstChunk, dstIndex )
         if (dstArch.Types[i].IsBuffer) then
             BufferHeader.Initialize(dst, dstArch.Types[i].BufferCapacity)
         else
-            ECSCore.MemClear(dst, dstArch.SizeOfs[i])
+            ECS.Core.MemClear(dst, dstArch.SizeOfs[i])
         end
     end
 end
@@ -319,3 +318,5 @@ function ChunkDataUtility.ClearManagedObjects( typeMan, chunk, index, count )
         end
     end
 end
+
+return ChunkDataUtility
