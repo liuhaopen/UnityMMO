@@ -1,5 +1,4 @@
-local ScriptBehaviourManager = BaseClass()
-ECS.ScriptBehaviourManager = ScriptBehaviourManager
+local ScriptBehaviourManager = ECS.BaseClass()
 
 function ScriptBehaviourManager:CreateInstance( world )
 	if self.OnBeforeCreateManagerInternal then
@@ -29,3 +28,4 @@ function ScriptBehaviourManager:DestroyInstance(  )
 	end
 end
 
+return ScriptBehaviourManager

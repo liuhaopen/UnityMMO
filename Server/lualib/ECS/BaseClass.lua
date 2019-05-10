@@ -1,6 +1,4 @@
-local _class={}
- 
-function BaseClass(super)
+local function BaseClass(super)
 	local class_type={}
 	class_type.Constructor=false
 	class_type.DefaultVar=false
@@ -43,3 +41,5 @@ function BaseClass(super)
  
 	return class_type
 end
+
+return BaseClass

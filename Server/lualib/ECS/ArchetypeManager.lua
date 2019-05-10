@@ -1,4 +1,4 @@
-local ArchetypeManager = BaseClass()
+local ArchetypeManager = ECS.BaseClass()
 ECS.ArchetypeManager = ArchetypeManager
 
 function ArchetypeManager:Constructor( sharedComponentManager )

@@ -1,4 +1,4 @@
-local EntityManager = BaseClass(ECS.ScriptBehaviourManager)
+local EntityManager = ECS.BaseClass(ECS.ScriptBehaviourManager)
 ECS.EntityManager = EntityManager
 ECS.EntityManager.Name = "ECS.EntityManager"
 ECS.TypeManager.RegisterScriptMgr(ECS.EntityManager.Name, EntityManager)

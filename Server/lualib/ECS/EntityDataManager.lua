@@ -1,4 +1,4 @@
-local EntityDataManager = BaseClass()
+local EntityDataManager = ECS.BaseClass()
 ECS.EntityDataManager = EntityDataManager
 
 local EntityData = {

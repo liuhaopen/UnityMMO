@@ -1,5 +1,4 @@
-local ComponentChunkIterator = BaseClass()
-ECS.ComponentChunkIterator = ComponentChunkIterator
+local ComponentChunkIterator = ECS.BaseClass()
 
 ECS.FilterType = {
     None = 1, SharedComponent=2, Changed=3,
@@ -101,3 +100,5 @@ function ComponentChunkIterator.CalculateLength( firstMatchingArchetype, filter 
     end
     return length
 end
+
+return ComponentChunkIterator

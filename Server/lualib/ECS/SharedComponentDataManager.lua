@@ -1,4 +1,4 @@
-local SharedComponentDataManager = BaseClass()
+local SharedComponentDataManager = ECS.BaseClass()
 ECS.SharedComponentDataManager = SharedComponentDataManager
 
 function SharedComponentDataManager:Constructor(  )

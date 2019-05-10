@@ -1,5 +1,7 @@
-local MovementUpdateSystem = BaseClass(ECS.ComponentSystem)
-ECS.TypeManager.RegisterScriptMgr("umo.MovementUpdateSystem", MovementUpdateSystem)
+local ECS = require "ECS"
+
+local MovementUpdateSystem = ECS.BaseClass(ECS.ComponentSystem)
+ECS.TypeManager.RegisterScriptMgr("UMO.MovementUpdateSystem", MovementUpdateSystem)
 
 function MovementUpdateSystem:Constructor( )
 end

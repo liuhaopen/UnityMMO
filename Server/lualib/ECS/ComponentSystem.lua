@@ -1,4 +1,4 @@
-local ComponentSystemBase = BaseClass(ECS.ScriptBehaviourManager)
+local ComponentSystemBase = ECS.BaseClass(ECS.ScriptBehaviourManager)
 ECS.ComponentSystemBase = ComponentSystemBase
 
 function ComponentSystemBase:Constructor(  )
@@ -100,9 +100,7 @@ end
 function ComponentSystemBase:CompleteDependencyInternal(  )
 end
 
-local ComponentSystem = BaseClass(ECS.ComponentSystemBase)
-ECS.ComponentSystem = ComponentSystem
-
+local ComponentSystem = ECS.BaseClass(ECS.ComponentSystemBase)
 function ComponentSystem:OnCreateManager( )
 	self.PostUpdateCommands = nil
 	--提取需要组件的类型信息

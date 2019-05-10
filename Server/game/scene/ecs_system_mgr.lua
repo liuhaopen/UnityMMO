@@ -4,9 +4,9 @@ function ecs_system_mgr:init( world, sceneMgr )
 	self.ecs_system_mgr_list = {}
 
 	local systems = {
-		"umo.damage_system",
-		"umo.monster_ai_system",
-		"umo.MovementUpdateSystem",
+		"UMO.DamageSystem",
+		"UMO.AISystem",
+		"UMO.MovementUpdateSystem",
 	}
 	for i,v in ipairs(systems) do
 		local system = world:GetOrCreateManager(v)

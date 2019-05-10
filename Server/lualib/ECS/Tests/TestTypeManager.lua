@@ -1,4 +1,5 @@
-TestTypeManager = BaseClass(require("TestBaseClass"))
+local ECS = require "ECS"
+TestTypeManager = ECS.BaseClass(require("TestBaseClass"))
 	
 function TestTypeManager:TestEntityTypeInfo(  )
 	local type_index = ECS.TypeManager.GetTypeIndexByName(ECS.Entity.Name)

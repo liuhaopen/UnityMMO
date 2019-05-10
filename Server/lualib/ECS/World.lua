@@ -1,4 +1,4 @@
-local World = BaseClass()
+local World = ECS.BaseClass()
 ECS.World = World
 ECS.World.Active = nil
 ECS.World.allWorlds = {}

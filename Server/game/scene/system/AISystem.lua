@@ -1,17 +1,13 @@
-ECS.TypeManager.RegisterType("umo.monster_ai", {ai_id="integer"})
-ECS.TypeManager.RegisterType("umo.monster_state", {state="integer", sub_state="integer"})
-local Time = require "game.scene.time"
-
+local ECS = require "ECS"
 local monster_const = require "game.scene.monster_const"
 
+local AISystem = ECS.BaseClass(ECS.ComponentSystem)
+ECS.TypeManager.RegisterScriptMgr("UMO.AISystem", AISystem)
 
-local monster_ai_system = BaseClass(ECS.ComponentSystem)
-ECS.TypeManager.RegisterScriptMgr("umo.monster_ai_system", monster_ai_system)
-
-function monster_ai_system:Constructor(  )
+function AISystem:Constructor(  )
 end
 
-function monster_ai_system:OnCreateManager(  )
+function AISystem:OnCreateManager(  )
 	ECS.ComponentSystem.OnCreateManager(self)
 
 	local blueprint_register = require "game.scene.ai.blueprint_register"
@@ -23,7 +19,7 @@ function monster_ai_system:OnCreateManager(  )
 	self.group = self:GetComponentGroup({"umo.monster_ai", "umo.uid"})
 end
 
-function monster_ai_system:OnUpdate(  )
+function AISystem:OnUpdate(  )
 	local deltaTime = Time.deltaTime
 	local entities = self.group:GetEntityArray()
 	local uids = self.group:GetComponentDataArray("umo.uid")
@@ -33,4 +29,4 @@ function monster_ai_system:OnUpdate(  )
 	end
 end
 
-return monster_ai_system
+return AISystem

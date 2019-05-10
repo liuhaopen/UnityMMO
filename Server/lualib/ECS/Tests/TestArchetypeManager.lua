@@ -1,4 +1,5 @@
-TestArchetypeManager = BaseClass(require("TestBaseClass"))
+local ECS = require "ECS"
+TestArchetypeManager = ECS.BaseClass(require("TestBaseClass"))
 
 function TestArchetypeManager:TestCreateArchetypeOne(  )
     local test_comp_name = "EcsTestData"

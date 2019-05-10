@@ -1,11 +1,11 @@
 local skynet = require "skynet"
 require "Common.Util.util"
-require "ECS.ECS"
+local ECS = require "ECS"
 require "common.helper"
 Time = require "game.scene.time"
 Vector3 = require "game.util.Vector3"
 local scene_helper = require "game.scene.scene_helper"
-RequireAllLuaFileInFolder("./game/scene/system")
+RequireAllLuaFileInFolder("./game/scene/System")
 local BP = require "Blueprint"
 
 local NORET = {}

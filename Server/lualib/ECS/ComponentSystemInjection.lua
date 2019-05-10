@@ -1,5 +1,4 @@
 local ComponentSystemInjection = {}
-ECS.ComponentSystemInjection = ComponentSystemInjection
 
 local function Split(szFullString, szSeparator, start_pos)
 	local nFindStartIndex = start_pos or 1
@@ -58,3 +57,5 @@ end
 function ComponentSystemInjection:InjectConstructorDependencies( manager, world, field_info, inject_field_name )
 	manager[inject_field_name] = world:GetOrCreateManager(field_info[2])	
 end
+
+return ComponentSystemInjection

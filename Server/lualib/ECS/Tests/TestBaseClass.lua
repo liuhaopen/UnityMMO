@@ -1,4 +1,5 @@
-local TestBaseClass = BaseClass()
+local ECS = require "ECS"
+local TestBaseClass = ECS.BaseClass()
 
 function TestBaseClass:Constructor(  )
 	
