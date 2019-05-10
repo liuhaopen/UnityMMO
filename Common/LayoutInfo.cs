@@ -13,9 +13,12 @@ namespace U3DExtends
         //[HideInInspector]
         [SerializeField]
         private string _layoutPath = string.Empty;
+        public static bool IsShowLayoutName = false;
 
         Vector3 _lastRealLayoutPos = new Vector3(-1, -1);
         Vector2 _lastRealLayoutSize = Vector2.zero;
+        UnityEngine.UI.Text _viewNameLabel = null;
+
         const string RealPosStartStr = "RealLayoutPosStart ";
         const string RealPosEndStr = " RealLayoutPosEnd\n";
 
@@ -41,6 +44,27 @@ namespace U3DExtends
             {
                 _layoutPath = value;
             }
+        }
+
+        public GameObject EditingView
+        {
+            get
+            {
+                for (int i = 0; i < transform.childCount; i++)
+                {
+                    Transform child = transform.GetChild(i);
+                    if (child.GetComponent<Decorate>() != null || (_viewNameLabel!=null && _viewNameLabel.transform==child))
+                        continue;
+                    return child.gameObject;
+                }
+                return null;
+            }
+        }
+
+        private void Start() {
+            Transform name_trans = transform.Find("ViewName");
+            if (name_trans!=null)
+                _viewNameLabel = name_trans.GetComponent<UnityEngine.UI.Text>();
         }
 
         //本来坐标或大小变更时也需要再保存一下,但是需要监听pos size等变更又要io保存,怕太多参照图时影响性能,所以还是界面保存时再一起保存吧
@@ -188,6 +212,24 @@ namespace U3DExtends
                 }
             }
         }
+
+        private void OnDrawGizmos() {
+            if (_viewNameLabel==null)
+                return;
+            // bool is_show_name = Event.current!=null && (Event.current.control) && !Event.current.alt && !Event.current.shift;
+            if (IsShowLayoutName)
+            {
+                string show_name = transform.name.Substring(0, transform.name.Length-("_Canvas").Length);
+                _viewNameLabel.text = show_name;
+                _viewNameLabel.transform.SetAsLastSibling();
+                _viewNameLabel.gameObject.SetActive(true);
+            }
+            else
+            {
+                _viewNameLabel.gameObject.SetActive(false);
+            }
+        }
+      
     }
 }
 #endif
