@@ -36,7 +36,7 @@ local CreateEntities = function ( self, archetype, num )
 end
 
 function EntityManager:CreateEntityByArcheType( archetype )
-    local entities = CreateEntities(self, archetype, num or 1)
+    local entities = CreateEntities(self, archetype, 1)
 	return entities and entities[1]
 end
 
@@ -114,20 +114,20 @@ function EntityManager:AddComponentData( entity, componentTypeName, componentDat
 end
 
 function EntityManager:SetComponentData( entity, componentTypeName, componentData )
-	local typeIndex = ECS.TypeManager.GetTypeIndexByName(componentTypeName)
-    self.Entities:AssertEntityHasComponent(entity, componentTypeName)
+	-- local typeIndex = ECS.TypeManager.GetTypeIndexByName(componentTypeName)
+    -- self.Entities:AssertEntityHasComponent(entity, componentTypeName)
     -- ComponentJobSafetyManager.CompleteReadAndWriteDependency(typeIndex)
-    local ptr = self.Entities:GetComponentDataWithTypeRW(entity, typeIndex, self.Entities.GlobalSystemVersion)
-    ECS.ChunkDataUtility.WriteComponentInChunk(ptr, componentTypeName, componentData)
-    -- UnsafeUtility.CopyStructureToPtr(componentData, ptr)
+    -- local ptr = self.Entities:GetComponentDataWithTypeRW(entity, typeIndex, self.Entities.GlobalSystemVersion)
+    -- ECS.ChunkDataUtility.WriteComponentInChunk(ptr, componentTypeName, componentData)
+    self.Entities:SetComponentDataWithTypeNameRW(entity, componentTypeName, componentData)
 end
 
 function EntityManager:GetComponentData( entity, componentTypeName )
-    local typeIndex = ECS.TypeManager.GetTypeIndexByName(componentTypeName)
-    self.Entities:AssertEntityHasComponent(entity, componentTypeName)
-    local ptr = self.Entities:GetComponentDataWithTypeRO(entity, typeIndex)
-    local data = ECS.ChunkDataUtility.ReadComponentFromChunk(ptr, componentTypeName)
-    return data
+    -- local typeIndex = ECS.TypeManager.GetTypeIndexByName(componentTypeName)
+    -- self.Entities:AssertEntityHasComponent(entity, componentTypeName)
+    -- local ptr = self.Entities:GetComponentDataWithTypeRO(entity, typeIndex)
+    -- local data = ECS.ChunkDataUtility.ReadComponentFromChunk(ptr, componentTypeName)
+    return self.Entities:GetComponentDataWithTypeNameRO(entity, componentTypeName)
 end
 
 function EntityManager:GetAllEntities(  )

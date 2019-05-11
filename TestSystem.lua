@@ -1,24 +1,12 @@
 local TestSystem = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr(TestSystem, "TestSystem")
-TestSystem.UpdateAfter = {"LastSystem"}
-TestSystem.UpdateBefore = {"FirstSystem"}
-TestSystem.UpdateInGroup = {"GroupSystem"}
-TestSystem.AlwaysUpdateSystem = true
+
 function TestSystem:Constructor(  )
-	local data = {
-		position = "ComponentDataArray:ECS.Position:ReadOnly",
-		rotation = "Subtractive:ECS.Rotation",
-		othersys = "ScriptMgr:ECS.TestSystem2",
-		entities = "EntityArray",
-		length   = "Length",
-	}
-	self.group = {}
-	self:Inject(self.group, data)
 end
 
 function TestSystem:OnCreateManager( )
 	ECS.ComponentSystem.OnCreateManager(self)
-    self.group_with_filter = self:GetComponentGroup({"ECS.Position:ReadOnly", "ECS.CodeLOD"})
+    self.group_with_filter = self:GetComponentGroup({"ECS.Position", "ECS.CodeLOD"})
 end
 
 function TestSystem:OnUpdate(  )
@@ -42,7 +30,7 @@ local use_case = function (  )
 
 	local entity = entity_mgr:CreateEntity()
 	entity_mgr:AddComponentData(entity, ECS.Position, {x=0, y=1, z=2})
-	local pos = entity_mgr:GetComponentData(entity, ECS.Position)
+	local pos = entity_mgr:GetComponentData(entity, "ECS.Position")
 	pos.x = 3
 	print('Cat:TestSystem.lua[46] pos.x, pos.y, pos.z', pos.x, pos.y, pos.z)
 	entity_mgr:SetComponentData(entity, ECS.Position, pos)

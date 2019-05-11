@@ -79,7 +79,7 @@ function ChunkDataUtility.ReadComponentFromChunk( chunk_ptr, componentTypeName, 
     return out_data
 end
 
-function ChunkDataUtility.WriteComponentInChunk( chunk_ptr, componentTypeName, componentData, offset )
+function ChunkDataUtility.WriteComponentInChunk_old( chunk_ptr, componentTypeName, componentData, offset )
     local typeInfo = ECS.TypeManager.GetTypeInfoByName(componentTypeName)
     assert(typeInfo~=nil, "cannot find type info with : "..componentTypeName)
     offset = offset or 0
@@ -91,6 +91,10 @@ function ChunkDataUtility.WriteComponentInChunk( chunk_ptr, componentTypeName, c
             -- ChunkDataUtility.WriteComponentInChunk(chunk_ptr+v.Offset, new_field_value)
         end
     end
+end
+
+function ChunkDataUtility:WriteComponentInChunk( buffer, componentTypeName, index, componentData )
+    buffer[componentTypeName][index] = componentData
 end
 
 function ChunkDataUtility.ReadComponentFromArray( chunk_ptr, index, componentTypeName, out_data )
@@ -110,6 +114,19 @@ function ChunkDataUtility.GetComponentDataRO( chunk, index, indexInTypeArray )
     local sizeOf = chunk.Archetype.SizeOfs[indexInTypeArray]
     print('Cat:ChunkDataUtility.lua[100] index, indexInTypeArray, offset, sizeOf', index, indexInTypeArray, offset, sizeOf)
     return chunk.Buffer + (offset + sizeOf * (index-1))
+end
+
+function ChunkDataUtility.GetComponentDataWithTypeName( chunk, componentName, index )
+    local data = chunk.Buffer[componentName][index]
+    if data ~= nil then
+        return data
+    else
+        --lazy init
+        local typeInfo = ECS.TypeManager.GetTypeInfoByName(componentName) 
+        data = ECS.ChunkDataUtility.DeepCopy(typeInfo.Prototype)
+        chunk.Buffer[componentName][index] = data
+        return data
+    end
 end
 
 function ChunkDataUtility.GetComponentDataRW( chunk, index, indexInTypeArray, globalSystemVersion )
@@ -142,29 +159,50 @@ function ChunkDataUtility.Copy( srcChunk, srcIndex, dstChunk, dstIndex, count )
     end
 end
 
-function ChunkDataUtility.InitializeComponents( dstChunk, dstIndex, count )
-    local arch = dstChunk.Archetype
+function ChunkDataUtility.DeepCopy( object )
+    local lookup_table = {}
+    local function _copy(object)
+        if type(object) ~= "table" then
+            return object
+        elseif lookup_table[object] then
+            return lookup_table[object]
+        end
 
-    local offsets = arch.Offsets
-    local sizeOfs = arch.SizeOfs
-    local dstBuffer = dstChunk.Buffer
-    local typesCount = arch.TypesCount
-    local types = arch.Types
+        local new_table = {}
+        lookup_table[object] = new_table
+        for index, value in pairs(object) do
+            new_table[_copy(index)] = _copy(value)
+        end
 
-    for t=2,typesCount do
-        local offset = offsets[t]
-        local sizeOf = sizeOfs[t]
-        local dst = dstBuffer + (offset + sizeOf * (dstIndex-1))
-
-        -- if types[t].IsBuffer then
-        --     for i=1,count do
-        --         BufferHeader.Initialize(dst, types[t].BufferCapacity)
-        --         dst = dst + sizeOf
-        --     end
-        -- else
-            ECS.Core.MemClear(dst, sizeOf * count)
-        -- end
+        return setmetatable(new_table, getmetatable(object))
     end
+
+    return _copy(object)
+end
+
+function ChunkDataUtility.InitializeComponents( dstChunk, dstIndex, count )
+    -- local arch = dstChunk.Archetype
+
+    -- local offsets = arch.Offsets
+    -- local sizeOfs = arch.SizeOfs
+    -- local dstBuffer = dstChunk.Buffer
+    -- local typesCount = arch.TypesCount
+    -- local types = arch.Types
+
+    -- for t=2,typesCount do
+    --     local offset = offsets[t]
+    --     local sizeOf = sizeOfs[t]
+    --     local dst = dstBuffer + (offset + sizeOf * (dstIndex-1))
+
+    --     -- if types[t].IsBuffer then
+    --     --     for i=1,count do
+    --     --         BufferHeader.Initialize(dst, types[t].BufferCapacity)
+    --     --         dst = dst + sizeOf
+    --     --     end
+    --     -- else
+    --         ECS.Core.MemClear(dst, sizeOf * count)
+    --     -- end
+    -- end
 end
 
 function ChunkDataUtility.ReplicateComponents( srcChunk, srcIndex, dstChunk, dstBaseIndex, count )
@@ -215,54 +253,57 @@ function ChunkDataUtility.Convert( srcChunk, srcIndex, dstChunk, dstIndex )
     local srcArch = srcChunk.Archetype
     local dstArch = dstChunk.Archetype
 
-    local srcI = 1
-    local dstI = 1
-    while (srcI <= srcArch.TypesCount and dstI <= dstArch.TypesCount) do
-        local src = srcChunk.Buffer + (srcArch.Offsets[srcI] + srcIndex * srcArch.SizeOfs[srcI])
-        local dst = dstChunk.Buffer + (dstArch.Offsets[dstI] + dstIndex * dstArch.SizeOfs[dstI])
-
-        if (srcArch.Types[srcI] < dstArch.Types[dstI]) then
-            -- Clear any buffers we're not going to keep.
-            if (srcArch.Types[srcI].IsBuffer) then
-                BufferHeader.Destroy(src)
-            end
-            srcI = srcI + 1
-        elseif (srcArch.Types[srcI] > dstArch.Types[dstI]) then
-            -- Clear components in the destination that aren't copied
-            if dstArch.Types[dstI].IsBuffer then
-                BufferHeader.Initialize(dst, dstArch.Types[dstI].BufferCapacity)
-            else
-                ECS.Core.MemClear(dst, dstArch.SizeOfs[dstI])
-            end
-            dstI = dstI + 1
-        else
-            ECS.Core.MemCpy(dst, src, srcArch.SizeOfs[srcI])
-            -- Poison source buffer to make sure there is no aliasing.
-            if (srcArch.Types[srcI].IsBuffer) then
-                BufferHeader.Initialize(src, srcArch.Types[srcI].BufferCapacity)
-            end
-            srcI = srcI + 1
-            dstI = dstI + 1
-        end
+    for k,v in pairs(srcChunk.Buffer) do
+        dstChunk.Buffer[k][dstIndex] = v[srcIndex]
     end
+    -- local srcI = 1
+    -- local dstI = 1
+    -- while (srcI <= srcArch.TypesCount and dstI <= dstArch.TypesCount) do
+    --     local src = srcChunk.Buffer + (srcArch.Offsets[srcI] + srcIndex * srcArch.SizeOfs[srcI])
+    --     local dst = dstChunk.Buffer + (dstArch.Offsets[dstI] + dstIndex * dstArch.SizeOfs[dstI])
+
+    --     if (srcArch.Types[srcI] < dstArch.Types[dstI]) then
+    --         -- Clear any buffers we're not going to keep.
+    --         if (srcArch.Types[srcI].IsBuffer) then
+    --             BufferHeader.Destroy(src)
+    --         end
+    --         srcI = srcI + 1
+    --     elseif (srcArch.Types[srcI] > dstArch.Types[dstI]) then
+    --         -- Clear components in the destination that aren't copied
+    --         if dstArch.Types[dstI].IsBuffer then
+    --             BufferHeader.Initialize(dst, dstArch.Types[dstI].BufferCapacity)
+    --         else
+    --             ECS.Core.MemClear(dst, dstArch.SizeOfs[dstI])
+    --         end
+    --         dstI = dstI + 1
+    --     else
+    --         ECS.Core.MemCpy(dst, src, srcArch.SizeOfs[srcI])
+    --         -- Poison source buffer to make sure there is no aliasing.
+    --         if (srcArch.Types[srcI].IsBuffer) then
+    --             BufferHeader.Initialize(src, srcArch.Types[srcI].BufferCapacity)
+    --         end
+    --         srcI = srcI + 1
+    --         dstI = dstI + 1
+    --     end
+    -- end
 
     -- Handle remaining components in the source that aren't copied
-    for i=srcI,srcArch.TypesCount do
-        local src = srcChunk.Buffer + (srcArch.Offsets[i] + srcIndex * srcArch.SizeOfs[i])
-        if (srcArch.Types[i].IsBuffer) then
-            BufferHeader.Destroy(src)
-        end
-    end
+    -- for i=srcI,srcArch.TypesCount do
+    --     local src = srcChunk.Buffer + (srcArch.Offsets[i] + srcIndex * srcArch.SizeOfs[i])
+        -- if (srcArch.Types[i].IsBuffer) then
+        --     BufferHeader.Destroy(src)
+        -- end
+    -- end
 
     -- Clear remaining components in the destination that aren't copied
-    for i=dstI,dstArch.TypesCount do
-        local dst = dstChunk.Buffer + (dstArch.Offsets[i] + dstIndex * dstArch.SizeOfs[i])
-        if (dstArch.Types[i].IsBuffer) then
-            BufferHeader.Initialize(dst, dstArch.Types[i].BufferCapacity)
-        else
-            ECS.Core.MemClear(dst, dstArch.SizeOfs[i])
-        end
-    end
+    -- for i=dstI,dstArch.TypesCount do
+    --     local dst = dstChunk.Buffer + (dstArch.Offsets[i] + dstIndex * dstArch.SizeOfs[i])
+    --     if (dstArch.Types[i].IsBuffer) then
+    --         BufferHeader.Initialize(dst, dstArch.Types[i].BufferCapacity)
+    --     else
+    --         ECS.Core.MemClear(dst, dstArch.SizeOfs[i])
+    --     end
+    -- end
 end
 
 function ChunkDataUtility.PoisonUnusedChunkData( chunk, value )

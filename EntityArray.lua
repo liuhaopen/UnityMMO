@@ -22,7 +22,9 @@ local get_fun = function ( t, index )
 	if index < t.m_Cache.CachedBeginIndex or index >= t.m_Cache.CachedEndIndex then
         t.m_Iterator:MoveToEntityIndexAndUpdateCache(index, t.m_Cache, false)
     end
-    return ECS.ChunkDataUtility.ReadComponentFromArray(t.m_Cache.CachedPtr, index, ECS.Entity.Name, t.m_Data)
+    -- return ECS.ChunkDataUtility.ReadComponentFromArray(t.m_Cache.CachedPtr, index, ECS.Entity.Name, t.m_Data)
+    local data = ECS.ChunkDataUtility.GetComponentDataWithTypeName(t.m_Cache.CurChunk, ECS.Entity.Name, index-t.m_Cache.CachedBeginIndex)
+ 	return data
 end
 
 local set_fun = function ( t, index, value )

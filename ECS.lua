@@ -15,9 +15,9 @@ setmetatable(ECSEnv, {
 	end,
 })
 
-ECS.Core = require("ECSCore")--这是个c库
+-- ECS.Core = require("ECSCore")--这是个c库
 ECS.BaseClass = importer.require("ECS.BaseClass", ECSEnv)
-ECS.CoreHelper = importer.require("ECS.CoreHelper", ECSEnv)
+-- ECS.CoreHelper = importer.require("ECS.CoreHelper", ECSEnv)
 ECS.TypeManager = importer.require("ECS.TypeManager", ECSEnv)
 ECS.ScriptBehaviourManager = importer.require("ECS.ScriptBehaviourManager", ECSEnv)
 ECS.World = importer.require("ECS.World", ECSEnv)

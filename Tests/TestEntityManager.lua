@@ -2,7 +2,7 @@ local ECS = require "ECS"
 TestEntityManager = ECS.BaseClass(require("TestBaseClass"))
 
 function TestEntityManager:TestIncreaseEntityCapacity(  )
-    local EcsTestData = {value="number"}
+    local EcsTestData = {value=0}
     ECS.TypeManager.RegisterType("DataForTestIncreaseEntityCapacity", EcsTestData)
 
     local archetype = self.m_Manager:CreateArchetype({"DataForTestIncreaseEntityCapacity"})
@@ -17,9 +17,9 @@ end
 function TestEntityManager:TestEntityGSetComponent(  )
     local test_compponent_name = "DataForTestEntityGSetComponent"
     local test_compponent_name2 = "DataForTestEntityGSetComponent2"
-	local EcsTestData = {x="number", y="boolean", z="integer"}
+	local EcsTestData = {x=0, y=false, z=0}
     ECS.TypeManager.RegisterType(test_compponent_name, EcsTestData)
-	ECS.TypeManager.RegisterType(test_compponent_name2, {value="integer"})
+	ECS.TypeManager.RegisterType(test_compponent_name2, {value=0})
 
 	local archetype = self.m_Manager:CreateArchetype({test_compponent_name, test_compponent_name2})
     local entity = self.m_Manager:CreateEntityByArcheType(archetype)
@@ -57,9 +57,9 @@ end
 function TestEntityManager:TestEntityAddComponent(  )
     local test_compponent_name = "DataForTestEntityAddComponent1"
     local test_compponent_name_two = "TestEntityAddComponent2"
-    local EcsTestData = {x="number", y="number", z="number"}
+    local EcsTestData = {x=0, y=0, z=0}
     ECS.TypeManager.RegisterType(test_compponent_name, EcsTestData)
-    ECS.TypeManager.RegisterType(test_compponent_name_two, {value="number"})
+    ECS.TypeManager.RegisterType(test_compponent_name_two, {value=0})
 
     local archetype = self.m_Manager:CreateArchetype({test_compponent_name})
     local entity = self.m_Manager:CreateEntityByArcheType(archetype)
@@ -75,7 +75,7 @@ end
 
 function TestEntityManager:TestEntityRemoveComponent(  )
     local test_compponent_name = "DataForTestEntityAddComponent"
-    local EcsTestData = {x="number", y="number", z="number"}
+    local EcsTestData = {x=0, y=0, z=0}
     ECS.TypeManager.RegisterType(test_compponent_name, EcsTestData)
 
     local archetype = self.m_Manager:CreateArchetype({test_compponent_name})

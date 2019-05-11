@@ -29,19 +29,20 @@ function TypeManager.Initialize(  )
 	-- 	-- FastEqualityTypeInfo = FastEquality.TypeInfo.Null,
 	-- 	EntityOffsets = nil, MemoryOrdering=0, BufferCapacity=-1, ElementSize = 0
 	-- }
-    TypeManager.RegisterType(ECS.Entity.Name, {Index="integer", Version="integer"})
+    TypeManager.RegisterType(ECS.Entity.Name, {Index=0, Version=0})
 end
 
 function TypeManager.BuildComponentType( name, type_desc )
-	local field_info_list, size = CalculateFieldInfo(type_desc)
+	-- local field_info_list, size = CalculateFieldInfo(type_desc)
 	local memoryOrdering = CalculateMemoryOrdering(name)
 	local type_info = {
 		Name = name,
-		Type = type_desc,
+		Prototype = type_desc,
+		-- Type = type_desc,
 		TypeIndex = TypeManager.s_Count,
 		BufferCapacity = -1,
-		SizeInChunk = size,
-		FieldInfoList = field_info_list,
+		-- SizeInChunk = size,
+		-- FieldInfoList = field_info_list,
 		MemoryOrdering = memoryOrdering,
 	}
 	return type_info
