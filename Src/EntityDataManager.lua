@@ -11,15 +11,10 @@ function EntityDataManager:Constructor( )
 	self.m_EntitiesCapacity = 10
     self.m_Entities = self:CreateEntityData(self.m_EntitiesCapacity)
 	self.m_EntitiesFreeIndex = 1
-    -- self.GlobalSystemVersion = ECS.ChangeVersionUtility.InitialGlobalSystemVersion
     self.GlobalSystemVersion = 1
 
 	self:InitializeAdditionalCapacity(1)
     self.m_ComponentTypeOrderVersion = {}
-	-- const int componentTypeOrderVersionSize = sizeof(int) * TypeManager.MaximumTypesCount;
- --    m_ComponentTypeOrderVersion = (int*) UnsafeUtility.Malloc(componentTypeOrderVersionSize,
- --        UnsafeUtility.AlignOf<int>(), Allocator.Persistent);
- --    UnsafeUtility.MemClear(m_ComponentTypeOrderVersion, componentTypeOrderVersionSize);
 end
 
 function EntityDataManager:InitializeAdditionalCapacity( start )
@@ -34,18 +29,17 @@ function EntityDataManager:InitializeAdditionalCapacity( start )
     self.m_Entities.ChunkData[self.m_EntitiesCapacity].IndexInChunk = -1;
 end
 
-function EntityDataManager:HasComponent( entity, comp_type_name )
-	if not self:Exists(entity) then 
+function EntityDataManager:HasComponent( entity, comp_type_name, ignoreExistCheck )
+	if not ignoreExistCheck and not self:Exists(entity) then 
 		return false
 	end
 	local archetype = self.m_Entities.Archetype[entity.Index]
-    local type_index = ECS.TypeManager.GetTypeIndexByName(comp_type_name)
-    return ECS.ChunkDataUtility.GetIndexInTypeArray(archetype, type_index) ~= -1;
+    return ECS.ChunkDataUtility.IsTypeNameInArchetype(archetype, comp_type_name)
 end
 
 function EntityDataManager:ValidateEntity( entity )
     if (entity.Index >= self.m_EntitiesCapacity) then
-        assert(false, "All entities passed to EntityManager must exist. One of the entities has already been destroyed or was never created.")
+        error("All entities passed to EntityManager must exist. One of the entities has already been destroyed or was never created.", 2)
     end
 end
 
@@ -59,12 +53,11 @@ end
 
 function EntityDataManager:AssertEntityHasComponent( entity, com_type_name )
     if not self:Exists(entity) then
-        assert(false, "The Entity does not exist")
+        error("The Entity does not exist", 2)
     end
-    if self:HasComponent(entity, com_type_name) then
-        return
+    if not self:HasComponent(entity, com_type_name, true) then
+        error("component has not been added to the entity.", 2)
     end
-    assert(false, "component has not been added to the entity.")
 end
             
 function EntityDataManager:GetComponentDataWithTypeRO( entity, typeIndex )
@@ -76,16 +69,6 @@ end
 function EntityDataManager:GetComponentDataWithTypeNameRO( entity, componentTypeName )
     local entityChunk = self.m_Entities.ChunkData[entity.Index].Chunk
     local entityIndexInChunk = self.m_Entities.ChunkData[entity.Index].IndexInChunk
-    -- local data = entityChunk.Buffer[componentTypeName][entityIndexInChunk]
-    -- if data ~= nil then
-    --     return data
-    -- else
-    --     --lazy init
-    --     local typeInfo = ECS.TypeManager.GetTypeInfoByName(componentTypeName) 
-    --     data = ECS.ChunkDataUtility.DeepCopy(typeInfo.Prototype)
-    --     entityChunk.Buffer[componentTypeName][entityIndexInChunk] = data
-    --     return data
-    -- end
     return ECS.ChunkDataUtility.GetComponentDataWithTypeName(entityChunk, componentTypeName, entityIndexInChunk)
 end
 
@@ -96,22 +79,15 @@ function EntityDataManager:SetComponentDataWithTypeNameRW( entity, componentType
 end
 
 function EntityDataManager:CreateEntities( archetypeManager, archetype, count )
-    -- local sharedComponentDataIndices = stackalloc int[archetype.NumSharedComponents]
-    -- UnsafeUtility.MemClear(sharedComponentDataIndices, archetype.NumSharedComponents*sizeof(int))
     local entities = {}
-    local sharedComponentDataIndices = {}
+    -- local sharedComponentDataIndices = {}
     local num = 0
     while count ~= 0 do
         local chunk = archetypeManager:GetChunkWithEmptySlots(archetype, sharedComponentDataIndices)
         local allocatedIndex
         local allocatedCount, allocatedIndex = archetypeManager:AllocateIntoChunk(chunk, count)
         num = num + allocatedCount
-        -- local tmp_entities = {}
         self:AllocateEntities(archetype, chunk, allocatedIndex, allocatedCount, entities)
-        ECS.ChunkDataUtility.InitializeComponents(chunk, allocatedIndex, allocatedCount)
-        -- for i,v in ipairs(tmp_entities) do
-        --     table.insert(entities, v)
-        -- end
         count = count - allocatedCount
     end
     self:IncrementComponentTypeOrderVersion(archetype)
@@ -119,6 +95,7 @@ function EntityDataManager:CreateEntities( archetypeManager, archetype, count )
 end
 
 function EntityDataManager:IncrementComponentTypeOrderVersion( archetype )
+    do return end--暂时没用
 	for t=1,archetype.TypesCount do
 		local typeIndex = archetype.Types[t].TypeIndex
         if not self.m_ComponentTypeOrderVersion[typeIndex] then
@@ -194,12 +171,12 @@ function EntityDataManager:AddComponent( entity, comp_type_name, archetypeManage
     self:IncrementComponentOrderVersion(newType, self:GetComponentChunk(entity), sharedComponentDataManager)
 end
 
-function EntityDataManager:RemoveComponent( entity, comp_type_name, archetypeManager, sharedComponentDataManager, groupManager, componentTypeInArchetypeArray )
+function EntityDataManager:RemoveComponent( entity, comp_type_name, archetypeManager, sharedComponentDataManager, groupManager )
     local componentType = ECS.ComponentTypeInArchetype.Create(ECS.ComponentType.Create(comp_type_name))
     local archetype = self:GetArchetype(entity)
-
     local removedTypes = 0
     local indexInOldTypeArray = -1
+    local componentTypeInArchetypeArray = {}
     for t=1,archetype.TypesCount do
         if archetype.Types[t].TypeIndex == componentType.TypeIndex then
             indexInOldTypeArray = t
@@ -331,10 +308,7 @@ function EntityDataManager:SetArchetype( typeMan, entity, archetype, sharedCompo
     local oldChunk = self.m_Entities.ChunkData[entity.Index].Chunk
     local oldChunkIndex = self.m_Entities.ChunkData[entity.Index].IndexInChunk
     ECS.ChunkDataUtility.Convert(oldChunk, oldChunkIndex, chunk, chunkIndex)
-    -- if chunk.ManagedArrayIndex >= 0 and oldChunk.ManagedArrayIndex >= 0 then
-    --     ECS.ChunkDataUtility.CopyManagedObjects(typeMan, oldChunk, oldChunkIndex, chunk, chunkIndex, 1)
-    -- end
-
+   
     self.m_Entities.Archetype[entity.Index] = archetype
     self.m_Entities.ChunkData[entity.Index].Chunk = chunk
     self.m_Entities.ChunkData[entity.Index].IndexInChunk = chunkIndex
@@ -346,24 +320,14 @@ function EntityDataManager:SetArchetype( typeMan, entity, archetype, sharedCompo
         self.m_Entities.ChunkData[lastEntity.Index].IndexInChunk = oldChunkIndex
 
         ECS.ChunkDataUtility.Copy(oldChunk, lastIndex, oldChunk, oldChunkIndex, 1)
-        -- if (oldChunk.ManagedArrayIndex >= 0) then
-        --     ChunkDataUtility.CopyManagedObjects(typeMan, oldChunk, lastIndex, oldChunk, oldChunkIndex, 1)
-        -- end
     end
 
-    -- if (oldChunk.ManagedArrayIndex >= 0) then
-    --     ChunkDataUtility.ClearManagedObjects(typeMan, oldChunk, lastIndex, 1)
-    -- end
     --Entity归新的Archetype了，所以旧的EnityCount要减1
     oldArchetype.EntityCount = oldArchetype.EntityCount - 1
     typeMan:SetChunkCount(oldChunk, lastIndex)
 end
 
 function EntityDataManager:AllocateEntities( arch, chunk, baseIndex, count, outputEntities )
-    if not self.entity_size_in_chunk then 
-        self.entity_size_in_chunk = ECS.TypeManager.GetTypeInfoByName(ECS.Entity.Name).SizeInChunk
-    end
-    -- local entityInChunkStart = chunk.Buffer + baseIndex
     for i=1,count do
         local entityIndexInChunk = self.m_Entities.ChunkData[self.m_EntitiesFreeIndex].IndexInChunk
         if entityIndexInChunk == -1 then
@@ -376,9 +340,7 @@ function EntityDataManager:AllocateEntities( arch, chunk, baseIndex, count, outp
         outputEntities[i].Index = self.m_EntitiesFreeIndex
         outputEntities[i].Version = entityVersion
 
-        -- ECS.ChunkDataUtility.WriteComponentInChunk(chunk.Buffer + (baseIndex + i - 2)*self.entity_size_in_chunk, ECS.Entity.Name, {Index=self.m_EntitiesFreeIndex, Version=entityVersion})
         chunk.Buffer[ECS.Entity.Name][baseIndex + i - 1] = outputEntities[i]
-        -- ECS.ChunkDataUtility.WriteComponentInChunk(chunk.Buffer, (baseIndex + i - 1), ECS.Entity.Name, {Index=self.m_EntitiesFreeIndex, Version=entityVersion})
         self.m_Entities.ChunkData[self.m_EntitiesFreeIndex].IndexInChunk = baseIndex + i - 1
         self.m_Entities.Archetype[self.m_EntitiesFreeIndex] = arch
         self.m_Entities.ChunkData[self.m_EntitiesFreeIndex].Chunk = chunk
@@ -412,15 +374,9 @@ function EntityDataManager:SetCapacity( value )
         return
     end
 
-    -- local newEntities = self:CreateEntityData(value)
-    -- CopyEntityData(newEntities, self.m_Entities, self.m_EntitiesCapacity)
-    -- self.m_Entities = nil
-    
-    -- self.m_Entities = newEntities
     local startNdx = self.m_EntitiesCapacity
     self.m_EntitiesCapacity = value
     self:InitializeAdditionalCapacity(startNdx)
-    -- self.Capacity = value
 end
 
 function EntityDataManager:CreateEntityData( newCapacity )

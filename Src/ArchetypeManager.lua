@@ -8,12 +8,6 @@ function ArchetypeManager:Constructor( sharedComponentManager )
     ECS.UnsafeLinkedListNode.InitializeList(self.m_EmptyChunkPool)
 end
 
--- local GetHash = function ( componentTypeInArchetypes )
--- 	local hash = HashUtility.Fletcher32(componentTypeInArchetypes,
---         #componentTypeInArchetypes * sizeof(ComponentTypeInArchetype) / sizeof(ushort))
---     return hash
--- end
-
 local GetTypesStr = function ( types, count )
     local names = {}
     for i=1,count do
@@ -34,149 +28,25 @@ function ArchetypeManager:GetExistingArchetype( types, count )
     return self.m_TypeLookup[type_str]
 end
 
--- function ArchetypeManager:GetOrCreateArchetype( types, count, groupManager )
-    -- local srcArchetype = self:GetOrCreateArchetypeInternal(types, count, groupManager)
-    -- local removedTypes = 0
-    -- local prefabTypeIndex = ECS.TypeManager.GetTypeIndexByName("Prefab")
-    -- for t=1,srcArchetype.TypesCount do
-    --     local type = srcArchetype.Types[t]
-    --     -- local skip = type.IsSystemStateComponent or type.IsSystemStateSharedComponent or (type.TypeIndex == prefabTypeIndex)
-    --     -- if skip then
-    --     --     removedTypes = removedTypes + 1
-    --     -- else
-    --         types[t - removedTypes] = srcArchetype.Types[t]
-    --     -- end
-    -- end
-
-    -- srcArchetype.InstantiableArchetype = srcArchetype
-    -- if removedTypes > 0 then
-    --     local instantiableArchetype = self:GetOrCreateArchetypeInternal(types, count-removedTypes, groupManager)
-    --     srcArchetype.InstantiableArchetype = instantiableArchetype
-    --     instantiableArchetype.InstantiableArchetype = instantiableArchetype
-    -- end
-    -- return srcArchetype
--- end
-
 function ArchetypeManager:CreateArchetypeInternal( types, count, groupManager )
     local type = {}
     type.TypesCount = count
     type.Types = types--should be deepcopy
     type.EntityCount = 0
     type.ChunkCount = 0
-
+    type.TypesMap = {}
+    for k,v in pairs(types) do
+        local typeName = ECS.TypeManager.GetTypeNameByIndex(v.TypeIndex)
+        type.TypesMap[typeName] = true
+    end
     type.NumSharedComponents = 0
     type.SharedComponentOffset = nil
 
-    -- local scalarEntityPatchCount = 0
-    -- local bufferEntityPatchCount = 0
-    -- for i=1,count do
-    --     local ct = ECS.TypeManager.GetTypeInfoByIndex(types[i].TypeIndex)
-    --     local entityOffsets = ct.EntityOffsets
-    --     if (entityOffsets ~= nil) then
-    --         if (ct.BufferCapacity >= 0) then
-    --             bufferEntityPatchCount = bufferEntityPatchCount + entityOffsets.Length
-    --         else
-    --             scalarEntityPatchCount = scalarEntityPatchCount + entityOffsets.Length
-    --         end
-    --     end
-    -- end
-
-    -- local chunkDataSize = ECS.Chunk.GetChunkBufferSize(type.TypesCount, type.NumSharedComponents)
-
-    -- type.Offsets = {}
-    -- type.SizeOfs = {}
-    -- type.TypeMemoryOrder = {}
-    -- type.ScalarEntityPatches = {}
-    -- type.ScalarEntityPatchCount = scalarEntityPatchCount
-    -- type.BufferEntityPatches = {}
-    -- type.BufferEntityPatchCount = bufferEntityPatchCount
-
-    -- local bytesPerInstance = 0
-    -- for i=1,count do
-        -- local cType = ECS.TypeManager.GetTypeInfoByIndex(types[i].TypeIndex)
-        -- local sizeOf = cType.SizeInChunk 
-        -- type.SizeOfs[i] = sizeOf
-
-        -- bytesPerInstance = bytesPerInstance + sizeOf
-    -- end
-
-    -- type.ChunkCapacity = math.floor(chunkDataSize / bytesPerInstance)
     --交给lua的table自动扩充
     type.ChunkCapacity = 2^50
 
-    -- local memoryOrderings = {}
-    -- for i=1,count do
-    --     memoryOrderings[i] = ECS.TypeManager.GetTypeInfoByIndex(types[i].TypeIndex).MemoryOrdering
-    -- end
-    -- for i=1,count do
-    --     local index = i
-    --     while (index > 1 and memoryOrderings[i] < memoryOrderings[type.TypeMemoryOrder[index - 1]]) do
-    --         type.TypeMemoryOrder[index] = type.TypeMemoryOrder[index - 1]
-    --         index = index - 1
-    --     end
-    --     type.TypeMemoryOrder[index] = i
-    -- end
-
-    -- local usedBytes = 0
-    -- for i=1,count do
-    --     local index = type.TypeMemoryOrder[i]
-    --     local sizeOf = type.SizeOfs[index]
-    --     type.Offsets[index] = usedBytes
-    --     usedBytes = usedBytes + sizeOf * type.ChunkCapacity
-    -- end
-
     type.NumManagedArrays = 0
     type.ManagedArrayOffset = nil
-
-    -- for i=1,count do
-    --     if (ECS.TypeManager.GetTypeInfoByIndex(types[i].TypeIndex).Category == ECS.TypeManager.TypeCategory.Class) then
-    --         type.NumManagedArrays = type.NumManagedArrays + 1
-    --     end
-    -- end
-
-    -- if (type.NumManagedArrays > 0) then
-    --     type.ManagedArrayOffset = self.m_ArchetypeChunkAllocator.Allocate(sizeof(int) * count, 4)
-    --     local mi = 0
-    --     for i=1,count do
-    --         local index = type.TypeMemoryOrder[i]
-    --         local cType = ECS.TypeManager.GetTypeInfoByIndex(types[index].TypeIndex)
-    --         if (cType.Category == ECS.TypeManager.TypeCategory.Class) then
-    --             type.ManagedArrayOffset[index] = mi
-    --             mi = mi + 1
-    --         else
-    --             type.ManagedArrayOffset[index] = -1
-    --         end
-    --     end
-    -- end
-
-    -- if (type.NumSharedComponents > 0) then
-    --     type.SharedComponentOffset = self.m_ArchetypeChunkAllocator.Allocate(sizeof(int) * count, 4)
-    --     local mi = 0
-    --     for i=1,count do
-    --         local index = type.TypeMemoryOrder[i]
-    --         local cType = ECS.TypeManager.GetTypeInfoByIndex(types[index].TypeIndex)
-    --         if (cType.Category == ECS.TypeManager.TypeCategory.ISharedComponentData) then
-    --             type.SharedComponentOffset[index] = mi
-    --             mi = mi + 1
-    --         else
-    --             type.SharedComponentOffset[index] = -1
-    --         end
-    --     end
-    -- end
-
-    -- local scalarPatchInfo = type.ScalarEntityPatches
-    -- local bufferPatchInfo = type.BufferEntityPatches
-    -- for i=1,count do
-    --     local ct = ECS.TypeManager.GetTypeInfoByIndex(types[i].TypeIndex)
-    --     local offsets = ct.EntityOffsets
-    --     if (ct.BufferCapacity >= 0) then
-    --         bufferPatchInfo = EntityRemapUtility.AppendBufferEntityPatches(bufferPatchInfo, offsets, type.Offsets[i], type.SizeOfs[i], ct.ElementSize);
-    --     else
-    --         scalarPatchInfo = EntityRemapUtility.AppendEntityPatches(scalarPatchInfo, offsets, type.Offsets[i], type.SizeOfs[i]);
-    --     end
-    -- end
-    -- type.ScalarEntityPatchCount = scalarEntityPatchCount
-    -- type.BufferEntityPatchCount = bufferEntityPatchCount
 
     type.PrevArchetype = self.m_LastArchetype
     self.m_LastArchetype = type
@@ -185,14 +55,9 @@ function ArchetypeManager:CreateArchetypeInternal( types, count, groupManager )
     type.ChunkListWithEmptySlots = ECS.UnsafeLinkedListNode.New()
     ECS.UnsafeLinkedListNode.InitializeList(type.ChunkList)
     ECS.UnsafeLinkedListNode.InitializeList(type.ChunkListWithEmptySlots)
-    -- type.FreeChunksBySharedComponents.Init(8)
 
-    -- m_TypeLookup.Add(GetHash(types, count), type)
     local type_str = GetTypesStr(types, count)
     self.m_TypeLookup[type_str] = type
-
-    -- type.SystemStateCleanupComplete = ArchetypeSystemStateCleanupComplete(type)
-    -- type.SystemStateCleanupNeeded = ArchetypeSystemStateCleanupNeeded(type)
 
     groupManager:AddArchetypeIfMatching(type)
     return type
@@ -242,27 +107,7 @@ function ArchetypeManager:ConstructChunk( archetype, chunk, sharedComponentDataI
     archetype.ChunkCount = archetype.ChunkCount+1
     if (numSharedComponents == 0) then
         archetype.ChunkListWithEmptySlots:Add(chunk.ChunkListWithEmptySlotsNode)
-    -- else
-    --     local sharedComponentValueArray = chunk.SharedComponentValueArray
-    --     UnsafeUtility.MemCpy(sharedComponentValueArray, sharedComponentDataIndices, archetype.NumSharedComponents*sizeof(int))
-
-    --     for i=1,archetype.NumSharedComponents do
-    --         local sharedComponentIndex = sharedComponentValueArray[i]
-    --         m_SharedComponentManager.AddReference(sharedComponentIndex)
-    --     end
-
-    --     archetype.FreeChunksBySharedComponents.Add(chunk)
     end
-
-    -- if archetype.NumManagedArrays > 0 then
-    --     chunk.ManagedArrayIndex = AllocateManagedArrayStorage(archetype.NumManagedArrays * chunk.Capacity)
-    -- else
-    --     chunk.ManagedArrayIndex = -1
-    -- end
-
-    -- for i=1,archetype.TypesCount do
-    --     chunk.ChangeVersion[i] = 0
-    -- end
 end
 
 function ArchetypeManager:AllocateIntoChunk( chunk, count )
@@ -279,17 +124,6 @@ function ArchetypeManager:SetChunkCount( chunk, newCount )
     local capacity = chunk.Capacity
     -- Chunk released to empty chunk pool
     if newCount == 0 then
-        -- Remove references to shared components
-        -- if (chunk.Archetype.NumSharedComponents > 0) then
-            -- local sharedComponentValueArray = chunk.SharedComponentValueArray
-            -- for i=1,chunk.Archetype.NumSharedComponents do
-                -- self.m_SharedComponentManager.RemoveReference(sharedComponentValueArray[i])
-            -- end
-        -- end
-        -- if (chunk.ManagedArrayIndex ~= -1) then
-        --     DeallocateManagedArrayStorage(chunk.ManagedArrayIndex)
-        --     chunk.ManagedArrayIndex = -1
-        -- end
         chunk.Archetype.ChunkCount = chunk.Archetype.ChunkCount - 1
         chunk.Archetype = nil
         chunk.ChunkListNode:Remove()
