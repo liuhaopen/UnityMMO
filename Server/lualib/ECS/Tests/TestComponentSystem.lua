@@ -48,9 +48,9 @@ ECS.TypeManager.RegisterScriptMgr("EmptySystem", EmptySystem)
 function TestComponentSystem:TestGetComponentGroup()
     local empty_sys = ECS.World.Active:GetOrCreateManager("EmptySystem")
 
-    ECS.TypeManager.RegisterType("DataForTestGetComponentGroup1", {x="number"})
-    ECS.TypeManager.RegisterType("DataForTestGetComponentGroup2", {x="integer", y="boolean"})
-    ECS.TypeManager.RegisterType("DataForTestGetComponentGroup3", {z="boolean"})
+    ECS.TypeManager.RegisterType("DataForTestGetComponentGroup1", {x=0})
+    ECS.TypeManager.RegisterType("DataForTestGetComponentGroup2", {x=0, y=false})
+    ECS.TypeManager.RegisterType("DataForTestGetComponentGroup3", {z=false})
 	local ro_rw = {"DataForTestGetComponentGroup1", "DataForTestGetComponentGroup2"}
 	local rw_rw = {"DataForTestGetComponentGroup1", "DataForTestGetComponentGroup3"}
 	local rw = {"DataForTestGetComponentGroup1"}
@@ -80,9 +80,9 @@ end
 function TestInjectSystem:OnUpdate(  )
 end
 function TestComponentSystem:TestInject(  )
-    ECS.TypeManager.RegisterType("DataForTestInject1", {x="number", y="boolean", z="integer"})
-    ECS.TypeManager.RegisterType("DataForTestInject2", {x="boolean", b="boolean"})
-    ECS.TypeManager.RegisterType("DataForTestInject3", {value="integer"})
+    ECS.TypeManager.RegisterType("DataForTestInject1", {x=0, y=false, z=0})
+    ECS.TypeManager.RegisterType("DataForTestInject2", {x=false, b=false})
+    ECS.TypeManager.RegisterType("DataForTestInject3", {value=0})
 	
     local sys = ECS.World.Active:GetOrCreateManager("TestInjectSystem")
     sys:Update()
@@ -135,9 +135,9 @@ end
 function TestComponentDataArraySystem:OnUpdate(  )
 end
 function TestComponentSystem:TestComponentDataArray(  )
-    ECS.TypeManager.RegisterType("DataForTestComponentDataArray1", {x="number", y="boolean", z="integer"})
-    ECS.TypeManager.RegisterType("DataForTestComponentDataArray2", {x="boolean", b="boolean"})
-    ECS.TypeManager.RegisterType("DataForTestComponentDataArray3", {value="integer"})
+    ECS.TypeManager.RegisterType("DataForTestComponentDataArray1", {x=0, y=false, z=0})
+    ECS.TypeManager.RegisterType("DataForTestComponentDataArray2", {x=false, b=false})
+    ECS.TypeManager.RegisterType("DataForTestComponentDataArray3", {value=0})
     
     local sys = ECS.World.Active:GetOrCreateManager("TestComponentDataArraySystem")
     sys:Update()
@@ -197,9 +197,9 @@ end
 function TestEntityArraySystem:OnUpdate(  )
 end
 function TestComponentSystem:TestEntityArray(  )
-    ECS.TypeManager.RegisterType("DataForTestEntityArray1", {x="number", y="boolean", z="integer"})
-    ECS.TypeManager.RegisterType("DataForTestEntityArray2", {x="boolean", b="boolean"})
-    ECS.TypeManager.RegisterType("DataForTestEntityArray3", {value="integer"})
+    ECS.TypeManager.RegisterType("DataForTestEntityArray1", {x=0, y=false, z=0})
+    ECS.TypeManager.RegisterType("DataForTestEntityArray2", {x=false, b=false})
+    ECS.TypeManager.RegisterType("DataForTestEntityArray3", {value=0})
     
     local sys = ECS.World.Active:GetOrCreateManager("TestEntityArraySystem")
     sys:Update()

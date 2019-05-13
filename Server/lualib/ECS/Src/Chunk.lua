@@ -3,7 +3,8 @@ ECS.Chunk = Chunk
 ECS.Chunk.kChunkSize = 16 * 1024
 
 function Chunk:Constructor(  )
-	self.Buffer = ECS.Core.CreateChunk(ECS.Chunk.kChunkSize)
+	-- self.Buffer = ECS.Core.CreateChunk(ECS.Chunk.kChunkSize)
+	self.Buffer = {}
 	self.Count = 0--当前Entity的数量
 	self.Capacity = 0--能存放Entity的容量
 	self.SharedComponentValueArray = {}
@@ -20,11 +21,13 @@ function Chunk.GetChunkBufferSize( numComponents, numSharedComponents )
 end
 
 function Chunk.GetSharedComponentOffset( numSharedComponents )
-    return ECS.Chunk.kChunkSize - numSharedComponents * ECS.CoreHelper.GetIntegerSize()
+    -- return ECS.Chunk.kChunkSize - numSharedComponents * ECS.CoreHelper.GetIntegerSize()
+    return 0
 end
 
 function Chunk.GetChangedComponentOffset( numComponents, numSharedComponents )
-    return Chunk.GetSharedComponentOffset(numSharedComponents) - numComponents * ECS.CoreHelper.GetIntegerSize()
+    -- return Chunk.GetSharedComponentOffset(numSharedComponents) - numComponents * ECS.CoreHelper.GetIntegerSize()
+    return 0
 end
 
 return Chunk

@@ -13,7 +13,6 @@ function EntityManager:OnCreateManager( capacity )
 	self.Entities = ECS.EntityDataManager.New(capacity)
 	self.m_SharedComponentManager = ECS.SharedComponentDataManager.New()
 	self.ArchetypeManager = ECS.ArchetypeManager.New(self.m_SharedComponentManager)
-	-- self.ComponentJobSafetyManager = ECS.ComponentJobSafetyManager.New()
 	self.m_GroupManager = ECS.EntityGroupManager.New(self.ComponentJobSafetyManager)
 	self.m_CachedComponentTypeArray = {}
 	self.m_CachedComponentTypeInArchetypeArray = {}
@@ -31,21 +30,17 @@ function EntityManager:GetGroupManager(  )
     return self.m_GroupManager
 end
 
-local CreateEntities = function ( self, archetype, num )
-    return self.Entities:CreateEntities(self.ArchetypeManager, archetype.Archetype, num)
-end
-
 function EntityManager:CreateEntityByArcheType( archetype )
-    local entities = CreateEntities(self, archetype, num or 1)
+    local entities = self.Entities:CreateEntities(self.ArchetypeManager, archetype.Archetype, 1)
 	return entities and entities[1]
 end
 
 function EntityManager:CreateEntitiesByArcheType( archetype, num )
-    return CreateEntities(self, archetype, num or 1)
+    return self.Entities:CreateEntities(self.ArchetypeManager, archetype.Archetype, num or 1)
 end
 
 function EntityManager:CreateEntityByComponents( com_types, num )
-	return CreateEntities(self, self:CreateArchetype(com_types), num or 1)
+	return self.Entities:CreateEntities(self.ArchetypeManager, self:CreateArchetype(com_types), num or 1)
 end
 
 function EntityManager:PopulatedCachedTypeInArchetypeArray( requiredComponents, count )
@@ -91,16 +86,13 @@ function EntityManager:Instantiate( srcEntity )
 end
 
 function EntityManager:AddComponent( entity, comp_type_name )
-	-- self:BeforeStructuralChange()
     self.Entities:AddComponent(entity, comp_type_name, self.ArchetypeManager, self.m_SharedComponentManager, self.m_GroupManager,
         self.m_CachedComponentTypeInArchetypeArray)
 end
 
 function EntityManager:RemoveComponent( entity, comp_type_name )
-	-- self:BeforeStructuralChange()
     self.Entities:AssertEntityHasComponent(entity, comp_type_name)
-    self.Entities:RemoveComponent(entity, comp_type_name, self.ArchetypeManager, self.m_SharedComponentManager, self.m_GroupManager,
-                self.m_CachedComponentTypeInArchetypeArray)
+    self.Entities:RemoveComponent(entity, comp_type_name, self.ArchetypeManager, self.m_SharedComponentManager, self.m_GroupManager)
 
     local archetype = self.Entities:GetArchetype(entity)
     if (archetype.SystemStateCleanupComplete) then
@@ -114,20 +106,21 @@ function EntityManager:AddComponentData( entity, componentTypeName, componentDat
 end
 
 function EntityManager:SetComponentData( entity, componentTypeName, componentData )
-	local typeIndex = ECS.TypeManager.GetTypeIndexByName(componentTypeName)
-    self.Entities:AssertEntityHasComponent(entity, componentTypeName)
-    -- ComponentJobSafetyManager.CompleteReadAndWriteDependency(typeIndex)
-    local ptr = self.Entities:GetComponentDataWithTypeRW(entity, typeIndex, self.Entities.GlobalSystemVersion)
-    ECS.ChunkDataUtility.WriteComponentInChunk(ptr, componentTypeName, componentData)
-    -- UnsafeUtility.CopyStructureToPtr(componentData, ptr)
+    -- self.Entities:AssertEntityHasComponent(entity, componentTypeName)--做检查需要消耗多一倍时间
+    self.Entities:SetComponentDataWithTypeNameRW(entity, componentTypeName, componentData)
 end
 
+--因为unity的ECS的此接口返回的是一个拷贝，所以这里也这么用吧，一般建议使用GetComponentDataRef提高效率，就是要小心别修改到就可以了
+-- function EntityManager:GetComponentData( entity, componentTypeName )
+--     -- self.Entities:AssertEntityHasComponent(entity, componentTypeName)
+--     local data = self.Entities:GetComponentDataWithTypeNameRO(entity, componentTypeName)
+--     data = ECS.ChunkDataUtility.DeepCopy(data)
+--     return data
+-- end
+--还是直接默认返回引用吧
 function EntityManager:GetComponentData( entity, componentTypeName )
-    local typeIndex = ECS.TypeManager.GetTypeIndexByName(componentTypeName)
-    self.Entities:AssertEntityHasComponent(entity, componentTypeName)
-    local ptr = self.Entities:GetComponentDataWithTypeRO(entity, typeIndex)
-    local data = ECS.ChunkDataUtility.ReadComponentFromChunk(ptr, componentTypeName)
-    return data
+    -- self.Entities:AssertEntityHasComponent(entity, componentTypeName)
+    return self.Entities:GetComponentDataWithTypeNameRO(entity, componentTypeName)
 end
 
 function EntityManager:GetAllEntities(  )
@@ -135,7 +128,7 @@ function EntityManager:GetAllEntities(  )
 end
 
 function EntityManager:GetComponentTypes( entity )
-	-- self.Entities.AssertEntitiesExist(&entity, 1);
+	-- self.Entities.AssertEntitiesExist(&entity, 1)
     local archetype = self.Entities:GetArchetype(entity)
     local components = {}
     for i=2, archetype.TypesCount do
@@ -145,7 +138,7 @@ function EntityManager:GetComponentTypes( entity )
 end
 
 function EntityManager:GetComponentCount( entity )
-	-- Entities.AssertEntitiesExist(&entity, 1);
+	-- Entities.AssertEntitiesExist(&entity, 1)
     local archetype = self.Entities:GetArchetype(entity)
     return archetype.TypesCount - 1
 end
