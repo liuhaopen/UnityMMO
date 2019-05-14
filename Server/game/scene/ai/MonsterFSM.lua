@@ -1,4 +1,4 @@
-local data = {
+local MonsterFSM = {
 	nodes = {
 		{
 			id = 1,
@@ -12,4 +12,4 @@ local data = {
 		},
 	},
 }
-return data
+return MonsterFSM

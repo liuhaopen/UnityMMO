@@ -10,11 +10,11 @@ local ECS = require "ECS"
 ECS.TypeManager.RegisterType("ECS.CustomCom", {x=0, y="", z=false})
 
 --Entity
-local entity_mgr = ECS.World.Active:GetOrCreateManager(ECS.EntityManager.Name)
-local archetype = entity_mgr:CreateArchetype({"ECS.CustomCom"})
-local entity = entity_mgr:CreateEntityByArcheType(archetype)
-entity_mgr:SetComponentData(entity, "ECS.CustomCom", {x=1.1, y="hello", z=true, tbl={a=1,b=false}})
-local comp_data = entity_mgr:GetComponentData(entity, "ECS.CustomCom")
+local entityMgr = ECS.World.Active:GetOrCreateManager(ECS.EntityManager.Name)
+local archetype = entityMgr:CreateArchetype({"ECS.CustomCom"})
+local entity = entityMgr:CreateEntityByArcheType(archetype)
+entityMgr:SetComponentData(entity, "ECS.CustomCom", {x=1.1, y="hello", z=true, tbl={a=1,b=false}})
+local comp_data = entityMgr:GetComponentData(entity, "ECS.CustomCom")
 
 --ComponentSystem
 local TestInjectSystem = ECS.BaseClass(ECS.ComponentSystem)

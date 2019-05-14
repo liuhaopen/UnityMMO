@@ -99,11 +99,10 @@ function LoginController:StartLogin(login_info)
     10:可以正常向游戏服务器收发协议了
 	--]]
     self.login_info = login_info
-
     --向登录服务器请求连接,一连接上就等待收到其发过来的随机值了(challenge)
     self.login_state = LoginConst.Status.WaitForLoginServerChanllenge
 
-	NetMgr:SendConnect("192.168.5.142", 8001, CS.XLuaFramework.NetPackageType.BaseLine)
+	NetMgr:SendConnect(self.login_info.account_ip, self.login_info.account_port, CS.XLuaFramework.NetPackageType.BaseLine)
 end
 
 function LoginController:OnReceiveLine(bytes) 
@@ -149,7 +148,7 @@ function LoginController:OnReceiveLine(bytes)
             print('Cat:LoginController.lua[login ok] subid', self.subid)
 
             --正式向游戏服务器请求连接,注意此时的协议已经不是基于行解析的了,换成了根据协议头两字节作为内容大小去解析的,所以接收数据的事件换成了NetDispatcher.Event.OnReceiveMsg(具体处理函数是本类)
-            NetMgr:SendConnect("192.168.5.142", 8888, CS.XLuaFramework.NetPackageType.BaseHead)
+            NetMgr:SendConnect(self.login_info.game_ip, self.login_info.game_port, CS.XLuaFramework.NetPackageType.BaseHead)
             self.login_state = LoginConst.Status.WaitForGameServerConnect
         else
             self.error_map = self.error_map or {

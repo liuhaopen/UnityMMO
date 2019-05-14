@@ -32,6 +32,10 @@ function LoginView:AddEvents(  )
 	        local login_info = {
 	            account = account,
 	            password = "password",
+	            account_ip = "192.168.5.115",
+	            account_port = 8001,
+	            game_ip = "192.168.5.115",
+	            game_port = 8888,
 	        }
 	        GlobalEventSystem:Fire(LoginConst.Event.StartLogin, login_info)
 	        CookieWrapper:GetInstance():SaveCookie(CookieLevelType.Common, CookieTimeType.TYPE_ALWAYS, CookieKey.LastLoginInfo, login_info)

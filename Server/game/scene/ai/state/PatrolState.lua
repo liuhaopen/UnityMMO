@@ -1,6 +1,5 @@
 local BP = require("Blueprint")
-local Time = require "game.scene.time"
-local SceneHelper = require "game.scene.scene_helper"
+local SceneHelper = require "game.scene.SceneHelper"
 
 local PatrolState = BP.BaseClass(BP.FSM.FSMState)
 --巡逻有两状态，1是发呆，2是跑去哨点，就是跑一下停一下，期间一旦发现敌人就切换战斗状态
@@ -18,7 +17,7 @@ function PatrolState:OnInit(  )
 	self.entityMgr = self.blackboard:GetVariable("entityMgr")
 	self.monsterMgr = self.blackboard:GetVariable("monsterMgr")
 	self.cfg = self.blackboard:GetVariable("cfg")
-	self.patrolInfo = self.entityMgr:GetComponentData(self.entity, "umo.patrol_info")
+	self.patrolInfo = self.entityMgr:GetComponentData(self.entity, "UMO.PatrolInfo")
 end
 
 function PatrolState:OnEnter(  )
@@ -34,8 +33,8 @@ function PatrolState:OnUpdate( deltaTime )
 		end
 	elseif self.sub_state == SubState.Walk then
 		if Time.time - self.sub_elapsed_time > self.walk_time then
-			local curPos = self.entityMgr:GetComponentData(self.entity, "umo.position")
-			local targetPos = self.entityMgr:GetComponentData(self.entity, "umo.target_pos")
+			local curPos = self.entityMgr:GetComponentData(self.entity, "UMO.Position")
+			local targetPos = self.entityMgr:GetComponentData(self.entity, "UMO.TargetPos")
 			local distanceFromTargetSqrt = Vector3.DistanceNoSqrt(targetPos, curPos)
 			if distanceFromTargetSqrt < 100 then
 				--到达巡逻点时就进入待机状态
@@ -62,16 +61,16 @@ function PatrolState:CheckAround(  )
 end
 
 function PatrolState:GetNearestEnemy(  )
-	local myPos = self.entityMgr:GetComponentData(self.entity, "umo.position")
+	local myPos = self.entityMgr:GetComponentData(self.entity, "UMO.Position")
 	local around = self.aoi:get_around(self.aoi_handle, self.cfg.ai.patrol.hunt_radius, self.cfg.ai.patrol.hunt_radius)
 	local minDistance = nil
 	local nearestEnemy = nil
 	for aoi_handle,_ in pairs(around) do
 		local uid = self.aoi:get_user_data(aoi_handle, "uid")
 		local sceneObjType = SceneHelper:get_type_by_uid(uid)
-		if sceneObjType == SceneObjectType.Role then
+		if sceneObjType == SceneConst.ObjectType.Role then
 			local enemyEntity = self.aoi:get_user_data(aoi_handle, "entity")
-			local enemyPos = self.entityMgr:GetComponentData(enemyEntity, "umo.position")
+			local enemyPos = self.entityMgr:GetComponentData(enemyEntity, "UMO.Position")
 			local distanceFromTargetSqrt = Vector3.DistanceNoSqrt(myPos, enemyPos)
 			if not minDistance or minDistance > distanceFromTargetSqrt then
 				minDistance = distanceFromTargetSqrt
@@ -96,7 +95,7 @@ function PatrolState:EnterSubState( sub_state )
 			local pos_y = self.patrolInfo.y + math.random(-radius, radius)
 			local pos_z = self.patrolInfo.z + math.random(-radius, radius)
 			local randomPos = {x=pos_x, y=pos_y, z=pos_z}
-			-- self.entityMgr:SetComponentData(self.entity, "umo.target_pos", randomPos)
+			-- self.entityMgr:SetComponentData(self.entity, "UMO.TargetPos", randomPos)
 			self.monsterMgr:change_target_pos(self.entity, randomPos)
 		else
 			print('Cat:PatrolState.lua unkown patrol type:', self.cfg.ai.patrol.type)

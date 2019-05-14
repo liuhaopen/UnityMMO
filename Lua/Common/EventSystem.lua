@@ -1,8 +1,9 @@
+--场景里的节点状态变更事件及战斗事件管理器
 local EventSystem = BaseClass()
 local table_insert = table.insert
 local table_remove = table.remove
 EventSystem.all_event_count = 0
---事件系统(非单健)
+
 function EventSystem:Constructor()
 	self.all_event_dic = {}
 	self.bind_id_to_event_id_dic = {}

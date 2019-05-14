@@ -1,10 +1,10 @@
 local BP = require("Blueprint")
 
-local blueprint_register = {}
+local BlueprintRegister = {}
 
-function blueprint_register:register_all(  )
+function BlueprintRegister:register_all(  )
 	BP.TypeManager:RegisterType("Blueprint.State.PatrolState", require("game.scene.ai.state.PatrolState"))
 	BP.TypeManager:RegisterType("Blueprint.State.FightState", require("game.scene.ai.state.FightState"))
 end
 
-return blueprint_register
+return BlueprintRegister

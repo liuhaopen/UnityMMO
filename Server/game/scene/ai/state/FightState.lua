@@ -1,5 +1,4 @@
 local BP = require("Blueprint")
-local time = require "game.scene.time"
 
 local FightState = BP.BaseClass(BP.FSM.FSMState)
 
@@ -28,8 +27,8 @@ function FightState:OnUpdate( deltaTime )
 	print('Cat:FightState.lua[27] self.targetEnemyEntity', self.targetEnemyEntity)
 	if self.targetEnemyEntity then
 		--判断是否进入攻击范围，是则发起攻击，否则追上去
-		local myPos = self.entityMgr:GetComponentData(self.entity, "umo.position")
-		local enemyPos = self.entityMgr:GetComponentData(self.targetEnemyEntity, "umo.position")
+		local myPos = self.entityMgr:GetComponentData(self.entity, "UMO.Position")
+		local enemyPos = self.entityMgr:GetComponentData(self.targetEnemyEntity, "UMO.Position")
 		local distanceFromTargetSqrt = Vector3.Distance(myPos, enemyPos)
 		local isMaxOk = distanceFromTargetSqrt <= self.cfg.ai.attack_area.max_distance
 		local isMinOk = distanceFromTargetSqrt >= self.cfg.ai.attack_area.min_distance

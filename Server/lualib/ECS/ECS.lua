@@ -47,10 +47,10 @@ local function InitWorld( worldName )
 	world:GetOrCreateManager(ECS.EntityManager.Name)
 
 	--register all systems
-	local systems = ECS.TypeManager.GetScriptMgrMap()
-	for k,v in pairs(systems) do
-		world:GetOrCreateManager(k)
-	end
+	-- local systems = ECS.TypeManager.GetScriptMgrMap()
+	-- for k,v in pairs(systems) do
+	-- 	world:GetOrCreateManager(k)
+	-- end
 	return world
 end
 

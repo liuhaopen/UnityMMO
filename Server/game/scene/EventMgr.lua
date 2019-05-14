@@ -1,36 +1,36 @@
-local scene_event_mgr = {}
+local SceneEventMgr = BaseClass()
 local table_insert = table.insert
 
-function scene_event_mgr:Init( sceneMgr )
+function SceneEventMgr:Init( sceneMgr )
 	self.sceneMgr = sceneMgr
 	self.event_list = {}
 	self.fight_event_list = {}
 end
 
-function scene_event_mgr:AddSceneEvent( uid, eventInfo )
+function SceneEventMgr:AddSceneEvent( uid, eventInfo )
 	self.event_list[uid] = self.event_list[uid] or {}
 	table_insert(self.event_list[uid], eventInfo)
 end
 
-function scene_event_mgr:GetSceneEvent( uid )
+function SceneEventMgr:GetSceneEvent( uid )
 	return self.event_list[uid]
 end
 
-function scene_event_mgr:ClearAllSceneEvents(  )
+function SceneEventMgr:ClearAllSceneEvents(  )
 	self.event_list = {}
 end
 
-function scene_event_mgr:AddFightEvent( uid, eventInfo )
+function SceneEventMgr:AddFightEvent( uid, eventInfo )
 	self.fight_event_list[uid] = self.fight_event_list[uid] or {}
 	table_insert(self.fight_event_list[uid], eventInfo)
 end
 
-function scene_event_mgr:GetFightEvent( uid )
+function SceneEventMgr:GetFightEvent( uid )
 	return self.fight_event_list[uid]
 end
 
-function scene_event_mgr:ClearAllFightEvents(  )
+function SceneEventMgr:ClearAllFightEvents(  )
 	self.fight_event_list = {}
 end
 
-return scene_event_mgr
+return SceneEventMgr

@@ -1,18 +1,17 @@
 local skill_cfg = require "game.config.scene.config_skill"
-local Time = require "game.scene.time"
 
-local fight_mgr = {}
+local FightMgr = BaseClass()
 
-function fight_mgr:init( scene )
-	self.scene_mgr = scene
-	self.entity_mgr = scene.entity_mgr
+function FightMgr:Init( scene )
+	self.sceneMgr = scene
+	self.entityMgr = scene.entityMgr
 	self.aoi = scene.aoi
 	self.damage_events = {}
 end
 
-function fight_mgr:cast_skill( user_info, req_data )
+function FightMgr:cast_skill( user_info, req_data )
 	--检查施法者状态（技能CD,是否麻痹、中毒、加班等）
-	local role_info = self.scene_mgr.role_list[user_info.cur_role_id]
+	local role_info = self.sceneMgr.role_list[user_info.cur_role_id]
 	local is_can_cast = true
 	local fight_event = nil
 	if is_can_cast then
@@ -34,13 +33,13 @@ function fight_mgr:cast_skill( user_info, req_data )
 
 		self:add_damage_event_for_defenders(fight_event)
 
-		self.scene_mgr.event_mgr:AddFightEvent(role_info.scene_uid, fight_event)
+		self.sceneMgr.eventMgr:AddFightEvent(role_info.scene_uid, fight_event)
 	end
 	return is_can_cast and 0 or 1, fight_event
 end
 
 --计算受击者列表
-function fight_mgr:cal_defender_list( fight_info, attacker_aoi_handle )
+function FightMgr:cal_defender_list( fight_info, attacker_aoi_handle )
 	local cfg = skill_cfg[fight_info.skill_id]
 	if not cfg or not attacker_aoi_handle then return end
 	
@@ -54,11 +53,11 @@ function fight_mgr:cal_defender_list( fight_info, attacker_aoi_handle )
 		defenders = {}
 		for aoi_handle,v in pairs(around) do
 			if aoi_handle ~= attacker_aoi_handle then
-				-- local uid = self.scene_mgr.aoi_handle_uid_map[aoi_handle]
+				-- local uid = self.sceneMgr.aoi_handle_uid_map[aoi_handle]
 				local uid = self.aoi:get_user_data(aoi_handle, "uid")
-				local entity = self.scene_mgr.uid_entity_map[uid]
+				local entity = self.sceneMgr.uid_entity_map[uid]
 				if entity then
-					local hp = self.entity_mgr:GetComponentData(entity, "umo.hp")
+					local hp = self.entityMgr:GetComponentData(entity, "UMO.HP")
 					local damage_value = self:cal_damage(fight_info, entity)
 					table.insert(defenders, {uid=uid, cur_hp=hp.cur, damage=damage_value, flag=math.random(0, 2)})
 				end
@@ -69,7 +68,7 @@ function fight_mgr:cal_defender_list( fight_info, attacker_aoi_handle )
 	return defenders
 end
 
-function fight_mgr:add_damage_event_for_defenders( fight_event )
+function FightMgr:add_damage_event_for_defenders( fight_event )
 	if not fight_event.defenders then return end
 	for k,v in pairs(fight_event.defenders) do
 		self.damage_events[v.uid] = self.damage_events[v.uid] or {}
@@ -82,19 +81,19 @@ function fight_mgr:add_damage_event_for_defenders( fight_event )
 	end
 end
 
-function fight_mgr:get_damage_events( scene_uid )
+function FightMgr:get_damage_events( scene_uid )
 	if not scene_uid then return end
 	return self.damage_events[scene_uid]
 end
 
-function fight_mgr:clear_damage_events( scene_uid )
+function FightMgr:clear_damage_events( scene_uid )
 	if not scene_uid or not self.damage_events[scene_uid] then return end
 
 	self.damage_events[scene_uid] = nil
 end
 
-function fight_mgr:cal_damage( fight_info, entity )
+function FightMgr:cal_damage( fight_info, entity )
 	return math.random(50, 1234)
 end
 
-return fight_mgr
+return FightMgr

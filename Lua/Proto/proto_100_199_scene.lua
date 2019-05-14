@@ -12,7 +12,7 @@ return [[
 	base_info 8 : scene_role_base_info
 }
 
-#key 对应前端SceneInfoKey.cs里的SceneInfoKey或后端scene_const.lua里的SceneInfoKey
+#key 对应前端SceneInfoKey.cs里的SceneInfoKey或后端SceneConst.lua里的SceneConst.InfoKey
 #1:EnterView即有场景节点（角色、怪物或NPC）进入视角，value为scene_uid,type_id,pos_x,pos_y,pos_z
 #2:LeaveView场景节点离开视角
 #3:PosChange场景节点的坐标变更
