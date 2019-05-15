@@ -1,5 +1,6 @@
 local skynet = require "skynet"
 local SceneConst = require "game.scene.SceneConst"
+local SceneHelper = require "game.scene.SceneHelper"
 
 local RoleMgr = BaseClass()
 
@@ -67,5 +68,138 @@ function RoleMgr:InitPosInfo( baseInfo )
 	end
 end
 
+function RoleMgr:RoleEnter( roleID )
+	if not self.roleList[roleID] then
+		local scene_uid = SceneHelper:NewSceneUID(SceneConst.ObjectType.Role)
+		local base_info = self:GetBaseInfoByRoleID(roleID)
+		local looks_info = self:GetLooksInfoByRoleID(roleID)
+		self:InitPosInfo(base_info)
 
+		local handle = self.sceneMgr.aoi:add()
+		self.sceneMgr.aoi:set_user_data(handle, "uid", scene_uid)
+		self.roleList[roleID] = {scene_uid=scene_uid, base_info=base_info, looks_info=looks_info, aoi_handle=handle, around_objs={}, radius_short=5000, radius_long=6000, fight_events_in_around={}}
+		self.sceneMgr.object_list[scene_uid] = self.roleList[roleID]
+		-- self.aoi_handle_uid_map[handle] = scene_uid
+		self.sceneMgr.aoi:set_pos(handle, base_info.pos_x, base_info.pos_y, base_info.pos_z)
+
+		local entity = self:CreateRole(scene_uid, roleID, base_info.pos_x, base_info.pos_y, base_info.pos_z, handle)
+		self.sceneMgr.uid_entity_map[scene_uid] = entity
+		-- self.sceneMgr.aoi:set_user_data(handle, "entity", entity)
+	end
+end
+
+local save_role_pos = function ( role_id, pos_x, pos_y, pos_z, scene_id )
+	local gameDBServer = skynet.localname(".GameDBServer")
+	is_succeed = skynet.call(gameDBServer, "lua", "update", "RoleBaseInfo", "role_id", role_id, {pos_x=pos_x, pos_y=pos_y, pos_z=pos_z, scene_id=scene_id})
+end
+
+function RoleMgr:RoleLeave( roleID )
+	local role_info = self.roleList[roleID]
+	print('Cat:scene.lua[role_leave_scene] roleID', roleID, role_info)
+	if not role_info then return end
+	
+	self.sceneMgr.aoi:remove(role_info.aoi_handle)
+	-- self.sceneMgr.aoi_handle_uid_map[role_info.aoi_handle] = nil --角色离开后还需要通过aoi_handle获取ta的uid
+	save_role_pos(roleID, role_info.base_info.pos_x, role_info.base_info.pos_y, role_info.base_info.pos_z, self.sceneMgr.cur_scene_id)	
+
+	if role_info.ack_scene_get_objs_info_change then
+		role_info.ack_scene_get_objs_info_change(true, {})
+	end
+	self.roleList[roleID] = nil
+end
+
+function RoleMgr:GetMainRoleInfo( roleID )
+	local role_info = self.roleList[roleID]
+	role_info = role_info and role_info.base_info or nil
+	if role_info then
+		local result =  {
+			role_info={
+				scene_uid=self.roleList[roleID].scene_uid,
+				role_id=roleID,
+				career=role_info.career,
+				name=role_info.name,
+				scene_id = self.sceneMgr.cur_scene_id,
+				pos_x = role_info.pos_x,
+				pos_y = role_info.pos_y,
+				pos_z = role_info.pos_z,
+				base_info = {
+					level = 0,
+				},
+			}
+		}
+		return result
+	else
+		--cannot find main role?
+		return {
+			role_info={
+				scene_uid=self.roleList[roleID].scene_uid,
+				role_id=roleID,
+				career=2,
+				name="unknow_role_name",
+				scene_id = self.sceneMgr.cur_scene_id,
+				pos_x = 0,
+				pos_y = 0,
+				pos_z = 0,
+				base_info = {
+					level = 0,
+				},
+			}
+		}
+	end
+end
+
+function RoleMgr:GetRoleLooksInfo( uid )
+	-- print('Cat:scene.lua[scene_get_role_look_info] user_info, req_data', user_info, roldID)
+	local role_info = self.sceneMgr.object_list[uid]
+	-- print('Cat:scene.lua[211] role_info', role_info, uid, self.sceneMgr.object_list[uid])
+	local looks_info
+	local entity = self.sceneMgr.uid_entity_map[uid]
+	if role_info and entity then
+		local hpData = self.sceneMgr.entityMgr:GetComponentData(entity, "UMO.HP")
+		looks_info = {
+			result = 0,
+			role_looks_info = {
+				career = role_info.base_info.career or 1,
+				name = role_info.name,
+				hp = hpData.cur,
+				max_hp = hpData.max,
+				body = 0,
+				hair = 0,
+				weapon = 0,
+				wing = 0,
+				horse = 0,
+			}
+		}
+	else
+		looks_info = {result=1}
+	end
+	return looks_info
+end
+
+function RoleMgr:RoleWalk( roldID, req_data )
+	local role_info = self.roleList[roldID]
+	if role_info and role_info.base_info then
+		-- role_info.base_info.pos = {x=req_data.start_x, y=req_data.start_y, z=req_data.start_z}
+		role_info.base_info.pos_x = req_data.start_x
+		role_info.base_info.pos_y = req_data.start_y
+		role_info.base_info.pos_z = req_data.start_z
+		local entity = self.sceneMgr.uid_entity_map[role_info.scene_uid]
+		if entity then
+			self.sceneMgr.entityMgr:SetComponentData(entity, "UMO.Position", {x=req_data.start_x, y=req_data.start_y, z=req_data.start_z})
+			self.sceneMgr.entityMgr:SetComponentData(entity, "UMO.TargetPos", {x=req_data.end_x, y=req_data.start_y, z=req_data.end_z})
+		end
+		self.sceneMgr.aoi:set_pos(role_info.aoi_handle, role_info.base_info.pos_x, role_info.base_info.pos_y, role_info.base_info.pos_z)
+		local pos_info = role_info.base_info.pos_x..","..role_info.base_info.pos_y..","..role_info.base_info.pos_z
+		local target_pos_info = req_data.end_x..","..req_data.end_z
+		local cur_time = Time.timeMS
+		-- local change_pos_event_info = {key=SceneConst.InfoKey.PosChange, value=pos_info, time= cur_time}
+		local change_target_pos_event_info = {key=SceneConst.InfoKey.TargetPos, value=target_pos_info, time=cur_time}
+		self.sceneMgr.eventMgr:AddSceneEvent(role_info.scene_uid, change_target_pos_event_info)
+		if req_data.jump_state ~= 0 then
+			-- table.insert(self.sceneMgr.event_list[role_info.scene_uid], {key=SceneConst.InfoKey.JumpState, value="1", time=cur_time})
+			self.sceneMgr.eventMgr:AddSceneEvent(role_info.scene_uid, {key=SceneConst.InfoKey.JumpState, value="1", time=cur_time})
+		end
+	end
+	return {}
+end
 return RoleMgr

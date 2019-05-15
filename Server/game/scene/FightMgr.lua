@@ -11,7 +11,7 @@ end
 
 function FightMgr:cast_skill( user_info, req_data )
 	--检查施法者状态（技能CD,是否麻痹、中毒、加班等）
-	local role_info = self.sceneMgr.role_list[user_info.cur_role_id]
+	local role_info = self.sceneMgr.roleMgr.roleList[user_info.cur_role_id]
 	local is_can_cast = true
 	local fight_event = nil
 	if is_can_cast then

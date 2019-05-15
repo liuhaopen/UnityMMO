@@ -16,22 +16,22 @@ function MonsterMgr:Init( sceneMgr, cfg )
 	self.monster_entities = {}
 	self.graphs_owners = {}
 
-	self:init_archetype()
-	self:init_monster()
+	self:InitArchetype()
+	self:InitMonster()
 end
 
-function MonsterMgr:init_archetype(  )
+function MonsterMgr:InitArchetype(  )
 	self.monster_archetype = self.entityMgr:CreateArchetype({
 		"UMO.Position", "UMO.TargetPos", "UMO.UID", "UMO.TypeID", "UMO.HP", "UMO.SceneObjType", "UMO.MonsterAI", "UMO.PatrolInfo", "UMO.MoveSpeed", "UMO.AOIHandle", 
 	})
 end
 
-function MonsterMgr:init_monster(  )
+function MonsterMgr:InitMonster(  )
 	local create_num = 0
 	for i,v in ipairs(self.nest_cfg) do
 		local patrolInfo = {x=v.pos_x, y=v.pos_y, z=v.pos_z, radius=v.radius}
 		for ii=1,v.monster_num do
-			self:create_monster(v.monster_type_id, patrolInfo, v)
+			self:CreateMonster(v.monster_type_id, patrolInfo, v)
 			create_num = create_num + 1
 			if test_info.create_num and create_num >= test_info.create_num then
 				return
@@ -40,7 +40,7 @@ function MonsterMgr:init_monster(  )
 	end
 end
 
-function MonsterMgr:create_monster( type_id, patrolInfo )
+function MonsterMgr:CreateMonster( type_id, patrolInfo )
 	local cfg = monster_cfg[type_id]
 	if not cfg then return end
 	
@@ -52,7 +52,7 @@ function MonsterMgr:create_monster( type_id, patrolInfo )
 	local monster = self.entityMgr:CreateEntityByArcheType(self.monster_archetype)
 	self.entityMgr:SetComponentData(monster, "UMO.Position", {x=pos_x, y=pos_y, z=pos_z})
 	self.entityMgr:SetComponentData(monster, "UMO.TargetPos", {x=pos_x, y=pos_y, z=pos_z})
-	local scene_uid = SceneHelper:new_scene_uid(SceneConst.ObjectType.Monster)
+	local scene_uid = SceneHelper:NewSceneUID(SceneConst.ObjectType.Monster)
 	self.entityMgr:SetComponentData(monster, "UMO.UID", {value=scene_uid})
 	self.entityMgr:SetComponentData(monster, "UMO.TypeID", {value=type_id})
 	self.entityMgr:SetComponentData(monster, "UMO.HP", {cur=cfg.max_hp, max=cfg.max_hp})
@@ -63,7 +63,7 @@ function MonsterMgr:create_monster( type_id, patrolInfo )
 
 	local handle = self.aoi:add()
 	self.aoi:set_user_data(handle, "uid", scene_uid)
-	self.aoi:set_user_data(handle, "entity", monster)
+	-- self.aoi:set_user_data(handle, "entity", monster)
 	self.aoi:set_pos(handle, pos_x, pos_y, pos_z)
 	self.entityMgr:SetComponentData(monster, "UMO.AOIHandle", {value=handle})
 
@@ -71,13 +71,13 @@ function MonsterMgr:create_monster( type_id, patrolInfo )
 	-- self.sceneMgr.aoi_handle_uid_map[handle] = scene_uid
 	self.sceneMgr.uid_entity_map[scene_uid] = monster
 
-    self:init_graphs_for_mon(scene_uid, monster, self.entityMgr, handle, self.aoi, cfg)
+    self:InitGraphsForMon(scene_uid, monster, self.entityMgr, handle, self.aoi, cfg)
 
 	table.insert(self.monster_entities, monster)
 	return monster
 end
 
-function MonsterMgr:init_graphs_for_mon( scene_uid, entity, entityMgr, aoi_handle, aoi, cfg )
+function MonsterMgr:InitGraphsForMon( scene_uid, entity, entityMgr, aoi_handle, aoi, cfg )
 	--此graph会在monster_ai_system.lua里update
 	local owner = BP.GraphsOwner.Create()
 	self.graphs_owners[scene_uid] = owner
@@ -86,20 +86,17 @@ function MonsterMgr:init_graphs_for_mon( scene_uid, entity, entityMgr, aoi_handl
 
 	local blackboard = owner:GetBlackboard()
 	blackboard:SetVariable("entity", entity)
-	blackboard:SetVariable("entityMgr", entityMgr)
 	blackboard:SetVariable("aoi_handle", aoi_handle)
-	blackboard:SetVariable("aoi", aoi)
-	blackboard:SetVariable("monsterMgr", self)
 	blackboard:SetVariable("sceneMgr", self.sceneMgr)
 	blackboard:SetVariable("cfg", cfg)
 	owner:Start()
 end
 
-function MonsterMgr:get_graphs_owner( uid )
+function MonsterMgr:GetGraphsOwner( uid )
 	return self.graphs_owners[uid]
 end
 
-function MonsterMgr:change_target_pos( entity, pos )
+function MonsterMgr:ChangeTargetPos( entity, pos )
 	self.entityMgr:SetComponentData(entity, "UMO.TargetPos", pos)
 	local uid = self.entityMgr:GetComponentData(entity, "UMO.UID")
 	local change_target_pos_event_info = {key=SceneConst.InfoKey.TargetPos, value=pos.x..","..pos.z, time=Time.timeMS}

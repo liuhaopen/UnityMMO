@@ -16,7 +16,7 @@ local config = {
 	[2000] = {
 		type_id = 2000, name = "小灰狼", max_hp=1000, 
 		attr_list = {[1]=100,[2]=100}, move_speed=500, ai={
-			fight_back = true, reborn_time = 1000, remove_after_dead = 500, patrol={type=1, idle_min=2000, idle_max=5000, hunt_radius=0}, attack_area = {min_distance=0, max_distance=100}, skill_list = {
+			fight_back = true, reborn_time = 1000, remove_after_dead = 500, patrol={type=1, idle_min=2000, idle_max=5000, hunt_radius=1000}, attack_area = {min_distance=0, max_distance=100}, skill_list = {
 				-- {skill_id=200001}
 			},
 		},
@@ -24,7 +24,7 @@ local config = {
 	[2001] = {
 		type_id = 2001, name = "大灰", max_hp=1000, 
 		attr_list = {[1]=100,[2]=100}, move_speed=500, skill_list={}, ai={
-			fight_back = true, reborn_time = 1000, remove_after_dead = 500, patrol={type=1, idle_min=2000, idle_max=5000, hunt_radius=0}, attack_area = {min_distance=0, max_distance=100}, skill_list = {
+			fight_back = true, reborn_time = 1000, remove_after_dead = 500, patrol={type=1, idle_min=2000, idle_max=5000, hunt_radius=1000}, attack_area = {min_distance=0, max_distance=100}, skill_list = {
 				{skill_id=200001, probability=5000}
 			},
 		},

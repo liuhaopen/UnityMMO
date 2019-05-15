@@ -1,5 +1,6 @@
 local BP = require("Blueprint")
 local SceneHelper = require "game.scene.SceneHelper"
+local SceneConst = require "game.scene.SceneConst"
 
 local PatrolState = BP.BaseClass(BP.FSM.FSMState)
 --巡逻有两状态，1是发呆，2是跑去哨点，就是跑一下停一下，期间一旦发现敌人就切换战斗状态
@@ -11,11 +12,12 @@ function PatrolState:OnInit(  )
 	self.idle_time = 0
 	self.walk_time = 0
 	-- print('Cat:patrol_state.lua[OnInit]')
-	self.aoi = self.blackboard:GetVariable("aoi")
 	self.aoi_handle = self.blackboard:GetVariable("aoi_handle")
 	self.entity = self.blackboard:GetVariable("entity")
-	self.entityMgr = self.blackboard:GetVariable("entityMgr")
-	self.monsterMgr = self.blackboard:GetVariable("monsterMgr")
+	self.sceneMgr = self.blackboard:GetVariable("sceneMgr")
+	self.aoi = self.sceneMgr.aoi
+	self.entityMgr = self.sceneMgr.entityMgr
+	self.monsterMgr = self.sceneMgr.monsterMgr
 	self.cfg = self.blackboard:GetVariable("cfg")
 	self.patrolInfo = self.entityMgr:GetComponentData(self.entity, "UMO.PatrolInfo")
 end
@@ -53,7 +55,6 @@ function PatrolState:CheckAround(  )
 		local nearestEnemy = self:GetNearestEnemy()
 		--发现敌人了，进入战斗状态
 		if nearestEnemy ~= nil then
-			print('Cat:PatrolState.lua[57] nearestEnemy', nearestEnemy)
 			self.blackboard:SetVariable("targetEnemyEntity", nearestEnemy)
 			self.fsm:TriggerState("Fight")
 		end
@@ -67,9 +68,10 @@ function PatrolState:GetNearestEnemy(  )
 	local nearestEnemy = nil
 	for aoi_handle,_ in pairs(around) do
 		local uid = self.aoi:get_user_data(aoi_handle, "uid")
-		local sceneObjType = SceneHelper:get_type_by_uid(uid)
+		local sceneObjType = SceneHelper:GetSceneObjTypeByUID(uid)
 		if sceneObjType == SceneConst.ObjectType.Role then
-			local enemyEntity = self.aoi:get_user_data(aoi_handle, "entity")
+			-- local enemyEntity = self.aoi:get_user_data(aoi_handle, "entity")
+			local enemyEntity = self.sceneMgr:GetEntityByUID(uid)
 			local enemyPos = self.entityMgr:GetComponentData(enemyEntity, "UMO.Position")
 			local distanceFromTargetSqrt = Vector3.DistanceNoSqrt(myPos, enemyPos)
 			if not minDistance or minDistance > distanceFromTargetSqrt then

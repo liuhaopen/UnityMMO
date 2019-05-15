@@ -1,4 +1,5 @@
 local BP = require("Blueprint")
+local FightHelper = require("game.scene.FightHelper")
 
 local FightState = BP.BaseClass(BP.FSM.FSMState)
 
@@ -24,7 +25,7 @@ function FightState:OnEnter(  )
 end
 
 function FightState:OnUpdate( deltaTime )
-	print('Cat:FightState.lua[27] self.targetEnemyEntity', self.targetEnemyEntity)
+	-- print('Cat:FightState.lua[27] self.targetEnemyEntity', self.targetEnemyEntity)
 	if self.targetEnemyEntity then
 		--判断是否进入攻击范围，是则发起攻击，否则追上去
 		local myPos = self.entityMgr:GetComponentData(self.entity, "UMO.Position")
@@ -37,12 +38,17 @@ function FightState:OnUpdate( deltaTime )
 			--离敌人距离刚好，发动攻击
 			self:Attack()
 		else
-			--离敌人太远或太近了，走位
-
+			--离敌人太远或太近了，走位移动到可攻击的目标点
+			local newPos = FightHelper.GetAssailablePos()			
+			
 		end
 	else
 		self.fsm:TriggerState("Patrol")
 	end
+end
+
+function FightState:RunToAssailablePos(  )
+	
 end
 
 function FightState:Attack(  )
