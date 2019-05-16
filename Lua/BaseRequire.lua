@@ -48,6 +48,7 @@ require("Game.Common.Action.ActionCatmullRom")
 
 --顺序无关的
 require("Common.Util.Functor")
+require("Game.Common.UIGlobal")
 
 
 require("Tools.CookieWrapper")

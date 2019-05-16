@@ -201,6 +201,23 @@ end
 
 function LoginController:Disconnect()
 	print('Cat:LoginController.lua[Disconnect]')
+    local view = nil
+    local showData = {
+        content = "网络已断开连接",
+        ok_btn_text = "重连",
+        on_ok = function()
+            Message:Show("重连")
+            self:StartLogin(self.login_info)
+            UIMgr:Close(view)
+        end,
+        cancel_btn_text = "重新登录",
+        on_cancel = function()
+            Message:Show("重新登录")
+            self:StartLogin(self.login_info)
+            UIMgr:Close(view)
+        end,
+    }
+    view = UI.AlertView.Show(showData)
     --Cat_Todo : 重新向游戏服务器请求连接
 	-- if self.login_state == 4 then
  --    	NetMgr:SendConnect("192.168.5.142", 8888, CS.XLuaFramework.NetPackageType.BaseHead)

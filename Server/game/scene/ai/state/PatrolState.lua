@@ -98,7 +98,7 @@ function PatrolState:EnterSubState( sub_state )
 			local pos_z = self.patrolInfo.z + math.random(-radius, radius)
 			local randomPos = {x=pos_x, y=pos_y, z=pos_z}
 			-- self.entityMgr:SetComponentData(self.entity, "UMO.TargetPos", randomPos)
-			self.monsterMgr:change_target_pos(self.entity, randomPos)
+			self.monsterMgr:ChangeTargetPos(self.entity, randomPos)
 		else
 			print('Cat:PatrolState.lua unkown patrol type:', self.cfg.ai.patrol.type)
 		end

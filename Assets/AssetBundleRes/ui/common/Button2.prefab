@@ -70,7 +70,7 @@ MonoBehaviour:
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
   m_isDefaultMaterial: 0
-  m_padding: 1.97
+  m_padding: 0
   m_canvasRenderer: {fileID: 2105815461978146011}
   m_TextComponent: {fileID: 8797739184124639416}
   m_materialReferenceIndex: 1
@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 143670876633762011}
   - component: {fileID: 8797739184124639416}
   m_Layer: 0
-  m_Name: Text (TMP)
+  m_Name: label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -143,8 +143,7 @@ MonoBehaviour:
   m_text: "\u786E\u5B9A"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2bb2b7af699b34547b97ba34835faab9, type: 2}
-  m_sharedMaterial: {fileID: 21581098704008832, guid: 2bb2b7af699b34547b97ba34835faab9,
-    type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: bab387c9f64f2d84db34e5a67fa8babe, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -246,7 +245,7 @@ GameObject:
   - component: {fileID: 6088848643535738072}
   - component: {fileID: 7334441744354984769}
   m_Layer: 0
-  m_Name: Button
+  m_Name: Button2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -269,7 +268,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -26.4, y: -164}
+  m_AnchoredPosition: {x: 56.4, y: -126.5}
   m_SizeDelta: {x: 152, y: 56}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4207156724487605621
@@ -300,7 +299,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: a48b94473b764b8418b8d8c81d640f97, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a2372c46fc3ef834481ca4e981be8b40, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

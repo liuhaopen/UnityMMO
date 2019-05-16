@@ -130,6 +130,10 @@ namespace XLuaFramework {
         public void SendConnect(string host, int port, NetPackageType type)
         {
             Debug.Log("host : " + host + " port:" + port.ToString() + " type:"+ type.ToString());
+            // if (client != null)
+            // {
+            //     client.EndConnect(new IAsyncResult(OnDisconnectManual));
+            // }
             client = null;
             curPackageType = type;
             try 
@@ -277,6 +281,13 @@ namespace XLuaFramework {
             Close();   //关掉客户端链接
             Debug.Log("networkmanager on disconnect!" + msg + " trace:" + new System.Diagnostics.StackTrace().ToString());
             AddEvent(onDisConnectCallBack, null);
+        }
+
+        void OnDisconnectManual(DisType dis, string msg) 
+        {
+            Close();   //关掉客户端链接
+            Debug.Log("networkmanager on disconnect account server!" + msg + " trace:" + new System.Diagnostics.StackTrace().ToString());
+            // AddEvent(onDisConnectCallBack, null);
         }
 
         void PrintBytes() 
