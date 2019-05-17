@@ -55,7 +55,7 @@ local update_around_objs = function ( sceneMgr, role_info )
 				local target_pos = sceneMgr.entityMgr:GetComponentData(entity, "UMO.TargetPos")
 				local scene_obj_type = sceneMgr.entityMgr:GetComponentData(entity, "UMO.SceneObjType")
 				local type_id = sceneMgr.entityMgr:GetComponentData(entity, "UMO.TypeID")
-				role_info.change_obj_infos = SceneHelper.AddInfoItem(role_info.change_obj_infos, scene_uid, {key=SceneConst.InfoKey.EnterView, value=scene_obj_type.value..","..type_id.value..","..pos.x..","..pos.y..","..pos.z..","..target_pos.x..","..target_pos.y..","..target_pos.z, time=cur_time})
+				role_info.change_obj_infos = SceneHelper.AddInfoItem(role_info.change_obj_infos, scene_uid, {key=SceneConst.InfoKey.EnterView, value=scene_obj_type.value..","..type_id.value..","..math.floor(pos.x)..","..math.floor(pos.y)..","..math.floor(pos.z)..","..math.floor(target_pos.x)..","..math.floor(target_pos.y)..","..math.floor(target_pos.z), time=cur_time})
 			end
 		else
 			if scene_uid then

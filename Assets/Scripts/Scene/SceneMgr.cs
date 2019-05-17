@@ -297,6 +297,7 @@ public class SceneMgr : MonoBehaviour
 
     public Entity AddSceneObject(long uid, string content)
     {
+        Debug.Log("content : "+content);
         string[] info_strs = content.Split(',');
         SceneObjectType type = (SceneObjectType)Enum.Parse(typeof(SceneObjectType), info_strs[0]);
         long typeID = Int64.Parse(info_strs[1]);

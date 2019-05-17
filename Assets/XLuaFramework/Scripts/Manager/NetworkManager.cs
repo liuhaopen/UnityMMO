@@ -130,16 +130,11 @@ namespace XLuaFramework {
         public void SendConnect(string host, int port, NetPackageType type)
         {
             Debug.Log("host : " + host + " port:" + port.ToString() + " type:"+ type.ToString());
-            // if (client != null)
-            // {
-            //     client.EndConnect(new IAsyncResult(OnDisconnectManual));
-            // }
-            client = null;
+            this.Close(); 
             curPackageType = type;
             try 
             {
                 IPAddress[] address = Dns.GetHostAddresses(host);
-                Debug.Log("address.Length : " + address.Length.ToString());
                 if (address.Length == 0)
                 {
                     Debug.LogError("host invalid");
@@ -169,6 +164,11 @@ namespace XLuaFramework {
 
         void OnConnect(IAsyncResult asr) {
             Debug.Log("on connect : "+ client.Connected.ToString());
+            if (!client.Connected)
+            {
+                Close();
+                return;
+            }
             outStream = client.GetStream();
             if (curPackageType == NetPackageType.BaseLine)
             {
@@ -281,13 +281,6 @@ namespace XLuaFramework {
             Close();   //关掉客户端链接
             Debug.Log("networkmanager on disconnect!" + msg + " trace:" + new System.Diagnostics.StackTrace().ToString());
             AddEvent(onDisConnectCallBack, null);
-        }
-
-        void OnDisconnectManual(DisType dis, string msg) 
-        {
-            Close();   //关掉客户端链接
-            Debug.Log("networkmanager on disconnect account server!" + msg + " trace:" + new System.Diagnostics.StackTrace().ToString());
-            // AddEvent(onDisConnectCallBack, null);
         }
 
         void PrintBytes() 

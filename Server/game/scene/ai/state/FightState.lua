@@ -9,12 +9,12 @@ local SubState = {
 }
 function FightState:OnInit(  )
 	print('Cat:FightState.lua[OnInit]')
-	self.aoi = self.blackboard:GetVariable("aoi")
 	self.aoi_handle = self.blackboard:GetVariable("aoi_handle")
 	self.aoi_area = self.blackboard:GetVariable("aoi_area")
 	self.entity = self.blackboard:GetVariable("entity")
-	self.entityMgr = self.blackboard:GetVariable("entityMgr")
 	self.sceneMgr = self.blackboard:GetVariable("sceneMgr")
+	self.aoi = self.sceneMgr.aoi
+	self.entityMgr = self.sceneMgr.entityMgr
 	self.cfg = self.blackboard:GetVariable("cfg")
 end
 

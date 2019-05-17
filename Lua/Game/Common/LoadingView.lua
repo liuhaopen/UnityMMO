@@ -1,9 +1,9 @@
-local AlertView = BaseClass()
+local LoadingView = BaseClass()
 
-function AlertView:DefaultVar( )
+function LoadingView:DefaultVar( )
 	return {
 	UIConfig = {
-			prefab_path = "Assets/AssetBundleRes/ui/common/AlertView.prefab",
+			prefab_path = "Assets/AssetBundleRes/ui/common/LoadingView.prefab",
 			canvas_name = "Normal",
 			components = {
 				{UI.Background, {is_click_to_close=false, alpha=0.5}},
@@ -12,18 +12,18 @@ function AlertView:DefaultVar( )
 	}
 end
 
-function AlertView.Show( data )
-	local view = AlertView.New()
+function LoadingView.Show( data )
+	local view = LoadingView.New()
 	view:SetData(data)
     UIMgr:Show(view)
     return view
 end
 
-function AlertView:SetData( data )
+function LoadingView:SetData( data )
 	self.data = data
 end
 
-function AlertView:OnLoad(  )
+function LoadingView:OnLoad(  )
 	local names = {"cancel:obj","ok:obj","content:txt","cancel/cancel_label:txt","ok/ok_label:txt",}
 	UI.GetChildren(self, self.transform, names)
 	
@@ -31,7 +31,7 @@ function AlertView:OnLoad(  )
 	self:UpdateView()
 end
 
-function AlertView:AddEvents(  )
+function LoadingView:AddEvents(  )
 	local on_click = function ( click_obj )
 		if click_obj == self.ok_obj then
 	        if self.data and self.data.on_ok then
@@ -47,7 +47,7 @@ function AlertView:AddEvents(  )
 	UIHelper.BindClickEvent(self.cancel_obj, on_click)
 end
 
-function AlertView:UpdateView(  )
+function LoadingView:UpdateView(  )
 	if not self.data then return end
 	
 	self.content_txt.text = self.data.content
@@ -55,4 +55,4 @@ function AlertView:UpdateView(  )
 	self.cancel_label_txt.text = self.data.cancel_btn_text
 end
         
-return AlertView
+return LoadingView
