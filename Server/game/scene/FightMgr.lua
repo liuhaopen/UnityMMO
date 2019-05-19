@@ -9,14 +9,17 @@ function FightMgr:Init( scene )
 	self.damage_events = {}
 end
 
-function FightMgr:cast_skill( user_info, req_data )
+function FightMgr:CastSkill( uid, user_info, req_data )
 	--检查施法者状态（技能CD,是否麻痹、中毒、加班等）
 	local role_info = self.sceneMgr.roleMgr.roleList[user_info.cur_role_id]
+	local sceneObj = self.sceneMgr:GetSceneObjByUID(uid)
+	if not sceneObj then return end
+	
 	local is_can_cast = true
 	local fight_event = nil
 	if is_can_cast then
 		fight_event = {
-			attacker_uid = role_info.scene_uid,
+			attacker_uid = uid,
 			skill_id = req_data.skill_id,
 			skill_lv = 1,
 			attacker_pos_x = req_data.cur_pos_x,--Cat_Todo : 记得做校验
@@ -33,7 +36,7 @@ function FightMgr:cast_skill( user_info, req_data )
 
 		self:add_damage_event_for_defenders(fight_event)
 
-		self.sceneMgr.eventMgr:AddFightEvent(role_info.scene_uid, fight_event)
+		self.sceneMgr.eventMgr:AddFightEvent(uid, fight_event)
 	end
 	return is_can_cast and 0 or 1, fight_event
 end

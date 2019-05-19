@@ -88,3 +88,15 @@ function TestEntityManager:TestEntityRemoveComponent(  )
     local has = self.m_Manager:HasComponent(entity, test_compponent_name)
     lu.assertFalse(has)
 end
+
+function TestEntityManager:TestRemoveEntity(  )
+    local EcsTestData = {value=0}
+    ECS.TypeManager.RegisterType("DataForTestRemoveEntity", EcsTestData)
+
+    local archetype = self.m_Manager:CreateArchetype({"DataForTestRemoveEntity"})
+    local entity = self.m_Manager:CreateEntityByArcheType(archetype)
+    lu.assertNotNil(entity)
+    lu.assertTrue(self.m_Manager:Exists(entity))
+    self.m_Manager:DestroyEntity(entity)
+    lu.assertFalse(self.m_Manager:Exists(entity))
+end

@@ -99,7 +99,7 @@ end
 function MonsterMgr:ChangeTargetPos( entity, pos )
 	self.entityMgr:SetComponentData(entity, "UMO.TargetPos", pos)
 	local uid = self.entityMgr:GetComponentData(entity, "UMO.UID")
-	local change_target_pos_event_info = {key=SceneConst.InfoKey.TargetPos, value=pos.x..","..pos.z, time=Time.timeMS}
+	local change_target_pos_event_info = {key=SceneConst.InfoKey.TargetPos, value=math.floor(pos.x)..","..math.floor(pos.z), time=Time.timeMS}
 	self.sceneMgr.eventMgr:AddSceneEvent(uid.value, change_target_pos_event_info)
 end
 

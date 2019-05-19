@@ -78,7 +78,7 @@ function RoleMgr:RoleEnter( roleID )
 		local handle = self.sceneMgr.aoi:add()
 		self.sceneMgr.aoi:set_user_data(handle, "uid", scene_uid)
 		self.roleList[roleID] = {scene_uid=scene_uid, base_info=base_info, looks_info=looks_info, aoi_handle=handle, around_objs={}, radius_short=5000, radius_long=6000, fight_events_in_around={}}
-		self.sceneMgr.object_list[scene_uid] = self.roleList[roleID]
+		-- self.sceneMgr:SetSceneObj(scene_uid, self.roleList[roleID])
 		-- self.aoi_handle_uid_map[handle] = scene_uid
 		self.sceneMgr.aoi:set_pos(handle, base_info.pos_x, base_info.pos_y, base_info.pos_z)
 
@@ -150,12 +150,13 @@ end
 
 function RoleMgr:GetRoleLooksInfo( uid )
 	-- print('Cat:scene.lua[scene_get_role_look_info] user_info, req_data', user_info, roldID)
-	local role_info = self.sceneMgr.object_list[uid]
-	-- print('Cat:scene.lua[211] role_info', role_info, uid, self.sceneMgr.object_list[uid])
+	-- local role_info = self.sceneMgr:GetSceneObjByUID(uid)
+	-- print('Cat:scene.lua[211] role_info', role_info, uid, self.sceneMgr.uid_obj_map[uid])
 	local looks_info
-	local entity = self.sceneMgr.uid_entity_map[uid]
-	if role_info and entity then
+	local entity = self.sceneMgr:GetEntityByUID(uid)
+	if entity then
 		local hpData = self.sceneMgr.entityMgr:GetComponentData(entity, "UMO.HP")
+		local role_info = self.sceneMgr.entityMgr:GetComponentData(entity, "UMO.RoleInfo")
 		looks_info = {
 			result = 0,
 			role_looks_info = {

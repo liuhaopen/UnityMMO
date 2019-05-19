@@ -11,3 +11,4 @@ ECS.TypeManager.RegisterType("UMO.PatrolInfo", {x=0, y=0, z=0, radius=0})--æ€ªç‰
 ECS.TypeManager.RegisterType("UMO.AOIHandle", {value=0})
 ECS.TypeManager.RegisterType("UMO.DamageEvents", {events=nil})
 ECS.TypeManager.RegisterType("UMO.MonsterAI", {ai_id=0})
+ECS.TypeManager.RegisterType("UMO.RoleInfo", {name="", base_info=nil})

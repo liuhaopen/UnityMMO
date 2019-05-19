@@ -10,12 +10,20 @@ RequireAllLuaFileInFolder("./game/scene/System")
 local SceneMgr = BaseClass()
 
 function SceneMgr:Constructor(  )
-	self.object_list = {}--the scene object includes the role monster npc
+	self.uid_obj_map = {}--the scene object includes the role monster npc
 	self.uid_entity_map = {}
 end
 
 function SceneMgr:GetEntityByUID( uid )
 	return self.uid_entity_map[uid]
+end
+
+function SceneMgr:GetSceneObj( uid )
+	return self.uid_obj_map[uid]
+end
+
+function SceneMgr:SetSceneObj( uid, obj )
+	self.uid_obj_map[uid] = obj
 end
 
 local fork_loop_ecs = function ( sceneMgr )

@@ -49,7 +49,7 @@ end
 
 --主动打人的怪需要经常判断附近有没人
 function PatrolState:CheckAround(  )
-	if not self.cfg.ai.patrol.hunt_radius or self.cfg.ai.patrol.hunt_radius == 0 then return end
+	if not self.cfg.ai.patrol.auto_attack_radius or self.cfg.ai.patrol.auto_attack_radius == 0 then return end
 	if not self.last_check_around or Time.time - self.last_check_around > 1.5 then
 		self.last_check_around = Time.time
 		local nearestEnemy = self:GetNearestEnemy()
@@ -63,7 +63,7 @@ end
 
 function PatrolState:GetNearestEnemy(  )
 	local myPos = self.entityMgr:GetComponentData(self.entity, "UMO.Position")
-	local around = self.aoi:get_around(self.aoi_handle, self.cfg.ai.patrol.hunt_radius, self.cfg.ai.patrol.hunt_radius)
+	local around = self.aoi:get_around(self.aoi_handle, self.cfg.ai.patrol.auto_attack_radius, self.cfg.ai.patrol.auto_attack_radius)
 	local minDistance = nil
 	local nearestEnemy = nil
 	for aoi_handle,_ in pairs(around) do

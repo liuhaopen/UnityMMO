@@ -77,7 +77,7 @@ end
 
 function EntityManager:Instantiate( srcEntity )
 	-- self:BeforeStructuralChange()
-    if not Entities:Exists(srcEntity) then
+    if not self.Entities:Exists(srcEntity) then
         assert(false, "srcEntity is not a valid entity")
     end
 
@@ -148,6 +148,9 @@ function EntityManager:CreateComponentGroup( requiredComponents )
 end
 
 function EntityManager:DestroyEntity( entity )
+    -- self.Entities:AssertEntitiesExist(entities, count)
+    -- self.Entities:AssertChunksUnlocked(entities, count)
+    -- self.EntityDataManager.TryRemoveEntityId(entities, count, self.Entities, self.ArchetypeManager, self.m_SharedComponentManager)
 end
 
 function EntityManager:GetArchetypeChunkComponentType( comp_type_name, isReadOnly )
