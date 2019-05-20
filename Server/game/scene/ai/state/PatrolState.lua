@@ -71,7 +71,7 @@ function PatrolState:GetNearestEnemy(  )
 		local sceneObjType = SceneHelper:GetSceneObjTypeByUID(uid)
 		if sceneObjType == SceneConst.ObjectType.Role then
 			-- local enemyEntity = self.aoi:get_user_data(aoi_handle, "entity")
-			local enemyEntity = self.sceneMgr:GetEntityByUID(uid)
+			local enemyEntity = self.sceneMgr:GetEntity(uid)
 			local enemyPos = self.entityMgr:GetComponentData(enemyEntity, "UMO.Position")
 			local distanceFromTargetSqrt = Vector3.DistanceNoSqrt(myPos, enemyPos)
 			if not minDistance or minDistance > distanceFromTargetSqrt then

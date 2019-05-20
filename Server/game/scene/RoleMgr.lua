@@ -12,6 +12,10 @@ function RoleMgr:Init( sceneMgr )
 	self:InitArchetype()
 end
 
+function RoleMgr:GetRole( roleID )
+	return self.roleList[roleID]
+end
+
 function RoleMgr:InitArchetype(  )
 	self.role_archetype = self.entityMgr:CreateArchetype({
 		"UMO.Position", "UMO.TargetPos", "UMO.UID", "UMO.TypeID", "UMO.HP", "UMO.SceneObjType", "UMO.MoveSpeed", "UMO.AOIHandle", 
@@ -83,7 +87,7 @@ function RoleMgr:RoleEnter( roleID )
 		self.sceneMgr.aoi:set_pos(handle, base_info.pos_x, base_info.pos_y, base_info.pos_z)
 
 		local entity = self:CreateRole(scene_uid, roleID, base_info.pos_x, base_info.pos_y, base_info.pos_z, handle)
-		self.sceneMgr.uid_entity_map[scene_uid] = entity
+		self.sceneMgr:SetEntity(scene_uid, entity)
 		-- self.sceneMgr.aoi:set_user_data(handle, "entity", entity)
 	end
 end
@@ -153,10 +157,12 @@ function RoleMgr:GetRoleLooksInfo( uid )
 	-- local role_info = self.sceneMgr:GetSceneObjByUID(uid)
 	-- print('Cat:scene.lua[211] role_info', role_info, uid, self.sceneMgr.uid_obj_map[uid])
 	local looks_info
-	local entity = self.sceneMgr:GetEntityByUID(uid)
+	local entity = self.sceneMgr:GetEntity(uid)
 	if entity then
 		local hpData = self.sceneMgr.entityMgr:GetComponentData(entity, "UMO.HP")
-		local role_info = self.sceneMgr.entityMgr:GetComponentData(entity, "UMO.RoleInfo")
+		local role_id = self.sceneMgr.entityMgr:GetComponentData(entity, "UMO.TypeID")
+		-- local role_info = self.sceneMgr.entityMgr:GetComponentData(entity, "UMO.RoleInfo")
+		local role_info = self:GetRole(role_id.value)
 		looks_info = {
 			result = 0,
 			role_looks_info = {
@@ -184,7 +190,7 @@ function RoleMgr:RoleWalk( roldID, req_data )
 		role_info.base_info.pos_x = req_data.start_x
 		role_info.base_info.pos_y = req_data.start_y
 		role_info.base_info.pos_z = req_data.start_z
-		local entity = self.sceneMgr.uid_entity_map[role_info.scene_uid]
+		local entity = self.sceneMgr:GetEntity(role_info.scene_uid)
 		if entity then
 			self.sceneMgr.entityMgr:SetComponentData(entity, "UMO.Position", {x=req_data.start_x, y=req_data.start_y, z=req_data.start_z})
 			self.sceneMgr.entityMgr:SetComponentData(entity, "UMO.TargetPos", {x=req_data.end_x, y=req_data.start_y, z=req_data.end_z})

@@ -69,7 +69,7 @@ function MonsterMgr:CreateMonster( type_id, patrolInfo )
 
 	-- print('Cat:MonsterMgr.lua[53] scene_uid', scene_uid, handle)
 	-- self.sceneMgr.aoi_handle_uid_map[handle] = scene_uid
-	self.sceneMgr.uid_entity_map[scene_uid] = monster
+	self.sceneMgr:SetEntity(scene_uid, monster)
 
     self:InitGraphsForMon(scene_uid, monster, self.entityMgr, handle, self.aoi, cfg)
 

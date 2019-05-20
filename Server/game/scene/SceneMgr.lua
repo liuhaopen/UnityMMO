@@ -14,17 +14,21 @@ function SceneMgr:Constructor(  )
 	self.uid_entity_map = {}
 end
 
-function SceneMgr:GetEntityByUID( uid )
+function SceneMgr:GetEntity( uid )
 	return self.uid_entity_map[uid]
 end
 
-function SceneMgr:GetSceneObj( uid )
-	return self.uid_obj_map[uid]
+function SceneMgr:SetEntity( uid, entity )
+	self.uid_entity_map[uid] = entity
 end
 
-function SceneMgr:SetSceneObj( uid, obj )
-	self.uid_obj_map[uid] = obj
-end
+-- function SceneMgr:GetSceneObj( uid )
+-- 	return self.uid_obj_map[uid]
+-- end
+
+-- function SceneMgr:SetSceneObj( uid, obj )
+-- 	self.uid_obj_map[uid] = obj
+-- end
 
 local fork_loop_ecs = function ( sceneMgr )
 	skynet.fork(function()
@@ -120,7 +124,6 @@ local collect_fight_events = function ( sceneMgr )
 		end
 	end
 	sceneMgr.eventMgr:ClearAllFightEvents()
-	-- sceneMgr.fight_events = {}
 end
 
 --定时合批发送战斗事件
@@ -130,9 +133,9 @@ local fork_loop_fight_event = function ( sceneMgr )
 			collect_fight_events(sceneMgr)
 			for k,role_info in pairs(sceneMgr.roleMgr.roleList) do
 				if role_info.fight_events_in_around and #role_info.fight_events_in_around>0 and role_info.ack_scene_listen_fight_event then
-					print("Cat:scene [start:138] role_info.fight_events_in_around:", role_info.fight_events_in_around)
-					PrintTable(role_info.fight_events_in_around)
-					print("Cat:scene [end]")
+					-- print("Cat:scene [start:138] role_info.fight_events_in_around:", role_info.fight_events_in_around)
+					-- PrintTable(role_info.fight_events_in_around)
+					-- print("Cat:scene [end]")
 					role_info.ack_scene_listen_fight_event(true, {fight_events=role_info.fight_events_in_around})
 					role_info.fight_events_in_around = {}
 					role_info.ack_scene_listen_fight_event = nil

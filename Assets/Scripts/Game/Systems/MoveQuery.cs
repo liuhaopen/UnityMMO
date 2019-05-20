@@ -32,7 +32,8 @@ public class MoveQuery : MonoBehaviour
         queryObj = go;
         charController = go.GetComponent<CharacterController>();
         charController.transform.position = transform.position;
-        charController.transform.SetParent(transform.parent);
+        // charController.transform.SetParent(transform.parent);
+        charController.transform.SetParent(UnityMMO.SceneMgr.Instance.MoveQueryContainer);
         charController.slopeLimit = this.slopeLimit;
         charController.stepOffset = this.stepOffset;
         charController.skinWidth = this.skinWidth;
