@@ -22,14 +22,6 @@ function SceneMgr:SetEntity( uid, entity )
 	self.uid_entity_map[uid] = entity
 end
 
--- function SceneMgr:GetSceneObj( uid )
--- 	return self.uid_obj_map[uid]
--- end
-
--- function SceneMgr:SetSceneObj( uid, obj )
--- 	self.uid_obj_map[uid] = obj
--- end
-
 local fork_loop_ecs = function ( sceneMgr )
 	skynet.fork(function()
 		while true do
@@ -64,8 +56,11 @@ local update_around_objs = function ( sceneMgr, role_info )
 			local entity = sceneMgr.uid_entity_map[scene_uid]
 			if entity then
 				local pos = sceneMgr.entityMgr:GetComponentData(entity, "UMO.Position")
-				local target_pos = sceneMgr.entityMgr:GetComponentData(entity, "UMO.TargetPos")
 				local scene_obj_type = sceneMgr.entityMgr:GetComponentData(entity, "UMO.SceneObjType")
+				local target_pos = pos 
+				if sceneMgr.entityMgr:HasComponent(entity, "UMO.TargetPos") then
+					target_pos = sceneMgr.entityMgr:GetComponentData(entity, "UMO.TargetPos")
+				end
 				local type_id = sceneMgr.entityMgr:GetComponentData(entity, "UMO.TypeID")
 				role_info.change_obj_infos = SceneHelper.AddInfoItem(role_info.change_obj_infos, scene_uid, {key=SceneConst.InfoKey.EnterView, value=scene_obj_type.value..","..type_id.value..","..math.floor(pos.x)..","..math.floor(pos.y)..","..math.floor(pos.z)..","..math.floor(target_pos.x)..","..math.floor(target_pos.y)..","..math.floor(target_pos.z), time=cur_time})
 			end
@@ -163,6 +158,7 @@ function SceneMgr:Init( scene_id )
 
 	self.roleMgr = require("game.scene.RoleMgr").New()
 	self.monsterMgr = require("game.scene.MonsterMgr").New()
+	self.npcMgr = require("game.scene.NPCMgr").New()
 	self.fightMgr = require("game.scene.FightMgr").New()
 
 	--管理所有的ECS System
@@ -185,6 +181,7 @@ function SceneMgr:Init( scene_id )
 	self.cur_scene_id = scene_id
 	self.roleMgr:Init(self)
 	self.monsterMgr:Init(self, self.scene_cfg.monster_list)
+	self.npcMgr:Init(self, self.scene_cfg.npc_list)
 	self.fightMgr:Init(self)
 	self.ecsSystemMgr:Init(self.ecs_world, self)
 	self.eventMgr:Init(self)
@@ -193,6 +190,10 @@ function SceneMgr:Init( scene_id )
 	fork_loop_scene_info_change(self)
 	fork_loop_fight_event(self)
 	fork_loop_update_around(self)
+end
+
+function SceneMgr:GetCurSceneID(  )
+	return self.cur_scene_id
 end
 
 return SceneMgr

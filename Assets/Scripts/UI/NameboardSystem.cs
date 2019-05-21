@@ -135,6 +135,8 @@ public class NameboardSpawnRequestSystem : BaseComponentSystem
                 nameboardData.UIResState = NameboardData.ResState.Loaded;
                 EntityManager.SetComponentData(request.Owner, nameboardData);
             }
+            var sceneObjType = EntityManager.GetComponentData<SceneObjectTypeData>(request.Owner);
+            nameboardBehav.SetBloodVisible(sceneObjType.Value==SceneObjectType.Role || sceneObjType.Value==SceneObjectType.Monster);
         }
     }
 }

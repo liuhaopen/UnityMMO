@@ -3,11 +3,18 @@ local sprotoparser = require "sprotoparser"
 local sprotoloader = require "sprotoloader"
 require "Common.Util.util"
 
+--某协议有语法错误时，只解析该协议文件，方便定位。不然报错中的行数很难定位,因为是所有协议文件合并成一个整体的行数：syntax error at [=text] line (210)
+-- local test_files = {
+-- 	"proto_200_299_task.lua", 
+-- }
 skynet.start(function()
 	--从协议目录里读取所有的lua文件,拼接其字符串生成sproto协议对象
  	local s = io.popen("ls ../Lua/Proto")
 	local fileNames = s:read("*all")
 	fileNames = Split(fileNames, "\n")
+	if test_files and #test_files > 0 then
+		fileNames = test_files
+	end
 	local proto_c2s_tb = {}
     for k,v in pairs(fileNames or {}) do
     	local dot_index = string.find(v, ".", 1, true)

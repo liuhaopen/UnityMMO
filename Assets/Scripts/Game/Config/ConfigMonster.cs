@@ -42,6 +42,13 @@ public class ConfigMonster
             return Items[typeID].MoveSpeed;
         return 500;
     }
+
+    public int GetBodyResID(long typeID)
+    {
+        if (Items.ContainsKey(typeID))
+            return Items[typeID].BodyResID;
+        return 0;
+    }
     
     private ConfigMonster()
     {

@@ -73,7 +73,7 @@
 19.10.03：先加入第三人称控制插件，快速测试场景的分块加载，人物控制这块以后还要改成ECS实现方式的。  
 19.10.09：增加摇杆界面，支持在手机上移动角色了  
 18.10.10：考虑到资源越来越多，都放一起的话本项目clone会超级久，所以以后就把资源放在另外一个项目吧  
-19.10.15：增加lua版本的cocos action  
+19.10.15：增加lua版本的cocos action(后来还是改成c#实现)  
 19.10.25：增加本地存档接口cookiemgr，保存一些本地设置如历史输入帐号  
 18.11.08：写脚本导出场景信息给后端使用（npc和怪物列表），直接生成lua代码。  
 18.11.13：初步完成的大世界场景分块加载（还在考虑无限场景的NavMesh资源管理，先尝试用跳跃点连接n个地图块的navmesh）  
@@ -90,5 +90,6 @@
 19.04.25：做战斗飘字时需要针对该艺术字节点做动画，虽然有现成的TweenLite可以用，但感觉还是cocos action的接口更好用，所以又实现了一个c#版本：  
 [UnityCocosAction](https://github.com/liuhaopen/UnityCocosAction "UnityCocosAction")    
 19.05.08：实现了个简单的状态机并完成了怪物的巡逻状态逻辑。  
+19.05.13：把LuaECS实现为纯lua了，因为c和lua交互的消耗太大，数据平坦放置带来的性能提升都弥补不了，而且用纯lua后可以使用table为组件，方便多了。  
 19.05.20：完成怪物追捕和攻击的逻辑：    
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/monster_fighting.gif)     

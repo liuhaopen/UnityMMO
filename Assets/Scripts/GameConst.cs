@@ -40,6 +40,11 @@ namespace UnityMMO
             return "Assets/AssetBundleRes/monster/monster_"+typeID;
         }
 
+        public static string GetNPCResPath(long typeID)
+        {
+            return "Assets/AssetBundleRes/npc/npc_"+typeID;
+        }
+
         public static string GetRoleSkillResPath(int career, int skillID)
         {
             return "Assets/AssetBundleRes/role/career_"+career+"/timeline/skill_"+skillID+".playable";

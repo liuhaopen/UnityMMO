@@ -97,6 +97,7 @@ public class SceneMgr : MonoBehaviour
         ResMgr.GetInstance().Init();
         RoleMgr.GetInstance().Init(world);
         MonsterMgr.GetInstance().Init(world);
+        NPCMgr.GetInstance().Init(world);
 	}
 
 	public void OnDestroy()
@@ -323,8 +324,12 @@ public class SceneMgr : MonoBehaviour
             entityDic.Add(uid, monster);
             return monster;
         }
-        // else if (type == SceneObjectType.NPC)
-            // return AddNPC(uid);
+        else if (type == SceneObjectType.NPC)
+        {
+            Entity npc = NPCMgr.GetInstance().AddNPC(uid, typeID, pos, targetPos);
+            entityDic.Add(uid, npc);
+            return npc;
+        }
         return Entity.Null;
     }
 
@@ -339,6 +344,9 @@ public class SceneMgr : MonoBehaviour
                 break;
             case SceneObjectType.Monster:
                 name = MonsterMgr.GetInstance().GetName(GetSceneObject(uid));
+                break;
+            case SceneObjectType.NPC:
+                name = NPCMgr.GetInstance().GetName(GetSceneObject(uid));
                 break;
             default:
                 name = "";
@@ -368,7 +376,9 @@ public class SceneMgr : MonoBehaviour
         Entity entity = GetSceneObject(uid);
         if (entity!=Entity.Null)
         {
-            var moveQuery = EntityManager.GetComponentObject<MoveQuery>(entity);
+            MoveQuery moveQuery=null;
+            if (EntityManager.HasComponent<MoveQuery>(entity))
+                moveQuery = EntityManager.GetComponentObject<MoveQuery>(entity);
             EntityManager.DestroyEntity(entity);
             entityDic.Remove(uid);
             if (moveQuery!=null)

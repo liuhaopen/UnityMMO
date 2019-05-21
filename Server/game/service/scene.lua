@@ -44,9 +44,9 @@ function CMD.scene_cast_skill(user_info, req_data)
 	local role = sceneMgr.roleMgr:GetRole(user_info.cur_role_id)
 	if role ~= nil then
 		local result_code, fight_event = sceneMgr.fightMgr:CastSkill(role.scene_uid, req_data)
-		print("Cat:scene [start:355] fight_event, result_code:", fight_event, result_code)
-		PrintTable(fight_event)
-		print("Cat:scene [end]")
+		-- print("Cat:scene [start:355] fight_event, result_code:", fight_event, result_code)
+		-- PrintTable(fight_event)
+		-- print("Cat:scene [end]")
 		-- do
 			--test : 给自己发送自己的技能协议
 			-- table.insert(sceneMgr.roleMgr.roleList[user_info.cur_role_id].fight_events_in_around, fight_event)

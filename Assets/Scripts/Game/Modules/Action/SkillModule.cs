@@ -72,7 +72,7 @@ public class SkillManager
     {
         int scene_obj_type = GetSceneObjTypeBySkillID(skillID);
         if (scene_obj_type == (int)SceneObjectType.Role)
-            return (int)math.floor((skillID%10000)/1000);
+            return (int)math.floor((skillID%100000)/10000);
         return 1;
     }
 

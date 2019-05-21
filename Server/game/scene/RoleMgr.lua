@@ -163,6 +163,9 @@ function RoleMgr:GetRoleLooksInfo( uid )
 		local role_id = self.sceneMgr.entityMgr:GetComponentData(entity, "UMO.TypeID")
 		-- local role_info = self.sceneMgr.entityMgr:GetComponentData(entity, "UMO.RoleInfo")
 		local role_info = self:GetRole(role_id.value)
+		if not role_info then
+			looks_info = {result=1}
+		end
 		looks_info = {
 			result = 0,
 			role_looks_info = {

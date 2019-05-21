@@ -22,5 +22,6 @@ public enum SceneObjectType
     Role=1,
     Monster=2,
     NPC=3,
+    DropItem=4,//掉落物
 }
 }

@@ -123,7 +123,7 @@ public class HandleRoleLooks : BaseComponentSystem
     {
         Debug.Log("on OnCreateManager HandleRoleLooks");
         base.OnCreateManager();
-        RoleGroup = GetComponentGroup(typeof(UID), typeof(LooksInfo));
+        RoleGroup = GetComponentGroup(typeof(UID), typeof(LooksInfo), typeof(RoleInfo));
     }
 
     protected override void OnUpdate()
