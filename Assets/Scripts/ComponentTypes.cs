@@ -79,7 +79,7 @@ namespace UnityMMO
             WaitLoad,//等待判断是否离主角够近，够近才进入此状态等待加载prefab
             Loading,//加载中
             Loaded,//已加载
-            DontLoad,//远离主角，别加载了
+            Deleting,//远离主角，别加载了
         }
         public ResState UIResState;
         public Entity UIEntity;

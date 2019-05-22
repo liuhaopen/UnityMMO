@@ -31,11 +31,12 @@ namespace XLua.CSObjectWrap
 			Utils.EndObjectRegister(type, L, translator, null, null,
 			    null, null, null);
 
-		    Utils.BeginClassRegister(type, L, __CreateInstance, 19, 0, 0);
+		    Utils.BeginClassRegister(type, L, __CreateInstance, 20, 0, 0);
 			Utils.RegisterFunc(L, Utils.CLS_IDX, "GetRoleResPath", _m_GetRoleResPath_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetUIResPath", _m_GetUIResPath_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetRoleCareerResPath", _m_GetRoleCareerResPath_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetMonsterResPath", _m_GetMonsterResPath_xlua_st_);
+            Utils.RegisterFunc(L, Utils.CLS_IDX, "GetNPCResPath", _m_GetNPCResPath_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetRoleSkillResPath", _m_GetRoleSkillResPath_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetMonsterSkillResPath", _m_GetMonsterSkillResPath_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetRoleJumpResPath", _m_GetRoleJumpResPath_xlua_st_);
@@ -174,6 +175,31 @@ namespace XLua.CSObjectWrap
                     long _typeID = LuaAPI.lua_toint64(L, 1);
                     
                         string gen_ret = UnityMMO.GameConst.GetMonsterResPath( _typeID );
+                        LuaAPI.lua_pushstring(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_GetNPCResPath_xlua_st_(RealStatePtr L)
+        {
+		    try {
+            
+            
+            
+                
+                {
+                    long _typeID = LuaAPI.lua_toint64(L, 1);
+                    
+                        string gen_ret = UnityMMO.GameConst.GetNPCResPath( _typeID );
                         LuaAPI.lua_pushstring(L, gen_ret);
                     
                     

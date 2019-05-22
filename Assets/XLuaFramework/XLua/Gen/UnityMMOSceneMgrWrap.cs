@@ -21,7 +21,7 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(UnityMMO.SceneMgr);
-			Utils.BeginObjectRegister(type, L, translator, 0, 14, 8, 4);
+			Utils.BeginObjectRegister(type, L, translator, 0, 14, 9, 4);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "CheckMainRolePos", _m_CheckMainRolePos);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Init", _m_Init);
@@ -45,6 +45,7 @@ namespace XLua.CSObjectWrap
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "MainCameraTrans", _g_get_MainCameraTrans);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "FreeLookCameraTrans", _g_get_FreeLookCameraTrans);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "CurSceneInfo", _g_get_CurSceneInfo);
+            Utils.RegisterFunc(L, Utils.GETTER_IDX, "MoveQueryContainer", _g_get_MoveQueryContainer);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "detector", _g_get_detector);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "groundLayer", _g_get_groundLayer);
             
@@ -620,6 +621,20 @@ namespace XLua.CSObjectWrap
 			
                 UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
                 translator.Push(L, gen_to_be_invoked.CurSceneInfo);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_MoveQueryContainer(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
+                translator.Push(L, gen_to_be_invoked.MoveQueryContainer);
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }

@@ -21,8 +21,9 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(UnityMMO.Nameboard);
-			Utils.BeginObjectRegister(type, L, translator, 0, 0, 3, 3);
+			Utils.BeginObjectRegister(type, L, translator, 0, 1, 3, 3);
 			
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "SetBloodVisible", _m_SetBloodVisible);
 			
 			
 			Utils.RegisterFunc(L, Utils.GETTER_IDX, "Name", _g_get_Name);
@@ -76,6 +77,34 @@ namespace XLua.CSObjectWrap
         
         
         
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_SetBloodVisible(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                UnityMMO.Nameboard gen_to_be_invoked = (UnityMMO.Nameboard)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    bool _isShow = LuaAPI.lua_toboolean(L, 2);
+                    
+                    gen_to_be_invoked.SetBloodVisible( _isShow );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
         
         
         
