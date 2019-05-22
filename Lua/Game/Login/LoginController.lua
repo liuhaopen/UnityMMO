@@ -71,14 +71,15 @@ function LoginController:ReqMainRole(  )
         print("Cat:LoginController [start:76] ack_data:", ack_data)
         PrintTable(ack_data)
         print("Cat:LoginController [end]")
-        GlobalEventSystem:Fire(MainUIConst.Event.InitMainUIViews)
         local role_info = ack_data.role_info
         local pos = Vector3.New(role_info.pos_x/GameConst.RealToLogic, role_info.pos_y/GameConst.RealToLogic, role_info.pos_z/GameConst.RealToLogic)
         SceneMgr.Instance:AddMainRole(role_info.scene_uid, role_info.role_id, role_info.name, role_info.career, pos)
         SceneMgr.Instance:LoadScene(role_info.scene_id)
         
-
+        MainRole:GetInstance():SetBaseInfo(role_info)
         GameVariable.IsNeedSynchSceneInfo = true
+        
+        GlobalEventSystem:Fire(MainUIConst.Event.InitMainUIViews)
     end
     NetDispatcher:SendMessage("scene_get_main_role_info", nil, on_ack_main_role)
 end
