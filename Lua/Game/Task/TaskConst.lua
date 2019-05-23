@@ -1,0 +1,5 @@
+local TaskConst = {
+	
+}
+
+return TaskConst

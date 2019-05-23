@@ -6,48 +6,42 @@ require("Game.Common.ItemListCreator")
 require("Game/Common/Message")
 
 --管理器--
-Game = {}
-local this = Game
+local Game = {}
+local Ctrls = {}
 
-local game
-local transform
-local gameObject
-
-Ctrls = {}
+function LuaMain()
+    print("logic start")     
+    UpdateManager:GetInstance():Startup()
+    Game:OnInitOK()
+end
 
 --初始化完成
-function Game.OnInitOK()
+function Game:OnInitOK()
     print('Cat:Game.lua[Game.OnInitOK()]')
-    Game.InitUI()
-    Game.InitControllers()
-
+    Game:InitUI()
+    Game:InitControllers()
 end
 
 function Game.InitUI()
-    local msg_panel = CS.UnityEngine.GameObject.Find("UICanvas/Dynamic/MessagePanel")
+    local msg_panel = GameObject.Find("UICanvas/Dynamic/MessagePanel")
     assert(msg_panel, "cannot fine message panel!")
     Message:Init(msg_panel.transform)
 
     UIMgr:Init({"UICanvas/Normal","UICanvas/MainUI", "UICanvas/Dynamic"}, "Normal")
-    --增加默认的UI组件
-    -- UIMgr:AddBeforeShowFunc(function ( view )
-    --     if view.UIConfig.canvas_name == "Normal" then
-    --     end
-    -- end)
+    
     local pre_load_prefab = {
         "Assets/AssetBundleRes/ui/common/Background.prefab",
     }
     UIWidgetPool:Init("UICanvas/HideUI")
-    print('Cat:Game.lua[40] pre_load_prefab[1]', pre_load_prefab[1])
     UIWidgetPool:RegisterWidgets(pre_load_prefab, call_back)
 end
 
-function Game.InitControllers()
+function Game:InitControllers()
     local ctrl_paths = {
-        -- "Game/Error/ErrorController", 
         "Game/Test/TestController",
         "Game/Login/LoginController", 
         "Game/MainUI/MainUIController", 
+        "Game/Task/TaskController", 
     }
     for i,v in ipairs(ctrl_paths) do
         local ctrl = require(v)
@@ -63,5 +57,5 @@ function Game.InitControllers()
 end
 
 --销毁--
-function Game.OnDestroy()
+function Game:OnDestroy()
 end

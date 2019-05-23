@@ -6,7 +6,6 @@ LoginController = {}
 
 function LoginController:Init(  )
 	print('Cat:LoginController.lua[Init]')
-
 	self:InitEvents()
 
     self.loginView = require("Game/Login/LoginView").New()
@@ -192,9 +191,7 @@ end
 
 function LoginController:OnReceiveMsg( bytes )
     local code = tostring(bytes)
-    -- print('Cat:LoginController.lua[handshake] code', code)
     local result = string.sub(code, 1, 3)
-    -- print('Cat:LoginController.lua[handshake] result code', result, tonumber(result))
     if tonumber(result) == 200 then
         --接收完一次就把网络控制权交给NetDispatcher了,开始使用sproto协议 
         NetDispatcher:Start()
@@ -205,7 +202,6 @@ function LoginController:OnReceiveMsg( bytes )
         Time:StartSynchServerTime()
     else
         Message:show("与游戏服务器握手失败:"..result)
-        --Cat_Todo : 处理握手失败
     end
 end
 
