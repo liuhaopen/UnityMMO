@@ -77,8 +77,8 @@ function LoginController:ReqMainRole(  )
         
         MainRole:GetInstance():SetBaseInfo(role_info)
         GameVariable.IsNeedSynchSceneInfo = true
-        
-        GlobalEventSystem:Fire(MainUIConst.Event.InitMainUIViews)
+
+        GlobalEventSystem:Fire(GlobalEvents.GameStart)
     end
     NetDispatcher:SendMessage("scene_get_main_role_info", nil, on_ack_main_role)
 end

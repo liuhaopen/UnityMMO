@@ -42,7 +42,7 @@ function LoginView:AddEvents(  )
 		elseif click_obj == self.single_mode_obj then
             UIMgr:CloseAllView()
 			GameVariable.IsSingleMode = true
-        	GlobalEventSystem:Fire(MainUIConst.Event.InitMainUIViews)
+        	GlobalEventSystem:Fire(GlobalEvents.GameStart)
         	CS.XLuaManager.Instance:OnLoginOk()
 		end
 	end

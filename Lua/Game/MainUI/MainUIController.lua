@@ -4,7 +4,7 @@ require("Game/MainUI/MainUIModel")
 MainUIController = {}
 
 function MainUIController:Init(  )
-    self.login_succeed_handler = GlobalEventSystem:Bind(MainUIConst.Event.InitMainUIViews, MainUIController.InitMainUIViews, self)
+    GlobalEventSystem:Bind(GlobalEvents.GameStart, MainUIController.InitMainUIViews, self)
     
 end		
 
