@@ -18,7 +18,7 @@ function MainUITaskView:OnLoad(  )
 
 	}
 	UI.GetChildren(self, self.transform, names)
-	
+
 	self.model = TaskModel:GetInstance()
 	self:AddEvents()
 	self:UpdateView()
@@ -42,9 +42,13 @@ end
 
 function MainUITaskView:UpdateView(  )
 	print('Cat:MainUITaskView.lua[34] self.is_loaded', self.is_loaded)
-	if not self.is_loaded then return end
-
 	local taskList = self.model:GetTaskList()
+	if not taskList or not self.is_loaded then return end
+	print("Cat:MainUITaskView [start:47] taskList:", taskList)
+	PrintTable(taskList)
+	print("Cat:MainUITaskView [end]")
+
+	
 end
 
 return MainUITaskView

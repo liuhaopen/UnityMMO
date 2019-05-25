@@ -1,6 +1,6 @@
 local EventDispatcher = BaseClass()
 local EventSystem = require "Common.EventSystem"
-function EventDispatcher:__init()
+function EventDispatcher:Constructor()
 	self.eventSys = EventSystem.New()
 end
 
@@ -8,21 +8,21 @@ function EventDispatcher:Bind(type_str, listener_func, owner)
 	if owner then
 		listener_func = Functor(listener_func, owner)
 	end
-	return EventSystem.Bind(self.eventSys, type_str, listener_func)
+	return self.eventSys:Bind(type_str, listener_func)
 end
 function EventDispatcher:UnBind(obj)
-	EventSystem.UnBind(self.eventSys, obj)
+	self.eventSys:UnBind(obj)
 end
 function EventDispatcher:UnBindAll()
-	EventSystem.UnBindAll(self.eventSys)
+	self.eventSys:UnBindAll(self.eventSys)
 end
 
 function EventDispatcher:Fire(type_str, ...)
-	EventSystem.Fire(self.eventSys, type_str, ...)
+	self.eventSys:Fire(type_str, ...)
 end
 
 function EventDispatcher:DelayFire(type_str, ...)
-	EventSystem.DelayFire(self.eventSys, type_str, ...)
+	self.eventSys:DelayFire(type_str, ...)
 end
 
 return EventDispatcher

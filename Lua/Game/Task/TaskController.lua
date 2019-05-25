@@ -1,4 +1,4 @@
-require("Game/Task/TaskConst")
+local TaskConst = require("Game/Task/TaskConst")
 require("Game/Task/TaskModel")
 
 local TaskController = {}

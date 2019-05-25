@@ -19,8 +19,6 @@ return [[
 
 #获取任务列表
 Task_GetInfoList 200 {
-	request {
-	}
 	response {
 		taskList 0 : *taskInfo
 	}

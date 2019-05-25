@@ -73,7 +73,7 @@ function NetDispatcher:InitSpb()
         local proto_c2s_tb = {}
         for k,v in pairs(fileNames or {}) do
             local proto_str = require("Proto."..v)
-            -- print_net('Cat:NetDispatcher.lua[35] c2s : ', proto_str)
+            print_net('Cat:NetDispatcher.lua[35] c2s : ', proto_str)
             if proto_str then
                 table.insert(proto_c2s_tb, proto_str)
             end
