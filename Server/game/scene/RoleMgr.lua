@@ -44,7 +44,7 @@ function RoleMgr:GetBaseInfoByRoleID( roleID )
 	return nil
 end
 
-function RoleMgr:GetLooksInfoByRoleID(  )
+function RoleMgr:GetLooksInfoByRoleID( roleID )
 	local gameDBServer = skynet.localname(".GameDBServer")
 	local is_ok, looks_info = skynet.call(gameDBServer, "lua", "select_by_key", "RoleLooksInfo", "role_id", roleID)
 	if is_ok and looks_info and looks_info[1] then
@@ -153,15 +153,11 @@ function RoleMgr:GetMainRoleInfo( roleID )
 end
 
 function RoleMgr:GetRoleLooksInfo( uid )
-	-- print('Cat:scene.lua[scene_get_role_look_info] user_info, req_data', user_info, roldID)
-	-- local role_info = self.sceneMgr:GetSceneObjByUID(uid)
-	-- print('Cat:scene.lua[211] role_info', role_info, uid, self.sceneMgr.uid_obj_map[uid])
 	local looks_info
 	local entity = self.sceneMgr:GetEntity(uid)
 	if entity then
 		local hpData = self.sceneMgr.entityMgr:GetComponentData(entity, "UMO.HP")
 		local role_id = self.sceneMgr.entityMgr:GetComponentData(entity, "UMO.TypeID")
-		-- local role_info = self.sceneMgr.entityMgr:GetComponentData(entity, "UMO.RoleInfo")
 		local role_info = self:GetRole(role_id.value)
 		if not role_info then
 			looks_info = {result=1}
@@ -173,10 +169,12 @@ function RoleMgr:GetRoleLooksInfo( uid )
 				name = role_info.name,
 				hp = hpData.cur,
 				max_hp = hpData.max,
+				-- body = role_info.looks_info.body or 0,
+				-- hair = role_info.looks_info.hair or 0,
 				body = 0,
 				hair = 0,
-				weapon = 0,
-				wing = 0,
+				weapon = role_info.looks_info.weapon or 0,
+				wing = role_info.looks_info.wing or 0,
 				horse = 0,
 			}
 		}

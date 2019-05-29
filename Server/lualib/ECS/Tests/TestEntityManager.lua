@@ -17,11 +17,13 @@ end
 function TestEntityManager:TestEntityGSetComponent(  )
     local test_compponent_name = "DataForTestEntityGSetComponent"
     local test_compponent_name2 = "DataForTestEntityGSetComponent2"
+    local test_compponent_name3 = "DataForTestEntityGSetComponent3"
 	local EcsTestData = {x=0, y=false, z=0}
     ECS.TypeManager.RegisterType(test_compponent_name, EcsTestData)
-	ECS.TypeManager.RegisterType(test_compponent_name2, {value=0})
+    ECS.TypeManager.RegisterType(test_compponent_name2, {value=0})
+	ECS.TypeManager.RegisterType(test_compponent_name3, 123)
 
-	local archetype = self.m_Manager:CreateArchetype({test_compponent_name, test_compponent_name2})
+	local archetype = self.m_Manager:CreateArchetype({test_compponent_name, test_compponent_name3, test_compponent_name2})
     local entity = self.m_Manager:CreateEntityByArcheType(archetype)
     lu.assertNotNil(entity)
     local comp_data = self.m_Manager:GetComponentData(entity, test_compponent_name)
@@ -31,15 +33,20 @@ function TestEntityManager:TestEntityGSetComponent(  )
 
     local comp_data2 = self.m_Manager:GetComponentData(entity, test_compponent_name2)
     lu.assertEquals(comp_data2.value, 0)
+    local comp_data3 = self.m_Manager:GetComponentData(entity, test_compponent_name3)
+    lu.assertEquals(comp_data3, 123)
 
     self.m_Manager:SetComponentData(entity, test_compponent_name, {x=1.123456, y=true, z=3})
     self.m_Manager:SetComponentData(entity, test_compponent_name2, {value=123456789})
+    self.m_Manager:SetComponentData(entity, test_compponent_name3, "456")--组件想换类型存储也行，不过不建议这么用
     comp_data = self.m_Manager:GetComponentData(entity, test_compponent_name)
     lu.assertEquals(comp_data.x, 1.123456)
     lu.assertEquals(comp_data.y, true)
     lu.assertEquals(comp_data.z, 3)
     comp_data2 = self.m_Manager:GetComponentData(entity, test_compponent_name2)
     lu.assertEquals(comp_data2.value, 123456789)
+    comp_data3 = self.m_Manager:GetComponentData(entity, test_compponent_name3)
+    lu.assertEquals(comp_data3, "456")
 
     local entity2 = self.m_Manager:CreateEntityByArcheType(archetype)
     lu.assertNotNil(entity2)
