@@ -222,10 +222,9 @@ namespace XLua.CSObjectWrap
             
                 
                 {
-                    int _career = LuaAPI.xlua_tointeger(L, 1);
-                    int _skillID = LuaAPI.xlua_tointeger(L, 2);
+                    int _skillID = LuaAPI.xlua_tointeger(L, 1);
                     
-                        string gen_ret = UnityMMO.GameConst.GetRoleSkillResPath( _career, _skillID );
+                        string gen_ret = UnityMMO.GameConst.GetRoleSkillResPath( _skillID );
                         LuaAPI.lua_pushstring(L, gen_ret);
                     
                     

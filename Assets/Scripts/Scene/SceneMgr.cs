@@ -147,12 +147,16 @@ public class SceneMgr : MonoBehaviour
                 detector = mainRoleGOE.GetComponent<SceneDetectorBase>();
             }
             action(1);
-            string navmeshPath = "navmesh_"+scene_id;
-            XLuaFramework.ResourceManager.GetInstance().LoadNavMesh(navmeshPath);
-            AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(navmeshPath, UnityEngine.SceneManagement.LoadSceneMode.Additive);
-            asy.completed += delegate(AsyncOperation asyOp){
-                Debug.Log("load navmesh:"+asyOp.isDone.ToString());
-            };
+            //CAT_TODO:Debug模式下加载navmesh,现在暂时没用到navmesh
+            if (!XLuaFramework.AppConfig.DebugMode)
+            {
+                string navmeshPath = "navmesh_"+scene_id;
+                XLuaFramework.ResourceManager.GetInstance().LoadNavMesh(navmeshPath);
+                AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(navmeshPath, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+                asy.completed += delegate(AsyncOperation asyOp){
+                    Debug.Log("load navmesh:"+asyOp.isDone.ToString());
+                };
+            }
         });
     }
 
