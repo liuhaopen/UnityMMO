@@ -1,29 +1,24 @@
-CREATE DATABASE  IF NOT EXISTS `UnityMMOGame` /*!40100 DEFAULT CHARACTER SET latin1 */;
-USE `UnityMMOGame`;
--- MySQL dump 10.13  Distrib 5.6.17, for Win32 (x86)
---
--- Host: 192.168.5.142    Database: UnityMMOGame
--- ------------------------------------------------------
--- Server version	5.6.40
+/*
+Navicat MySQL Data Transfer
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+Source Server         : UnityMMO
+Source Server Version : 50640
+Source Host           : 192.168.5.115:3306
+Source Database       : UnityMMOGame
 
---
--- Table structure for table `Account`
---
+Target Server Type    : MYSQL
+Target Server Version : 50640
+File Encoding         : 65001
 
+Date: 2019-06-02 12:46:41
+*/
+
+SET FOREIGN_KEY_CHECKS=0;
+
+-- ----------------------------
+-- Table structure for Account
+-- ----------------------------
 DROP TABLE IF EXISTS `Account`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Account` (
   `account_id` bigint(20) NOT NULL,
   `role_id_1` bigint(20) DEFAULT NULL,
@@ -31,31 +26,65 @@ CREATE TABLE `Account` (
   `role_id_3` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`account_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `RoleBaseInfo`
---
+-- ----------------------------
+-- Records of Account
+-- ----------------------------
+INSERT INTO `Account` VALUES ('123', '1100585369600', '1100585369601', null);
+INSERT INTO `Account` VALUES ('213', '1100585369602', null, null);
 
+-- ----------------------------
+-- Table structure for RoleBaseInfo
+-- ----------------------------
 DROP TABLE IF EXISTS `RoleBaseInfo`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `RoleBaseInfo` (
   `role_id` bigint(20) NOT NULL,
   `name` varchar(18) NOT NULL,
   `career` tinyint(4) NOT NULL,
   `level` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `scene_id` int(11) DEFAULT NULL,
+  `pos_x` int(11) DEFAULT NULL,
+  `pos_y` int(11) DEFAULT NULL,
+  `pos_z` int(11) DEFAULT NULL,
   PRIMARY KEY (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+-- ----------------------------
+-- Records of RoleBaseInfo
+-- ----------------------------
+INSERT INTO `RoleBaseInfo` VALUES ('1100585369600', '开朗的赤穗', '2', '0', '1001', '69158', '16377', '114931');
+INSERT INTO `RoleBaseInfo` VALUES ('1100585369601', '可爱哒圭介', '1', '0', '1001', '76711', '16433', '114771');
+INSERT INTO `RoleBaseInfo` VALUES ('1100585369602', '可爱哒恭平', '1', '0', '1001', '84934', '16420', '128311');
 
--- Dump completed on 2018-07-30 21:14:03
+-- ----------------------------
+-- Table structure for RoleLooksInfo
+-- ----------------------------
+DROP TABLE IF EXISTS `RoleLooksInfo`;
+CREATE TABLE `RoleLooksInfo` (
+  `role_id` bigint(64) NOT NULL,
+  `body` int(10) DEFAULT NULL,
+  `hair` int(10) DEFAULT NULL,
+  `weapon` int(10) DEFAULT NULL,
+  `wing` int(10) DEFAULT NULL,
+  PRIMARY KEY (`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+-- Records of RoleLooksInfo
+-- ----------------------------
+INSERT INTO `RoleLooksInfo` VALUES ('1100585369600', '1', '1', null, null);
+INSERT INTO `RoleLooksInfo` VALUES ('1100585369601', '0', '0', null, null);
+INSERT INTO `RoleLooksInfo` VALUES ('1100585369602', '1', '1', null, null);
+
+-- ----------------------------
+-- Table structure for Task
+-- ----------------------------
+DROP TABLE IF EXISTS `Task`;
+CREATE TABLE `Task` (
+  `role_id` bigint(50) NOT NULL,
+  PRIMARY KEY (`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+-- Records of Task
+-- ----------------------------

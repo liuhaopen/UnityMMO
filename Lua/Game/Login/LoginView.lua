@@ -56,7 +56,8 @@ function LoginView:UpdateView(  )
 	PrintTable(last_login_info)
 	print("Cat:LoginView [end]")
 	if last_login_info then
-		self.account_txt.text = last_login_info.account
+		self.account_txt.text = last_login_info.account or ""
+		self.server_ip_txt.text = last_login_info.game_ip or "192.168.5.115"
 	end
 end
         

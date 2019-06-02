@@ -19,9 +19,7 @@ CookieTimeType = {
 
 CookieKey = {
 	LastLoginInfo					= "CookieKey.LastLoginInfo",			--上次登录的信息
-	LastSelectRoleID					= "CookieKey.LastSelectRoleID",			--上次登录的角色
-	-- LastLoginAccount				= "CookieKey.LastLoginAccount",			--上次登录的用户名
-	-- LastLoginPassword				= "CookieKey.LastLoginPassword",		--上次登录的密码
+	LastSelectRoleID				= "CookieKey.LastSelectRoleID",			--上次登录的角色
 }
 
 function CookieWrapper:Init()
