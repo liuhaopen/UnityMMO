@@ -16,4 +16,3 @@ do
 done
 
 $ROOT/skynet/skynet $ROOT/config
-
