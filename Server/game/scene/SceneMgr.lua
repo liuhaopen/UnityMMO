@@ -4,7 +4,7 @@ local ECS = require "ECS"
 local BP = require "Blueprint"
 local SceneConst = require "game.scene.SceneConst"
 local SceneHelper = require "game.scene.SceneHelper"
-RequireAllLuaFileInFolder("./game/scene/System")
+RequireAllLuaFileInFolder("./game/scene/system")
 
 
 local SceneMgr = BaseClass()
@@ -177,7 +177,7 @@ function SceneMgr:Init( scene_id )
 	self.aoi:init()
 	self.ecs_world = ECS.InitWorld("scene_world")
 	self.entityMgr = ECS.World.Active:GetOrCreateManager(ECS.EntityManager.Name)
-	self.scene_cfg = require("Config.scene.config_scene_"..scene_id)
+	self.scene_cfg = require("config.scene.config_scene_"..scene_id)
 	self.cur_scene_id = scene_id
 	self.roleMgr:Init(self)
 	self.monsterMgr:Init(self, self.scene_cfg.monster_list)
