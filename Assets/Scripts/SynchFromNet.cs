@@ -79,6 +79,12 @@ public class SynchFromNet {
         if (!is_can_cast)
             return;
 
+        //更新朝向
+        Transform trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(scene_entity);
+        // trans.rotation = Quaternion.Euler(trans.eulerAngles.x, fight_event.direction/100, trans.eulerAngles.z);
+        trans.LookAt(new Vector3(fight_event.target_pos_x/GameConst.RealToLogic, trans.localPosition.y, fight_event.target_pos_z/GameConst.RealToLogic));
+        
+        //播放攻击动作
         string assetPath = SkillManager.GetInstance().GetSkillResPath((int)fight_event.skill_id);
         Debug.Log("OnAckFightEvents assetPath : "+assetPath);
         var param = new Dictionary<string, object>();

@@ -20,8 +20,8 @@ public class ReloadLayoutOnExitGame : MonoBehaviour
         isRunningGame = true;
         //Debug.Log("ReloadLayoutOnExitGame Start()");
     }
-
-    //结束游戏运行后,如果发现运行期间有保存过的话就要重新加载界面
+    
+    //after exit game from unity editor, reload layouts which has been saved during the run
     private void OnApplicationQuit()
     {
         //Debug.Log("ReloadLayoutOnExitGame OnApplicationQuit()"+ hadSaveOnRunTime.ToString());

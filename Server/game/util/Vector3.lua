@@ -457,6 +457,7 @@ end
 Vector3.__add = function(va, vb)
 	return _new(va.x + vb.x, va.y + vb.y, va.z + vb.z)
 end
+Vector3.Add = Vector3.__add
 
 Vector3.__sub = function(va, vb)
 	return _new(va.x - vb.x, va.y - vb.y, va.z - vb.z)

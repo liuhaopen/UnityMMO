@@ -40,9 +40,14 @@ namespace UnityMMO
             return "Assets/AssetBundleRes/monster/monster_"+typeID;
         }
 
-        public static string GetRoleSkillResPath(int career, int skillID)
+        public static string GetNPCResPath(long typeID)
         {
-            return "Assets/AssetBundleRes/role/career_"+career+"/timeline/skill_"+skillID+".playable";
+            return "Assets/AssetBundleRes/npc/npc_"+typeID;
+        }
+
+        public static string GetRoleSkillResPath(int skillID)
+        {
+            return "Assets/AssetBundleRes/role/timeline/skill_"+skillID+".playable";
         }
 
         public static string GetMonsterSkillResPath(int skillID)
@@ -52,7 +57,7 @@ namespace UnityMMO
 
         public static string GetRoleJumpResPath(int career, int jumpID)
         {
-            return "Assets/AssetBundleRes/role/career_"+career+"/timeline/jump_"+jumpID+".playable";
+            return "Assets/AssetBundleRes/role/timeline/jump_career"+career+"_"+jumpID+".playable";
         }
 
         public static string GetBloodResPath(Nameboard.ColorStyle style)

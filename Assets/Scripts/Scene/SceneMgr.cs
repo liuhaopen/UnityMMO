@@ -37,13 +37,14 @@ public class SceneMgr : MonoBehaviour
     bool isBaseWorldLoadOk = false;
     public LayerMask groundLayer = 1 << 0;
     float lastCheckMainRolePosTime = 0;
-
+    Transform moveQueryContainer = null;
     public EntityManager EntityManager { get => m_GameWorld.GetEntityManager();}
     public bool IsLoadingScene { get => isLoadingScene; set => isLoadingScene = value; }
     public CinemachineFreeLook FreeLookCamera { get => freeLookCamera; set => freeLookCamera = value; }
     public Transform MainCameraTrans { get => mainCameraTrans; }
     public Transform FreeLookCameraTrans { get => freeLookCameraTrans; }
     public SceneInfo CurSceneInfo { get => curSceneInfo; }
+    public Transform MoveQueryContainer { get =>moveQueryContainer; }
 
     Cinemachine.CinemachineFreeLook freeLookCamera;
     Transform freeLookCameraTrans;
@@ -61,6 +62,7 @@ public class SceneMgr : MonoBehaviour
             freeLookCameraTrans = camera.transform;
             FreeLookCamera = camera.GetComponent<Cinemachine.CinemachineFreeLook>();
         }
+        moveQueryContainer = GameObject.Find("SceneObjContainer/MoveQueryContainer").transform;
 	}
 
     void Update()
@@ -95,6 +97,7 @@ public class SceneMgr : MonoBehaviour
         ResMgr.GetInstance().Init();
         RoleMgr.GetInstance().Init(world);
         MonsterMgr.GetInstance().Init(world);
+        NPCMgr.GetInstance().Init(world);
 	}
 
 	public void OnDestroy()
@@ -144,12 +147,16 @@ public class SceneMgr : MonoBehaviour
                 detector = mainRoleGOE.GetComponent<SceneDetectorBase>();
             }
             action(1);
-            string navmeshPath = "navmesh_"+scene_id;
-            XLuaFramework.ResourceManager.GetInstance().LoadNavMesh(navmeshPath);
-            AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(navmeshPath, UnityEngine.SceneManagement.LoadSceneMode.Additive);
-            asy.completed += delegate(AsyncOperation asyOp){
-                Debug.Log("load navmesh:"+asyOp.isDone.ToString());
-            };
+            //CAT_TODO:Debug模式下加载navmesh,现在暂时没用到navmesh
+            if (!XLuaFramework.AppConfig.DebugMode)
+            {
+                string navmeshPath = "navmesh_"+scene_id;
+                XLuaFramework.ResourceManager.GetInstance().LoadNavMesh(navmeshPath);
+                AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(navmeshPath, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+                asy.completed += delegate(AsyncOperation asyOp){
+                    Debug.Log("load navmesh:"+asyOp.isDone.ToString());
+                };
+            }
         });
     }
 
@@ -297,6 +304,7 @@ public class SceneMgr : MonoBehaviour
 
     public Entity AddSceneObject(long uid, string content)
     {
+        Debug.Log("content : "+content);
         string[] info_strs = content.Split(',');
         SceneObjectType type = (SceneObjectType)Enum.Parse(typeof(SceneObjectType), info_strs[0]);
         long typeID = Int64.Parse(info_strs[1]);
@@ -320,8 +328,12 @@ public class SceneMgr : MonoBehaviour
             entityDic.Add(uid, monster);
             return monster;
         }
-        // else if (type == SceneObjectType.NPC)
-            // return AddNPC(uid);
+        else if (type == SceneObjectType.NPC)
+        {
+            Entity npc = NPCMgr.GetInstance().AddNPC(uid, typeID, pos, targetPos);
+            entityDic.Add(uid, npc);
+            return npc;
+        }
         return Entity.Null;
     }
 
@@ -336,6 +348,9 @@ public class SceneMgr : MonoBehaviour
                 break;
             case SceneObjectType.Monster:
                 name = MonsterMgr.GetInstance().GetName(GetSceneObject(uid));
+                break;
+            case SceneObjectType.NPC:
+                name = NPCMgr.GetInstance().GetName(GetSceneObject(uid));
                 break;
             default:
                 name = "";
@@ -365,7 +380,9 @@ public class SceneMgr : MonoBehaviour
         Entity entity = GetSceneObject(uid);
         if (entity!=Entity.Null)
         {
-            var moveQuery = EntityManager.GetComponentObject<MoveQuery>(entity);
+            MoveQuery moveQuery=null;
+            if (EntityManager.HasComponent<MoveQuery>(entity))
+                moveQuery = EntityManager.GetComponentObject<MoveQuery>(entity);
             EntityManager.DestroyEntity(entity);
             entityDic.Remove(uid);
             if (moveQuery!=null)

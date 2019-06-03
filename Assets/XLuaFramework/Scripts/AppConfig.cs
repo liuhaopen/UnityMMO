@@ -158,11 +158,11 @@ namespace XLuaFramework {
                 if (webUrl != string.Empty)
                     return webUrl;
                 if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WebGLPlayer)
-                    webUrl = "http://192.168.5.123/WindowsStreamingAssets/";
+                    webUrl = "http://192.168.5.132/WindowsStreamingAssets/";
                 else if (Application.platform == RuntimePlatform.Android)
-                    webUrl = "http://192.168.5.123/AndroidStreamingAssets/";
+                    webUrl = "http://192.168.5.132/AndroidStreamingAssets/";
                 else if (Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.OSXEditor || Application.platform == RuntimePlatform.OSXPlayer)
-                    webUrl = "http://192.168.5.123/IOSStreamingAssets/";
+                    webUrl = "http://192.168.5.132/IOSStreamingAssets/";
                 else
                     Debug.Log("Unspport System!");
                 return webUrl;

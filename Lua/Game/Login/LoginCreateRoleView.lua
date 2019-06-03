@@ -103,16 +103,17 @@ function LoginCreateRoleView:OnClickRandomName(  )
 	else
 		nick_name = nick_name .. self.forename_woman[math.ceil(#self.forename_woman*math.random())]
 	end
+	print('Cat:LoginCreateRoleView.lua[106] nick_name', nick_name)
 	self.role_name_input.text = nick_name
 end
 
 function LoginCreateRoleView:AddEvents(  )
-    print('Cat:LoginCreateRoleView.lua[AddEvents]')
 	local on_click = function ( click_btn )
 		print('Cat:LoginCreateRoleView.lua[29] click_btn', click_btn)
 		if click_btn == self.close_obj then
             UIMgr:Close(self)--返回上个界面
-        elseif self.random_obj == click_obj then
+        elseif click_btn == self.random_obj then
+        	print('Cat:LoginCreateRoleView.lua[117]')
 			self:OnClickRandomName()
         elseif click_btn == self.create_role_obj then
 			--请求创建角色
@@ -140,7 +141,7 @@ function LoginCreateRoleView:AddEvents(  )
 end
 
 function LoginCreateRoleView:OnClose(  )
-    require("Game/Login/LoginSceneBgView"):SetActive(false)
+    -- require("Game/Login/LoginSceneBgView"):SetActive(false)
 end
 
 return LoginCreateRoleView

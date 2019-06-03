@@ -39,19 +39,19 @@ npc_list = {{
 		pos_x = 78790,
 		pos_y = 16619,
 		pos_z = 107390,
-		npc_id = 1,
+		npc_id = 3000,
 },
 {
 		pos_x = 74990,
 		pos_y = 16300,
 		pos_z = 118240,
-		npc_id = 2,
+		npc_id = 3001,
 },
 {
 		pos_x = 84500,
 		pos_y = 16900,
 		pos_z = 122100,
-		npc_id = 3,
+		npc_id = 3002,
 },
 },
 monster_list = {{

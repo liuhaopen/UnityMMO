@@ -16,10 +16,6 @@ public class SceneInfoExporterForServer : Editor
     [MenuItem("SceneEditor/Export Scene Info For Server")]
     private static void Export()
     {
-        // {
-        //     Text();
-        //     return;
-        // }
         SceneInfoForServer scene_info = Selection.activeTransform.GetComponent<SceneInfoForServer>();
         if (scene_info == null)
         {
@@ -73,7 +69,7 @@ public class SceneInfoExporterForServer : Editor
 
         export_info.monster_list = new List<MonsterInfo>();
         MonsterInfo monster = new MonsterInfo();
-        monster.monster_id = 1;
+        monster.monster_type_id = 1;
         monster.pos_x = 1.1f;
         monster.pos_y = 2.2f;
         monster.pos_z = 3.123456f;

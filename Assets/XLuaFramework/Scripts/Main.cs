@@ -7,15 +7,13 @@ namespace XLuaFramework {
     //负责整个游戏流程调度,从启动后热更新,渠道sdk接入,各系统的初始化,直到登录才完成使命
     public class Main : MonoBehaviour {
         public enum State{
-            None,
-            CheckExtractResource,
-            UpdateResourceFromNet,
-            InitAssetBundle,
-            InitSDK,
-            InitBaseCode,
-            StartLogin,
-            StartGame,
-            Playing,
+            CheckExtractResource,//初次运行游戏时需要解压资源文件
+            UpdateResourceFromNet,//热更阶段：从服务器上拿到最新的资源
+            InitAssetBundle,//初始化AssetBundle
+            StartLogin,//登录流程
+            StartGame,//正式进入场景游戏
+            Playing,//完成启动流程了，接下来把控制权交给玩法逻辑
+            None,//无
         }
         public enum SubState{
             Enter,Update

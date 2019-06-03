@@ -21,7 +21,6 @@ public class ApplyDamageBehaviour : PlayableBehaviour
         Owner = owner;
         EntityMgr = entityMgr;
         Defenders = param as List<scene_fight_defender_info>;
-        Debug.Log("Defenders : "+(Defenders!=null).ToString());
     }
     
     // Called when the owning graph starts playing

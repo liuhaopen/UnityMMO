@@ -9,7 +9,7 @@ namespace U3DExtends
         public static bool IsShowSceneMenu = true;
 
         //选中图片节点再选图片时，即帮节点赋上该图
-        public static bool IsEnableFastSelectImage = true;
+        public static bool IsEnableFastSelectImage = false;
         //选中图片节点再选图片时，帮节点赋上该图时自动设为原图大小
         public static bool IsAutoSizeOnFastSelectImg = false;
 
@@ -37,18 +37,6 @@ namespace U3DExtends
         { 
             //复制选中节点全名的字符串到系统剪切板
             public const string CopyNodesName = "%#c";
-
-            //调节显示层次的快捷键
-            public const string MoveNodeUp = "%UP";
-            public const string MoveNodeTop = "%#UP";
-            public const string MoveNodeDown = "%DOWN";
-            public const string MoveNodeBottom = "%#DOWN";
-
-            //整洁地排序所有界面
-            public const string SortAllCanvas = "";
-            //删掉UITestNodeName节点下的所有界面
-            public const string ClearAllCanvas = "";
-
         }
 
         //所有编辑界面的Canvas都放到此节点上，可定制节点名

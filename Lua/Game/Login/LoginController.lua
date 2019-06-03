@@ -6,11 +6,10 @@ LoginController = {}
 
 function LoginController:Init(  )
 	print('Cat:LoginController.lua[Init]')
-
 	self:InitEvents()
 
-    local loginView = require("Game/Login/LoginView").New()
-    UIMgr:Show(loginView)
+    self.loginView = require("Game/Login/LoginView").New()
+    UIMgr:Show(self.loginView)
 end
 
 function LoginController:InitEvents(  )
@@ -71,14 +70,15 @@ function LoginController:ReqMainRole(  )
         print("Cat:LoginController [start:76] ack_data:", ack_data)
         PrintTable(ack_data)
         print("Cat:LoginController [end]")
-        GlobalEventSystem:Fire(MainUIConst.Event.InitMainUIViews)
         local role_info = ack_data.role_info
         local pos = Vector3.New(role_info.pos_x/GameConst.RealToLogic, role_info.pos_y/GameConst.RealToLogic, role_info.pos_z/GameConst.RealToLogic)
         SceneMgr.Instance:AddMainRole(role_info.scene_uid, role_info.role_id, role_info.name, role_info.career, pos)
         SceneMgr.Instance:LoadScene(role_info.scene_id)
         
-
+        MainRole:GetInstance():SetBaseInfo(role_info)
         GameVariable.IsNeedSynchSceneInfo = true
+
+        GlobalEventSystem:Fire(GlobalEvents.GameStart)
     end
     NetDispatcher:SendMessage("scene_get_main_role_info", nil, on_ack_main_role)
 end
@@ -99,11 +99,10 @@ function LoginController:StartLogin(login_info)
     10:可以正常向游戏服务器收发协议了
 	--]]
     self.login_info = login_info
-
     --向登录服务器请求连接,一连接上就等待收到其发过来的随机值了(challenge)
     self.login_state = LoginConst.Status.WaitForLoginServerChanllenge
 
-	NetMgr:SendConnect("192.168.5.142", 8001, CS.XLuaFramework.NetPackageType.BaseLine)
+	NetMgr:SendConnect(self.login_info.account_ip, self.login_info.account_port, CS.XLuaFramework.NetPackageType.BaseLine)
 end
 
 function LoginController:OnReceiveLine(bytes) 
@@ -147,10 +146,7 @@ function LoginController:OnReceiveLine(bytes)
             print('Cat:LoginController.lua login succeed!')
             self.subid = crypt.base64decode(string.sub(code, 5))
             print('Cat:LoginController.lua[login ok] subid', self.subid)
-
-            --正式向游戏服务器请求连接,注意此时的协议已经不是基于行解析的了,换成了根据协议头两字节作为内容大小去解析的,所以接收数据的事件换成了NetDispatcher.Event.OnReceiveMsg(具体处理函数是本类)
-            NetMgr:SendConnect("192.168.5.142", 8888, CS.XLuaFramework.NetPackageType.BaseHead)
-            self.login_state = LoginConst.Status.WaitForGameServerConnect
+            self:StartConnectGameServer()
         else
             self.error_map = self.error_map or {
                 [400] = "握手失败",
@@ -177,13 +173,25 @@ function LoginController:Connect()
         --接下来的处理就在OnReceiveMsg函数里
         self.login_state = LoginConst.Status.WaitForGameServerHandshake
 	end
+    if self.loginView then
+        UIMgr:Close(self.loginView)
+        self.loginView = nil
+    end
+    if self.reconnectView then
+        UIMgr:Close(self.reconnectView)
+        self.reconnectView = nil
+    end
+end
+
+function LoginController:StartConnectGameServer(  )
+    --正式向游戏服务器请求连接,注意此时的协议已经不是基于行解析的了,换成了根据协议头两字节作为内容大小去解析的,所以接收数据的事件换成了NetDispatcher.Event.OnReceiveMsg(具体处理函数是本类)
+    NetMgr:SendConnect(self.login_info.game_ip, self.login_info.game_port, CS.XLuaFramework.NetPackageType.BaseHead)
+    self.login_state = LoginConst.Status.WaitForGameServerConnect
 end
 
 function LoginController:OnReceiveMsg( bytes )
     local code = tostring(bytes)
-    -- print('Cat:LoginController.lua[handshake] code', code)
     local result = string.sub(code, 1, 3)
-    -- print('Cat:LoginController.lua[handshake] result code', result, tonumber(result))
     if tonumber(result) == 200 then
         --接收完一次就把网络控制权交给NetDispatcher了,开始使用sproto协议 
         NetDispatcher:Start()
@@ -194,14 +202,41 @@ function LoginController:OnReceiveMsg( bytes )
         Time:StartSynchServerTime()
     else
         Message:show("与游戏服务器握手失败:"..result)
-        --Cat_Todo : 处理握手失败
     end
 end
 
 
 
 function LoginController:Disconnect()
-	print('Cat:LoginController.lua[Disconnect]')
+	print('Cat:LoginController.lua[Disconnect]', self.login_state)
+    if not self.login_info.had_disconnect_with_account_server and self.login_state == LoginConst.Status.WaitForGameServerConnect then
+        --每次登录流程中，进入游戏服务器时都会从帐号服务器断开，所以首次断开时可忽略，不需要弹断网的窗口
+        self.login_info.had_disconnect_with_account_server = true
+        return
+    end
+
+    if self.reconnectView then return end
+    local showData = {
+        content = "网络已断开连接",
+        ok_btn_text = "重连",
+        on_ok = function()
+            -- Message:Show("重连")
+            --Cat_Todo : 判断帐号服务器是否也断了，是的话也是要先连帐号服务器的
+            self:StartConnectGameServer()
+            -- self:StartLogin(self.login_info)
+            -- UIMgr:Close(self.reconnectView)
+        end,
+        cancel_btn_text = "重新登录",
+        on_cancel = function()
+            --Cat_Todo : 清理场景啊
+            --显示登录界面
+            if not self.loginView then
+                self.loginView = require("Game/Login/LoginView").New()
+                UIMgr:Show(self.loginView)
+            end
+        end,
+    }
+    self.reconnectView = UI.AlertView.Show(showData)
     --Cat_Todo : 重新向游戏服务器请求连接
 	-- if self.login_state == 4 then
  --    	NetMgr:SendConnect("192.168.5.142", 8888, CS.XLuaFramework.NetPackageType.BaseHead)

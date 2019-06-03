@@ -1,5 +1,7 @@
-local MovementUpdateSystem = BaseClass(ECS.ComponentSystem)
-ECS.TypeManager.RegisterScriptMgr("umo.MovementUpdateSystem", MovementUpdateSystem)
+local ECS = require "ECS"
+
+local MovementUpdateSystem = ECS.BaseClass(ECS.ComponentSystem)
+ECS.TypeManager.RegisterScriptMgr("UMO.MovementUpdateSystem", MovementUpdateSystem)
 
 function MovementUpdateSystem:Constructor( )
 end
@@ -7,15 +9,15 @@ end
 function MovementUpdateSystem:OnCreateManager(  )
 	ECS.ComponentSystem.OnCreateManager(self)
 
-	self.group = self:GetComponentGroup({"umo.position", "umo.target_pos", "umo.move_speed", "umo.aoi_handle"})
+	self.group = self:GetComponentGroup({"UMO.Position", "UMO.TargetPos", "UMO.MoveSpeed", "UMO.AOIHandle"})
 end
 
 function MovementUpdateSystem:OnUpdate(  )
 	local deltaTime = Time.deltaTime
-	local positions = self.group:GetComponentDataArray("umo.position")
-	local targetPositions = self.group:GetComponentDataArray("umo.target_pos")
-	local speeds = self.group:GetComponentDataArray("umo.move_speed")
-	local aoi_handles = self.group:GetComponentDataArray("umo.aoi_handle")
+	local positions = self.group:GetComponentDataArray("UMO.Position")
+	local targetPositions = self.group:GetComponentDataArray("UMO.TargetPos")
+	local speeds = self.group:GetComponentDataArray("UMO.MoveSpeed")
+	local aoi_handles = self.group:GetComponentDataArray("UMO.AOIHandle")
 	local dt = Time.deltaTime
 	for i=1,positions.Length do
 		local startPos = positions[i]

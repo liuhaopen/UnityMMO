@@ -26,7 +26,7 @@ public class MonsterMgr
     public void Init(GameWorld world)
 	{
         m_world = world;
-        container = GameObject.Find("SceneObjContainer").transform;
+        container = GameObject.Find("SceneObjContainer/MonsterContainer").transform;
 	}
 
     public void OnDestroy()
@@ -47,7 +47,7 @@ public class MonsterMgr
 
     private void InitMonster(Entity monster, long uid, long typeID, Vector3 pos, Vector3 targetPos)
     {
-        EntityManager.AddComponentData(monster, new MoveSpeed {Value = 500});
+        EntityManager.AddComponentData(monster, new MoveSpeed {Value = ConfigMonster.GetInstance().GetMoveSpeed(typeID)});
         EntityManager.AddComponentData(monster, new TargetPosition {Value = targetPos});
         EntityManager.AddComponentData(monster, new LocomotionState {LocoState = LocomotionState.State.Idle});
         EntityManager.AddComponentData(monster, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
@@ -69,7 +69,13 @@ public class MonsterMgr
     private void CreateLooks(Entity ownerEntity, long typeID)
     {
         var resPath = GameConst.GetMonsterResPath(typeID);
-        string bodyPath = resPath+"/model_clothe_"+typeID+".prefab";
+        var bodyResID = ConfigMonster.GetInstance().GetBodyResID(typeID);
+        if (bodyResID == 0)
+        {
+            Debug.LogError("monster body res id 0, typeID:"+typeID);
+            return;
+        }
+        string bodyPath = resPath+"/model_clothe_"+bodyResID+".prefab";
         XLuaFramework.ResourceManager.GetInstance().LoadAsset<GameObject>(bodyPath, delegate(UnityEngine.Object[] objs) {
             if (objs!=null && objs.Length>0)
             {

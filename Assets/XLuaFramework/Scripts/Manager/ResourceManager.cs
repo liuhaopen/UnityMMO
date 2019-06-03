@@ -50,6 +50,11 @@ public class AssetBundleInfo {
         public void Initialize(string manifestName, Action initOK) {
             m_BaseDownloadingURL = AppConfig.GetRelativePath();
             Debug.Log("ResourceManager:Initialize() m_BaseDownloadingURL:" + m_BaseDownloadingURL);
+            if (AppConfig.DebugMode)
+            {
+                initOK();
+                return;
+            }
             LoadAsset<AssetBundleManifest>(manifestName, new string[] { "AssetBundleManifest" }, delegate(UObject[] objs) {
                 if (objs.Length > 0) {
                     m_AssetBundleManifest = objs[0] as AssetBundleManifest;
@@ -120,18 +125,18 @@ public class AssetBundleInfo {
                 return abName;
             }
             abName = abName.ToLower();
-            if (abName.Contains("/")) {
+            // if (abName.Contains("/")) {
                 return abName;
-            }
-            for (int i = 0; i < m_AllManifest.Length; i++) {
-                int index = m_AllManifest[i].LastIndexOf('/');  
-                string path = m_AllManifest[i].Remove(0, index + 1);    //字符串操作函数都会产生GC
-                if (path.Equals(abName)) {
-                    return m_AllManifest[i];
-                }
-            }
-            Debug.LogError("GetRealAssetPath Error:>>" + abName);
-            return "";
+            // }
+            // for (int i = 0; i < m_AllManifest.Length; i++) {
+            //     int index = m_AllManifest[i].LastIndexOf('/');  
+            //     string path = m_AllManifest[i].Remove(0, index + 1);    //字符串操作函数都会产生GC
+            //     if (path.Equals(abName)) {
+            //         return m_AllManifest[i];
+            //     }
+            // }
+            // Debug.LogError("GetRealAssetPath Error:>>" + abName);
+            // return "";
         }
 
         public void LoadAsset<T>(string file_path, Action<UObject[]> action = null, LuaFunction func = null) where T : UObject {
@@ -259,21 +264,27 @@ public class AssetBundleInfo {
             WWW download = null;
             if (type == typeof(AssetBundleManifest))
                 download = new WWW(url);
-            else {
-                string[] dependencies = m_AssetBundleManifest.GetAllDependencies(abName);
-                if (dependencies.Length > 0) {
-                    m_Dependencies.Add(abName, dependencies);
-                    for (int i = 0; i < dependencies.Length; i++) {
-                        string depName = dependencies[i];
-                        AssetBundleInfo bundleInfo = null;
-                        if (m_LoadedAssetBundles.TryGetValue(depName, out bundleInfo)) {
-                            bundleInfo.m_ReferencedCount++;
-                        } else if (!m_LoadRequests.ContainsKey(depName)) {
-                            yield return StartCoroutine(OnLoadAssetBundle(depName, type));
+            else 
+            {
+                Hash128 hash = new Hash128();
+                if (m_AssetBundleManifest != null)
+                {
+                    string[] dependencies = m_AssetBundleManifest.GetAllDependencies(abName);
+                    if (dependencies.Length > 0) {
+                        m_Dependencies.Add(abName, dependencies);
+                        for (int i = 0; i < dependencies.Length; i++) {
+                            string depName = dependencies[i];
+                            AssetBundleInfo bundleInfo = null;
+                            if (m_LoadedAssetBundles.TryGetValue(depName, out bundleInfo)) {
+                                bundleInfo.m_ReferencedCount++;
+                            } else if (!m_LoadRequests.ContainsKey(depName)) {
+                                yield return StartCoroutine(OnLoadAssetBundle(depName, type));
+                            }
                         }
                     }
+                    hash = m_AssetBundleManifest.GetAssetBundleHash(abName);
                 }
-                download = WWW.LoadFromCacheOrDownload(url, m_AssetBundleManifest.GetAssetBundleHash(abName), 0);
+                download = WWW.LoadFromCacheOrDownload(url, hash, 0);
             }
             yield return download;
 

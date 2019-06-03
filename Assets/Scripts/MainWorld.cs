@@ -48,7 +48,6 @@ namespace UnityMMO{
             
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateRoleAnimatorSystem>(m_GameWorld));
 
-            // TimelineSpawnRequest.Create(m_GameWorld.GetEntityManager(), Entity.Null, "haha");
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<ResetPosOffsetSystem>(m_GameWorld));
             
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<NameboardSystem>(m_GameWorld));
@@ -78,6 +77,7 @@ namespace UnityMMO{
             // Debug.Log("main world update");
             m_Systems.Update();
             GameInput.GetInstance().Reset();
+            m_GameWorld.ProcessDespawns();
         }
         
         void TestLoadMultipleNavMeshInRunTime()

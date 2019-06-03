@@ -4,6 +4,7 @@ local netdispatcher = {
 	handler_list = {
 		{min_proto_tag=1, max_proto_tag=99, handler=require("game.service.account")},
 		-- {min_proto_tag=100, max_proto_tag=199, handler=require("game.service.scene")},
+		{min_proto_tag=200, max_proto_tag=299, handler=require("game.service.Task")},
 	},
 }
 netdispatcher.handler_len = #netdispatcher.handler_list

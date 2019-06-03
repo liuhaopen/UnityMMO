@@ -19,6 +19,7 @@ public class Nameboard : MonoBehaviour
 
     private TextMeshProUGUI nameLabel;
     Image bloodImg;
+    GameObject bloodObj;
 
     public string Name 
     { 
@@ -43,10 +44,16 @@ public class Nameboard : MonoBehaviour
         }
     }
 
+    public void SetBloodVisible(bool isShow)
+    {
+        bloodObj.SetActive(isShow);
+    }
+
     private void Awake() 
     {
         nameLabel = transform.Find("name_con/name_label").GetComponent<TextMeshProUGUI>();
         bloodImg = transform.Find("blood_con/blood_bar/blood").GetComponent<Image>();
+        bloodObj = transform.Find("blood_con").gameObject;
     }
 
 }

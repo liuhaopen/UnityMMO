@@ -44,6 +44,7 @@
 		<type fullname="UnityMMO.EnemySpawnSystemState" preserve="all"/>
 		<type fullname="UnityMMO.GameInput" preserve="all"/>
 		<type fullname="UnityMMO.MonsterMgr" preserve="all"/>
+		<type fullname="UnityMMO.NPCMgr" preserve="all"/>
 		<type fullname="UnityMMO.RoleInfo" preserve="all"/>
 		<type fullname="UnityMMO.RoleMgr" preserve="all"/>
 		<type fullname="UnityMMO.ResMgr" preserve="all"/>

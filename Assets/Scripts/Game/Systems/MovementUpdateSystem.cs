@@ -33,7 +33,8 @@ public class MovementUpdateSystem : BaseComponentSystem
             var targetPos = targetPositions[i].Value;
             var speed = speeds[i].Value;
             var posOffset = posOffsets[i].Value;
-            if (speed <= 0)
+            var curLocoStateObj = locoStates[i];
+            if (speed <= 0 || curLocoStateObj.LocoState==LocomotionState.State.BeHit)
                 continue;
             var curTrans = transforms[i];
             float3 startPos = curTrans.localPosition;
@@ -45,13 +46,12 @@ public class MovementUpdateSystem : BaseComponentSystem
             bool isMoveWanted = moveDistance>0.01f;
             
             var newLocoState = LocomotionState.State.StateNum;
-            var curLocoStateObj = locoStates[i];
             var phaseDuration = Time.time - curLocoStateObj.StartTime;
             var curLocoState = curLocoStateObj.LocoState;
             // bool isOnGround = curLocoState == LocomotionState.State.Idle || curLocoState == LocomotionState.State.Run || curLocoState == LocomotionState.State.Sprint;
             bool isOnGround = curLocoStateObj.IsOnGround();
             // Debug.Log("isOnGround : "+isOnGround.ToString()+" movewanted:"+isMoveWanted.ToString());
-            if (isOnGround && curLocoStateObj.LocoState!=LocomotionState.State.BeHit)
+            if (isOnGround)
             {
                 if (isMoveWanted)
                     newLocoState = LocomotionState.State.Run;

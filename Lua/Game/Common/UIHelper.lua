@@ -5,7 +5,7 @@ local LuaClickListener = LuaClickListener
 local LuaDragListener = LuaDragListener
 local WordManager = WordManager
 
-UI = {}
+UI = UI or {}
 --下列接口会尝试多种设置的，如果你已经知道你的节点是什么类型的就别用下列接口了
 function UI.SetVisible( obj, is_show )
 	if not obj then return end

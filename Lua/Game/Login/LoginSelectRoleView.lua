@@ -16,7 +16,7 @@ end
 
 function LoginSelectRoleView:OnLoad(  )
 	local names = {
-		"item_scroll","close","role_con","role_tip","start:obj","item_scroll/Viewport/item_con",
+		"item_scroll","role_con","role_tip","start:obj","item_scroll/Viewport/item_con",
 	}
 	UI.GetChildren(self, self.transform, names)
 	self.transform.sizeDelta = Vector2.zero

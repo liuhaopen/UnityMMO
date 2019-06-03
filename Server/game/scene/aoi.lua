@@ -176,6 +176,29 @@ function aoi:find_around_in_link( node, distance )
 	return result
 end
 
+function aoi:set_user_data( handle, key, value )
+	local node = self.nodes[handle]
+	if not node then return end
+	node.user_data = node.user_data or {}
+	node.user_data[key] = value
+end
+
+function aoi:get_user_data( handle, key )
+	local node = self.nodes[handle]
+	if not node then return end
+	node.user_data = node.user_data or {}
+	return node.user_data[key]
+end
+
+--获取附近的节点列表，注意是只读的，别修改此列表
+function aoi:get_around( handle, radius_short, radius_long )
+	local node = self.nodes[handle]
+	if not node then return {} end
+	self:get_around_offset(handle, radius_short, radius_long)
+	return node.around_list
+end
+
+--获取附近的节点,但每次只返回和上次的差异集合，即新进入和新离开的节点集合。进入条件为：小于等于radius_short半径的节点；离开条件为：大于等于radius_long的节点
 function aoi:get_around_offset( handle, radius_short, radius_long )
 	local node = self.nodes[handle]
 	if not node then return {} end

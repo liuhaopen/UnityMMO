@@ -1,43 +1,38 @@
-CREATE DATABASE  IF NOT EXISTS `UnityMMOAccount` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `UnityMMOAccount`;
--- MySQL dump 10.13  Distrib 5.6.17, for Win32 (x86)
---
--- Host: 192.168.5.142    Database: UnityMMOAccount
--- ------------------------------------------------------
--- Server version	5.6.40
+/*
+Navicat MySQL Data Transfer
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+Source Server         : UnityMMO
+Source Server Version : 50640
+Source Host           : 192.168.5.115:3306
+Source Database       : UnityMMOAccount
 
---
--- Table structure for table `Account`
---
+Target Server Type    : MYSQL
+Target Server Version : 50640
+File Encoding         : 65001
 
+Date: 2019-06-02 12:47:26
+*/
+
+SET FOREIGN_KEY_CHECKS=0;
+
+-- ----------------------------
+-- Table structure for Account
+-- ----------------------------
 DROP TABLE IF EXISTS `Account`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Account` (
   `account_id` bigint(20) NOT NULL,
   `password` char(20) DEFAULT NULL,
   PRIMARY KEY (`account_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2018-07-30 21:15:12
+-- ----------------------------
+-- Records of Account
+-- ----------------------------
+INSERT INTO `Account` VALUES ('123', 'password');
+INSERT INTO `Account` VALUES ('213', 'password');
+INSERT INTO `Account` VALUES ('222', 'password');
+INSERT INTO `Account` VALUES ('1234', 'password');
+INSERT INTO `Account` VALUES ('2123', 'password');
+INSERT INTO `Account` VALUES ('2134', 'password');
+INSERT INTO `Account` VALUES ('12333', 'password');
+INSERT INTO `Account` VALUES ('213213', 'password');

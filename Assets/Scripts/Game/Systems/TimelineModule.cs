@@ -127,7 +127,6 @@ public class TimelineSpawnSystem : BaseComponentSystem
                         {
                             // var cpa = info.asset as ScriptPlayable<>;
                             var cpa = info.asset as ParamPlayableAsset;
-                            Debug.Log("cpa != null : "+(cpa != null).ToString());
                             if (cpa != null)
                             {
                                 cpa.Param = timelineInfo.Param[nameParts[0]];

@@ -1,6 +1,6 @@
-package.path = package.path ..';../?.lua;../../?.lua;Tests/?.lua';
-require "ECS"
-lu = require('Tests.luaunit')
+package.path = package.path ..'?/?.lua;../?.lua;../../?.lua;Tests/?.lua';
+local ECS = require "ECS"
+lu = require('Common.luaunit')
 
 --在上级目录运行本文件即可：lua Tests/test_all.lua
 
@@ -55,7 +55,7 @@ local s = io.popen("dir /b Tests")--for windows
 local fileNames = s:read("*all")
 fileNames = Split(fileNames, "\n")
 for k,v in pairs(fileNames or {}) do
-	if v~="" and v~="test_all.lua" and v~="luaunit.lua" and v~="BaseClass.lua" then
+	if v~="" and v~="test_all.lua" and v~="luaunit.lua" then
 		local dot_index = string.find(v, ".", 1, true)
     	local is_lua_file = string.find(v, ".lua", -4, true)
     	if dot_index ~= nil and is_lua_file then

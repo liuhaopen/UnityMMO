@@ -35,12 +35,10 @@ public class SceneStaticObject : ISceneObject
 
     public void OnHide()
     {
-        // Debug.Log("m_LoadStaticObj : "+(m_LoadStaticObj!=null).ToString());
         if (m_LoadStaticObj)
         {
             Object.Destroy(m_LoadStaticObj);
             m_LoadStaticObj = null;
-            // ResourceManager.UnLoad(m_ResPath);
         }
     }
 
@@ -76,28 +74,3 @@ public class SceneStaticObject : ISceneObject
         m_LightmapScaleOffset = lightmapScaleOffset;
     }
 }
-
-// public class SceneRoleDetector : IDetector
-    // {
-    //     Entity entity;
-    //     EntityManager entityManager;
-    //     public Vector3 Position 
-    //     {
-    //         get 
-    //         {
-    //             Position pos = entityManager.GetComponentData<Position>(this.entity);
-    //             return pos.Value;
-    //         }
-    //     }
-
-    //     public SceneRoleDetector(Entity entity)
-    //     {
-    //         this.entity = entity;
-    //         entityManager = World.Active.GetExistingManager<EntityManager>();
-    //     }
-
-    //     public bool IsDetected(Bounds bounds)
-    //     {
-    //         throw new System.NotImplementedException();
-    //     }
-    // }

@@ -130,12 +130,11 @@ namespace XLuaFramework {
         public void SendConnect(string host, int port, NetPackageType type)
         {
             Debug.Log("host : " + host + " port:" + port.ToString() + " type:"+ type.ToString());
-            client = null;
+            this.Close(); 
             curPackageType = type;
             try 
             {
                 IPAddress[] address = Dns.GetHostAddresses(host);
-                Debug.Log("address.Length : " + address.Length.ToString());
                 if (address.Length == 0)
                 {
                     Debug.LogError("host invalid");
@@ -165,6 +164,11 @@ namespace XLuaFramework {
 
         void OnConnect(IAsyncResult asr) {
             Debug.Log("on connect : "+ client.Connected.ToString());
+            if (!client.Connected)
+            {
+                Close();
+                return;
+            }
             outStream = client.GetStream();
             if (curPackageType == NetPackageType.BaseLine)
             {

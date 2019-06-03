@@ -110,7 +110,7 @@ namespace UnityMMO
             var roleInfo = roleGameOE.GetComponent<RoleInfo>();
             var skillID = SkillManager.GetInstance().GetSkillIDByIndex(skillIndex);
           
-            string assetPath = GameConst.GetRoleSkillResPath(roleInfo.Career, skillID);
+            string assetPath = GameConst.GetRoleSkillResPath(skillID);
             bool isNormalAttack = skillIndex == -1;//普通攻击
             if (!isNormalAttack)
                 SkillManager.GetInstance().ResetCombo();//使用非普攻技能时就重置连击索引
