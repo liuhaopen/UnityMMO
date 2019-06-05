@@ -1,5 +1,5 @@
 LoginConst = LoginConst or {
-	--LoginConst.Status.WaitForGameServerHandshake
+	--LoginConst.Status.WaitForLoginServerChanllenge
 	Status = {
 		WaitForLoginServerChanllenge = 1,--刚连接上登录服务器后就等收challenge了
 		WaitForLoginServerHandshakeKey = 2,--等待接收登录服务器的handshake key

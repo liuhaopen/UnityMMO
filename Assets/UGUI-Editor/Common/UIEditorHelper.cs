@@ -336,7 +336,9 @@ namespace U3DExtends
             string just_name = System.IO.Path.GetFileNameWithoutExtension(asset_relate_path);
             new_view.name = just_name;
             new_layout.gameObject.name = just_name + "_Canvas";
-            PrefabUtility.DisconnectPrefabInstance(new_view);//链接中的话删里面的子节点时会报警告，所以还是一直失联的好，保存时直接覆盖prefab就行了
+            #if !UNITY_2018_3_OR_NEWER
+                PrefabUtility.DisconnectPrefabInstance(new_view);//链接中的话删里面的子节点时会报警告，所以还是一直失联的好，保存时直接覆盖prefab就行了
+            #endif
             //打开界面时,从项目临时文件夹找到对应界面的参照图配置,然后生成参照图
             layoutInfo.ApplyConfig(asset_relate_path);
             ReopenLayoutOnExitGame.RecordOpenLayout(select_path, new_layout.transform.localPosition);

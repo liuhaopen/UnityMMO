@@ -28,6 +28,10 @@ function LoginController:InitEvents(  )
             local role_list = ack_data.role_list
             LoginModel:GetInstance():SetRoleList(role_list)
             
+            if self.loginView then
+                UIMgr:Close(self.loginView)
+                self.loginView = nil
+            end
             if role_list and #role_list > 0 then
                 --已有角色就先进入选择角色界面
                 local view = require("Game/Login/LoginSelectRoleView").New()
@@ -173,10 +177,6 @@ function LoginController:Connect()
         --接下来的处理就在OnReceiveMsg函数里
         self.login_state = LoginConst.Status.WaitForGameServerHandshake
 	end
-    if self.loginView then
-        UIMgr:Close(self.loginView)
-        self.loginView = nil
-    end
     if self.reconnectView then
         UIMgr:Close(self.reconnectView)
         self.reconnectView = nil
@@ -201,7 +201,7 @@ function LoginController:OnReceiveMsg( bytes )
 
         Time:StartSynchServerTime()
     else
-        Message:show("与游戏服务器握手失败:"..result)
+        Message:Show("与游戏服务器握手失败:"..result)
     end
 end
 
@@ -214,7 +214,9 @@ function LoginController:Disconnect()
         self.login_info.had_disconnect_with_account_server = true
         return
     end
-
+    if self.login_state == LoginConst.Status.WaitForLoginServerChanllenge then
+        Message:Show("连接登录服务器失败")
+    end
     if self.reconnectView then return end
     local showData = {
         content = "网络已断开连接",
@@ -222,25 +224,24 @@ function LoginController:Disconnect()
         on_ok = function()
             -- Message:Show("重连")
             --Cat_Todo : 判断帐号服务器是否也断了，是的话也是要先连帐号服务器的
-            self:StartConnectGameServer()
-            -- self:StartLogin(self.login_info)
+            -- self:StartConnectGameServer()
+            self:StartLogin(self.login_info)
             -- UIMgr:Close(self.reconnectView)
         end,
         cancel_btn_text = "重新登录",
         on_cancel = function()
             --Cat_Todo : 清理场景啊
             --显示登录界面
-            if not self.loginView then
+            if self.loginView then
+                UIMgr:Close(self.reconnectView)
+                self.reconnectView = nil
+            else
                 self.loginView = require("Game/Login/LoginView").New()
                 UIMgr:Show(self.loginView)
             end
         end,
     }
     self.reconnectView = UI.AlertView.Show(showData)
-    --Cat_Todo : 重新向游戏服务器请求连接
-	-- if self.login_state == 4 then
- --    	NetMgr:SendConnect("192.168.5.142", 8888, CS.XLuaFramework.NetPackageType.BaseHead)
- --    end
 end
 
 return LoginController

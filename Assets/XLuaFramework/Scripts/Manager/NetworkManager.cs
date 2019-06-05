@@ -167,6 +167,7 @@ namespace XLuaFramework {
             if (!client.Connected)
             {
                 Close();
+                AddEvent(onDisConnectCallBack, null);
                 return;
             }
             outStream = client.GetStream();
