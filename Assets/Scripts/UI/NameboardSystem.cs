@@ -42,8 +42,10 @@ public class NameboardSystem : BaseComponentSystem
         float BloodSlotDIs = BloodSlotToCamera.magnitude;
         float maxVisualDis = 20;
         float scaleFactor = Mathf.Clamp(1-(BloodSlotDIs-maxVisualDis)/maxVisualDis, 0, 1);
-        bool isBoardVisible = !(board2DPosition.x > Screen.width || board2DPosition.x < 0 || board2DPosition.y > Screen.height || board2DPosition.y < 0);
-        
+        Vector3 dir = (target.position - Camera.main.transform.position).normalized;
+        float dot = Vector3.Dot(Camera.main.transform.forward, dir);     //判断物体是否在相机前面
+        bool isBoardVisible = dot > 0 && (board2DPosition.x <= Screen.width && board2DPosition.x >= 0 && board2DPosition.y <= Screen.height && board2DPosition.y >= 0);
+
         if (isBoardVisible)
         {
             if (nameboardData.UIResState == NameboardData.ResState.WaitLoad)
