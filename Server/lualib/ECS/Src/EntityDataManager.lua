@@ -212,7 +212,36 @@ function EntityDataManager:GetComponentChunk( entity )
     return self.m_Entities.ChunkData[entity.Index].Chunk
 end
 
-function EntityDataManager:TryRemoveEntityId( entities, count, archetypeManager, sharedComponentDataManager, groupManager, componentTypeInArchetypeArray )
+function EntityDataManager:TryRemoveEntityId( entity, archetypeManager )
+    local batchCount = 1
+    -- local archetype = chunk.Archetype
+    
+    local freeIndex = self.m_EntitiesFreeIndex
+    local entityIndex = entity.Index
+
+    local chunk = self.m_Entities.ChunkData[entityIndex].Chunk
+    local indexInChunk = self.m_Entities.ChunkData[entityIndex].IndexInChunk
+    self.m_Entities.ChunkData[entityIndex].Chunk = nil
+    self.m_Entities.Version[entityIndex] = self.m_Entities.Version[entityIndex] + 1
+    self.m_Entities.ChunkData[entityIndex].IndexInChunk = freeIndex
+    freeIndex = entityIndex
+    self.m_EntitiesFreeIndex = freeIndex
+
+    local patchCount = math.min(batchCount, chunk.Count - indexInChunk - batchCount)
+    if 0 == patchCount then
+        return
+    end
+    -- local movedEntities = chunk.Buffer + (chunk.Count - patchCount)
+    -- self.m_Entities.ChunkData[movedEntities[i].Index].IndexInChunk = indexInChunk + i
+
+    ECS.ChunkDataUtility.Copy(chunk, chunk.Count - patchCount, chunk, indexInChunk, patchCount)
+
+    self:IncrementComponentOrderVersion(archetype, chunk, sharedComponentDataManager)
+    chunk.Archetype.EntityCount = chunk.Archetype.EntityCount - batchCount
+    archetypeManager:SetChunkCount(chunk, chunk.Count - batchCount)
+end
+
+function EntityDataManager:TryRemoveEntityIdArray( entities, count, archetypeManager, sharedComponentDataManager, groupManager, componentTypeInArchetypeArray )
     local entityIndex = 0;
     while (entityIndex ~= count) do
         local indexInChunk

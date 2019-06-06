@@ -143,7 +143,7 @@ function ChunkDataUtility.GetComponentDataRW( chunk, index, indexInTypeArray, gl
 end
 
 function ChunkDataUtility.Copy( srcChunk, srcIndex, dstChunk, dstIndex, count )
-    Assert.IsTrue(srcChunk.Archetype == dstChunk.Archetype)
+    assert(srcChunk.Archetype == dstChunk.Archetype)
 
     local arch = srcChunk.Archetype
     local srcBuffer = srcChunk.Buffer
@@ -151,15 +151,12 @@ function ChunkDataUtility.Copy( srcChunk, srcIndex, dstChunk, dstIndex, count )
     local offsets = arch.Offsets
     local sizeOfs = arch.SizeOfs
     local typesCount = arch.TypesCount
-
-    for t=1,typesCount do
-        local offset = offsets[t]
-        local sizeOf = sizeOfs[t]
-        local src = srcBuffer + (offset + sizeOf * srcIndex)
-        local dst = dstBuffer + (offset + sizeOf * dstIndex)
-
-        dstChunk.ChangeVersion[t] = srcChunk.ChangeVersion[t]
-        UnsafeUtility.MemCpy(dst, src, sizeOf * count)
+    for k,v in pairs(srcChunk.Buffer) do
+        for iii=1,count do
+            if dstBuffer[k] and dstBuffer[k][dstIndex+iii] then
+                dstBuffer[k][dstIndex+iii] = v[srcIndex+iii]
+            end
+        end
     end
 end
 

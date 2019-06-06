@@ -151,6 +151,7 @@ function EntityManager:DestroyEntity( entity )
     -- self.Entities:AssertEntitiesExist(entities, count)
     -- self.Entities:AssertChunksUnlocked(entities, count)
     -- self.EntityDataManager.TryRemoveEntityId(entities, count, self.Entities, self.ArchetypeManager, self.m_SharedComponentManager)
+    self.Entities:TryRemoveEntityId(entity, self.ArchetypeManager)
 end
 
 function EntityManager:GetArchetypeChunkComponentType( comp_type_name, isReadOnly )
