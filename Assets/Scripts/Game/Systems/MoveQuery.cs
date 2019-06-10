@@ -32,6 +32,8 @@ public class MoveQuery : MonoBehaviour
         queryObj = go;
         charController = go.GetComponent<CharacterController>();
         charController.transform.position = transform.position;
+        moveQueryStart = transform.position;
+        moveQueryEnd = transform.position;
         // charController.transform.SetParent(transform.parent);
         charController.transform.SetParent(UnityMMO.SceneMgr.Instance.MoveQueryContainer);
         charController.slopeLimit = this.slopeLimit;

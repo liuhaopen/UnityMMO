@@ -10,6 +10,11 @@ local MonsterFSM = {
 			type = "Blueprint.State.FightState",
 			name = "Fight",
 		},
+		{
+			id = 3,
+			type = "Blueprint.State.DeadState",
+			name = "Dead",
+		},
 	},
 }
 return MonsterFSM

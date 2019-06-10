@@ -15,7 +15,7 @@ ai.hunt_radius：追捕半径，超过此半径就不再追了，切换到巡逻
 --]]
 local config = {
 	[2000] = {
-		type_id = 2000, name = "小灰狼", max_hp=1000, 
+		type_id = 2000, name = "小灰狼", max_hp=10000, 
 		attr_list = {[1]=100,[2]=100}, move_speed=500, ai={
 			fight_back = true, reborn_time = 1000, remove_after_dead = 500, patrol={type=1, idle_min=2000, idle_max=5000, auto_attack_radius=1000}, attack_area = {min_distance=50, max_distance=400}, hunt_radius=1000, skill_list = {
 				{skill_id=200000, random=60}, {skill_id=200001, random=40}
@@ -23,7 +23,7 @@ local config = {
 		},
 	},
 	[2001] = {
-		type_id = 2001, name = "大灰", max_hp=1000, 
+		type_id = 2001, name = "大灰", max_hp=10000, 
 		attr_list = {[1]=100,[2]=100}, move_speed=500, skill_list={}, ai={
 			fight_back = true, reborn_time = 1000, remove_after_dead = 500, patrol={type=1, idle_min=2000, idle_max=5000, auto_attack_radius=1000}, attack_area = {min_distance=100, max_distance=500}, hunt_radius=1000, skill_list = {
 				{skill_id=200100, random=50}, {skill_id=200101, random=50}
@@ -31,7 +31,7 @@ local config = {
 		},
 	},
 	[2002] = {
-		type_id = 2002, name = "金钱猫",max_hp=1000, 
+		type_id = 2002, name = "金钱猫",max_hp=10000, 
 		attr_list = {[1]=100,[2]=100}, move_speed=500, skill_list={}, ai={
 			fight_back = true, reborn_time = 1000, remove_after_dead = 500, patrol={type=1, idle_min=2000, idle_max=5000, auto_attack_radius=0}, attack_area = {min_distance=0, max_distance=100}, skill_list = {
 				{skill_id=200200, random=50}, {skill_id=200201, random=50}
@@ -39,7 +39,7 @@ local config = {
 		},
 	},
 	[2003] = {
-		type_id = 2003, name = "红袍妖女", max_hp=1000, 
+		type_id = 2003, name = "红袍妖女", max_hp=10000, 
 		attr_list = {[1]=100,[2]=100}, move_speed=500, skill_list={}, ai={
 			fight_back = true, reborn_time = 1000, remove_after_dead = 500, patrol={type=1, idle_min=2000, idle_max=5000, auto_attack_radius=0}, attack_area = {min_distance=0, max_distance=100}, skill_list = {
 				{skill_id=200300, random=50}, {skill_id=200301, random=50}
@@ -47,7 +47,7 @@ local config = {
 		},
 	},
 	[2004] = {
-		type_id = 2004, name = "断头鬼", max_hp=1000, 
+		type_id = 2004, name = "断头鬼", max_hp=10000, 
 		attr_list = {[1]=100,[2]=100}, move_speed=500, skill_list={}, ai={
 			fight_back = true, reborn_time = 1000, remove_after_dead = 500, patrol={type=1, idle_min=2000, idle_max=5000, auto_attack_radius=0}, attack_area = {min_distance=0, max_distance=100}, skill_list = {
 				{skill_id=200400, random=50}, {skill_id=200401, random=50}
@@ -55,7 +55,7 @@ local config = {
 		},
 	},
 	[2005] = {
-		type_id = 2005, name = "唱大戏的", max_hp=1000, 
+		type_id = 2005, name = "唱大戏的", max_hp=10000, 
 		attr_list = {[1]=100,[2]=100}, move_speed=500, skill_list={}, ai={
 			fight_back = true, reborn_time = 1000, remove_after_dead = 500, patrol={type=1, idle_min=2000, idle_max=5000, auto_attack_radius=0}, attack_area = {min_distance=0, max_distance=100}, skill_list = {
 				{skill_id=200500, random=50}, {skill_id=200501, random=50}

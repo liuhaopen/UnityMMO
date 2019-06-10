@@ -5,7 +5,7 @@ local MonsterFSM = require "game.scene.ai.MonsterFSM"
 local BP = require("Blueprint")
 local MonsterMgr = BaseClass()
 local test_info = {
-	-- create_num = 1,--只创建1只怪物，方便调试
+	create_num = 1,--只创建1只怪物，方便调试
 }
 
 function MonsterMgr:Init( sceneMgr, cfg )
@@ -15,6 +15,7 @@ function MonsterMgr:Init( sceneMgr, cfg )
 	self.nest_cfg = cfg
 	self.monster_entities = {}
 	self.graphs_owners = {}
+	self.fsms = {}
 
 	self:InitArchetype()
 	self:InitMonster()
@@ -22,7 +23,7 @@ end
 
 function MonsterMgr:InitArchetype(  )
 	self.monster_archetype = self.entityMgr:CreateArchetype({
-		"UMO.Position", "UMO.TargetPos", "UMO.UID", "UMO.TypeID", "UMO.HP", "UMO.SceneObjType", "UMO.MonsterAI", "UMO.PatrolInfo", "UMO.MoveSpeed", "UMO.AOIHandle", 
+		"UMO.Position", "UMO.TargetPos", "UMO.UID", "UMO.TypeID", "UMO.HP", "UMO.SceneObjType", "UMO.MonsterAI", "UMO.PatrolInfo", "UMO.MoveSpeed", "UMO.AOIHandle", "UMO.DeadState", "UMO.DamageEvents"
 	})
 end
 
@@ -53,11 +54,11 @@ function MonsterMgr:CreateMonster( type_id, patrolInfo )
 	self.entityMgr:SetComponentData(monster, "UMO.Position", {x=pos_x, y=pos_y, z=pos_z})
 	self.entityMgr:SetComponentData(monster, "UMO.TargetPos", {x=pos_x, y=pos_y, z=pos_z})
 	local scene_uid = SceneHelper:NewSceneUID(SceneConst.ObjectType.Monster)
-	self.entityMgr:SetComponentData(monster, "UMO.UID", {value=scene_uid})
+	self.entityMgr:SetComponentData(monster, "UMO.UID", scene_uid)
 	self.entityMgr:SetComponentData(monster, "UMO.TypeID", {value=type_id})
 	self.entityMgr:SetComponentData(monster, "UMO.HP", {cur=cfg.max_hp, max=cfg.max_hp})
 	self.entityMgr:SetComponentData(monster, "UMO.SceneObjType", {value=SceneConst.ObjectType.Monster})
-	self.entityMgr:SetComponentData(monster, "UMO.MonsterAI", {ai_id=scene_uid})
+	self.entityMgr:SetComponentData(monster, "UMO.MonsterAI", scene_uid)
 	self.entityMgr:SetComponentData(monster, "UMO.PatrolInfo", patrolInfo)
 	self.entityMgr:SetComponentData(monster, "UMO.MoveSpeed", {value=cfg.move_speed})
 
@@ -83,6 +84,7 @@ function MonsterMgr:InitGraphsForMon( scene_uid, entity, entityMgr, aoi_handle, 
 	self.graphs_owners[scene_uid] = owner
 	local graph = BP.FSM.FSMGraph.Create(MonsterFSM)
 	owner:AddGraph(graph)
+	self.fsms[scene_uid] = graph
 
 	local blackboard = owner:GetBlackboard()
 	blackboard:SetVariable("entity", entity)
@@ -96,11 +98,21 @@ function MonsterMgr:GetGraphsOwner( uid )
 	return self.graphs_owners[uid]
 end
 
+function MonsterMgr:GetFSM( uid )
+	return self.fsms[uid]
+end
+
+function MonsterMgr:TriggerState( uid, stateName )
+	local fsm = self.fsms[uid]
+	if not fsm then return end
+	fsm:TriggerState(stateName)
+end
+
 function MonsterMgr:ChangeTargetPos( entity, pos )
 	self.entityMgr:SetComponentData(entity, "UMO.TargetPos", pos)
 	local uid = self.entityMgr:GetComponentData(entity, "UMO.UID")
 	local change_target_pos_event_info = {key=SceneConst.InfoKey.TargetPos, value=math.floor(pos.x)..","..math.floor(pos.z), time=Time.timeMS}
-	self.sceneMgr.eventMgr:AddSceneEvent(uid.value, change_target_pos_event_info)
+	self.sceneMgr.eventMgr:AddSceneEvent(uid, change_target_pos_event_info)
 end
 
 return MonsterMgr

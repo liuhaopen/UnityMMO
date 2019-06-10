@@ -9,7 +9,9 @@ return [[
 	pos_x 5 : integer
 	pos_y 6 : integer
 	pos_z 7 : integer
-	base_info 8 : scene_role_base_info
+	cur_hp 8 : integer
+	max_hp 9 : integer
+	base_info 10 : scene_role_base_info
 }
 
 #key 对应前端SceneInfoKey.cs里的SceneInfoKey或后端SceneConst.lua里的SceneConst.InfoKey

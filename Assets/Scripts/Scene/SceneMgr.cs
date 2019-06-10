@@ -293,9 +293,9 @@ public class SceneMgr : MonoBehaviour
         CorrectMainRolePos();
     }
 
-    public Entity AddMainRole(long uid, long typeID, string name, int career, Vector3 pos)
+    public Entity AddMainRole(long uid, long typeID, string name, int career, Vector3 pos, float curHp, float maxHp)
 	{
-        Entity role = RoleMgr.GetInstance().AddMainRole(uid, typeID, name, career, pos);
+        Entity role = RoleMgr.GetInstance().AddMainRole(uid, typeID, name, career, pos, curHp, maxHp);
         entityDic.Add(uid, role);
 
         SkillManager.GetInstance().Init(career);
@@ -318,13 +318,17 @@ public class SceneMgr : MonoBehaviour
         var targetPos = GetCorrectPos(new Vector3(target_x/GameConst.RealToLogic, target_y/GameConst.RealToLogic, target_z/GameConst.RealToLogic));
         if (type == SceneObjectType.Role)
         {
-            Entity role = RoleMgr.GetInstance().AddRole(uid, typeID, pos, targetPos);
+            long curHP = Int64.Parse(info_strs[8]);
+            long maxHP = Int64.Parse(info_strs[9]);
+            Entity role = RoleMgr.GetInstance().AddRole(uid, typeID, pos, targetPos, curHP/GameConst.RealToLogic, maxHP/GameConst.RealToLogic);
             entityDic.Add(uid, role);
             return role;
         }
         else if (type == SceneObjectType.Monster)
         {
-            Entity monster = MonsterMgr.GetInstance().AddMonster(uid, typeID, pos, targetPos);
+            long curHP = Int64.Parse(info_strs[8]);
+            long maxHP = Int64.Parse(info_strs[9]);
+            Entity monster = MonsterMgr.GetInstance().AddMonster(uid, typeID, pos, targetPos, curHP/GameConst.RealToLogic, maxHP/GameConst.RealToLogic);
             entityDic.Add(uid, monster);
             return monster;
         }

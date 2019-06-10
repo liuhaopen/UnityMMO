@@ -263,10 +263,7 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(UnityMMO.Factions), UnityMMOFactionsWrap.__Register);
         
         
-            translator.DelayWrapLoader(typeof(UnityMMO.ModifyHealthQueue), UnityMMOModifyHealthQueueWrap.__Register);
-        
-        
-            translator.DelayWrapLoader(typeof(UnityMMO.Health), UnityMMOHealthWrap.__Register);
+            translator.DelayWrapLoader(typeof(UnityMMO.HealthStateData), UnityMMOHealthStateDataWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(UnityMMO.SceneObjectData), UnityMMOSceneObjectDataWrap.__Register);
@@ -300,6 +297,9 @@ namespace XLua.CSObjectWrap
         
         
             translator.DelayWrapLoader(typeof(UnityMMO.ResMgr), UnityMMOResMgrWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(UnityMMO.TimeEx), UnityMMOTimeExWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(UnityMMO.TimelineInfo), UnityMMOTimelineInfoWrap.__Register);

@@ -35,8 +35,7 @@
 		<type fullname="UnityMMO.SprintInfo" preserve="all"/>
 		<type fullname="UnityMMO.Shot" preserve="all"/>
 		<type fullname="UnityMMO.Factions" preserve="all"/>
-		<type fullname="UnityMMO.ModifyHealthQueue" preserve="all"/>
-		<type fullname="UnityMMO.Health" preserve="all"/>
+		<type fullname="UnityMMO.HealthStateData" preserve="all"/>
 		<type fullname="UnityMMO.SceneObjectData" preserve="all"/>
 		<type fullname="UnityMMO.Enemy" preserve="all"/>
 		<type fullname="UnityMMO.EnemyShootState" preserve="all"/>
@@ -48,6 +47,7 @@
 		<type fullname="UnityMMO.RoleInfo" preserve="all"/>
 		<type fullname="UnityMMO.RoleMgr" preserve="all"/>
 		<type fullname="UnityMMO.ResMgr" preserve="all"/>
+		<type fullname="UnityMMO.TimeEx" preserve="all"/>
 		<type fullname="UnityMMO.TimelineInfo" preserve="all"/>
 		<type fullname="UnityMMO.TimelineManager" preserve="all"/>
 		<type fullname="UnityMMO.MainWorld" preserve="all"/>

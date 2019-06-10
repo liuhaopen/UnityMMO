@@ -142,6 +142,16 @@ public class NameboardSpawnRequestSystem : BaseComponentSystem
                 nameboardData.UIResState = NameboardData.ResState.Loaded;
                 EntityManager.SetComponentData(request.Owner, nameboardData);
             }
+            bool hasHPData = EntityManager.HasComponent<HealthStateData>(request.Owner);
+            // Debug.Log("has Hp data "+hasHPData);
+            if (hasHPData)
+            {
+                var hpData = EntityManager.GetComponentData<HealthStateData>(request.Owner);
+                nameboardBehav.MaxHp = hpData.MaxHp;
+                nameboardBehav.CurHp = hpData.CurHp;
+                // nameboardBehav.UpdateBloodBar(hpData.CurHp, hpData.MaxHp);
+            }
+
             var sceneObjType = EntityManager.GetComponentData<SceneObjectTypeData>(request.Owner);
             nameboardBehav.SetBloodVisible(sceneObjType.Value==SceneObjectType.Role || sceneObjType.Value==SceneObjectType.Monster);
         }

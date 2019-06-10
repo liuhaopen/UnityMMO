@@ -12,6 +12,7 @@ public enum SceneInfoKey
     PosChange=3,
     TargetPos=4,
     JumpState=5,
+    HPChange=6,
 }
 
 [Hotfix]

@@ -206,7 +206,7 @@ function TestComponentSystem:TestEntityArray(  )
     lu.assertNotNil(sys.group)
     local entities = sys.group:GetEntityArray()
     lu.assertNotNil(entities)
-    lu.assertEquals(#entities, 0)
+    lu.assertEquals(entities.Length, 0)
 
     local archetype = self.m_Manager:CreateArchetype({"DataForTestEntityArray1", "DataForTestEntityArray2", "DataForTestEntityArray3"})
     local entity = self.m_Manager:CreateEntityByArcheType(archetype)

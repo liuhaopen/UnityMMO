@@ -27,6 +27,7 @@ public class SynchFromNet {
         changeFuncDic[SceneInfoKey.PosChange] = ApplyChangeInfoPos;
         changeFuncDic[SceneInfoKey.TargetPos] = ApplyChangeInfoTargetPos;
         changeFuncDic[SceneInfoKey.JumpState] = ApplyChangeInfoJumpState;
+        changeFuncDic[SceneInfoKey.HPChange] = ApplyChangeInfoHPChange;
     }
 
     public void StartSynchFromNet()
@@ -86,7 +87,7 @@ public class SynchFromNet {
         
         //播放攻击动作
         string assetPath = SkillManager.GetInstance().GetSkillResPath((int)fight_event.skill_id);
-        Debug.Log("OnAckFightEvents assetPath : "+assetPath);
+        // Debug.Log("OnAckFightEvents assetPath : "+assetPath);
         var param = new Dictionary<string, object>();
         param["FlyHurtWord"] = fight_event.defenders;
         var timelineInfo = new TimelineInfo{ResPath=assetPath, Owner=scene_entity, Param=param};
@@ -204,6 +205,37 @@ public class SynchFromNet {
         var actionData = SceneMgr.Instance.EntityManager.GetComponentData<ActionData>(entity);
         actionData.Jump = 1;
         SceneMgr.Instance.EntityManager.SetComponentData(entity, actionData);
+    }
+    
+    private void ApplyChangeInfoHPChange(Entity entity, SprotoType.info_item change_info)
+    {
+        // Debug.Log("hp change : "+change_info.value);
+        string[] strs = change_info.value.Split(',');
+        float curHp = (float)Int64.Parse(strs[0])/GameConst.RealToLogic;
+        var healthData = SceneMgr.Instance.EntityManager.GetComponentData<HealthStateData>(entity);
+        healthData.CurHp = curHp;
+        SceneMgr.Instance.EntityManager.SetComponentData(entity, healthData);
+        bool hasNameboardData = SceneMgr.Instance.EntityManager.HasComponent<NameboardData>(entity);
+        if (hasNameboardData)
+        {
+            var nameBobardData = SceneMgr.Instance.EntityManager.GetComponentData<NameboardData>(entity);
+            if (nameBobardData.UIResState==NameboardData.ResState.Loaded && !nameBobardData.UIEntity.Equals(Entity.Null))
+            {
+                var nameboardNode = SceneMgr.Instance.EntityManager.GetComponentObject<Nameboard>(nameBobardData.UIEntity);
+                if (nameboardNode != null)
+                {
+                    nameboardNode.CurHp = curHp;
+                }
+            }
+        }
+        if (curHp <= 0.001)
+        {
+            var locoState = SceneMgr.Instance.EntityManager.GetComponentData<LocomotionState>(entity);
+            locoState.LocoState = LocomotionState.State.Dead;
+            Debug.Log("Time : "+TimeEx.ServerTime+" time:"+change_info.time);
+            locoState.StartTime = change_info.time/GameConst.RealToLogic;
+            SceneMgr.Instance.EntityManager.SetComponentData(entity, locoState);
+        }
     }
     
 }

@@ -62,7 +62,7 @@ namespace UnityMMO{
             if (GameVariable.IsSingleMode)
             {
                 //目前只有一个场景（本来就想做成无限大世界的）
-                SceneMgr.Instance.AddMainRole(1, 1, "testRole", 2, Vector3.zero);
+                SceneMgr.Instance.AddMainRole(1, 1, "testRole", 2, Vector3.zero, 100, 100);
                 SceneMgr.Instance.LoadScene(1001);
             }
             else

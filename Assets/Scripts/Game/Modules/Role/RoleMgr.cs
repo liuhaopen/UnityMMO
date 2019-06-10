@@ -38,7 +38,7 @@ public class RoleMgr
 		Instance = null;
 	}
 
-    public Entity AddMainRole(long uid, long typeID, string name, int career, Vector3 pos)
+    public Entity AddMainRole(long uid, long typeID, string name, int career, Vector3 pos, float curHp, float maxHp)
 	{
         GameObjectEntity roleGameOE = m_GameWorld.Spawn<GameObjectEntity>(ResMgr.GetInstance().GetPrefab("MainRole"));
         roleGameOE.name = "MainRole_"+uid;
@@ -46,7 +46,7 @@ public class RoleMgr
         roleGameOE.transform.localPosition = pos;
         Entity role = roleGameOE.Entity;
         RoleMgr.GetInstance().SetName(uid, name);
-        InitRole(role, uid, typeID, pos, pos);
+        InitRole(role, uid, typeID, pos, pos, curHp, maxHp);
         EntityManager.AddComponentData(role, new PosSynchInfo {LastUploadPos = float3.zero});
         EntityManager.AddComponent(role, ComponentType.Create<UserCommand>());
         
@@ -70,18 +70,18 @@ public class RoleMgr
         return mainRoleGOE.Entity == entity;
     }
 
-    public Entity AddRole(long uid, long typeID, Vector3 pos, Vector3 targetPos)
+    public Entity AddRole(long uid, long typeID, Vector3 pos, Vector3 targetPos, float curHp, float maxHp)
 	{
         GameObjectEntity roleGameOE = m_GameWorld.Spawn<GameObjectEntity>(ResMgr.GetInstance().GetPrefab("Role"));
         roleGameOE.name = "Role_"+uid;
         roleGameOE.transform.SetParent(container);
         roleGameOE.transform.localPosition = pos;
         Entity role = roleGameOE.Entity;
-        InitRole(role, uid, typeID, pos, targetPos);
+        InitRole(role, uid, typeID, pos, targetPos, curHp, maxHp);
         return role;
 	}
 
-    private void InitRole(Entity role, long uid, long typeID, Vector3 pos, Vector3 targetPos)
+    private void InitRole(Entity role, long uid, long typeID, Vector3 pos, Vector3 targetPos, float curHp, float maxHp)
     {
         EntityManager.AddComponentData(role, new MoveSpeed {Value = 1200});
         EntityManager.AddComponentData(role, new TargetPosition {Value = targetPos});
@@ -95,6 +95,7 @@ public class RoleMgr
         EntityManager.AddComponentData(role, new JumpState {JumpStatus=JumpState.State.None, JumpCount=0, OriginYPos=0, AscentHeight=0});
         EntityManager.AddComponentData(role, ActionData.Empty);
         EntityManager.AddComponentData(role, new PosOffset {Value = float3.zero});
+        EntityManager.AddComponentData(role, new HealthStateData {CurHp=curHp, MaxHp=maxHp});
         EntityManager.AddComponentData(role, new TimelineState {NewStatus=TimelineState.NewState.Allow, InterruptStatus=TimelineState.InterruptState.Allow});
         
         MoveQuery rmq = EntityManager.GetComponentObject<MoveQuery>(role);

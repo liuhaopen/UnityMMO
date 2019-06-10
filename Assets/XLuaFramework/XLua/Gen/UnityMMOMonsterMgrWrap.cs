@@ -160,8 +160,10 @@ namespace XLua.CSObjectWrap
                     long _typeID = LuaAPI.lua_toint64(L, 3);
                     UnityEngine.Vector3 _pos;translator.Get(L, 4, out _pos);
                     UnityEngine.Vector3 _targetPos;translator.Get(L, 5, out _targetPos);
+                    float _curHp = (float)LuaAPI.lua_tonumber(L, 6);
+                    float _maxHp = (float)LuaAPI.lua_tonumber(L, 7);
                     
-                        Unity.Entities.Entity gen_ret = gen_to_be_invoked.AddMonster( _uid, _typeID, _pos, _targetPos );
+                        Unity.Entities.Entity gen_ret = gen_to_be_invoked.AddMonster( _uid, _typeID, _pos, _targetPos, _curHp, _maxHp );
                         translator.Push(L, gen_ret);
                     
                     

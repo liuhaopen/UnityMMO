@@ -165,8 +165,10 @@ namespace XLua.CSObjectWrap
                     string _name = LuaAPI.lua_tostring(L, 4);
                     int _career = LuaAPI.xlua_tointeger(L, 5);
                     UnityEngine.Vector3 _pos;translator.Get(L, 6, out _pos);
+                    float _curHp = (float)LuaAPI.lua_tonumber(L, 7);
+                    float _maxHp = (float)LuaAPI.lua_tonumber(L, 8);
                     
-                        Unity.Entities.Entity gen_ret = gen_to_be_invoked.AddMainRole( _uid, _typeID, _name, _career, _pos );
+                        Unity.Entities.Entity gen_ret = gen_to_be_invoked.AddMainRole( _uid, _typeID, _name, _career, _pos, _curHp, _maxHp );
                         translator.Push(L, gen_ret);
                     
                     
@@ -254,8 +256,10 @@ namespace XLua.CSObjectWrap
                     long _typeID = LuaAPI.lua_toint64(L, 3);
                     UnityEngine.Vector3 _pos;translator.Get(L, 4, out _pos);
                     UnityEngine.Vector3 _targetPos;translator.Get(L, 5, out _targetPos);
+                    float _curHp = (float)LuaAPI.lua_tonumber(L, 6);
+                    float _maxHp = (float)LuaAPI.lua_tonumber(L, 7);
                     
-                        Unity.Entities.Entity gen_ret = gen_to_be_invoked.AddRole( _uid, _typeID, _pos, _targetPos );
+                        Unity.Entities.Entity gen_ret = gen_to_be_invoked.AddRole( _uid, _typeID, _pos, _targetPos, _curHp, _maxHp );
                         translator.Push(L, gen_ret);
                     
                     

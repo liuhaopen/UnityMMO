@@ -78,7 +78,7 @@ namespace XLua.CSObjectWrap
 		    Utils.BeginObjectRegister(typeof(UnityMMO.SceneInfoKey), L, translator, 0, 0, 0, 0);
 			Utils.EndObjectRegister(typeof(UnityMMO.SceneInfoKey), L, translator, null, null, null, null, null);
 			
-			Utils.BeginClassRegister(typeof(UnityMMO.SceneInfoKey), L, null, 7, 0, 0);
+			Utils.BeginClassRegister(typeof(UnityMMO.SceneInfoKey), L, null, 8, 0, 0);
             
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "None", UnityMMO.SceneInfoKey.None);
             
@@ -91,6 +91,8 @@ namespace XLua.CSObjectWrap
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "TargetPos", UnityMMO.SceneInfoKey.TargetPos);
             
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "JumpState", UnityMMO.SceneInfoKey.JumpState);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "HPChange", UnityMMO.SceneInfoKey.HPChange);
             
 			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
             
@@ -132,6 +134,10 @@ namespace XLua.CSObjectWrap
 				else if (LuaAPI.xlua_is_eq_str(L, 1, "JumpState"))
                 {
                     translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.JumpState);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "HPChange"))
+                {
+                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.HPChange);
                 }
 				else
                 {
@@ -504,7 +510,7 @@ namespace XLua.CSObjectWrap
 		    Utils.BeginObjectRegister(typeof(UnityMMO.LocomotionState.State), L, translator, 0, 0, 0, 0);
 			Utils.EndObjectRegister(typeof(UnityMMO.LocomotionState.State), L, translator, null, null, null, null, null);
 			
-			Utils.BeginClassRegister(typeof(UnityMMO.LocomotionState.State), L, null, 10, 0, 0);
+			Utils.BeginClassRegister(typeof(UnityMMO.LocomotionState.State), L, null, 11, 0, 0);
             
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Idle", UnityMMO.LocomotionState.State.Idle);
             
@@ -521,6 +527,8 @@ namespace XLua.CSObjectWrap
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "InAir", UnityMMO.LocomotionState.State.InAir);
             
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "BeHit", UnityMMO.LocomotionState.State.BeHit);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Dead", UnityMMO.LocomotionState.State.Dead);
             
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "StateNum", UnityMMO.LocomotionState.State.StateNum);
             
@@ -572,6 +580,10 @@ namespace XLua.CSObjectWrap
 				else if (LuaAPI.xlua_is_eq_str(L, 1, "BeHit"))
                 {
                     translator.PushUnityMMOLocomotionStateState(L, UnityMMO.LocomotionState.State.BeHit);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Dead"))
+                {
+                    translator.PushUnityMMOLocomotionStateState(L, UnityMMO.LocomotionState.State.Dead);
                 }
 				else if (LuaAPI.xlua_is_eq_str(L, 1, "StateNum"))
                 {

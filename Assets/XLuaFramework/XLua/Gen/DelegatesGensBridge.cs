@@ -1161,7 +1161,7 @@ namespace XLua
 #endif
 		}
         
-		public Unity.Entities.Entity __Gen_Delegate_Imp50(object p0, long p1, long p2, object p3, int p4, UnityEngine.Vector3 p5)
+		public Unity.Entities.Entity __Gen_Delegate_Imp50(object p0, long p1, long p2, object p3, int p4, UnityEngine.Vector3 p5, float p6, float p7)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -1176,8 +1176,10 @@ namespace XLua
                 translator.PushAny(L, p3);
                 LuaAPI.xlua_pushinteger(L, p4);
                 translator.PushUnityEngineVector3(L, p5);
+                LuaAPI.lua_pushnumber(L, p6);
+                LuaAPI.lua_pushnumber(L, p7);
                 
-                PCall(L, 6, 1, errFunc);
+                PCall(L, 8, 1, errFunc);
                 
                 
                 Unity.Entities.Entity __gen_ret;translator.Get(L, errFunc + 1, out __gen_ret);

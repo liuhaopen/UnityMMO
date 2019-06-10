@@ -1,6 +1,7 @@
 
 using Unity.Entities;
 using UnityEngine;
+using UnityMMO;
 
 [DisableAutoCreation]
 public class HandleDamage : BaseComponentSystem
@@ -25,7 +26,7 @@ public class HandleDamage : BaseComponentSystem
         {
             var healthState = healthStateArray[i];
             
-            if (healthState.health <= 0)
+            if (healthState.CurHp <= 0)
                 continue;
 
             var entity = entityArray[i]; 
@@ -46,7 +47,8 @@ public class HandleDamage : BaseComponentSystem
                 var damageEvent = damageBuffer[eventIndex];
     
                 //GameDebug.Log(string.Format("ApplyDamage. Target:{0} Instigator:{1} Dam:{2}", healthState.name, m_world.GetGameObjectFromEntity(damageEvent.instigator), damageEvent.damage ));
-                healthState.ApplyDamage(ref damageEvent, (int)Time.time);
+                
+                // healthState.ApplyDamage(ref damageEvent, (int)Time.time);
                 EntityManager.SetComponentData(entity,healthState);
                 
                 impulseVec += damageEvent.direction * damageEvent.impulse;

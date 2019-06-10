@@ -146,7 +146,9 @@ function Time:StartSynchServerTime(  )
             	--从请求至收到回复的时间间隔
             	local time_offset = _Time.realtimeSinceStartup*1000 - _Time.req_time
                 -- print('Cat:LoginController.lua[118] server_time_info:', server_time_info.server_time, " time_offset:", time_offset)
-                Time:SetServerTime(server_time_info.server_time+time_offset/2)
+                local server_time = server_time_info.server_time+time_offset/2
+                Time:SetServerTime(server_time)
+                CS.UnityMMO.TimeEx.ServerTime = Time:GetServerTime()
                 local timer = Timer.New(function()
                 	--每隔几秒就同步一次
 	                synch_time()

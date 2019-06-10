@@ -1579,7 +1579,7 @@ namespace SprotoType {
 
 
 	public class scene_main_role_info : SprotoTypeBase {
-		private static int max_field_count = 9;
+		private static int max_field_count = 11;
 		
 		
 		private Int64 _scene_uid; // tag 0
@@ -1654,13 +1654,31 @@ namespace SprotoType {
 			get { return base.has_field.has_field (7); }
 		}
 
-		private scene_role_base_info _base_info; // tag 8
+		private Int64 _cur_hp; // tag 8
+		public Int64 cur_hp {
+			get { return _cur_hp; }
+			set { base.has_field.set_field (8, true); _cur_hp = value; }
+		}
+		public bool HasCur_hp {
+			get { return base.has_field.has_field (8); }
+		}
+
+		private Int64 _max_hp; // tag 9
+		public Int64 max_hp {
+			get { return _max_hp; }
+			set { base.has_field.set_field (9, true); _max_hp = value; }
+		}
+		public bool HasMax_hp {
+			get { return base.has_field.has_field (9); }
+		}
+
+		private scene_role_base_info _base_info; // tag 10
 		public scene_role_base_info base_info {
 			get { return _base_info; }
-			set { base.has_field.set_field (8, true); _base_info = value; }
+			set { base.has_field.set_field (10, true); _base_info = value; }
 		}
 		public bool HasBase_info {
-			get { return base.has_field.has_field (8); }
+			get { return base.has_field.has_field (10); }
 		}
 
 		public scene_main_role_info () : base(max_field_count) {}
@@ -1698,6 +1716,12 @@ namespace SprotoType {
 					this.pos_z = base.deserialize.read_integer ();
 					break;
 				case 8:
+					this.cur_hp = base.deserialize.read_integer ();
+					break;
+				case 9:
+					this.max_hp = base.deserialize.read_integer ();
+					break;
+				case 10:
 					this.base_info = base.deserialize.read_obj<scene_role_base_info> ();
 					break;
 				default:
@@ -1743,7 +1767,15 @@ namespace SprotoType {
 			}
 
 			if (base.has_field.has_field (8)) {
-				base.serialize.write_obj (this.base_info, 8);
+				base.serialize.write_integer (this.cur_hp, 8);
+			}
+
+			if (base.has_field.has_field (9)) {
+				base.serialize.write_integer (this.max_hp, 9);
+			}
+
+			if (base.has_field.has_field (10)) {
+				base.serialize.write_obj (this.base_info, 10);
 			}
 
 			return base.serialize.close ();

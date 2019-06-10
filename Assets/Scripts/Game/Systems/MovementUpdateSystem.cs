@@ -34,7 +34,8 @@ public class MovementUpdateSystem : BaseComponentSystem
             var speed = speeds[i].Value;
             var posOffset = posOffsets[i].Value;
             var curLocoStateObj = locoStates[i];
-            if (speed <= 0 || curLocoStateObj.LocoState==LocomotionState.State.BeHit)
+            // if (speed <= 0 || curLocoStateObj.LocoState==LocomotionState.State.BeHit|| curLocoStateObj.LocoState==LocomotionState.State.Dead)
+            if (speed <= 0)
                 continue;
             var curTrans = transforms[i];
             float3 startPos = curTrans.localPosition;
@@ -159,6 +160,8 @@ class MovementHandleGroundCollision : BaseComponentSystem
         for (int i = 0; i < locoStates.Length; i++)
         {
             var locoState = locoStates[i];
+            if (locoState.LocoState == LocomotionState.State.Dead)
+                continue;
             var query = querys[i];
             // Check for ground change (hitting ground or leaving ground)  
             var isOnGround = locoState.IsOnGround();
@@ -210,7 +213,7 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(PosSynchInfo));
+        group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(PosSynchInfo), typeof(LocomotionState));
     }
 
     protected override void OnUpdate()
@@ -219,7 +222,10 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
         var targetPosArray = group.GetComponentDataArray<TargetPosition>();
         var posArray = group.GetComponentArray<Transform>();
         var moveSpeedArray = group.GetComponentDataArray<MoveSpeed>();
-        
+        var locoStates = group.GetComponentDataArray<LocomotionState>();
+        var curLocoStateObj = locoStates[0];
+        if (curLocoStateObj.LocoState==LocomotionState.State.BeHit|| curLocoStateObj.LocoState==LocomotionState.State.Dead)
+            return;
         var input = GameInput.GetInstance().JoystickDir;
         if (input.sqrMagnitude > 0)
         {

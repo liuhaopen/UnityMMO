@@ -62,7 +62,12 @@ local update_around_objs = function ( sceneMgr, role_info )
 					target_pos = sceneMgr.entityMgr:GetComponentData(entity, "UMO.TargetPos")
 				end
 				local type_id = sceneMgr.entityMgr:GetComponentData(entity, "UMO.TypeID")
-				role_info.change_obj_infos = SceneHelper.AddInfoItem(role_info.change_obj_infos, scene_uid, {key=SceneConst.InfoKey.EnterView, value=scene_obj_type.value..","..type_id.value..","..math.floor(pos.x)..","..math.floor(pos.y)..","..math.floor(pos.z)..","..math.floor(target_pos.x)..","..math.floor(target_pos.y)..","..math.floor(target_pos.z), time=cur_time})
+				local eventStr = scene_obj_type.value..","..type_id.value..","..math.floor(pos.x)..","..math.floor(pos.y)..","..math.floor(pos.z)..","..math.floor(target_pos.x)..","..math.floor(target_pos.y)..","..math.floor(target_pos.z)
+				if sceneMgr.entityMgr:HasComponent(entity, "UMO.HP") then
+					local hp = sceneMgr.entityMgr:GetComponentData(entity, "UMO.HP")
+					eventStr = eventStr..","..math.floor(hp.cur)..","..math.floor(hp.max)
+				end
+				role_info.change_obj_infos = SceneHelper.AddInfoItem(role_info.change_obj_infos, scene_uid, {key=SceneConst.InfoKey.EnterView, value=eventStr, time=cur_time})
 			end
 		else
 			if scene_uid then

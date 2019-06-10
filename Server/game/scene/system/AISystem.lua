@@ -16,10 +16,10 @@ end
 
 function AISystem:OnUpdate(  )
 	local deltaTime = Time.deltaTime
-	local entities = self.group:GetEntityArray()
+	-- local entities = self.group:GetEntityArray()
 	local uids = self.group:GetComponentDataArray("UMO.UID")
 	for i=1,uids.Length do
-		local graphsowner = self.monsterMgr:GetGraphsOwner(uids[i].value)
+		local graphsowner = self.monsterMgr:GetGraphsOwner(uids[i])
 		graphsowner:Update(deltaTime)
 	end
 end

@@ -19,7 +19,7 @@ function FightState:OnInit(  )
 	self.monsterMgr = self.sceneMgr.monsterMgr
 	self.cfg = self.blackboard:GetVariable("cfg")
 
-	self.uid = self.entityMgr:GetComponentData(self.entity, "UMO.UID").value
+	self.uid = self.entityMgr:GetComponentData(self.entity, "UMO.UID")
 end
 
 function FightState:OnEnter(  )
@@ -102,7 +102,7 @@ function FightState:Attack(  )
 		target_pos_y = math.floor(enemyPos.y),
 		target_pos_z = math.floor(enemyPos.z),
 		-- direction = math.floor(angle*100),
-		uid_defenders_map = {[defender_uid.value]=true},	
+		uid_defenders_map = {[defender_uid]=true},	
 	})
 	
 end

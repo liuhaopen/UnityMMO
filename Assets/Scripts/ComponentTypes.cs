@@ -50,6 +50,7 @@ namespace UnityMMO
             TrebleJump,
             InAir,
             BeHit,
+            Dead,
             StateNum,
         }
         public State LocoState;
@@ -171,13 +172,20 @@ namespace UnityMMO
         public const int kPlayer = 0;
         public const int kEnemy = 1;
     }
-    public struct ModifyHealthQueue : IComponentData
+    // public struct ModifyHealthQueue : IComponentData
+    // {
+    //     public NativeArray<float> queue;
+    // }
+    // public struct Health : IComponentData
+    // {
+    //     public float Value;
+    // }
+    public struct HealthStateData : IComponentData      
     {
-        public NativeArray<float> queue;
-    }
-    public struct Health : IComponentData
-    {
-        public float Value;
+        public float CurHp;
+        public float MaxHp;     
+        public int DeathTick;
+        public Entity KilledBy;
     }
     public struct SceneObjectData : IComponentData
     {

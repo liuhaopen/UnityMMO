@@ -32,13 +32,13 @@ public class UpdateRoleAnimatorSystem : BaseComponentSystem
             var looksEntity = looksInfo.LooksEntity;
             var animator = m_world.GetEntityManager().GetComponentObject<Animator>(looksEntity);
             if (animator!=null)
-                UpdateAnimator(animator, locoStates[i].LocoState);
+                UpdateAnimator(animator, locoStates[i]);
         }
     }
 
-    void UpdateAnimator(Animator animator, LocomotionState.State locoState)
+    void UpdateAnimator(Animator animator, LocomotionState locoData)
     {
-        // Debug.Log("locoState : "+locoState.ToString());
+        LocomotionState.State locoState = locoData.LocoState;
         if (locoState == LocomotionState.State.Idle && !animator.GetCurrentAnimatorStateInfo(0).IsName("idle"))
         {
             // animator.CrossFade("idle", 0.2f, 0, Time.deltaTime);
@@ -65,5 +65,18 @@ public class UpdateRoleAnimatorSystem : BaseComponentSystem
         {
             animator.Play("jump3");
         }
+        else if (locoState == LocomotionState.State.Dead && !animator.GetCurrentAnimatorStateInfo(0).IsName("death"))
+        {
+            if (Time.time - locoData.StartTime <= 0.2)
+            {
+                animator.Play("death");
+            }
+            else
+            {
+                //have been dead for a long time
+                animator.Play("death", 0, 1.0f);
+            }
+        }
+        
     }
 }

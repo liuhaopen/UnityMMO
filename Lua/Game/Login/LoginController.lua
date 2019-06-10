@@ -76,7 +76,7 @@ function LoginController:ReqMainRole(  )
         print("Cat:LoginController [end]")
         local role_info = ack_data.role_info
         local pos = Vector3.New(role_info.pos_x/GameConst.RealToLogic, role_info.pos_y/GameConst.RealToLogic, role_info.pos_z/GameConst.RealToLogic)
-        SceneMgr.Instance:AddMainRole(role_info.scene_uid, role_info.role_id, role_info.name, role_info.career, pos)
+        SceneMgr.Instance:AddMainRole(role_info.scene_uid, role_info.role_id, role_info.name, role_info.career, pos, role_info.cur_hp, role_info.max_hp)
         SceneMgr.Instance:LoadScene(role_info.scene_id)
         
         MainRole:GetInstance():SetBaseInfo(role_info)

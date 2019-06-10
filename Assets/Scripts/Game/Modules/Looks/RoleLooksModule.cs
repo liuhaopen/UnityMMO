@@ -94,8 +94,8 @@ public class HandleRoleLooksNetRequest : BaseComponentSystem
                     if (m_world.GetEntityManager().HasComponent<HealthStateData>(owner))
                     {
                         var hpData = m_world.GetEntityManager().GetComponentData<HealthStateData>(owner);
-                        hpData.health = rsp.role_looks_info.hp;
-                        hpData.maxHealth = rsp.role_looks_info.max_hp;
+                        hpData.CurHp = rsp.role_looks_info.hp;
+                        hpData.MaxHp = rsp.role_looks_info.max_hp;
                         m_world.GetEntityManager().SetComponentData<HealthStateData>(owner, hpData);
                     }
                     bool hasTrans = m_world.GetEntityManager().HasComponent<Transform>(owner);

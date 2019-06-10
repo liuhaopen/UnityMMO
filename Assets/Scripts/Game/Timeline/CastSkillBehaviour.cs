@@ -36,7 +36,7 @@ public class CastSkillBehaviour : PlayableBehaviour
     public override void OnBehaviourPlay(Playable playable, FrameData info)
     {
         var isMainRole = RoleMgr.GetInstance().IsMainRoleEntity(Owner);
-        Debug.Log("cast skill behav isMainRole :"+isMainRole.ToString());
+        // Debug.Log("cast skill behav isMainRole :"+isMainRole.ToString());
         if (isMainRole)
         {
             var trans = EntityMgr.GetComponentObject<Transform>(Owner);

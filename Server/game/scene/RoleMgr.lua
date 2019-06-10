@@ -18,7 +18,7 @@ end
 
 function RoleMgr:InitArchetype(  )
 	self.role_archetype = self.entityMgr:CreateArchetype({
-		"UMO.Position", "UMO.TargetPos", "UMO.UID", "UMO.TypeID", "UMO.HP", "UMO.SceneObjType", "UMO.MoveSpeed", "UMO.AOIHandle", 
+		"UMO.Position", "UMO.TargetPos", "UMO.UID", "UMO.TypeID", "UMO.HP", "UMO.SceneObjType", "UMO.MoveSpeed", "UMO.AOIHandle", "UMO.DeadState", "UMO.DamageEvents"
 	})
 end
 
@@ -26,7 +26,7 @@ function RoleMgr:CreateRole( uid, roleID, pos_x, pos_y, pos_z, aoi_handle )
 	local role = self.entityMgr:CreateEntityByArcheType(self.role_archetype)
 	self.entityMgr:SetComponentData(role, "UMO.Position", {x=pos_x, y=pos_y, z=pos_z})
 	self.entityMgr:SetComponentData(role, "UMO.TargetPos", {x=pos_x, y=pos_y, z=pos_z})
-	self.entityMgr:SetComponentData(role, "UMO.UID", {value=uid})
+	self.entityMgr:SetComponentData(role, "UMO.UID", uid)
 	self.entityMgr:SetComponentData(role, "UMO.TypeID", {value=roleID})
 	self.entityMgr:SetComponentData(role, "UMO.HP", {cur=1000, max=1000})
 	self.entityMgr:SetComponentData(role, "UMO.SceneObjType", {value=SceneConst.ObjectType.Role})
@@ -116,6 +116,8 @@ function RoleMgr:GetMainRoleInfo( roleID )
 	local role_info = self.roleList[roleID]
 	role_info = role_info and role_info.base_info or nil
 	if role_info then
+		local entity = self.sceneMgr:GetEntity(self.roleList[roleID].scene_uid)
+		local hpData = self.sceneMgr.entityMgr:GetComponentData(entity, "UMO.HP")
 		local result =  {
 			role_info={
 				scene_uid=self.roleList[roleID].scene_uid,
@@ -126,6 +128,8 @@ function RoleMgr:GetMainRoleInfo( roleID )
 				pos_x = role_info.pos_x,
 				pos_y = role_info.pos_y,
 				pos_z = role_info.pos_z,
+				cur_hp = hpData.cur,
+				max_hp = hpData.max,
 				base_info = {
 					level = 0,
 				},
