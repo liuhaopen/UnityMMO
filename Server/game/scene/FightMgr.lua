@@ -59,7 +59,12 @@ function FightMgr:CalDefenderList( fight_info, attacker_aoi_handle )
 		around[attacker_aoi_handle] = nil--把攻击者自己去掉
 		for aoi_handle,v in pairs(around) do
 			local uid = self.aoi:get_user_data(aoi_handle, "uid")
-			uid_defenders_map[uid] = true
+			local entity = self.sceneMgr:GetEntity(uid)
+			local hpData = self.entityMgr:GetComponentData(entity, "UMO.HP")
+			local isBeatable = self.entityMgr:HasComponent(entity, "UMO.Beatable")
+			if hpData.cur > 0 and isBeatable then
+				uid_defenders_map[uid] = true
+			end
 		end
 	end
 	self.aoi:remove(skill_bomb)
@@ -87,7 +92,7 @@ function FightMgr:AddDamageEventForDefenders( fight_event, uid_defenders_map )
 end
 
 function FightMgr:CalDamage( fight_info, entity )
-	return math.random(50, 1234)
+	return math.random(100, 550)
 end
 
 return FightMgr

@@ -31,11 +31,12 @@ namespace XLua.CSObjectWrap
 			Utils.EndObjectRegister(type, L, translator, null, null,
 			    null, null, null);
 
-		    Utils.BeginClassRegister(type, L, __CreateInstance, 1, 1, 1);
+		    Utils.BeginClassRegister(type, L, __CreateInstance, 1, 2, 1);
 			
 			
             
-			Utils.RegisterFunc(L, Utils.CLS_GETTER_IDX, "ServerTime", _g_get_ServerTime);
+			Utils.RegisterFunc(L, Utils.CLS_GETTER_IDX, "ServerTimeSec", _g_get_ServerTimeSec);
+            Utils.RegisterFunc(L, Utils.CLS_GETTER_IDX, "ServerTime", _g_get_ServerTime);
             
 			Utils.RegisterFunc(L, Utils.CLS_SETTER_IDX, "ServerTime", _s_set_ServerTime);
             
@@ -60,11 +61,23 @@ namespace XLua.CSObjectWrap
         
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_ServerTimeSec(RealStatePtr L)
+        {
+		    try {
+            
+			    LuaAPI.lua_pushint64(L, UnityMMO.TimeEx.ServerTimeSec);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         static int _g_get_ServerTime(RealStatePtr L)
         {
 		    try {
             
-			    LuaAPI.lua_pushnumber(L, UnityMMO.TimeEx.ServerTime);
+			    LuaAPI.lua_pushint64(L, UnityMMO.TimeEx.ServerTime);
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }
@@ -78,7 +91,7 @@ namespace XLua.CSObjectWrap
         {
 		    try {
                 
-			    UnityMMO.TimeEx.ServerTime = (float)LuaAPI.lua_tonumber(L, 1);
+			    UnityMMO.TimeEx.ServerTime = LuaAPI.lua_toint64(L, 1);
             
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);

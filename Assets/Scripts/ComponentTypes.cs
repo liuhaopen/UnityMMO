@@ -54,6 +54,16 @@ namespace UnityMMO
             StateNum,
         }
         public State LocoState;
+        // private State locoState;
+        // public State LocoState
+        // {
+        //     get => locoState;
+        //     set
+        //     {
+        //         locoState = value;
+        //         Debug.Log("set locostate : "+value+" track:"+new System.Diagnostics.StackTrace().ToString());
+        //     }
+        // }
 
         public bool IsOnGround()
         {
@@ -81,6 +91,7 @@ namespace UnityMMO
             Loading,//加载中
             Loaded,//已加载
             Deleting,//远离主角，别加载了
+            DontLoad,//不需要再加载了
         }
         public ResState UIResState;
         public Entity UIEntity;

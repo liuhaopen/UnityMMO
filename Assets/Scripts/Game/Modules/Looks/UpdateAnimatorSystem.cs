@@ -5,9 +5,9 @@ using UnityEngine.Playables;
 using UnityMMO;
 
 [DisableAutoCreation]
-public class UpdateRoleAnimatorSystem : BaseComponentSystem
+public class UpdateAnimatorSystem : BaseComponentSystem
 {
-    public UpdateRoleAnimatorSystem(GameWorld world) : base(world) {}
+    public UpdateAnimatorSystem(GameWorld world) : base(world) {}
 
     ComponentGroup group;
 
@@ -39,6 +39,7 @@ public class UpdateRoleAnimatorSystem : BaseComponentSystem
     void UpdateAnimator(Animator animator, LocomotionState locoData)
     {
         LocomotionState.State locoState = locoData.LocoState;
+        // Debug.Log("locoState : "+locoState);
         if (locoState == LocomotionState.State.Idle && !animator.GetCurrentAnimatorStateInfo(0).IsName("idle"))
         {
             // animator.CrossFade("idle", 0.2f, 0, Time.deltaTime);
@@ -67,15 +68,16 @@ public class UpdateRoleAnimatorSystem : BaseComponentSystem
         }
         else if (locoState == LocomotionState.State.Dead && !animator.GetCurrentAnimatorStateInfo(0).IsName("death"))
         {
-            if (Time.time - locoData.StartTime <= 0.2)
-            {
+            // Debug.Log("TimeEx.ServerTime:"+TimeEx.ServerTime+" startTime:"+locoData.StartTime+" "+((Time.time - locoData.StartTime)));
+            // if (Time.time - locoData.StartTime <= 1)
+            // {
                 animator.Play("death");
-            }
-            else
-            {
-                //have been dead for a long time
-                animator.Play("death", 0, 1.0f);
-            }
+            // }
+            // else
+            // {
+            //     //have been dead for a long time
+            //     animator.Play("death", 0, 1.0f);
+            // }
         }
         
     }

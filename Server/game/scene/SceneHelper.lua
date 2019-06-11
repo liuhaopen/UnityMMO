@@ -1,3 +1,5 @@
+local SceneConst = require "game.scene.SceneConst"
+local Time = Time
 local SceneHelper = {
 	scene_uid_counter = {0, 0, 0},
 }
@@ -27,6 +29,14 @@ function SceneHelper.AddInfoItem( change_obj_infos, scene_uid, info_item )
 	end
 	table.insert(cur_info.info_list, info_item)
 	return change_obj_infos
+end
+
+function SceneHelper.ChangePos( entity, pos, entityMgr, eventMgr )
+	entityMgr:SetComponentData(entity, "UMO.Position", pos)
+	entityMgr:SetComponentData(entity, "UMO.TargetPos", pos)
+	local uid = entityMgr:GetComponentData(entity, "UMO.UID")
+	local change_pos_event_info = {key=SceneConst.InfoKey.PosChange, value=math.floor(pos.x)..","..math.floor(pos.y)..","..math.floor(pos.z), time=Time.timeMS}
+	eventMgr:AddSceneEvent(uid, change_pos_event_info)
 end
 
 return SceneHelper

@@ -37,7 +37,7 @@ public class NameboardSystem : BaseComponentSystem
     void UpdateNameboard(Transform target, NameboardData nameboardData, Entity entity)
     {
         Vector2 board2DPosition = Camera.main.WorldToScreenPoint(target.position);
-        Vector3 BloodSlotWorldPos = target.position + new Vector3 (0f, 1.8f, 0f);
+        Vector3 BloodSlotWorldPos = target.position + new Vector3 (0f, 1.5f, 0f);
         Vector3 BloodSlotToCamera = Camera.main.transform.position - BloodSlotWorldPos;
         float BloodSlotDIs = BloodSlotToCamera.magnitude;
         float maxVisualDis = 20;

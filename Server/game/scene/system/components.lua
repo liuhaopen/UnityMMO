@@ -16,4 +16,5 @@ ECS.TypeManager.RegisterType("UMO.DamageEvents", {})
 ECS.TypeManager.RegisterType("UMO.MonsterAI", 0)
 ECS.TypeManager.RegisterType("UMO.RoleInfo", {name="", base_info=nil})
 --0活着的，1死了，2幽灵
-ECS.TypeManager.RegisterType("UMO.DeadState", 0)
+-- ECS.TypeManager.RegisterType("UMO.DeadState", 0)
+ECS.TypeManager.RegisterType("UMO.Beatable", true)

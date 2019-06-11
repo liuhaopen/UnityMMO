@@ -163,10 +163,10 @@ public class SynchFromNet {
         long new_x = Int64.Parse(pos_strs[0]);
         long new_y = Int64.Parse(pos_strs[1]);
         long new_z = Int64.Parse(pos_strs[2]);
-        if (SceneMgr.Instance.EntityManager.HasComponent<Transform>(entity))
+        // if (SceneMgr.Instance.EntityManager.HasComponent<Transform>(entity))
         {
             Transform trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(entity);
-            trans.localPosition = new Vector3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic);
+            trans.localPosition = SceneMgr.Instance.GetCorrectPos(new Vector3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic));
             SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = trans.localPosition});
         }
     }
@@ -218,22 +218,42 @@ public class SynchFromNet {
         bool hasNameboardData = SceneMgr.Instance.EntityManager.HasComponent<NameboardData>(entity);
         if (hasNameboardData)
         {
-            var nameBobardData = SceneMgr.Instance.EntityManager.GetComponentData<NameboardData>(entity);
-            if (nameBobardData.UIResState==NameboardData.ResState.Loaded && !nameBobardData.UIEntity.Equals(Entity.Null))
+            var nameboardData = SceneMgr.Instance.EntityManager.GetComponentData<NameboardData>(entity);
+            if (nameboardData.UIResState==NameboardData.ResState.Loaded)
             {
-                var nameboardNode = SceneMgr.Instance.EntityManager.GetComponentObject<Nameboard>(nameBobardData.UIEntity);
+                var nameboardNode = SceneMgr.Instance.EntityManager.GetComponentObject<Nameboard>(nameboardData.UIEntity);
                 if (nameboardNode != null)
                 {
                     nameboardNode.CurHp = curHp;
+                    //remove nameboard when dead
+                    var isDead = strs.Length == 2 && strs[1]=="dead";
+                    if (isDead)
+                    {
+                        SceneMgr.Instance.World.RequestDespawn(nameboardNode.gameObject);
+                        nameboardData.UIResState = NameboardData.ResState.DontLoad;
+                        nameboardData.UIEntity = Entity.Null;
+                        SceneMgr.Instance.EntityManager.SetComponentData(entity, nameboardData);
+                    }
+                }
+            }
+            else if (nameboardData.UIResState==NameboardData.ResState.DontLoad)
+            {
+                var isRelive = strs.Length == 2 && strs[1]=="relive";
+                Debug.Log("isRelive : "+isRelive);
+                if (isRelive)
+                {
+                    nameboardData.UIResState = NameboardData.ResState.WaitLoad;
+                    SceneMgr.Instance.EntityManager.SetComponentData(entity, nameboardData);
                 }
             }
         }
-        if (curHp <= 0.001)
+        if (strs.Length == 2)
         {
+            var isRelive = strs[1]=="relive";
             var locoState = SceneMgr.Instance.EntityManager.GetComponentData<LocomotionState>(entity);
-            locoState.LocoState = LocomotionState.State.Dead;
-            Debug.Log("Time : "+TimeEx.ServerTime+" time:"+change_info.time);
-            locoState.StartTime = change_info.time/GameConst.RealToLogic;
+            locoState.LocoState = isRelive?LocomotionState.State.Idle:LocomotionState.State.Dead;
+            // Debug.Log("Time : "+TimeEx.ServerTime.ToString()+" time:"+change_info.time+" isRelive:"+isRelive+" state:"+locoState.LocoState.ToString());
+            locoState.StartTime = Time.time - (TimeEx.ServerTime-change_info.time)/1000.0f;
             SceneMgr.Instance.EntityManager.SetComponentData(entity, locoState);
         }
     }

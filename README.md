@@ -15,5 +15,5 @@
 见[Wiki](https://github.com/liuhaopen/UnityMMO/wiki/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0 "Wiki")  
 
 # 近况Gif
-完成怪物追捕和攻击的逻辑：    
-![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/monster_fighting.gif)     
+完成怪物扣血和死亡复活逻辑：    
+![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/monster_kill_relive.gif)     

@@ -5,7 +5,7 @@ local MonsterFSM = require "game.scene.ai.MonsterFSM"
 local BP = require("Blueprint")
 local MonsterMgr = BaseClass()
 local test_info = {
-	create_num = 1,--只创建1只怪物，方便调试
+	-- create_num = 1,--只创建1只怪物，方便调试
 }
 
 function MonsterMgr:Init( sceneMgr, cfg )
@@ -23,7 +23,7 @@ end
 
 function MonsterMgr:InitArchetype(  )
 	self.monster_archetype = self.entityMgr:CreateArchetype({
-		"UMO.Position", "UMO.TargetPos", "UMO.UID", "UMO.TypeID", "UMO.HP", "UMO.SceneObjType", "UMO.MonsterAI", "UMO.PatrolInfo", "UMO.MoveSpeed", "UMO.AOIHandle", "UMO.DeadState", "UMO.DamageEvents"
+		"UMO.Position", "UMO.TargetPos", "UMO.UID", "UMO.TypeID", "UMO.HP", "UMO.SceneObjType", "UMO.MonsterAI", "UMO.PatrolInfo", "UMO.MoveSpeed", "UMO.AOIHandle", "UMO.Beatable", "UMO.DamageEvents"
 	})
 end
 

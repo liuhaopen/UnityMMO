@@ -14,35 +14,35 @@ local config = {
 	[120000] = {
 		skill_id = 120000, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 5000,
+				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 600,
 			},
 		},	
 	},
 	[120001] = {
 		skill_id = 120001, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 5000,
+				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 600,
 			},
 		},	
 	},
 	[120002] = {
 		skill_id = 120002, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 5000,
+				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 600,
 			},
 		},	
 	},
 	[120003] = {
 		skill_id = 120003, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 5000,
+				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 600,
 			},
 		},	
 	},
 	[120013] = {
 		skill_id = 120013, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 5000,
+				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 600,
 			},
 		},	
 	},
@@ -50,7 +50,7 @@ local config = {
 	[200000] = {
 		skill_id = 200000, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 5000,
+				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 600,
 			},
 		},	
 	},

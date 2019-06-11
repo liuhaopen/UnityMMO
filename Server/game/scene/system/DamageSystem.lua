@@ -8,7 +8,7 @@ function DamageSystem:OnCreateManager(  )
 	ECS.ComponentSystem.OnCreateManager(self)
 	self.fightMgr = self.sceneMgr.fightMgr
 
-	self.group = self:GetComponentGroup({"UMO.DamageEvents", "UMO.AOIHandle", "UMO.HP", "UMO.DeadState"})
+	self.group = self:GetComponentGroup({"UMO.DamageEvents", "UMO.AOIHandle", "UMO.HP"})
 end
 
 function DamageSystem:OnUpdate(  )
@@ -46,11 +46,11 @@ function DamageSystem:HandleDamage( entity, dEvents, hp )
 			change_target_pos_event_info = {key=SceneConst.InfoKey.HPChange, value=math.floor(hp.cur), time=Time.timeMS}
 		else
 			--enter dead state
-			self.m_EntityManager:SetComponentData(entity, "UMO.DeadState", 1)
+			-- self.m_EntityManager:SetComponentData(entity, "UMO.DeadState", 1)
 			if self.m_EntityManager:HasComponent(entity, "UMO.MonsterAI") then
 				self.sceneMgr.monsterMgr:TriggerState(uid, "Dead")
 			end
-			change_target_pos_event_info = {key=SceneConst.InfoKey.HPChange, value=math.floor(hp.cur), time=Time.timeMS}
+			change_target_pos_event_info = {key=SceneConst.InfoKey.HPChange, value=math.floor(hp.cur)..",dead", time=Time.timeMS}
 		end
 		self.sceneMgr.eventMgr:AddSceneEvent(uid, change_target_pos_event_info)
 	end

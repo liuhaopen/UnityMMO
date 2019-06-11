@@ -46,7 +46,7 @@ namespace UnityMMO{
 
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<TimelineSpawnSystem>(m_GameWorld));
             
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateRoleAnimatorSystem>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateAnimatorSystem>(m_GameWorld));
 
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<ResetPosOffsetSystem>(m_GameWorld));
             

@@ -9,7 +9,7 @@ local SubState = {
 	GoBack = 3,--回到巡逻点
 }
 function FightState:OnInit(  )
-	print('Cat:FightState.lua[OnInit]')
+	-- print('Cat:FightState.lua[OnInit]')
 	self.aoi_handle = self.blackboard:GetVariable("aoi_handle")
 	self.aoi_area = self.blackboard:GetVariable("aoi_area")
 	self.entity = self.blackboard:GetVariable("entity")

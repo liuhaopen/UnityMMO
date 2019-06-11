@@ -3,15 +3,26 @@ using UnityEngine;
 namespace UnityMMO{
     public static class TimeEx
     {
-        public static float ServerTime = 0;
-        // public static float GetServerTime(this Time time)
-        // {
-        //     return TimeEx.ServerTime;
-        // }
+        private static long ServerTimeMSOnStart = 0;
+        //获取服务器时间，单位秒
+        public static long ServerTimeSec{
+            get 
+            {
+                return (long)Math.Floor((ServerTimeMSOnStart+1000*Time.realtimeSinceStartup)/1000+0.5f);
+            }
+        }
 
-        // public static void SetServerTime(this Time time, float serverTime)
-        // {
-        //     TimeEx.ServerTime = serverTime;
-        // }
+        //获取服务器时间，单位毫秒
+        public static long ServerTime{
+            get 
+            {
+                return (long)Math.Floor(ServerTimeMSOnStart+1000*Time.realtimeSinceStartup+0.5);
+            }
+            set 
+            {
+                ServerTimeMSOnStart = (long)Math.Floor(value-Time.realtimeSinceStartup*1000+0.5);
+            }
+        }
+
     }
 }

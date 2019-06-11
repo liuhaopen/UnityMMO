@@ -26,12 +26,12 @@ public class CommonAnimatorBehaviour : StateMachineBehaviour
         if (SceneMgr.Instance.EntityManager.HasComponent<LocomotionState>(goe.Entity))
         {
             var locoState = SceneMgr.Instance.EntityManager.GetComponentData<LocomotionState>(goe.Entity);
-            // if (stateInfo.IsName("behit"))
-            // {
+            if (locoState.LocoState == LocomotionState.State.BeHit)
+            {
                 locoState.LocoState = LocomotionState.State.Idle;
                 locoState.StartTime = Time.time;
                 SceneMgr.Instance.EntityManager.SetComponentData<LocomotionState>(goe.Entity, locoState);
-            // }
+            }
         }
     }
 

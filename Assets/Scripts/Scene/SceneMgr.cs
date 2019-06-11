@@ -38,13 +38,16 @@ public class SceneMgr : MonoBehaviour
     public LayerMask groundLayer = 1 << 0;
     float lastCheckMainRolePosTime = 0;
     Transform moveQueryContainer = null;
+    Transform flyWordContainer = null;
     public EntityManager EntityManager { get => m_GameWorld.GetEntityManager();}
+    public GameWorld World { get => m_GameWorld;}
     public bool IsLoadingScene { get => isLoadingScene; set => isLoadingScene = value; }
     public CinemachineFreeLook FreeLookCamera { get => freeLookCamera; set => freeLookCamera = value; }
     public Transform MainCameraTrans { get => mainCameraTrans; }
     public Transform FreeLookCameraTrans { get => freeLookCameraTrans; }
     public SceneInfo CurSceneInfo { get => curSceneInfo; }
     public Transform MoveQueryContainer { get =>moveQueryContainer; }
+    public Transform FlyWordContainer { get =>flyWordContainer; }
 
     Cinemachine.CinemachineFreeLook freeLookCamera;
     Transform freeLookCameraTrans;
@@ -63,6 +66,7 @@ public class SceneMgr : MonoBehaviour
             FreeLookCamera = camera.GetComponent<Cinemachine.CinemachineFreeLook>();
         }
         moveQueryContainer = GameObject.Find("SceneObjContainer/MoveQueryContainer").transform;
+        flyWordContainer = GameObject.Find("SceneObjContainer/FlyWordContainer").transform;
 	}
 
     void Update()
