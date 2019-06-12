@@ -612,7 +612,7 @@ namespace XLua.CSObjectWrap
 		    Utils.BeginObjectRegister(typeof(UnityMMO.NameboardData.ResState), L, translator, 0, 0, 0, 0);
 			Utils.EndObjectRegister(typeof(UnityMMO.NameboardData.ResState), L, translator, null, null, null, null, null);
 			
-			Utils.BeginClassRegister(typeof(UnityMMO.NameboardData.ResState), L, null, 5, 0, 0);
+			Utils.BeginClassRegister(typeof(UnityMMO.NameboardData.ResState), L, null, 6, 0, 0);
             
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "WaitLoad", UnityMMO.NameboardData.ResState.WaitLoad);
             
@@ -621,6 +621,8 @@ namespace XLua.CSObjectWrap
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Loaded", UnityMMO.NameboardData.ResState.Loaded);
             
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Deleting", UnityMMO.NameboardData.ResState.Deleting);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "DontLoad", UnityMMO.NameboardData.ResState.DontLoad);
             
 			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
             
@@ -654,6 +656,10 @@ namespace XLua.CSObjectWrap
 				else if (LuaAPI.xlua_is_eq_str(L, 1, "Deleting"))
                 {
                     translator.PushUnityMMONameboardDataResState(L, UnityMMO.NameboardData.ResState.Deleting);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "DontLoad"))
+                {
+                    translator.PushUnityMMONameboardDataResState(L, UnityMMO.NameboardData.ResState.DontLoad);
                 }
 				else
                 {

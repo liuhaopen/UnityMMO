@@ -267,6 +267,46 @@ namespace XLuaFramework
                 listener.onClick = luafunc;
         }
 
+        public static void BindDownEvent(GameObject obj, LuaFunction luafunc)
+        {
+            if (obj == null || luafunc == null) return;
+            EventTriggerListener listener = EventTriggerListener.Get(obj);
+            if (listener != null)
+                listener.onDown = luafunc;
+        }
+
+        public static void BindUpEvent(GameObject obj, LuaFunction luafunc)
+        {
+            if (obj == null || luafunc == null) return;
+            EventTriggerListener listener = EventTriggerListener.Get(obj);
+            if (listener != null)
+                listener.onUp = luafunc;
+        }
+
+        public static void BindDragEvent(GameObject obj, LuaFunction luafunc)
+        {
+            if (obj == null || luafunc == null) return;
+            DragTriggerListener listener = DragTriggerListener.Get(obj);
+            if (listener != null)
+                listener.onDrag = luafunc;
+        }
+
+        public static void BindDragBeginEvent(GameObject obj, LuaFunction luafunc)
+        {
+            if (obj == null || luafunc == null) return;
+            DragTriggerListener listener = DragTriggerListener.Get(obj);
+            if (listener != null)
+                listener.onDragBegin = luafunc;
+        }
+
+        public static void BindDragEndEvent(GameObject obj, LuaFunction luafunc)
+        {
+            if (obj == null || luafunc == null) return;
+            DragTriggerListener listener = DragTriggerListener.Get(obj);
+            if (listener != null)
+                listener.onDragEnd = luafunc;
+        }
+
         public static string FillUIResPath(string fileName)
         {
             if (fileName.StartsWith("Assets/"))

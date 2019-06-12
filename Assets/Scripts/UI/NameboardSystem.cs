@@ -109,7 +109,7 @@ public class NameboardSpawnRequestSystem : BaseComponentSystem
     {
         base.OnCreateManager();
         Group = GetComponentGroup(typeof(NameboardSpawnRequest));
-        nameboardCanvas = GameObject.Find("UICanvas/Scene").transform;
+        nameboardCanvas = GameObject.Find("UICanvas/Nameboard").transform;
     }
 
     protected override void OnUpdate()

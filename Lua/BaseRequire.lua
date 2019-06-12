@@ -10,6 +10,10 @@ GameConst = CS.UnityMMO.GameConst
 GameVariable = CS.UnityMMO.GameVariable
 SceneMgr = CS.UnityMMO.SceneMgr
 TextAnchor = CS.UnityEngine.TextAnchor
+Camera = CS.UnityEngine.Camera
+
+EntityManager = CS.Unity.Entities.EntityManager
+print('Cat:BaseRequire.lua[16] EntityManager', EntityManager)
 -- SkillMgr = CS.UnityMMO.SkillManager
 
 Mathf		= require "Common.UnityEngine.Mathf"

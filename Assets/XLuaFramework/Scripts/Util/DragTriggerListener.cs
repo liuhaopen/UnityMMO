@@ -2,14 +2,15 @@
 using System.Collections;
 using UnityEngine.EventSystems;
 using System;
+using XLua;
 
 namespace XLuaFramework {
 	public class DragTriggerListener : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
 		public delegate void VoidDelegate (GameObject go,float x,float y);
-        public VoidDelegate onDrag;
-        public VoidDelegate onDragBegin;
-        public VoidDelegate onDragEnd;
+        public LuaFunction onDrag;
+        public LuaFunction onDragBegin;
+        public LuaFunction onDragEnd;
         static public DragTriggerListener Get (GameObject go)
 		{
             DragTriggerListener listener = go.GetComponent<DragTriggerListener>();
@@ -21,7 +22,7 @@ namespace XLuaFramework {
         {
             if (onDragBegin != null)
             {
-                onDragBegin(gameObject, eventData.position.x, eventData.position.y);
+                onDragBegin.Call(gameObject, eventData.position.x, eventData.position.y);
             }
         }
 
@@ -29,7 +30,7 @@ namespace XLuaFramework {
         {
             if (onDrag != null)
             {
-                onDrag(gameObject, eventData.position.x, eventData.position.y);
+                onDrag.Call(gameObject, eventData.position.x, eventData.position.y);
             }
         }
 
@@ -37,7 +38,7 @@ namespace XLuaFramework {
         {
             if (onDragEnd != null)
             {
-                onDragEnd(gameObject, eventData.position.x, eventData.position.y);
+                onDragEnd.Call(gameObject, eventData.position.x, eventData.position.y);
             }
         }
     }

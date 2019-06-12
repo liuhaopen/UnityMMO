@@ -41,6 +41,7 @@
 		<type fullname="UnityMMO.EnemyShootState" preserve="all"/>
 		<type fullname="UnityMMO.EnemySpawnCooldown" preserve="all"/>
 		<type fullname="UnityMMO.EnemySpawnSystemState" preserve="all"/>
+		<type fullname="UnityMMO.ECSHelper" preserve="all"/>
 		<type fullname="UnityMMO.GameInput" preserve="all"/>
 		<type fullname="UnityMMO.MonsterMgr" preserve="all"/>
 		<type fullname="UnityMMO.NPCMgr" preserve="all"/>
@@ -111,6 +112,7 @@
 		<type fullname="UnityEngine.LayerMask" preserve="all"/>
 		<type fullname="UnityEngine.Plane" preserve="all"/>
 		<type fullname="UnityEngine.RectTransform" preserve="all"/>
+		<type fullname="UnityEngine.Camera" preserve="all"/>
 		<type fullname="UnityEngine.Debug" preserve="all"/>
 		
 	</assembly>

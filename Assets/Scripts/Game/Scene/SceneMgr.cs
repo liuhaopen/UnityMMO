@@ -12,9 +12,6 @@ using XLua;
 
 namespace UnityMMO
 {
-    
-[Hotfix]
-[LuaCallCSharp]
 public class SceneMgr : MonoBehaviour
 {
 	public static SceneMgr Instance;
