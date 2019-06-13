@@ -406,6 +406,11 @@ public class SceneMgr : MonoBehaviour
         return Entity.Null;
     }
 
+    public long GetSceneObjectByPos(Vector3 absPos)
+    {
+        return SceneHelper.GetSceneObjectByPos(absPos, entityDic);
+    }
+
 }
 
 }

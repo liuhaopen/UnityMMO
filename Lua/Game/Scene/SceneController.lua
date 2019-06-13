@@ -9,6 +9,12 @@ function SceneController:Init(  )
 end
 
 function SceneController:InitEvents(  )
+	local on_start_game = function (  )
+		print('Cat:SceneController.lua[13]')
+		ECS:Init(SceneMgr.Instance.EntityManager)
+	end
+    GlobalEventSystem:Bind(GlobalEvents.GameStart, on_start_game)
+
     local on_down = function ( target, x, y )
     	print('Cat:SceneController.lua[down] x, y', target, x, y)
     	self.touch_begin_x = x
@@ -17,19 +23,12 @@ function SceneController:InitEvents(  )
 	UIHelper.BindClickEvent(self.sceneNode, on_down)
 
 	local on_up = function ( target, x, y )
-    	print('Cat:SceneController.lua[up] x, y', target, x, y)
-    	local wpos = self.mainCamera:ScreenToWorldPoint(Vector3(x, y, 0))
-    	print('Cat:SceneController.lua[22] wpos.x, wpos.y, wpos.z', wpos.x, wpos.y, wpos.z)
+    	-- print('Cat:SceneController.lua[up] x, y', target, x, y)
+    	-- local wpos = self.mainCamera:ScreenToWorldPoint(Vector3(x, y, 0))
+    	-- print('Cat:SceneController.lua[22] wpos.x, wpos.y, wpos.z', wpos.x, wpos.y, wpos.z)
+        SceneMgr.Instance:GetSceneObjectByPos(Vector3.zero)
     end
 	UIHelper.BindClickEvent(self.sceneNode, on_up)
-
-
-	print('Cat:SceneController.lua[27] CS.Unity.Entities.EntityManager', CS.Unity.Entities.EntityManager)
-	local get_comp_generic = xlua.get_generic_method(CS.Unity.Entities.EntityManager, 'GetComponentData')
-	print('Cat:SceneController.lua[28] get_comp_generic', get_comp_generic)
-	local get_comp_fun = get_comp_generic(CS.UnityMMO.UID)
-	print('Cat:SceneController.lua[31] get_comp_fun', get_comp_fun)
-	-- get_comp_fun(SceneMgr.Instance.EntityManager, )
 
 end
 

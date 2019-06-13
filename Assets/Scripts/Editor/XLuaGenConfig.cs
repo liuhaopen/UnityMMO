@@ -77,6 +77,7 @@ public static class XLuaGenConfig
         typeof(Unity.Entities.World),
         typeof(Unity.Entities.Entity),
         typeof(Unity.Entities.GameObjectEntity),
+        typeof(Unity.Entities.EntityManagerExtensions),
         typeof(Unity.Entities.EntityManager)
     };
 

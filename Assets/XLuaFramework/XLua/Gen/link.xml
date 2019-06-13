@@ -15,7 +15,6 @@
 		<type fullname="UnityMMO.GameVariable" preserve="all"/>
 		<type fullname="UnityMMO.SceneInfoKey" preserve="all"/>
 		<type fullname="UnityMMO.SceneObjectType" preserve="all"/>
-		<type fullname="UnityMMO.SceneMgr" preserve="all"/>
 		<type fullname="CircleRawImage" preserve="all"/>
 		<type fullname="UnityMMO.UID" preserve="all"/>
 		<type fullname="UnityMMO.SceneObjectTypeData" preserve="all"/>
@@ -43,23 +42,25 @@
 		<type fullname="UnityMMO.EnemySpawnSystemState" preserve="all"/>
 		<type fullname="UnityMMO.ECSHelper" preserve="all"/>
 		<type fullname="UnityMMO.GameInput" preserve="all"/>
+		<type fullname="UnityMMO.MainWorld" preserve="all"/>
 		<type fullname="UnityMMO.MonsterMgr" preserve="all"/>
 		<type fullname="UnityMMO.NPCMgr" preserve="all"/>
 		<type fullname="UnityMMO.RoleInfo" preserve="all"/>
 		<type fullname="UnityMMO.RoleMgr" preserve="all"/>
 		<type fullname="UnityMMO.ResMgr" preserve="all"/>
+		<type fullname="UnityMMO.BornInfo" preserve="all"/>
+		<type fullname="UnityMMO.BornInfoData" preserve="all"/>
+		<type fullname="UnityMMO.SceneHelper" preserve="all"/>
+		<type fullname="UnityMMO.SceneInfo" preserve="all"/>
+		<type fullname="UnityMMO.BaseSceneInfoData" preserve="all"/>
+		<type fullname="UnityMMO.SceneMgr" preserve="all"/>
+		<type fullname="UnityMMO.PlayerInputSystem" preserve="all"/>
+		<type fullname="UnityMMO.TestManager" preserve="all"/>
 		<type fullname="UnityMMO.TimeEx" preserve="all"/>
 		<type fullname="UnityMMO.TimelineInfo" preserve="all"/>
 		<type fullname="UnityMMO.TimelineManager" preserve="all"/>
-		<type fullname="UnityMMO.MainWorld" preserve="all"/>
 		<type fullname="UnityMMO.NetMsgDispatcher" preserve="all"/>
-		<type fullname="UnityMMO.BornInfo" preserve="all"/>
-		<type fullname="UnityMMO.BornInfoData" preserve="all"/>
-		<type fullname="UnityMMO.SceneInfo" preserve="all"/>
-		<type fullname="UnityMMO.BaseSceneInfoData" preserve="all"/>
 		<type fullname="UnityMMO.SynchFromNet" preserve="all"/>
-		<type fullname="UnityMMO.PlayerInputSystem" preserve="all"/>
-		<type fullname="UnityMMO.TestManager" preserve="all"/>
 		<type fullname="UnityMMO.FightFlyWord" preserve="all"/>
 		<type fullname="UnityMMO.Nameboard" preserve="all"/>
 		<type fullname="UnityMMO.Timer" preserve="all"/>
@@ -156,6 +157,7 @@
 
 	<assembly fullname="Unity.Entities.Hybrid">
 	    <type fullname="Unity.Entities.GameObjectEntity" preserve="all"/>
+		<type fullname="Unity.Entities.EntityManagerExtensions" preserve="all"/>
 		
 	</assembly>
 

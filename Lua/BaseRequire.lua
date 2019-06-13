@@ -12,8 +12,6 @@ SceneMgr = CS.UnityMMO.SceneMgr
 TextAnchor = CS.UnityEngine.TextAnchor
 Camera = CS.UnityEngine.Camera
 
-EntityManager = CS.Unity.Entities.EntityManager
-print('Cat:BaseRequire.lua[16] EntityManager', EntityManager)
 -- SkillMgr = CS.UnityMMO.SkillManager
 
 Mathf		= require "Common.UnityEngine.Mathf"
@@ -39,6 +37,7 @@ require("Common.Util.event")
 require("Common.Util.Timer")
 UpdateManager = require "Common.UpdateManager"
 require "Common.GlobalEventSystem"
+ECS = require "Game.Common.ECS"
 
 require("Game.Common.Action.ActionNodeWrapper")
 require("Game.Common.Action.ActionTweenFunction")

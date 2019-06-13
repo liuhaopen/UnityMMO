@@ -10,7 +10,7 @@ using LuaCSFunction = XLua.LuaDLL.lua_CSFunction;
 
 using XLua;
 using System.Collections.Generic;
-
+using Unity.Entities;
 
 namespace XLua.CSObjectWrap
 {
@@ -512,12 +512,34 @@ namespace XLua.CSObjectWrap
                     
                     return 1;
                 }
+                if(gen_param_count == 2&& translator.Assignable<UnityEngine.GameObject>(L, 2)) 
+                {
+                    UnityEngine.GameObject _srcGameObject = (UnityEngine.GameObject)translator.GetObject(L, 2, typeof(UnityEngine.GameObject));
+                    
+                        Unity.Entities.Entity gen_ret = gen_to_be_invoked.Instantiate( _srcGameObject );
+                        translator.Push(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
                 if(gen_param_count == 3&& translator.Assignable<Unity.Entities.Entity>(L, 2)&& translator.Assignable<Unity.Collections.NativeArray<Unity.Entities.Entity>>(L, 3)) 
                 {
                     Unity.Entities.Entity _srcEntity;translator.Get(L, 2, out _srcEntity);
                     Unity.Collections.NativeArray<Unity.Entities.Entity> _outputEntities;translator.Get(L, 3, out _outputEntities);
                     
                     gen_to_be_invoked.Instantiate( _srcEntity, _outputEntities );
+                    
+                    
+                    
+                    return 0;
+                }
+                if(gen_param_count == 3&& translator.Assignable<UnityEngine.GameObject>(L, 2)&& translator.Assignable<Unity.Collections.NativeArray<Unity.Entities.Entity>>(L, 3)) 
+                {
+                    UnityEngine.GameObject _srcGameObject = (UnityEngine.GameObject)translator.GetObject(L, 2, typeof(UnityEngine.GameObject));
+                    Unity.Collections.NativeArray<Unity.Entities.Entity> _outputEntities;translator.Get(L, 3, out _outputEntities);
+                    
+                    gen_to_be_invoked.Instantiate( _srcGameObject, _outputEntities );
                     
                     
                     
