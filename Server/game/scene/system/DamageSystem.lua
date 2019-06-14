@@ -12,9 +12,9 @@ function DamageSystem:OnCreateManager(  )
 end
 
 function DamageSystem:OnUpdate(  )
-	local damages = self.group:GetComponentDataArray("UMO.DamageEvents")
-	local hps = self.group:GetComponentDataArray("UMO.HP")
-	local entities = self.group:GetEntityArray()
+	local damages = self.group:ToComponentDataArray("UMO.DamageEvents")
+	local hps = self.group:ToComponentDataArray("UMO.HP")
+	local entities = self.group:ToEntityArray()
 	for i=1,damages.Length do
 		self:HandleDamage(entities[i], damages[i], hps[i])
 	end

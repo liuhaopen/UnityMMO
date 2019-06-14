@@ -1,3 +1,4 @@
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -9,22 +10,23 @@ public class ResetPosOffsetSystem : BaseComponentSystem
 {
     public ResetPosOffsetSystem(GameWorld world) : base(world) {}
 
-    ComponentGroup group;
+    EntityQuery group;
 
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        group = GetComponentGroup(typeof(PosOffset));
+        group = GetEntityQuery(typeof(PosOffset));
     }
 
     protected override void OnUpdate()
     {
-        var posOffsets = group.GetComponentDataArray<PosOffset>();
+        var posOffsets = group.ToComponentDataArray<PosOffset>(Allocator.TempJob);
         for (int i=0; i<posOffsets.Length; i++)
         {
             var posOffset = posOffsets[i];
             posOffset.Value = float3.zero;
             posOffsets[i] = posOffset;
         }
+        posOffsets.Dispose();
     }
 }

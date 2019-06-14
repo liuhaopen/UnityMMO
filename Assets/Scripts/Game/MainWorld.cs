@@ -26,34 +26,34 @@ namespace UnityMMO{
 
         public void InitializeSystems() {
             m_Systems = new SystemCollection();
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<PlayerInputSystem>());
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<PlayerInputSystem>());
             
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooks>(m_GameWorld));
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooksNetRequest>(m_GameWorld));
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleRoleLooksSpawnRequests>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<HandleRoleLooks>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<HandleRoleLooksNetRequest>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<HandleRoleLooksSpawnRequests>(m_GameWorld));
 
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<CreateTargetPosFromUserInputSystem>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<CreateTargetPosFromUserInputSystem>(m_GameWorld));
 
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<MovementUpdateSystem>(m_GameWorld));
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<HandleMovementQueries>(m_GameWorld));
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<MovementHandleGroundCollision>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<MovementUpdateSystem>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<HandleMovementQueries>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<MovementHandleGroundCollision>(m_GameWorld));
 
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<GroundTestSystem>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<GroundTestSystem>(m_GameWorld));
 
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UploadMainRolePosSystem>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<UploadMainRolePosSystem>(m_GameWorld));
 
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<SkillSpawnSystem>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<SkillSpawnSystem>(m_GameWorld));
 
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<TimelineSpawnSystem>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<TimelineSpawnSystem>(m_GameWorld));
             
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<UpdateAnimatorSystem>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<UpdateAnimatorSystem>(m_GameWorld));
 
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<ResetPosOffsetSystem>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<ResetPosOffsetSystem>(m_GameWorld));
             
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<NameboardSystem>(m_GameWorld));
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<NameboardSpawnRequestSystem>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<NameboardSystem>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<NameboardSpawnRequestSystem>(m_GameWorld));
 
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateManager<ActionDataResetSystem>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<ActionDataResetSystem>(m_GameWorld));
             
         }
 

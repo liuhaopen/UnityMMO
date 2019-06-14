@@ -59,20 +59,20 @@ public class MoveQuery : MonoBehaviour
 [DisableAutoCreation]
 class HandleMovementQueries : BaseComponentSystem
 {
-    ComponentGroup Group;
+    EntityQuery Group;
 	
     public HandleMovementQueries(GameWorld world) : base(world) {}
 	
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        Group = GetComponentGroup(typeof(MoveQuery));
+        Group = GetEntityQuery(typeof(MoveQuery));
     }
 
     protected override void OnUpdate()
     {
         // Profiler.BeginSample("HandleMovementQueries");
-        var queryArray = Group.GetComponentArray<MoveQuery>();
+        var queryArray = Group.ToComponentArray<MoveQuery>();
 
         // Debug.Log("queryArray.Length : "+queryArray.Length);
         for (var i = 0; i < queryArray.Length; i++)

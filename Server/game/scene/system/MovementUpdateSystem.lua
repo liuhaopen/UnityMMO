@@ -14,10 +14,10 @@ end
 
 function MovementUpdateSystem:OnUpdate(  )
 	local deltaTime = Time.deltaTime
-	local positions = self.group:GetComponentDataArray("UMO.Position")
-	local targetPositions = self.group:GetComponentDataArray("UMO.TargetPos")
-	local speeds = self.group:GetComponentDataArray("UMO.MoveSpeed")
-	local aoi_handles = self.group:GetComponentDataArray("UMO.AOIHandle")
+	local positions = self.group:ToComponentDataArray("UMO.Position")
+	local targetPositions = self.group:ToComponentDataArray("UMO.TargetPos")
+	local speeds = self.group:ToComponentDataArray("UMO.MoveSpeed")
+	local aoi_handles = self.group:ToComponentDataArray("UMO.AOIHandle")
 	local dt = Time.deltaTime
 	for i=1,positions.Length do
 		local startPos = positions[i]

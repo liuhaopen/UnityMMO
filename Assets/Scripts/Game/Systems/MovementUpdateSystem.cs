@@ -1,3 +1,4 @@
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -9,25 +10,25 @@ public class MovementUpdateSystem : BaseComponentSystem
 {
     public MovementUpdateSystem(GameWorld world) : base(world) {}
 
-    ComponentGroup group;
+    EntityQuery group;
 
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
         // group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(MoveQuery), typeof(LocomotionState), typeof(PosOffset), typeof(PosSynchInfo));
-        group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(MoveQuery), typeof(LocomotionState), typeof(PosOffset));
+        group = GetEntityQuery(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(MoveQuery), typeof(LocomotionState), typeof(PosOffset));
     }
 
     protected override void OnUpdate()
     {
         float dt = Time.deltaTime;
-        var entities = group.GetEntityArray();
-        var targetPositions = group.GetComponentDataArray<TargetPosition>();
-        var speeds = group.GetComponentDataArray<MoveSpeed>();
-        var transforms = group.GetComponentArray<Transform>();
-        var moveQuerys = group.GetComponentArray<MoveQuery>();
-        var locoStates = group.GetComponentDataArray<LocomotionState>();
-        var posOffsets = group.GetComponentDataArray<PosOffset>();
+        var entities = group.ToEntityArray(Allocator.TempJob);
+        var targetPositions = group.ToComponentDataArray<TargetPosition>(Allocator.TempJob);
+        var speeds = group.ToComponentDataArray<MoveSpeed>(Allocator.TempJob);
+        var transforms = group.ToComponentArray<Transform>();
+        var moveQuerys = group.ToComponentArray<MoveQuery>();
+        var locoStates = group.ToComponentDataArray<LocomotionState>(Allocator.TempJob);
+        var posOffsets = group.ToComponentDataArray<PosOffset>(Allocator.TempJob);
         for (int i=0; i<targetPositions.Length; i++)
         {
             var targetPos = targetPositions[i].Value;
@@ -133,6 +134,11 @@ public class MovementUpdateSystem : BaseComponentSystem
                 curTrans.rotation = Quaternion.Slerp(curTrans.rotation, Quaternion.Euler(euler), Time.deltaTime*50);
             }
         }
+        entities.Dispose();
+        targetPositions.Dispose();
+        speeds.Dispose();
+        locoStates.Dispose();
+        posOffsets.Dispose();
     }
 }
 
@@ -144,19 +150,19 @@ class MovementHandleGroundCollision : BaseComponentSystem
     {
     }
 
-    ComponentGroup group;
+    EntityQuery group;
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        group = GetComponentGroup(typeof(Transform), typeof(MoveQuery), typeof(LocomotionState), typeof(TargetPosition));
+        group = GetEntityQuery(typeof(Transform), typeof(MoveQuery), typeof(LocomotionState), typeof(TargetPosition));
     }
 
     protected override void OnUpdate()
     {
-        var locoStates = group.GetComponentDataArray<LocomotionState>();
-        var targets = group.GetComponentDataArray<TargetPosition>();
-        var querys = group.GetComponentArray<MoveQuery>();
-        var transforms = group.GetComponentArray<Transform>();
+        var locoStates = group.ToComponentDataArray<LocomotionState>(Allocator.TempJob);
+        var targets = group.ToComponentDataArray<TargetPosition>(Allocator.TempJob);
+        var querys = group.ToComponentArray<MoveQuery>();
+        var transforms = group.ToComponentArray<Transform>();
         for (int i = 0; i < locoStates.Length; i++)
         {
             var locoState = locoStates[i];
@@ -199,6 +205,8 @@ class MovementHandleGroundCollision : BaseComponentSystem
             // locoState.position = query.moveQueryResult;
             // EntityManager.SetComponentData(charAbility.character, locoState);
         }
+        locoStates.Dispose();
+        targets.Dispose();
     }
 }
 
@@ -208,21 +216,21 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
 {
     public CreateTargetPosFromUserInputSystem(GameWorld world) : base(world) {}
 
-    ComponentGroup group;
+    EntityQuery group;
 
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(PosSynchInfo), typeof(LocomotionState));
+        group = GetEntityQuery(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(PosSynchInfo), typeof(LocomotionState));
     }
 
     protected override void OnUpdate()
     {
         float dt = Time.deltaTime;
-        var targetPosArray = group.GetComponentDataArray<TargetPosition>();
-        var posArray = group.GetComponentArray<Transform>();
-        var moveSpeedArray = group.GetComponentDataArray<MoveSpeed>();
-        var locoStates = group.GetComponentDataArray<LocomotionState>();
+        var targetPosArray = group.ToComponentDataArray<TargetPosition>(Allocator.TempJob);
+        var posArray = group.ToComponentArray<Transform>();
+        var moveSpeedArray = group.ToComponentDataArray<MoveSpeed>(Allocator.TempJob);
+        var locoStates = group.ToComponentDataArray<LocomotionState>(Allocator.TempJob);
         var curLocoStateObj = locoStates[0];
         if (curLocoStateObj.LocoState==LocomotionState.State.BeHit|| curLocoStateObj.LocoState==LocomotionState.State.Dead)
             return;
@@ -251,5 +259,8 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
             var newTargetPos = new TargetPosition{Value=posArray[0].localPosition};
             targetPosArray[0] = newTargetPos;
         }
+        targetPosArray.Dispose();
+        moveSpeedArray.Dispose();
+        locoStates.Dispose();
     }
 }

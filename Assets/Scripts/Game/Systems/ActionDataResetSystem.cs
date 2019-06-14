@@ -1,3 +1,4 @@
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -9,20 +10,21 @@ public class ActionDataResetSystem : BaseComponentSystem
 {
     public ActionDataResetSystem(GameWorld world) : base(world) {}
 
-    ComponentGroup group;
+    EntityQuery group;
 
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        group = GetComponentGroup(typeof(ActionData));
+        group = GetEntityQuery(typeof(ActionData));
     }
 
     protected override void OnUpdate()
     {
-        var datas = group.GetComponentDataArray<ActionData>();
+        var datas = group.ToComponentDataArray<ActionData>(Allocator.TempJob);
         for (int i=0; i<datas.Length; i++)
         {
             datas[i] = ActionData.Empty;
         }
+        datas.Dispose();
     }
 }

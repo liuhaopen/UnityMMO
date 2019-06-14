@@ -1,3 +1,4 @@
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
@@ -9,19 +10,19 @@ public class UpdateAnimatorSystem : BaseComponentSystem
 {
     public UpdateAnimatorSystem(GameWorld world) : base(world) {}
 
-    ComponentGroup group;
+    EntityQuery group;
 
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        group = GetComponentGroup(typeof(LooksInfo), typeof(LocomotionState), typeof(PlayableDirector));
+        group = GetEntityQuery(typeof(LooksInfo), typeof(LocomotionState), typeof(PlayableDirector));
     }
 
     protected override void OnUpdate()
     {
-        var looksInfos = group.GetComponentDataArray<LooksInfo>();
-        var locoStates = group.GetComponentDataArray<LocomotionState>();
-        var directors = group.GetComponentArray<PlayableDirector>();
+        var looksInfos = group.ToComponentDataArray<LooksInfo>(Allocator.TempJob);
+        var locoStates = group.ToComponentDataArray<LocomotionState>(Allocator.TempJob);
+        var directors = group.ToComponentArray<PlayableDirector>();
         for (int i=0; i<looksInfos.Length; i++)
         {
             var looksInfo = looksInfos[i];
@@ -34,6 +35,8 @@ public class UpdateAnimatorSystem : BaseComponentSystem
             if (animator!=null)
                 UpdateAnimator(animator, locoStates[i]);
         }
+        looksInfos.Dispose();
+        locoStates.Dispose();
     }
 
     void UpdateAnimator(Animator animator, LocomotionState locoData)

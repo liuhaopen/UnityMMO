@@ -1,6 +1,5 @@
 using System;
 using Cinemachine;
-using Cinemachine.Timeline;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;

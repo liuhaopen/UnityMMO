@@ -10,8 +10,8 @@ namespace UnityMMO
         public long Value;
     }
 
-    // [DisallowMultipleComponent] 
-    // public class UIDProxy : ComponentDataProxy<UID> { }
+    [DisallowMultipleComponent] 
+    public class UIDProxy : ComponentDataProxy<UID> { }
 
     public struct SceneObjectTypeData : IComponentData
     {

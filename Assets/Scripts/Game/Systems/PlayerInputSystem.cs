@@ -6,6 +6,7 @@ using UnityEngine.Timeline;
 using XLuaFramework;
 using System;
 using Unity.Mathematics;
+using Unity.Collections;
 
 namespace UnityMMO
 {
@@ -15,26 +16,29 @@ namespace UnityMMO
         public PlayerInputSystem()
         {
         }
-        ComponentGroup group;
+        EntityQuery group;
 
         protected override void OnCreateManager()
         {
             base.OnCreateManager();
-            group = GetComponentGroup(typeof(UserCommand), typeof(TargetPosition), typeof(MoveSpeed));
+            group = GetEntityQuery(typeof(UserCommand), typeof(TargetPosition), typeof(MoveSpeed));
         }
 
         protected override void OnUpdate()
         {
             // Debug.Log("on OnUpdate player input system");
             float dt = Time.deltaTime;
-            var userCommandArray = group.GetComponentDataArray<UserCommand>();
-            var targetPosArray = group.GetComponentDataArray<TargetPosition>();
-            var moveSpeedArray = group.GetComponentDataArray<MoveSpeed>();
+            var userCommandArray = group.ToComponentDataArray<UserCommand>(Allocator.TempJob);
+            var targetPosArray = group.ToComponentDataArray<TargetPosition>(Allocator.TempJob);
+            var moveSpeedArray = group.ToComponentDataArray<MoveSpeed>(Allocator.TempJob);
             if (userCommandArray.Length==0)
                 return;
             var userCommand = userCommandArray[0];
             SampleInput(ref userCommand, dt);
             // userCommandArray[0] = userCommand;
+            userCommandArray.Dispose();
+            targetPosArray.Dispose();
+            moveSpeedArray.Dispose();
         }
 
         public void SampleInput(ref UserCommand command, float deltaTime)

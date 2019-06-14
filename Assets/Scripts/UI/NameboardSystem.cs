@@ -8,7 +8,7 @@ using UnityMMO;
 [DisableAutoCreation]
 public class NameboardSystem : BaseComponentSystem
 {
-    ComponentGroup Group;
+    EntityQuery Group;
 
     public NameboardSystem(GameWorld gameWorld) : base(gameWorld)
     {
@@ -17,14 +17,14 @@ public class NameboardSystem : BaseComponentSystem
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        Group = GetComponentGroup(typeof(Transform), typeof(NameboardData));
+        Group = GetEntityQuery(typeof(Transform), typeof(NameboardData));
     }
 
     protected override void OnUpdate()
     {      
-        var entityArray = Group.GetEntityArray();
-        var nameboardArray = Group.GetComponentDataArray<NameboardData>();
-        var posArray = Group.GetComponentArray<Transform>();
+        var entityArray = Group.ToEntityArray(Allocator.TempJob);
+        var nameboardArray = Group.ToComponentDataArray<NameboardData>(Allocator.TempJob);
+        var posArray = Group.ToComponentArray<Transform>();
 
         for (var i = 0; i < nameboardArray.Length; i++)
         {
@@ -32,6 +32,8 @@ public class NameboardSystem : BaseComponentSystem
             var entity = entityArray[i];
             UpdateNameboard(posArray[i], nameboard, entity);
         }
+        entityArray.Dispose();
+        nameboardArray.Dispose();
     }
 
     void UpdateNameboard(Transform target, NameboardData nameboardData, Entity entity)
@@ -98,7 +100,7 @@ public struct NameboardSpawnRequest : IComponentData
 [DisableAutoCreation]
 public class NameboardSpawnRequestSystem : BaseComponentSystem
 {
-    ComponentGroup Group;
+    EntityQuery Group;
     Transform nameboardCanvas;
 
     public NameboardSpawnRequestSystem(GameWorld gameWorld) : base(gameWorld)
@@ -108,15 +110,14 @@ public class NameboardSpawnRequestSystem : BaseComponentSystem
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        Group = GetComponentGroup(typeof(NameboardSpawnRequest));
+        Group = GetEntityQuery(typeof(NameboardSpawnRequest));
         nameboardCanvas = GameObject.Find("UICanvas/Nameboard").transform;
     }
 
     protected override void OnUpdate()
     {      
-        var requestArray = Group.GetComponentDataArray<NameboardSpawnRequest>();
-        var entityArray = Group.GetEntityArray();
-
+        var requestArray = Group.ToComponentDataArray<NameboardSpawnRequest>(Allocator.TempJob);
+        var entityArray = Group.ToEntityArray(Allocator.TempJob);
         var spawnRequests = new NameboardSpawnRequest[requestArray.Length];
         for (var i = 0; i < requestArray.Length; i++)
         {
@@ -155,5 +156,7 @@ public class NameboardSpawnRequestSystem : BaseComponentSystem
             var sceneObjType = EntityManager.GetComponentData<SceneObjectTypeData>(request.Owner);
             nameboardBehav.SetBloodVisible(sceneObjType.Value==SceneObjectType.Role || sceneObjType.Value==SceneObjectType.Monster);
         }
+        requestArray.Dispose();
+        entityArray.Dispose();
     }
 }

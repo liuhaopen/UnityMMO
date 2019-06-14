@@ -1,4 +1,5 @@
 
+using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 using UnityMMO;
@@ -6,7 +7,7 @@ using UnityMMO;
 [DisableAutoCreation]
 public class HandleDamage : BaseComponentSystem
 {
-    private ComponentGroup Group;
+    private EntityQuery Group;
     
     public HandleDamage(GameWorld gameWorld) : base(gameWorld)
     {}
@@ -14,14 +15,14 @@ public class HandleDamage : BaseComponentSystem
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        Group = GetComponentGroup(typeof(HealthStateData));
+        Group = GetEntityQuery(typeof(HealthStateData));
     }
     
     protected override void OnUpdate()
     {
-        var entityArray = Group.GetEntityArray();
-        var healthStateArray = Group.GetComponentDataArray<HealthStateData>();
-        // var collOwnerArray = Group.GetComponentDataArray<HitCollisionOwnerData>();
+        var entityArray = Group.ToEntityArray(Allocator.TempJob);
+        var healthStateArray = Group.ToComponentDataArray<HealthStateData>(Allocator.TempJob);
+        // var collOwnerArray = Group.ToComponentDataArray<HitCollisionOwnerData>();
         for (int i = 0; i < entityArray.Length; i++)
         {
             var healthState = healthStateArray[i];
@@ -96,5 +97,7 @@ public class HandleDamage : BaseComponentSystem
                 // }
             }
         }
+        entityArray.Dispose();
+        healthStateArray.Dispose();
     }
 }

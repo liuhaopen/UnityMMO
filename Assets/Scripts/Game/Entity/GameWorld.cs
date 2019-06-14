@@ -5,6 +5,7 @@ using Object = UnityEngine.Object;
 using Unity.Entities;
 using UnityEditor;
 using UnityEngine.Profiling;
+using Unity.Collections;
 
 
 #if UNITY_EDITOR
@@ -59,21 +60,22 @@ public struct EntityGroupChildren : IBufferElementData
 [DisableAutoCreation]
 public class DestroyDespawning : ComponentSystem
 {
-    ComponentGroup Group;
+    EntityQuery Group;
 
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        Group = GetComponentGroup(typeof(DespawningEntity));
+        Group = GetEntityQuery(typeof(DespawningEntity));
     }
     
     protected override void OnUpdate()
     {
-        var entityArray = Group.GetEntityArray();
+        var entityArray = Group.ToEntityArray(Allocator.TempJob);
         for (var i = 0; i < entityArray.Length; i++)
         {
             PostUpdateCommands.DestroyEntity(entityArray[i]);
         }
+        entityArray.Dispose();
     }
 }
 
@@ -120,7 +122,7 @@ public class GameWorld
         
 
         World.Active = m_ECSWorld;
-        m_EntityManager = m_ECSWorld.GetOrCreateManager<EntityManager>();
+        m_EntityManager = m_ECSWorld.GetOrCreateSystem<EntityManager>();
 
         GameDebug.Assert(m_EntityManager.IsCreated);
 
@@ -130,7 +132,7 @@ public class GameWorld
 
         s_Worlds.Add(this);
 
-        m_destroyDespawningSystem = m_ECSWorld.CreateManager<DestroyDespawning>();
+        m_destroyDespawningSystem = m_ECSWorld.CreateSystem<DestroyDespawning>();
     }
 
     public void Shutdown()
@@ -165,18 +167,18 @@ public class GameWorld
         GameObject.Destroy(m_sceneRoot);
     }
 
-    public void RegisterSceneEntities()
-    {
-        // Replicated entities are sorted by their netID and numbered accordingly
-        var sceneEntities = new List<ReplicatedEntity>(Object.FindObjectsOfType<ReplicatedEntity>());
-        // sceneEntities.Sort((a, b) => ByteArrayComp.instance.Compare(a.netID, b.netID));
-        for (int i = 0; i < sceneEntities.Count; i++)
-        {
-            GameDebug.Assert(sceneEntities[i].GetComponent<SceneEntity>() != null, "Entity {0} has replciated component but does not have scene entity",sceneEntities[i]);
-            sceneEntities[i].id = i;
-        }
-        m_sceneEntities.AddRange(sceneEntities);
-    }
+    // public void RegisterSceneEntities()
+    // {
+    //     // Replicated entities are sorted by their netID and numbered accordingly
+    //     var sceneEntities = new List<ReplicatedEntity>(Object.FindObjectsOfType<ReplicatedEntity>());
+    //     // sceneEntities.Sort((a, b) => ByteArrayComp.instance.Compare(a.netID, b.netID));
+    //     for (int i = 0; i < sceneEntities.Count; i++)
+    //     {
+    //         GameDebug.Assert(sceneEntities[i].GetComponent<SceneEntity>() != null, "Entity {0} has replciated component but does not have scene entity",sceneEntities[i]);
+    //         sceneEntities[i].id = i;
+    //     }
+    //     m_sceneEntities.AddRange(sceneEntities);
+    // }
     
     public EntityManager GetEntityManager()    
     {
@@ -232,7 +234,7 @@ public class GameWorld
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    public List<ReplicatedEntity> SceneEntities { get { return m_sceneEntities; } }
+    // public List<ReplicatedEntity> SceneEntities { get { return m_sceneEntities; } }
 
     public void RequestDespawn(GameObject entity)
     {
@@ -347,7 +349,7 @@ public class GameWorld
     DestroyDespawning m_destroyDespawningSystem;
 
     List<GameObject> m_dynamicEntities = new List<GameObject>();
-    List<ReplicatedEntity> m_sceneEntities = new List<ReplicatedEntity>();
+    // List<ReplicatedEntity> m_sceneEntities = new List<ReplicatedEntity>();
     List<GameObject> m_DespawnRequests = new List<GameObject>(32);
     List<Entity> m_DespawnEntityRequests = new List<Entity>(32);
 

@@ -1,3 +1,4 @@
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -9,22 +10,25 @@ public class FightSpawnSystem : BaseComponentSystem
 {
     public FightSpawnSystem(GameWorld world) : base(world) {}
 
-    ComponentGroup RequestGroup;
+    EntityQuery RequestGroup;
 
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        RequestGroup = GetComponentGroup(typeof(SkillSpawnRequest));
+        RequestGroup = GetEntityQuery(typeof(SkillSpawnRequest));
     }
 
     protected override void OnUpdate()
     {
         float dt = Time.deltaTime;
-        var requestArray = RequestGroup.GetComponentDataArray<SkillSpawnRequest>();
+        var requestArray = RequestGroup.ToComponentDataArray<SkillSpawnRequest>(Allocator.TempJob);
         if (requestArray.Length == 0)
+        {
+            requestArray.Dispose();
             return;
+        }
 
-        var requestEntityArray = RequestGroup.GetEntityArray();
+        var requestEntityArray = RequestGroup.ToEntityArray(Allocator.TempJob);
         
         // Copy requests as spawning will invalidate Group
         var requests = new SkillSpawnRequest[requestArray.Length];
@@ -40,6 +44,8 @@ public class FightSpawnSystem : BaseComponentSystem
             if (IsIgnore())
                 continue;
         }
+        requestEntityArray.Dispose();
+        requestArray.Dispose();
     }
 
     bool IsIgnore()

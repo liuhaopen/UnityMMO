@@ -24,7 +24,7 @@ function TestInjectSystem:OnCreateManager(  )
 	self.group = self:GetComponentGroup({"ECS.CustomCom"})
 end
 function TestInjectSystem:OnUpdate(  )
-	local comps = self.group:GetComponentDataArray("ECS.CustomCom")
+	local comps = self.group:ToComponentDataArray("ECS.CustomCom")
 	for i=1,comps.Length do
 		local comp = comps[i]
 		if comp.tbl.b then

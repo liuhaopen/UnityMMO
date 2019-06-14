@@ -1,3 +1,4 @@
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -116,22 +117,25 @@ public class SkillSpawnSystem : BaseComponentSystem
 {
     public SkillSpawnSystem(GameWorld world) : base(world) {}
 
-    ComponentGroup RequestGroup;
+    EntityQuery RequestGroup;
 
     protected override void OnCreateManager()
     {
         base.OnCreateManager();
-        RequestGroup = GetComponentGroup(typeof(SkillSpawnRequest));
+        RequestGroup = GetEntityQuery(typeof(SkillSpawnRequest));
     }
 
     protected override void OnUpdate()
     {
         float dt = Time.deltaTime;
-        var requestArray = RequestGroup.GetComponentDataArray<SkillSpawnRequest>();
+        var requestArray = RequestGroup.ToComponentDataArray<SkillSpawnRequest>(Allocator.TempJob);
         if (requestArray.Length == 0)
+        {
+            requestArray.Dispose();
             return;
+        }
 
-        var requestEntityArray = RequestGroup.GetEntityArray();
+        var requestEntityArray = RequestGroup.ToEntityArray(Allocator.TempJob);
         
         // Copy requests as spawning will invalidate Group
         var requests = new SkillSpawnRequest[requestArray.Length];
@@ -143,7 +147,8 @@ public class SkillSpawnSystem : BaseComponentSystem
 
         for(var i = 0; i < requests.Length; i++)
         {
-            
         }
+        requestEntityArray.Dispose();
+        requestArray.Dispose();
     }
 }

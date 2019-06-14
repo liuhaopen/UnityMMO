@@ -9,11 +9,11 @@ function ComponentGroup:Constructor( groupData, safetyManager, typeManager, enti
     self.EntityDataManager = entityDataManager
 end
 
-function ComponentGroup:GetComponentDataArray( com_type )
+function ComponentGroup:ToComponentDataArray( com_type )
     local typeIndex = ECS.TypeManager.GetTypeIndexByName(com_type)
     local iterator, length = self:GetComponentChunkIterator()
     local indexInComponentGroup = self:GetIndexInComponentGroup(typeIndex)
-    local res = self:GetComponentDataArrayByIterator(iterator, indexInComponentGroup, length, com_type)
+    local res = self:ToComponentDataArrayByIterator(iterator, indexInComponentGroup, length, com_type)
     return res
 end
 
@@ -25,7 +25,7 @@ function ComponentGroup:GetIndexInComponentGroup( componentType )
     return componentIndex
 end
 
-function ComponentGroup:GetComponentDataArrayByIterator( iterator, indexInComponentGroup, length, com_type )
+function ComponentGroup:ToComponentDataArrayByIterator( iterator, indexInComponentGroup, length, com_type )
     iterator:SetIndexInComponentGroup(indexInComponentGroup)
     local data = ECS.ComponentDataArray.Create(iterator, length, com_type)
     return data
@@ -39,7 +39,7 @@ function ComponentGroup:GetSharedComponentDataArray( shared_com_type )
     return res
 end
 
-function ComponentGroup:GetEntityArray(  )
+function ComponentGroup:ToEntityArray(  )
     local iterator, length = self:GetComponentChunkIterator()
     iterator:SetIndexInComponentGroup(1)
     local data = ECS.EntityArray.Create(iterator, length)
