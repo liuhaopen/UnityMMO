@@ -20,11 +20,14 @@ public class ActionDataResetSystem : BaseComponentSystem
 
     protected override void OnUpdate()
     {
+        var entities = group.ToEntityArray(Allocator.TempJob);
         var datas = group.ToComponentDataArray<ActionData>(Allocator.TempJob);
         for (int i=0; i<datas.Length; i++)
         {
-            datas[i] = ActionData.Empty;
+            // datas[i] = ActionData.Empty;
+            EntityManager.SetComponentData<ActionData>(entities[i], ActionData.Empty);
         }
+        entities.Dispose();
         datas.Dispose();
     }
 }

@@ -98,9 +98,8 @@ public class MovementUpdateSystem : BaseComponentSystem
             {
                 ySpeed = GameConst.JumpAscentHeight[curLocoStateObj.LocoState-LocomotionState.State.Jump] / GameConst.JumpAscentDuration[curLocoStateObj.LocoState-LocomotionState.State.Jump] - GameConst.Gravity;
             }
-            locoStates[i] = curLocoStateObj;
-
-            // Debug.Log("ySpeed : "+ySpeed+" state :"+newLocoState.ToString());
+            // locoStates[i] = curLocoStateObj;
+            EntityManager.SetComponentData<LocomotionState>(entities[i], curLocoStateObj);
             float3 newPos;
             if (moveDistance < speed/GameConst.SpeedFactor*dt)
             {
@@ -159,6 +158,7 @@ class MovementHandleGroundCollision : BaseComponentSystem
 
     protected override void OnUpdate()
     {
+        var entities = group.ToEntityArray(Allocator.TempJob);
         var locoStates = group.ToComponentDataArray<LocomotionState>(Allocator.TempJob);
         var targets = group.ToComponentDataArray<TargetPosition>(Allocator.TempJob);
         var querys = group.ToComponentArray<MoveQuery>();
@@ -195,7 +195,8 @@ class MovementHandleGroundCollision : BaseComponentSystem
                 }
                 
                 locoState.StartTime = Time.time;
-                locoStates[i] = locoState;
+                // locoStates[i] = locoState;
+                EntityManager.SetComponentData<LocomotionState>(entities[i], locoState);
             }
             // Manually calculate resulting velocity as characterController.velocity is linked to Time.deltaTime
             // var newPos = query.moveQueryResult;
@@ -205,6 +206,7 @@ class MovementHandleGroundCollision : BaseComponentSystem
             // locoState.position = query.moveQueryResult;
             // EntityManager.SetComponentData(charAbility.character, locoState);
         }
+        entities.Dispose();
         locoStates.Dispose();
         targets.Dispose();
     }
@@ -226,15 +228,52 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
 
     protected override void OnUpdate()
     {
-        float dt = Time.deltaTime;
+        var posArray = group.ToComponentArray<Transform>();
+        Entities.ForEach((Entity entity, ref TargetPosition targetPos, ref MoveSpeed moveSpeed, ref LocomotionState curLocoStateObj)=>{
+            if (curLocoStateObj.LocoState==LocomotionState.State.BeHit|| curLocoStateObj.LocoState==LocomotionState.State.Dead)
+                return;
+            var input = GameInput.GetInstance().JoystickDir;
+            // Debug.Log("input.sqrMagnitude:"+input.sqrMagnitude);
+            if (input.sqrMagnitude > 0)
+            {
+                var forward = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.forward);
+                forward.y = 0;
+                var right = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.right);
+                float3 targetDirection = input.x * right + input.y * forward;
+                targetDirection.y = 0;
+                targetDirection = Vector3.Normalize(targetDirection);
+                float3 curPos = posArray[0].localPosition;
+                var speed = moveSpeed.Value;
+                float3 newTargetPos;
+                if (speed > 0)
+                    newTargetPos = curPos+targetDirection*(speed/GameConst.SpeedFactor*0.10f);//延着方向前进0.10秒为目标坐标
+                else
+                    newTargetPos = curPos;
+                newTargetPos.y = targetPos.Value.y;
+                targetPos.Value = newTargetPos;
+                // Debug.Log("targetDirection : "+newTargetPos.x+" "+newTargetPos.y+" "+newTargetPos.z);
+            }
+            else
+            {
+                targetPos.Value = posArray[0].localPosition;
+            }
+        });
+    }
+
+#if false
+    protected override void OnUpdate()
+    {
         var targetPosArray = group.ToComponentDataArray<TargetPosition>(Allocator.TempJob);
         var posArray = group.ToComponentArray<Transform>();
         var moveSpeedArray = group.ToComponentDataArray<MoveSpeed>(Allocator.TempJob);
         var locoStates = group.ToComponentDataArray<LocomotionState>(Allocator.TempJob);
         var curLocoStateObj = locoStates[0];
+        Debug.Log("curLocoStateObj.LocoState : "+curLocoStateObj.LocoState);
         if (curLocoStateObj.LocoState==LocomotionState.State.BeHit|| curLocoStateObj.LocoState==LocomotionState.State.Dead)
             return;
         var input = GameInput.GetInstance().JoystickDir;
+        Debug.Log("input.sqrMagnitude:"+input.sqrMagnitude);
+        
         if (input.sqrMagnitude > 0)
         {
             var forward = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.forward);
@@ -251,7 +290,7 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
             else
                 newTargetPos.Value = curPos;
             newTargetPos.Value.y = targetPosArray[0].Value.y;
-            // Debug.Log("targetDirection : "+newTargetPos.Value.x+" "+newTargetPos.Value.y+" "+newTargetPos.Value.z);
+            Debug.Log("targetDirection : "+newTargetPos.Value.x+" "+newTargetPos.Value.y+" "+newTargetPos.Value.z);
             targetPosArray[0] = newTargetPos;
         }
         else
@@ -263,4 +302,5 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
         moveSpeedArray.Dispose();
         locoStates.Dispose();
     }
+#endif
 }

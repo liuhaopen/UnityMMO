@@ -164,7 +164,8 @@ public class HandleRoleLooks : BaseComponentSystem
             if (isNeedReqLooksInfo)
             {
                 looksInfo.CurState = LooksInfo.State.Loading;
-                looksInfoArray[i] = looksInfo;
+                // looksInfoArray[i] = looksInfo;
+                EntityManager.SetComponentData<LooksInfo>(entities[i], looksInfo);
                 RoleLooksNetRequest.Create(PostUpdateCommands, uid.Value, entity);
             }
         }
