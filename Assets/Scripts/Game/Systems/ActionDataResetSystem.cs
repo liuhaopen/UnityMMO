@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 using UnityMMO;
+using UnityMMO.Component;
 
 [DisableAutoCreation]
 public class ActionDataResetSystem : BaseComponentSystem

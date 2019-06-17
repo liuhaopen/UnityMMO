@@ -1,18 +1,4 @@
 --下面基础组件间的require有依赖顺序相关,闲着没事也别换顺序,要加新的往文件尾加就好
-Util = CS.XLuaFramework.Util
-AppConfig = CS.XLuaFramework.AppConfig
-ResMgr = CS.XLuaFramework.ResourceManager.GetInstance()
-NetMgr = CS.XLuaFramework.NetworkManager.GetInstance()
-UIHelper = CS.XLuaFramework.UIHelper
-cookiesManager = CS.XLuaFramework.CookiesManager.GetInstance()
-GameObject = CS.UnityEngine.GameObject
-GameConst = CS.UnityMMO.GameConst
-GameVariable = CS.UnityMMO.GameVariable
-SceneMgr = CS.UnityMMO.SceneMgr
-TextAnchor = CS.UnityEngine.TextAnchor
-Camera = CS.UnityEngine.Camera
-
--- SkillMgr = CS.UnityMMO.SkillManager
 
 Mathf		= require "Common.UnityEngine.Mathf"
 Vector2		= require "Common.UnityEngine.Vector2"

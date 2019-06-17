@@ -1,5 +1,25 @@
 UI = UI or {}
 
+Util = CS.XLuaFramework.Util
+AppConfig = CS.XLuaFramework.AppConfig
+ResMgr = CS.XLuaFramework.ResourceManager.GetInstance()
+NetMgr = CS.XLuaFramework.NetworkManager.GetInstance()
+UIHelper = CS.XLuaFramework.UIHelper
+cookiesManager = CS.XLuaFramework.CookiesManager.GetInstance()
+GameObject = CS.UnityEngine.GameObject
+GameConst = CS.UnityMMO.GameConst
+GameVariable = CS.UnityMMO.GameVariable
+SceneMgr = CS.UnityMMO.SceneMgr
+TextAnchor = CS.UnityEngine.TextAnchor
+Camera = CS.UnityEngine.Camera
+SceneHelper = CS.UnityMMO.SceneHelper
+RoleMgr = CS.UnityMMO.RoleMgr
+MonsterMgr = CS.UnityMMO.MonsterMgr
+NPCMgr = CS.UnityMMO.NPCMgr
+
+Entity = CS.Unity.Entities.Entity
+-- SkillMgr = CS.UnityMMO.SkillManager
+
 GlobalEvents = require("Game.Common.GlobalEvents")
 EventDispatcher = require("Game.Common.EventDispatcher")
 

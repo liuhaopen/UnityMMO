@@ -4,6 +4,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using UnityMMO.Component;
 
 namespace UnityMMO
 {
@@ -46,7 +47,7 @@ public class RoleMgr
         roleGameOE.transform.localPosition = pos;
         Entity role = roleGameOE.Entity;
         RoleMgr.GetInstance().SetName(uid, name);
-        InitRole(role, uid, typeID, pos, pos, curHp, maxHp);
+        InitRole(role, uid, typeID, pos, pos, curHp, maxHp, true);
         EntityManager.AddComponentData(role, new PosSynchInfo {LastUploadPos = float3.zero});
         EntityManager.AddComponent(role, ComponentType.Create<UserCommand>());
         
@@ -81,13 +82,13 @@ public class RoleMgr
         return role;
 	}
 
-    private void InitRole(Entity role, long uid, long typeID, Vector3 pos, Vector3 targetPos, float curHp, float maxHp)
+    private void InitRole(Entity role, long uid, long typeID, Vector3 pos, Vector3 targetPos, float curHp, float maxHp, bool isNeedNavAgent=false)
     {
         EntityManager.AddComponentData(role, new MoveSpeed {Value = 1200});
         EntityManager.AddComponentData(role, new TargetPosition {Value = targetPos});
         EntityManager.AddComponentData(role, new LocomotionState {LocoState = LocomotionState.State.Idle});
         EntityManager.AddComponentData(role, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
-        EntityManager.AddComponentData(role, new UID {Value=uid});
+        EntityManager.SetComponentData(role, new UID {Value=uid});
         EntityManager.AddComponentData(role, new SceneObjectTypeData {Value=SceneObjectType.Role});
         EntityManager.AddComponentData(role, new NameboardData {UIResState=NameboardData.ResState.WaitLoad});
         EntityManager.AddComponentData(role, new TypeID {Value=typeID});
@@ -99,7 +100,7 @@ public class RoleMgr
         EntityManager.AddComponentData(role, new TimelineState {NewStatus=TimelineState.NewState.Allow, InterruptStatus=TimelineState.InterruptState.Allow});
         
         MoveQuery rmq = EntityManager.GetComponentObject<MoveQuery>(role);
-        rmq.Initialize();
+        rmq.Initialize(isNeedNavAgent);
     }
 
     public string GetName(long uid)

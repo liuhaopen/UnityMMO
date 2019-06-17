@@ -4,6 +4,7 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityMMO;
+using UnityMMO.Component;
 
 [DisableAutoCreation]
 public class NameboardSystem : BaseComponentSystem

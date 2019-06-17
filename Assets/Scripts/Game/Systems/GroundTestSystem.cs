@@ -3,6 +3,7 @@ using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 using UnityMMO;
+using UnityMMO.Component;
 
 [DisableAutoCreation]
 public class GroundTestSystem : BaseComponentSystem

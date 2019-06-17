@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using UnityMMO.Component;
 using static Protocol;
 
 namespace UnityMMO {
@@ -185,10 +186,10 @@ public class SynchFromNet {
         long new_z = Int64.Parse(pos_strs[1]);
         var newTargetPos = new float3(new_x/GameConst.RealToLogic, 0, new_z/GameConst.RealToLogic);
 
-        var trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(entity);
-        var curPos = trans.localPosition;
-        curPos.y = 0;
-        var distance = Vector3.Distance(curPos, newTargetPos);
+        // var trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(entity);
+        // var curPos = trans.localPosition;
+        // curPos.y = 0;
+        // var distance = Vector3.Distance(curPos, newTargetPos);
         // if (distance > 100)
         // {
         //     //如果目标坐标距离人物当前坐标很远就直接设置

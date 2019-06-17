@@ -6,6 +6,7 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityMMO;
+using UnityMMO.Component;
 
 public struct RoleLooksSpawnRequest : IComponentData
 {

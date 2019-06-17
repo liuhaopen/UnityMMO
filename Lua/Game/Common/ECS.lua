@@ -35,6 +35,11 @@ function ECS:SetComponentData( entity, compType, data )
 	func(self.entityMgr, entity, data, compType)
 end
 
+function ECS:HasComponent( entity, compType )
+	local func = self:GetFunc("HasComponent", compType, EntityManager)
+	return func(self.entityMgr, entity, compType)
+end
+
 function ECS:GetComponentObject( entity, compType )
 	local func = self:GetFunc("SetComponentData", compType, EntityManagerExtensions)
 	return func(self.entityMgr, entity, compType)

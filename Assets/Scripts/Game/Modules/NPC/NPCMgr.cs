@@ -3,6 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using UnityMMO.Component;
 
 namespace UnityMMO
 {
@@ -52,7 +53,7 @@ public class NPCMgr
         // EntityManager.AddComponentData(NPC, new TargetPosition {Value = targetPos});
         EntityManager.AddComponentData(NPC, new LocomotionState {LocoState = LocomotionState.State.Idle});
         EntityManager.AddComponentData(NPC, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
-        EntityManager.AddComponentData(NPC, new UID {Value=uid});
+        EntityManager.SetComponentData(NPC, new UID {Value=uid});
         EntityManager.AddComponentData(NPC, new TypeID {Value=typeID});
         EntityManager.AddComponentData(NPC, ActionData.Empty);
         EntityManager.AddComponentData(NPC, new SceneObjectTypeData {Value=SceneObjectType.NPC});

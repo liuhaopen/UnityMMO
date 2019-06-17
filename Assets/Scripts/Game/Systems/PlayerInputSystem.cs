@@ -7,6 +7,7 @@ using XLuaFramework;
 using System;
 using Unity.Mathematics;
 using Unity.Collections;
+using UnityMMO.Component;
 
 namespace UnityMMO
 {

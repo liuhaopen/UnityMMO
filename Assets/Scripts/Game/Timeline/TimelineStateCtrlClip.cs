@@ -4,6 +4,7 @@ using Unity.Entities;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityMMO;
+using UnityMMO.Component;
 
 [System.Serializable]
 public class TimelineStateCtrlClip : PlayableAsset

@@ -4,6 +4,11 @@ using UnityEngine;
 
 namespace UnityMMO
 {
+public struct RaycastSceneObjHit 
+{
+    public Entity entity;
+    public Vector3 point;
+}
 public class SceneHelper
 {
     private static EntityManager EntityMgr;
@@ -14,27 +19,41 @@ public class SceneHelper
         EntityMgr = entityMgr;
     }
 
-    public static long GetSceneObjectByPos(Vector3 absPos, Dictionary<long, Entity> entityDic)
+    public static RaycastSceneObjHit GetClickSceneObject()
     {
+        RaycastSceneObjHit result = new RaycastSceneObjHit();
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        Debug.Log("Input.mousePosition : "+Input.mousePosition.x+" "+Input.mousePosition.y+" z:"+Input.mousePosition.z);
+        // Debug.Log("Input.mousePosition : "+Input.mousePosition.x+" "+Input.mousePosition.y+" z:"+Input.mousePosition.z);
         RaycastHit hit=new RaycastHit();
         if(Physics.Raycast(ray,out hit))
         {
             Debug.Log(hit.collider.name);
+            result.point = hit.point;
+            var uid = hit.collider.GetComponentInParent<UIDProxy>();
+            // Debug.Log("uid : dddd : "+(uid!=null));
+            if (uid != null)
+            {
+                // Debug.Log("uid.Value.Value : "+uid.Value.Value);
+                result.entity = SceneMgr.Instance.GetSceneObject(uid.Value.Value);
+            }
+        }
+        return result;
+    }
+
+    //unfinished method
+    public static long GetSceneObjectByPos(Vector3 absPos, Dictionary<long, Entity> entityDic)
+    {
+        int inAreaNum = 0; 
+        foreach (var item in entityDic)
+        {
+            var isIn = IsPosInEntityBound(absPos, item.Value);
+            if (isIn)
+            {
+                UIDTempCacheList[inAreaNum] = item.Value;
+                inAreaNum++;
+            }
         }
         return 0;
-        // int inAreaNum = 0; 
-        // foreach (var item in entityDic)
-        // {
-        //     var isIn = IsPosInEntityBound(absPos, item.Value);
-        //     if (isIn)
-        //     {
-        //         UIDTempCacheList[inAreaNum] = item.Value;
-        //         inAreaNum++;
-        //     }
-        // }
-        // return 0;
     }
 
     public static bool IsPosInEntityBound(Vector3 absPos, Entity entity)

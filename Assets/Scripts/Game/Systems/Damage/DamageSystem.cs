@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 using UnityMMO;
+using UnityMMO.Component;
 
 [DisableAutoCreation]
 public class HandleDamage : BaseComponentSystem

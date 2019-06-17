@@ -16,20 +16,12 @@ public class SceneMgr : MonoBehaviour
 {
 	public static SceneMgr Instance;
     GameWorld m_GameWorld;
-    // public Transform container;
-	// EntityManager entityManager;
-    // public EntityArchetype RoleArchetype;
-    // public EntityArchetype MonsterArchetype;
-    // public EntityArchetype NPCArchetype;
     Dictionary<long, Entity> entityDic;
     SceneInfo curSceneInfo;
     Entity mainRole;
     public SceneDetectorBase detector;
     private SceneObjectLoadController m_Controller;
     const string SceneInfoPath = "Assets/AssetBundleRes/scene/";
-
-    // GameObject mainRolePrefab;
-    // GameObject rolePrefab;
     private bool isLoadingScene = false;
     bool isBaseWorldLoadOk = false;
     public LayerMask groundLayer = 1 << 0;
@@ -45,7 +37,6 @@ public class SceneMgr : MonoBehaviour
     public SceneInfo CurSceneInfo { get => curSceneInfo; }
     public Transform MoveQueryContainer { get =>moveQueryContainer; }
     public Transform FlyWordContainer { get =>flyWordContainer; }
-
     Cinemachine.CinemachineFreeLook freeLookCamera;
     Transform freeLookCameraTrans;
     Transform mainCameraTrans;
@@ -71,7 +62,6 @@ public class SceneMgr : MonoBehaviour
         // Debug.Log("detector : "+(detector!=null).ToString()+" cont : "+(m_Controller != null).ToString());
         if (detector != null && m_Controller != null)
             m_Controller.RefreshDetector(detector);
-        
         // CheckMainRolePos();
     }
 
@@ -149,7 +139,7 @@ public class SceneMgr : MonoBehaviour
             }
             action(1);
             //CAT_TODO:Debug模式下加载navmesh,现在暂时没用到navmesh
-            if (!XLuaFramework.AppConfig.DebugMode)
+            // if (!XLuaFramework.AppConfig.DebugMode)
             {
                 string navmeshPath = "navmesh_"+scene_id;
                 XLuaFramework.ResourceManager.GetInstance().LoadNavMesh(navmeshPath);
@@ -251,7 +241,7 @@ public class SceneMgr : MonoBehaviour
         if (Physics.Raycast(ray1, out groundHit, 12000, groundLayer))
         {
             newPos = groundHit.point;
-            newPos.y += 0.5f;
+            newPos.y += 0.1f;
         }
         else
         {
@@ -406,10 +396,6 @@ public class SceneMgr : MonoBehaviour
         return Entity.Null;
     }
 
-    public long GetSceneObjectByPos(Vector3 absPos)
-    {
-        return SceneHelper.GetSceneObjectByPos(absPos, entityDic);
-    }
 
 }
 

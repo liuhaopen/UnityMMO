@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 using UnityMMO;
+using UnityMMO.Component;
 
 public class CommonAnimatorBehaviour : StateMachineBehaviour
 {

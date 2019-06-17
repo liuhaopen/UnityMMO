@@ -69,6 +69,9 @@ public static class XLuaGenConfig
                 typeof(Animator),
                 typeof(CircleRawImage),
                 typeof(Camera),
+                typeof(Physics),
+                typeof(Input),
+                typeof(KeyCode),
                 typeof(UnityEngine.Debug)
             };
 

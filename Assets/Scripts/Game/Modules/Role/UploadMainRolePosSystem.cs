@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityMMO;
 using SprotoType;
 using Unity.Collections;
+using UnityMMO.Component;
 
 [DisableAutoCreation]
 public class UploadMainRolePosSystem : BaseComponentSystem

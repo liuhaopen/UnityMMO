@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 using UnityMMO;
+using UnityMMO.Component;
 using XLuaFramework;
 
 public struct TimelineSpawnRequest : IComponentData

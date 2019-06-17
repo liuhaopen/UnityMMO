@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Entities;
+using UnityMMO.Component;
 
 namespace UnityMMO
 {

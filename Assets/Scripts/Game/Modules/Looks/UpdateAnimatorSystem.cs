@@ -4,6 +4,7 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityMMO;
+using UnityMMO.Component;
 
 [DisableAutoCreation]
 public class UpdateAnimatorSystem : BaseComponentSystem

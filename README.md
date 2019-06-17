@@ -11,6 +11,14 @@
 )在虚拟机安装mysql并导入Server/data/里的两个数据库文件  
 )运行:./run.sh跑起服务端  
 
+
+## Status and prerequisites
+Current status at a glance:
+```
+Unity version: 2019.1.4f1
+Platforms    : client for Windows and Android;server only for Linux
+```
+
 # 开发笔记
 见[Wiki](https://github.com/liuhaopen/UnityMMO/wiki/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0 "Wiki")  
 

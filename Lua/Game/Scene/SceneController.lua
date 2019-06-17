@@ -24,9 +24,24 @@ function SceneController:InitEvents(  )
 
 	local on_up = function ( target, x, y )
     	-- print('Cat:SceneController.lua[up] x, y', target, x, y)
-    	-- local wpos = self.mainCamera:ScreenToWorldPoint(Vector3(x, y, 0))
-    	-- print('Cat:SceneController.lua[22] wpos.x, wpos.y, wpos.z', wpos.x, wpos.y, wpos.z)
-        SceneMgr.Instance:GetSceneObjectByPos(Vector3.zero)
+        local hit = SceneHelper.GetClickSceneObject()
+        if hit then
+            print('Cat:SceneController.lua[35] hit.entity, hit.point.x, hit.point.y', hit.entity, hit.point.x, hit.point.y)
+            print('Cat:SceneController.lua[30] ECS:HasComponent(hit.entity, CS.UnityMMO.Component.SceneObjectTypeData)', ECS:HasComponent(hit.entity, CS.UnityMMO.Component.SceneObjectTypeData))
+            if hit.entity == Entity.Null then
+                local goe = RoleMgr.GetInstance():GetMainRole()
+                local moveQuery = goe:GetComponent(typeof(CS.UnityMMO.MoveQuery))
+                print('Cat:SceneController.lua[39] moveQuery', moveQuery)
+                local findInfo = {
+                    destination = hit.point,
+                    stoppingDistance = 2,
+                }
+                moveQuery:StartFindWay(findInfo)
+            elseif ECS:HasComponent(hit.entity, CS.UnityMMO.Component.SceneObjectTypeData) then
+                local sceneObjType = ECS:GetComponentData(hit.entity, CS.UnityMMO.Component.SceneObjectTypeData)
+                print('Cat:SceneController.lua[41] sceneObjType', sceneObjType.Value)
+            end
+        end
     end
 	UIHelper.BindClickEvent(self.sceneNode, on_up)
 

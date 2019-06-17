@@ -5,14 +5,8 @@ using UnityEngine;
 
 namespace UnityMMO
 {
-    public struct UID : IComponentData
-    {
-        public long Value;
-    }
-
-    [DisallowMultipleComponent] 
-    public class UIDProxy : ComponentDataProxy<UID> { }
-
+namespace Component
+{
     public struct SceneObjectTypeData : IComponentData
     {
         public SceneObjectType Value;
@@ -228,4 +222,5 @@ namespace UnityMMO
         public int SpawnedEnemyCount;
         public UnityEngine.Random.State RandomState;
     }
+}
 }

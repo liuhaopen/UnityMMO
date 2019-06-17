@@ -4,6 +4,7 @@ using Unity.Entities;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityMMO;
+using UnityMMO.Component;
 
 // A behaviour that is attached to a playable
 public class SpeedControlBehaviour : PlayableBehaviour
