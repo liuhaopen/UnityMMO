@@ -20,7 +20,7 @@ end
 --半透明黑色背景组件
 UI.Background = BaseClass(UI.UIComponent)
 function UI.Background:OnLoad()
-	print('Cat:UIComponent.lua[23] self.alpha, self.is_click_to_close', self.alpha, self.is_click_to_close)
+	-- print('Cat:UIComponent.lua[23] self.alpha, self.is_click_to_close', self.alpha, self.is_click_to_close)
 	local bg = UIWidgetPool:CreateWidget("Background")
 	self.bg_img = bg.gameObject:GetComponent("RawImage")
 	self.bg_obj = bg.gameObject
@@ -38,7 +38,6 @@ function UI.Background:OnLoad()
 	if self.is_click_to_close then
 		self.bg_img.raycastTarget = true
 		local on_click = function ( )
-			print('Cat:UIComponent.lua[38]')
 			UIMgr:Close(self.view_owner)
 		end
 		UIHelper.BindClickEvent(self.bg_obj, on_click)
@@ -81,10 +80,10 @@ function UI.HideOtherView:OnLoad()
 end
 
 function UI.HideOtherView:OnClose()
-	print('Cat:UI.lua[HideOtherView OnClose]')
+	-- print('Cat:UI.lua[HideOtherView OnClose]')
 	if UIMgr:IsClosingAllView() then return end
 	local opened_views = UIMgr:GetViewStack()
-	print('Cat:UIComponent.lua[87] opened_views', opened_views)
+	-- print('Cat:UIComponent.lua[87] opened_views', opened_views)
 	for i=#opened_views,1,-1 do
 		if self.view_owner ~= opened_views[i] then
 			UIMgr:SetViewVisible(opened_views[i], true)
@@ -108,10 +107,10 @@ end
 --延迟销毁界面
 UI.DelayDestroy = BaseClass(UI.UIComponent)
 function UI.DelayDestroy:OnClose()
-	print('Cat:UI.lua[DelayDestroy]')
+	-- print('Cat:UI.lua[DelayDestroy]')
 	self.view_owner.is_destroyed = true
 	local timer = Timer.New(function()
-		print('Cat:UIComponent.lua[Destroy]')
+		-- print('Cat:UIComponent.lua[Destroy]')
 		GameObject.Destroy(self.view_owner.gameObject)
 	end, self.delay_time or 5)
 	timer:Start()
