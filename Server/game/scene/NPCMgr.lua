@@ -50,9 +50,7 @@ function NPCMgr:CreateNPC( type_id, pos_x, pos_y, pos_z )
 	self.entityMgr:SetComponentData(entity, "UMO.AOIHandle", {value=handle})
 
 	self.sceneMgr:SetEntity(scene_uid, entity)
-    -- self:InitGraphsForMon(scene_uid, entity, self.entityMgr, handle, self.aoi, cfg)
 
-	-- table.insert(self.monster_entities, entity)
 	return entity
 end
 

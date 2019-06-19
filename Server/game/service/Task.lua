@@ -3,7 +3,7 @@ require "Common.Util.util"
 
 local Task = {}
 
-function Task.Task_GetInfoList(user_info, req_data)
+function Task.Task_GetInfoList(userInfo, reqData)
 	local ackData = {
 		taskList = {
 			{
@@ -14,6 +14,14 @@ function Task.Task_GetInfoList(user_info, req_data)
 		},
 	}
 	return ackData
+end
+
+function Task.Task_GetInfoListInNPC( userInfo, reqData )
+	print("Cat:Task [start:20] reqData:", reqData)
+	PrintTable(reqData)
+	print("Cat:Task [end]")
+	--Cat_Todo : check if it is close to npc 
+	return {npcUID=reqData.npcUID}
 end
 
 

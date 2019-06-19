@@ -32,12 +32,17 @@ function SceneController:InitEvents(  )
                 local moveQuery = goe:GetComponent(typeof(CS.UnityMMO.MoveQuery))
                 local findInfo = {
                     destination = hit.point,
-                    stoppingDistance = 2,
+                    stoppingDistance = 0,
                 }
                 moveQuery:StartFindWay(findInfo)
             elseif ECS:HasComponent(hit.entity, CS.UnityMMO.Component.SceneObjectTypeData) then
                 local sceneObjType = ECS:GetComponentData(hit.entity, CS.UnityMMO.Component.SceneObjectTypeData)
                 print('Cat:SceneController.lua[41] sceneObjType', sceneObjType.Value)
+                if sceneObjType.Value == CS.UnityMMO.SceneObjectType.NPC then
+                    local typeID = ECS:GetComponentData(hit.entity, CS.UnityMMO.Component.TypeID)
+                    print('Cat:SceneController.lua[43] typeID.Value', typeID.Value)
+                    TaskController:GetInstance():DoConversation(typeID.Value)
+                end
             end
         end
     end

@@ -2,8 +2,6 @@ using XLua;
 
 namespace UnityMMO
 {
-[Hotfix]
-[LuaCallCSharp]
 public enum SceneInfoKey
 {
     None=0,
@@ -13,16 +11,17 @@ public enum SceneInfoKey
     TargetPos=4,
     JumpState=5,
     HPChange=6,
+    NPCState=7,
 }
 
-[Hotfix]
-[LuaCallCSharp]
 public enum SceneObjectType
 {
     None=0,
     Role=1,
     Monster=2,
     NPC=3,
-    DropItem=4,//掉落物
+    Collectable=4,
+    DropItem=5,//掉落物
+    Interactive=6,
 }
 }
