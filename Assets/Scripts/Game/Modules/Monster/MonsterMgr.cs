@@ -71,7 +71,7 @@ public class MonsterMgr
 
     private void CreateLooks(Entity ownerEntity, long typeID)
     {
-        var resPath = GameConst.GetMonsterResPath(typeID);
+        var resPath = ResPath.GetMonsterResPath(typeID);
         var bodyResID = ConfigMonster.GetInstance().GetBodyResID(typeID);
         if (bodyResID == 0)
         {

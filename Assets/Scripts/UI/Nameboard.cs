@@ -39,7 +39,7 @@ public class Nameboard : MonoBehaviour
         {
             if (curColorStyle != value)
             {
-                string resPath = GameConst.GetBloodResPath(value);
+                string resPath = ResPath.GetBloodResPath(value);
                 UIHelper.SetImage(bloodImg, resPath);
             }
             curColorStyle = value; 

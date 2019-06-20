@@ -3,6 +3,8 @@ return [[
 	role_id 0 : integer
 	career 1 : integer
 	name 2 : string
+	body 3 : integer
+	hair 4 : integer
 }
 
 account_get_server_time 1 {

@@ -1,4 +1,4 @@
-ResPath = ResPath or {}
+ResPath = BaseClass(CS.UnityMMO.ResPath)
 
 function ResPath.GetFullUIPath( relativePath )
 	return "Assets/AssetBundleRes/ui/"..relativePath

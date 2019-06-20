@@ -5,7 +5,7 @@ local LuaClickListener = LuaClickListener
 local LuaDragListener = LuaDragListener
 local WordManager = WordManager
 
-UI = UI or {}
+UI = BaseClass(CS.XLuaFramework.UIHelper)
 --下列接口会尝试多种设置的，如果你已经知道你的节点是什么类型的就别用下列接口了
 function UI.SetVisible( obj, is_show )
 	if not obj then return end
@@ -192,6 +192,14 @@ function UI.SetLocalPosition(transform, pos)
 	UI.SetLocalPositionXYZ(transform, pos.x, pos.y, pos.z)
 end
 
+function UI.GetPositionXYZ(transform)
+	if transform then
+		local pos = transform.position
+		return pos.x, pos.y, pos.z
+	end
+	return 0
+end
+
 function UI.GetLocalPositionX(transform)
 	if transform then
 		local pos = transform.localPosition
@@ -278,6 +286,12 @@ function UI.GetAnchoredPositionXY(transform)
 		return pos.x, pos.y
 	end
 	return 0, 0
+end
+
+function UI.SetLocalScaleXYZ( transform, x, y, z )
+	if transform then
+		transform.localScale = Vector3(x, y, z)
+	end
 end
 
 function UI.SetSizeDeltaXY(transform, x, y)

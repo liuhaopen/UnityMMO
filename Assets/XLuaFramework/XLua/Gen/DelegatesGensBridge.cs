@@ -842,7 +842,31 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp36(object p0, object p1, bool p2, object p3)
+		public void __Gen_Delegate_Imp36(object p0, object p1, bool p2)
+		{
+#if THREAD_SAFE || HOTFIX_ENABLE
+            lock (luaEnv.luaEnvLock)
+            {
+#endif
+                RealStatePtr L = luaEnv.rawL;
+                int errFunc = LuaAPI.pcall_prepare(L, errorFuncRef, luaReference);
+                ObjectTranslator translator = luaEnv.translator;
+                translator.PushAny(L, p0);
+                translator.PushAny(L, p1);
+                LuaAPI.lua_pushboolean(L, p2);
+                
+                PCall(L, 3, 0, errFunc);
+                
+                
+                
+                LuaAPI.lua_settop(L, errFunc - 1);
+                
+#if THREAD_SAFE || HOTFIX_ENABLE
+            }
+#endif
+		}
+        
+		public void __Gen_Delegate_Imp37(object p0, object p1, bool p2, object p3)
 		{
 #if THREAD_SAFE || HOTFIX_ENABLE
             lock (luaEnv.luaEnvLock)
@@ -862,116 +886,6 @@ namespace XLua
                 
                 LuaAPI.lua_settop(L, errFunc - 1);
                 
-#if THREAD_SAFE || HOTFIX_ENABLE
-            }
-#endif
-		}
-        
-		public string __Gen_Delegate_Imp37()
-		{
-#if THREAD_SAFE || HOTFIX_ENABLE
-            lock (luaEnv.luaEnvLock)
-            {
-#endif
-                RealStatePtr L = luaEnv.rawL;
-                int errFunc = LuaAPI.pcall_prepare(L, errorFuncRef, luaReference);
-                
-                
-                PCall(L, 0, 1, errFunc);
-                
-                
-                string __gen_ret = LuaAPI.lua_tostring(L, errFunc + 1);
-                LuaAPI.lua_settop(L, errFunc - 1);
-                return  __gen_ret;
-#if THREAD_SAFE || HOTFIX_ENABLE
-            }
-#endif
-		}
-        
-		public string __Gen_Delegate_Imp38(int p0)
-		{
-#if THREAD_SAFE || HOTFIX_ENABLE
-            lock (luaEnv.luaEnvLock)
-            {
-#endif
-                RealStatePtr L = luaEnv.rawL;
-                int errFunc = LuaAPI.pcall_prepare(L, errorFuncRef, luaReference);
-                
-                LuaAPI.xlua_pushinteger(L, p0);
-                
-                PCall(L, 1, 1, errFunc);
-                
-                
-                string __gen_ret = LuaAPI.lua_tostring(L, errFunc + 1);
-                LuaAPI.lua_settop(L, errFunc - 1);
-                return  __gen_ret;
-#if THREAD_SAFE || HOTFIX_ENABLE
-            }
-#endif
-		}
-        
-		public string __Gen_Delegate_Imp39(long p0)
-		{
-#if THREAD_SAFE || HOTFIX_ENABLE
-            lock (luaEnv.luaEnvLock)
-            {
-#endif
-                RealStatePtr L = luaEnv.rawL;
-                int errFunc = LuaAPI.pcall_prepare(L, errorFuncRef, luaReference);
-                
-                LuaAPI.lua_pushint64(L, p0);
-                
-                PCall(L, 1, 1, errFunc);
-                
-                
-                string __gen_ret = LuaAPI.lua_tostring(L, errFunc + 1);
-                LuaAPI.lua_settop(L, errFunc - 1);
-                return  __gen_ret;
-#if THREAD_SAFE || HOTFIX_ENABLE
-            }
-#endif
-		}
-        
-		public string __Gen_Delegate_Imp40(int p0, int p1)
-		{
-#if THREAD_SAFE || HOTFIX_ENABLE
-            lock (luaEnv.luaEnvLock)
-            {
-#endif
-                RealStatePtr L = luaEnv.rawL;
-                int errFunc = LuaAPI.pcall_prepare(L, errorFuncRef, luaReference);
-                
-                LuaAPI.xlua_pushinteger(L, p0);
-                LuaAPI.xlua_pushinteger(L, p1);
-                
-                PCall(L, 2, 1, errFunc);
-                
-                
-                string __gen_ret = LuaAPI.lua_tostring(L, errFunc + 1);
-                LuaAPI.lua_settop(L, errFunc - 1);
-                return  __gen_ret;
-#if THREAD_SAFE || HOTFIX_ENABLE
-            }
-#endif
-		}
-        
-		public string __Gen_Delegate_Imp41(UnityMMO.Nameboard.ColorStyle p0)
-		{
-#if THREAD_SAFE || HOTFIX_ENABLE
-            lock (luaEnv.luaEnvLock)
-            {
-#endif
-                RealStatePtr L = luaEnv.rawL;
-                int errFunc = LuaAPI.pcall_prepare(L, errorFuncRef, luaReference);
-                ObjectTranslator translator = luaEnv.translator;
-                translator.PushUnityMMONameboardColorStyle(L, p0);
-                
-                PCall(L, 1, 1, errFunc);
-                
-                
-                string __gen_ret = LuaAPI.lua_tostring(L, errFunc + 1);
-                LuaAPI.lua_settop(L, errFunc - 1);
-                return  __gen_ret;
 #if THREAD_SAFE || HOTFIX_ENABLE
             }
 #endif

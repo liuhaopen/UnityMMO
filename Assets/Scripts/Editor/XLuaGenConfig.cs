@@ -72,6 +72,7 @@ public static class XLuaGenConfig
                 typeof(Physics),
                 typeof(Input),
                 typeof(KeyCode),
+                typeof(RenderTexture),
                 typeof(UnityEngine.Debug)
             };
 

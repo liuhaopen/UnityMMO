@@ -61,9 +61,9 @@ public class SkillManager
         string assetPath;
         int scene_obj_type = GetSceneObjTypeBySkillID(skillID);
         if (scene_obj_type == (int)SceneObjectType.Role)
-            assetPath = GameConst.GetRoleSkillResPath(skillID);
+            assetPath = ResPath.GetRoleSkillResPath(skillID);
         else if(scene_obj_type == (int)SceneObjectType.Monster)
-            assetPath = GameConst.GetMonsterSkillResPath(skillID);
+            assetPath = ResPath.GetMonsterSkillResPath(skillID);
         else
             assetPath = "";
         return assetPath;

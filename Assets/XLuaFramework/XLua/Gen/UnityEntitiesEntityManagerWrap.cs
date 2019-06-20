@@ -561,9 +561,9 @@ namespace XLua.CSObjectWrap
             
                 if(gen_param_count == 2&& translator.Assignable<Unity.Entities.EntityQuery>(L, 2)) 
                 {
-                    Unity.Entities.EntityQuery _entityQueryFilter = (Unity.Entities.EntityQuery)translator.GetObject(L, 2, typeof(Unity.Entities.EntityQuery));
+                    Unity.Entities.EntityQuery _entityQuery = (Unity.Entities.EntityQuery)translator.GetObject(L, 2, typeof(Unity.Entities.EntityQuery));
                     
-                    gen_to_be_invoked.DestroyEntity( _entityQueryFilter );
+                    gen_to_be_invoked.DestroyEntity( _entityQuery );
                     
                     
                     

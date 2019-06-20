@@ -11,13 +11,12 @@
 		<type fullname="XLuaFramework.ResourceManager" preserve="all"/>
 		<type fullname="XLuaFramework.UIHelper" preserve="all"/>
 		<type fullname="XLuaFramework.Util" preserve="all"/>
-		<type fullname="UnityMMO.GameConst" preserve="all"/>
 		<type fullname="UnityMMO.GameVariable" preserve="all"/>
-		<type fullname="UnityMMO.SceneInfoKey" preserve="all"/>
-		<type fullname="UnityMMO.SceneObjectType" preserve="all"/>
 		<type fullname="CircleRawImage" preserve="all"/>
 		<type fullname="UnityMMO.UID" preserve="all"/>
 		<type fullname="UnityMMO.UIDProxy" preserve="all"/>
+		<type fullname="UnityMMO.GameConst" preserve="all"/>
+		<type fullname="UnityMMO.ResPath" preserve="all"/>
 		<type fullname="UnityMMO.ECSHelper" preserve="all"/>
 		<type fullname="UnityMMO.GameInput" preserve="all"/>
 		<type fullname="UnityMMO.MainWorld" preserve="all"/>
@@ -32,6 +31,8 @@
 		<type fullname="UnityMMO.SceneHelper" preserve="all"/>
 		<type fullname="UnityMMO.SceneInfo" preserve="all"/>
 		<type fullname="UnityMMO.BaseSceneInfoData" preserve="all"/>
+		<type fullname="UnityMMO.SceneInfoKey" preserve="all"/>
+		<type fullname="UnityMMO.SceneObjectType" preserve="all"/>
 		<type fullname="UnityMMO.SceneMgr" preserve="all"/>
 		<type fullname="UnityMMO.FindWayInfo" preserve="all"/>
 		<type fullname="UnityMMO.MoveQuery" preserve="all"/>
@@ -89,6 +90,7 @@
 		<type fullname="UnityEngine.Camera" preserve="all"/>
 		<type fullname="UnityEngine.Input" preserve="all"/>
 		<type fullname="UnityEngine.KeyCode" preserve="all"/>
+		<type fullname="UnityEngine.RenderTexture" preserve="all"/>
 		<type fullname="UnityEngine.Debug" preserve="all"/>
 		
 	</assembly>

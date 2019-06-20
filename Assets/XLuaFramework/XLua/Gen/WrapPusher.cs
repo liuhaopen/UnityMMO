@@ -35,11 +35,11 @@ namespace XLua
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.Bounds>(translator.PushUnityEngineBounds, translator.Get, translator.UpdateUnityEngineBounds);
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.Ray2D>(translator.PushUnityEngineRay2D, translator.Get, translator.UpdateUnityEngineRay2D);
 				translator.RegisterPushAndGetAndUpdate<XLuaFramework.NetPackageType>(translator.PushXLuaFrameworkNetPackageType, translator.Get, translator.UpdateXLuaFrameworkNetPackageType);
-				translator.RegisterPushAndGetAndUpdate<UnityMMO.SceneInfoKey>(translator.PushUnityMMOSceneInfoKey, translator.Get, translator.UpdateUnityMMOSceneInfoKey);
-				translator.RegisterPushAndGetAndUpdate<UnityMMO.SceneObjectType>(translator.PushUnityMMOSceneObjectType, translator.Get, translator.UpdateUnityMMOSceneObjectType);
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.TextAnchor>(translator.PushUnityEngineTextAnchor, translator.Get, translator.UpdateUnityEngineTextAnchor);
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.TouchPhase>(translator.PushUnityEngineTouchPhase, translator.Get, translator.UpdateUnityEngineTouchPhase);
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.KeyCode>(translator.PushUnityEngineKeyCode, translator.Get, translator.UpdateUnityEngineKeyCode);
+				translator.RegisterPushAndGetAndUpdate<UnityMMO.SceneInfoKey>(translator.PushUnityMMOSceneInfoKey, translator.Get, translator.UpdateUnityMMOSceneInfoKey);
+				translator.RegisterPushAndGetAndUpdate<UnityMMO.SceneObjectType>(translator.PushUnityMMOSceneObjectType, translator.Get, translator.UpdateUnityMMOSceneObjectType);
 				translator.RegisterPushAndGetAndUpdate<UnityMMO.TimelineInfo.Event>(translator.PushUnityMMOTimelineInfoEvent, translator.Get, translator.UpdateUnityMMOTimelineInfoEvent);
 				translator.RegisterPushAndGetAndUpdate<UnityMMO.Nameboard.ColorStyle>(translator.PushUnityMMONameboardColorStyle, translator.Get, translator.UpdateUnityMMONameboardColorStyle);
 			
@@ -662,174 +662,6 @@ namespace XLua
             }
         }
         
-        int UnityMMOSceneInfoKey_TypeID = -1;
-		int UnityMMOSceneInfoKey_EnumRef = -1;
-        
-        public void PushUnityMMOSceneInfoKey(RealStatePtr L, UnityMMO.SceneInfoKey val)
-        {
-            if (UnityMMOSceneInfoKey_TypeID == -1)
-            {
-			    bool is_first;
-                UnityMMOSceneInfoKey_TypeID = getTypeId(L, typeof(UnityMMO.SceneInfoKey), out is_first);
-				
-				if (UnityMMOSceneInfoKey_EnumRef == -1)
-				{
-				    Utils.LoadCSTable(L, typeof(UnityMMO.SceneInfoKey));
-				    UnityMMOSceneInfoKey_EnumRef = LuaAPI.luaL_ref(L, LuaIndexes.LUA_REGISTRYINDEX);
-				}
-				
-            }
-			
-			if (LuaAPI.xlua_tryget_cachedud(L, (int)val, UnityMMOSceneInfoKey_EnumRef) == 1)
-            {
-			    return;
-			}
-			
-            IntPtr buff = LuaAPI.xlua_pushstruct(L, 4, UnityMMOSceneInfoKey_TypeID);
-            if (!CopyByValue.Pack(buff, 0, (int)val))
-            {
-                throw new Exception("pack fail fail for UnityMMO.SceneInfoKey ,value="+val);
-            }
-			
-			LuaAPI.lua_getref(L, UnityMMOSceneInfoKey_EnumRef);
-			LuaAPI.lua_pushvalue(L, -2);
-			LuaAPI.xlua_rawseti(L, -2, (int)val);
-			LuaAPI.lua_pop(L, 1);
-			
-        }
-		
-        public void Get(RealStatePtr L, int index, out UnityMMO.SceneInfoKey val)
-        {
-		    LuaTypes type = LuaAPI.lua_type(L, index);
-            if (type == LuaTypes.LUA_TUSERDATA )
-            {
-			    if (LuaAPI.xlua_gettypeid(L, index) != UnityMMOSceneInfoKey_TypeID)
-				{
-				    throw new Exception("invalid userdata for UnityMMO.SceneInfoKey");
-				}
-				
-                IntPtr buff = LuaAPI.lua_touserdata(L, index);
-				int e;
-                if (!CopyByValue.UnPack(buff, 0, out e))
-                {
-                    throw new Exception("unpack fail for UnityMMO.SceneInfoKey");
-                }
-				val = (UnityMMO.SceneInfoKey)e;
-                
-            }
-            else
-            {
-                val = (UnityMMO.SceneInfoKey)objectCasters.GetCaster(typeof(UnityMMO.SceneInfoKey))(L, index, null);
-            }
-        }
-		
-        public void UpdateUnityMMOSceneInfoKey(RealStatePtr L, int index, UnityMMO.SceneInfoKey val)
-        {
-		    
-            if (LuaAPI.lua_type(L, index) == LuaTypes.LUA_TUSERDATA)
-            {
-			    if (LuaAPI.xlua_gettypeid(L, index) != UnityMMOSceneInfoKey_TypeID)
-				{
-				    throw new Exception("invalid userdata for UnityMMO.SceneInfoKey");
-				}
-				
-                IntPtr buff = LuaAPI.lua_touserdata(L, index);
-                if (!CopyByValue.Pack(buff, 0,  (int)val))
-                {
-                    throw new Exception("pack fail for UnityMMO.SceneInfoKey ,value="+val);
-                }
-            }
-			
-            else
-            {
-                throw new Exception("try to update a data with lua type:" + LuaAPI.lua_type(L, index));
-            }
-        }
-        
-        int UnityMMOSceneObjectType_TypeID = -1;
-		int UnityMMOSceneObjectType_EnumRef = -1;
-        
-        public void PushUnityMMOSceneObjectType(RealStatePtr L, UnityMMO.SceneObjectType val)
-        {
-            if (UnityMMOSceneObjectType_TypeID == -1)
-            {
-			    bool is_first;
-                UnityMMOSceneObjectType_TypeID = getTypeId(L, typeof(UnityMMO.SceneObjectType), out is_first);
-				
-				if (UnityMMOSceneObjectType_EnumRef == -1)
-				{
-				    Utils.LoadCSTable(L, typeof(UnityMMO.SceneObjectType));
-				    UnityMMOSceneObjectType_EnumRef = LuaAPI.luaL_ref(L, LuaIndexes.LUA_REGISTRYINDEX);
-				}
-				
-            }
-			
-			if (LuaAPI.xlua_tryget_cachedud(L, (int)val, UnityMMOSceneObjectType_EnumRef) == 1)
-            {
-			    return;
-			}
-			
-            IntPtr buff = LuaAPI.xlua_pushstruct(L, 4, UnityMMOSceneObjectType_TypeID);
-            if (!CopyByValue.Pack(buff, 0, (int)val))
-            {
-                throw new Exception("pack fail fail for UnityMMO.SceneObjectType ,value="+val);
-            }
-			
-			LuaAPI.lua_getref(L, UnityMMOSceneObjectType_EnumRef);
-			LuaAPI.lua_pushvalue(L, -2);
-			LuaAPI.xlua_rawseti(L, -2, (int)val);
-			LuaAPI.lua_pop(L, 1);
-			
-        }
-		
-        public void Get(RealStatePtr L, int index, out UnityMMO.SceneObjectType val)
-        {
-		    LuaTypes type = LuaAPI.lua_type(L, index);
-            if (type == LuaTypes.LUA_TUSERDATA )
-            {
-			    if (LuaAPI.xlua_gettypeid(L, index) != UnityMMOSceneObjectType_TypeID)
-				{
-				    throw new Exception("invalid userdata for UnityMMO.SceneObjectType");
-				}
-				
-                IntPtr buff = LuaAPI.lua_touserdata(L, index);
-				int e;
-                if (!CopyByValue.UnPack(buff, 0, out e))
-                {
-                    throw new Exception("unpack fail for UnityMMO.SceneObjectType");
-                }
-				val = (UnityMMO.SceneObjectType)e;
-                
-            }
-            else
-            {
-                val = (UnityMMO.SceneObjectType)objectCasters.GetCaster(typeof(UnityMMO.SceneObjectType))(L, index, null);
-            }
-        }
-		
-        public void UpdateUnityMMOSceneObjectType(RealStatePtr L, int index, UnityMMO.SceneObjectType val)
-        {
-		    
-            if (LuaAPI.lua_type(L, index) == LuaTypes.LUA_TUSERDATA)
-            {
-			    if (LuaAPI.xlua_gettypeid(L, index) != UnityMMOSceneObjectType_TypeID)
-				{
-				    throw new Exception("invalid userdata for UnityMMO.SceneObjectType");
-				}
-				
-                IntPtr buff = LuaAPI.lua_touserdata(L, index);
-                if (!CopyByValue.Pack(buff, 0,  (int)val))
-                {
-                    throw new Exception("pack fail for UnityMMO.SceneObjectType ,value="+val);
-                }
-            }
-			
-            else
-            {
-                throw new Exception("try to update a data with lua type:" + LuaAPI.lua_type(L, index));
-            }
-        }
-        
         int UnityEngineTextAnchor_TypeID = -1;
 		int UnityEngineTextAnchor_EnumRef = -1;
         
@@ -1082,6 +914,174 @@ namespace XLua
             }
         }
         
+        int UnityMMOSceneInfoKey_TypeID = -1;
+		int UnityMMOSceneInfoKey_EnumRef = -1;
+        
+        public void PushUnityMMOSceneInfoKey(RealStatePtr L, UnityMMO.SceneInfoKey val)
+        {
+            if (UnityMMOSceneInfoKey_TypeID == -1)
+            {
+			    bool is_first;
+                UnityMMOSceneInfoKey_TypeID = getTypeId(L, typeof(UnityMMO.SceneInfoKey), out is_first);
+				
+				if (UnityMMOSceneInfoKey_EnumRef == -1)
+				{
+				    Utils.LoadCSTable(L, typeof(UnityMMO.SceneInfoKey));
+				    UnityMMOSceneInfoKey_EnumRef = LuaAPI.luaL_ref(L, LuaIndexes.LUA_REGISTRYINDEX);
+				}
+				
+            }
+			
+			if (LuaAPI.xlua_tryget_cachedud(L, (int)val, UnityMMOSceneInfoKey_EnumRef) == 1)
+            {
+			    return;
+			}
+			
+            IntPtr buff = LuaAPI.xlua_pushstruct(L, 4, UnityMMOSceneInfoKey_TypeID);
+            if (!CopyByValue.Pack(buff, 0, (int)val))
+            {
+                throw new Exception("pack fail fail for UnityMMO.SceneInfoKey ,value="+val);
+            }
+			
+			LuaAPI.lua_getref(L, UnityMMOSceneInfoKey_EnumRef);
+			LuaAPI.lua_pushvalue(L, -2);
+			LuaAPI.xlua_rawseti(L, -2, (int)val);
+			LuaAPI.lua_pop(L, 1);
+			
+        }
+		
+        public void Get(RealStatePtr L, int index, out UnityMMO.SceneInfoKey val)
+        {
+		    LuaTypes type = LuaAPI.lua_type(L, index);
+            if (type == LuaTypes.LUA_TUSERDATA )
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != UnityMMOSceneInfoKey_TypeID)
+				{
+				    throw new Exception("invalid userdata for UnityMMO.SceneInfoKey");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+				int e;
+                if (!CopyByValue.UnPack(buff, 0, out e))
+                {
+                    throw new Exception("unpack fail for UnityMMO.SceneInfoKey");
+                }
+				val = (UnityMMO.SceneInfoKey)e;
+                
+            }
+            else
+            {
+                val = (UnityMMO.SceneInfoKey)objectCasters.GetCaster(typeof(UnityMMO.SceneInfoKey))(L, index, null);
+            }
+        }
+		
+        public void UpdateUnityMMOSceneInfoKey(RealStatePtr L, int index, UnityMMO.SceneInfoKey val)
+        {
+		    
+            if (LuaAPI.lua_type(L, index) == LuaTypes.LUA_TUSERDATA)
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != UnityMMOSceneInfoKey_TypeID)
+				{
+				    throw new Exception("invalid userdata for UnityMMO.SceneInfoKey");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+                if (!CopyByValue.Pack(buff, 0,  (int)val))
+                {
+                    throw new Exception("pack fail for UnityMMO.SceneInfoKey ,value="+val);
+                }
+            }
+			
+            else
+            {
+                throw new Exception("try to update a data with lua type:" + LuaAPI.lua_type(L, index));
+            }
+        }
+        
+        int UnityMMOSceneObjectType_TypeID = -1;
+		int UnityMMOSceneObjectType_EnumRef = -1;
+        
+        public void PushUnityMMOSceneObjectType(RealStatePtr L, UnityMMO.SceneObjectType val)
+        {
+            if (UnityMMOSceneObjectType_TypeID == -1)
+            {
+			    bool is_first;
+                UnityMMOSceneObjectType_TypeID = getTypeId(L, typeof(UnityMMO.SceneObjectType), out is_first);
+				
+				if (UnityMMOSceneObjectType_EnumRef == -1)
+				{
+				    Utils.LoadCSTable(L, typeof(UnityMMO.SceneObjectType));
+				    UnityMMOSceneObjectType_EnumRef = LuaAPI.luaL_ref(L, LuaIndexes.LUA_REGISTRYINDEX);
+				}
+				
+            }
+			
+			if (LuaAPI.xlua_tryget_cachedud(L, (int)val, UnityMMOSceneObjectType_EnumRef) == 1)
+            {
+			    return;
+			}
+			
+            IntPtr buff = LuaAPI.xlua_pushstruct(L, 4, UnityMMOSceneObjectType_TypeID);
+            if (!CopyByValue.Pack(buff, 0, (int)val))
+            {
+                throw new Exception("pack fail fail for UnityMMO.SceneObjectType ,value="+val);
+            }
+			
+			LuaAPI.lua_getref(L, UnityMMOSceneObjectType_EnumRef);
+			LuaAPI.lua_pushvalue(L, -2);
+			LuaAPI.xlua_rawseti(L, -2, (int)val);
+			LuaAPI.lua_pop(L, 1);
+			
+        }
+		
+        public void Get(RealStatePtr L, int index, out UnityMMO.SceneObjectType val)
+        {
+		    LuaTypes type = LuaAPI.lua_type(L, index);
+            if (type == LuaTypes.LUA_TUSERDATA )
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != UnityMMOSceneObjectType_TypeID)
+				{
+				    throw new Exception("invalid userdata for UnityMMO.SceneObjectType");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+				int e;
+                if (!CopyByValue.UnPack(buff, 0, out e))
+                {
+                    throw new Exception("unpack fail for UnityMMO.SceneObjectType");
+                }
+				val = (UnityMMO.SceneObjectType)e;
+                
+            }
+            else
+            {
+                val = (UnityMMO.SceneObjectType)objectCasters.GetCaster(typeof(UnityMMO.SceneObjectType))(L, index, null);
+            }
+        }
+		
+        public void UpdateUnityMMOSceneObjectType(RealStatePtr L, int index, UnityMMO.SceneObjectType val)
+        {
+		    
+            if (LuaAPI.lua_type(L, index) == LuaTypes.LUA_TUSERDATA)
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != UnityMMOSceneObjectType_TypeID)
+				{
+				    throw new Exception("invalid userdata for UnityMMO.SceneObjectType");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+                if (!CopyByValue.Pack(buff, 0,  (int)val))
+                {
+                    throw new Exception("pack fail for UnityMMO.SceneObjectType ,value="+val);
+                }
+            }
+			
+            else
+            {
+                throw new Exception("try to update a data with lua type:" + LuaAPI.lua_type(L, index));
+            }
+        }
+        
         int UnityMMOTimelineInfoEvent_TypeID = -1;
 		int UnityMMOTimelineInfoEvent_EnumRef = -1;
         
@@ -1315,18 +1315,6 @@ namespace XLua
 				translator.PushXLuaFrameworkNetPackageType(L, array[index]);
 				return true;
 			}
-			else if (type == typeof(UnityMMO.SceneInfoKey[]))
-			{
-			    UnityMMO.SceneInfoKey[] array = obj as UnityMMO.SceneInfoKey[];
-				translator.PushUnityMMOSceneInfoKey(L, array[index]);
-				return true;
-			}
-			else if (type == typeof(UnityMMO.SceneObjectType[]))
-			{
-			    UnityMMO.SceneObjectType[] array = obj as UnityMMO.SceneObjectType[];
-				translator.PushUnityMMOSceneObjectType(L, array[index]);
-				return true;
-			}
 			else if (type == typeof(UnityEngine.TextAnchor[]))
 			{
 			    UnityEngine.TextAnchor[] array = obj as UnityEngine.TextAnchor[];
@@ -1343,6 +1331,18 @@ namespace XLua
 			{
 			    UnityEngine.KeyCode[] array = obj as UnityEngine.KeyCode[];
 				translator.PushUnityEngineKeyCode(L, array[index]);
+				return true;
+			}
+			else if (type == typeof(UnityMMO.SceneInfoKey[]))
+			{
+			    UnityMMO.SceneInfoKey[] array = obj as UnityMMO.SceneInfoKey[];
+				translator.PushUnityMMOSceneInfoKey(L, array[index]);
+				return true;
+			}
+			else if (type == typeof(UnityMMO.SceneObjectType[]))
+			{
+			    UnityMMO.SceneObjectType[] array = obj as UnityMMO.SceneObjectType[];
+				translator.PushUnityMMOSceneObjectType(L, array[index]);
 				return true;
 			}
 			else if (type == typeof(UnityMMO.TimelineInfo.Event[]))
@@ -1417,18 +1417,6 @@ namespace XLua
 				translator.Get(L, obj_idx, out array[array_idx]);
 				return true;
 			}
-			else if (type == typeof(UnityMMO.SceneInfoKey[]))
-			{
-			    UnityMMO.SceneInfoKey[] array = obj as UnityMMO.SceneInfoKey[];
-				translator.Get(L, obj_idx, out array[array_idx]);
-				return true;
-			}
-			else if (type == typeof(UnityMMO.SceneObjectType[]))
-			{
-			    UnityMMO.SceneObjectType[] array = obj as UnityMMO.SceneObjectType[];
-				translator.Get(L, obj_idx, out array[array_idx]);
-				return true;
-			}
 			else if (type == typeof(UnityEngine.TextAnchor[]))
 			{
 			    UnityEngine.TextAnchor[] array = obj as UnityEngine.TextAnchor[];
@@ -1444,6 +1432,18 @@ namespace XLua
 			else if (type == typeof(UnityEngine.KeyCode[]))
 			{
 			    UnityEngine.KeyCode[] array = obj as UnityEngine.KeyCode[];
+				translator.Get(L, obj_idx, out array[array_idx]);
+				return true;
+			}
+			else if (type == typeof(UnityMMO.SceneInfoKey[]))
+			{
+			    UnityMMO.SceneInfoKey[] array = obj as UnityMMO.SceneInfoKey[];
+				translator.Get(L, obj_idx, out array[array_idx]);
+				return true;
+			}
+			else if (type == typeof(UnityMMO.SceneObjectType[]))
+			{
+			    UnityMMO.SceneObjectType[] array = obj as UnityMMO.SceneObjectType[];
 				translator.Get(L, obj_idx, out array[array_idx]);
 				return true;
 			}

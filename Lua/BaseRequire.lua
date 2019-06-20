@@ -43,5 +43,5 @@ require("Game.Common.UIGlobal")
 require("Tools.CookieWrapper")
 
 
-require("Game.Common.GameResPath")
+require("Game.Common.ResPath")
 

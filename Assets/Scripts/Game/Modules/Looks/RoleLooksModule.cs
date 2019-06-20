@@ -222,12 +222,14 @@ public class HandleRoleLooksSpawnRequests : BaseComponentSystem
             int body = request.body;
             int hair = request.hair;
             Debug.Log("body : "+body+" hair:"+hair);
-            int bodyID = 1000+career*100+body;
-            int hairID = 1000+career*100+hair;
+            // int bodyID = 1000+career*100+body;
+            // int hairID = 1000+career*100+hair;
             // string careerPath = UnityMMO.GameConst.GetRoleCareerResPath(career);
-            string roleResPath = "Assets/AssetBundleRes/role";
-            string bodyPath = roleResPath+"/body/body_"+bodyID+"/model_body_"+bodyID+".prefab";
-            string hairPath = roleResPath+"/hair/hair_"+hairID+"/model_hair_"+hairID+".prefab";
+            // string roleResPath = "Assets/AssetBundleRes/role";
+            // string bodyPath = roleResPath+"/body/body_"+bodyID+"/model_body_"+bodyID+".prefab";
+            // string hairPath = roleResPath+"/hair/hair_"+hairID+"/model_hair_"+hairID+".prefab";
+            string bodyPath = ResPath.GetRoleBodyResPath(career, body);
+            string hairPath = ResPath.GetRoleHairResPath(career, hair);
             Debug.Log("SpawnRoleLooks bodyPath : "+bodyPath);
             XLuaFramework.ResourceManager.GetInstance().LoadAsset<GameObject>(bodyPath, delegate(UnityEngine.Object[] objs) {
                 if (objs!=null && objs.Length>0)

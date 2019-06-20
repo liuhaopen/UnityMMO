@@ -16,7 +16,7 @@ end
 
 function LoginSelectRoleView:OnLoad(  )
 	local names = {
-		"item_scroll","role_con","role_tip","start:obj","item_scroll/Viewport/item_con",
+		"item_scroll","role_mesh:raw","role_tip","start:obj","item_scroll/Viewport/item_con",
 	}
 	UI.GetChildren(self, self.transform, names)
 	self.transform.sizeDelta = Vector2.zero
@@ -53,7 +53,7 @@ function LoginSelectRoleView:UpdateView()
     local info = {
 		data_list = self.data, 
 		item_con = self.item_con, 
-		prefab_path = GameResPath.GetFullUIPath("login/LoginSelectRoleItem.prefab"), 
+		prefab_path = ResPath.GetFullUIPath("login/LoginSelectRoleItem.prefab"), 
 		item_height = 121,
 		space_y = 15,
 		scroll_view = self.item_scroll,
@@ -90,7 +90,7 @@ function LoginSelectRoleView:UpdateRoleHeadItems( item, index, v )
 		item.role_name_txt.text = item.data.name
 		local curLv = item.data.base_info and item.data.base_info.level or 0
 		item.role_lv_txt.text = curLv.."级"
-		local headRes = GameResPath.GetRoleHeadRes(item.data.career, 0)
+		local headRes = ResPath.GetRoleHeadRes(item.data.career, 0)
 		UIHelper.SetRawImage(item.role_head_raw, headRes)
 		
 		item.role_head_obj:SetActive(true)
@@ -144,14 +144,19 @@ end
 
 function LoginSelectRoleView:SetPlayModelInfo( role_vo )
 	local show_data = {
-		layer_name = self.layer_name,
-		action_name_list = {"show"},
-		can_rotate = true,
+		showType = MeshNode.ShowType.Role,
+		showRawImg = self.role_mesh_raw,
+		bodyID = role_vo.body,
+		hairID = role_vo.hair,
+		career = role_vo.career,
+		actionNameList = {"show"},
+		canRotate = true,
 		scale = 200,
 		position = Vector3(0, 0, 0),
-		need_replay_action = "show", --界面从隐藏到显示，需要重新摆pose
+		needReplayAction = "show", --界面从隐藏到显示，需要重新摆pose
 	}
-	-- lua_resM:SetRoleModelByVo(self, self.role_con, role_vo, show_data)
+	self.roleMeshNode = self.roleMeshNode or MeshNode.New()
+	self.roleMeshNode:SetData(show_data)
 end
 
 function LoginSelectRoleView:SetCurSelectRoleID( role_id )

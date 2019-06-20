@@ -70,162 +70,6 @@ namespace XLua.CSObjectWrap
 		}
 	}
     
-    public class UnityMMOSceneInfoKeyWrap
-    {
-		public static void __Register(RealStatePtr L)
-        {
-		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-		    Utils.BeginObjectRegister(typeof(UnityMMO.SceneInfoKey), L, translator, 0, 0, 0, 0);
-			Utils.EndObjectRegister(typeof(UnityMMO.SceneInfoKey), L, translator, null, null, null, null, null);
-			
-			Utils.BeginClassRegister(typeof(UnityMMO.SceneInfoKey), L, null, 8, 0, 0);
-            
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "None", UnityMMO.SceneInfoKey.None);
-            
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "EnterView", UnityMMO.SceneInfoKey.EnterView);
-            
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "LeaveView", UnityMMO.SceneInfoKey.LeaveView);
-            
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "PosChange", UnityMMO.SceneInfoKey.PosChange);
-            
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "TargetPos", UnityMMO.SceneInfoKey.TargetPos);
-            
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "JumpState", UnityMMO.SceneInfoKey.JumpState);
-            
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "HPChange", UnityMMO.SceneInfoKey.HPChange);
-            
-			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
-            
-            Utils.EndClassRegister(typeof(UnityMMO.SceneInfoKey), L, translator);
-        }
-		
-		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int __CastFrom(RealStatePtr L)
-		{
-			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
-            if (lua_type == LuaTypes.LUA_TNUMBER)
-            {
-                translator.PushUnityMMOSceneInfoKey(L, (UnityMMO.SceneInfoKey)LuaAPI.xlua_tointeger(L, 1));
-            }
-			
-            else if(lua_type == LuaTypes.LUA_TSTRING)
-            {
-			    if (LuaAPI.xlua_is_eq_str(L, 1, "None"))
-                {
-                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.None);
-                }
-				else if (LuaAPI.xlua_is_eq_str(L, 1, "EnterView"))
-                {
-                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.EnterView);
-                }
-				else if (LuaAPI.xlua_is_eq_str(L, 1, "LeaveView"))
-                {
-                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.LeaveView);
-                }
-				else if (LuaAPI.xlua_is_eq_str(L, 1, "PosChange"))
-                {
-                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.PosChange);
-                }
-				else if (LuaAPI.xlua_is_eq_str(L, 1, "TargetPos"))
-                {
-                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.TargetPos);
-                }
-				else if (LuaAPI.xlua_is_eq_str(L, 1, "JumpState"))
-                {
-                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.JumpState);
-                }
-				else if (LuaAPI.xlua_is_eq_str(L, 1, "HPChange"))
-                {
-                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.HPChange);
-                }
-				else
-                {
-                    return LuaAPI.luaL_error(L, "invalid string for UnityMMO.SceneInfoKey!");
-                }
-            }
-			
-            else
-            {
-                return LuaAPI.luaL_error(L, "invalid lua type for UnityMMO.SceneInfoKey! Expect number or string, got + " + lua_type);
-            }
-
-            return 1;
-		}
-	}
-    
-    public class UnityMMOSceneObjectTypeWrap
-    {
-		public static void __Register(RealStatePtr L)
-        {
-		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-		    Utils.BeginObjectRegister(typeof(UnityMMO.SceneObjectType), L, translator, 0, 0, 0, 0);
-			Utils.EndObjectRegister(typeof(UnityMMO.SceneObjectType), L, translator, null, null, null, null, null);
-			
-			Utils.BeginClassRegister(typeof(UnityMMO.SceneObjectType), L, null, 6, 0, 0);
-            
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "None", UnityMMO.SceneObjectType.None);
-            
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Role", UnityMMO.SceneObjectType.Role);
-            
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Monster", UnityMMO.SceneObjectType.Monster);
-            
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "NPC", UnityMMO.SceneObjectType.NPC);
-            
-            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "DropItem", UnityMMO.SceneObjectType.DropItem);
-            
-			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
-            
-            Utils.EndClassRegister(typeof(UnityMMO.SceneObjectType), L, translator);
-        }
-		
-		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int __CastFrom(RealStatePtr L)
-		{
-			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
-            if (lua_type == LuaTypes.LUA_TNUMBER)
-            {
-                translator.PushUnityMMOSceneObjectType(L, (UnityMMO.SceneObjectType)LuaAPI.xlua_tointeger(L, 1));
-            }
-			
-            else if(lua_type == LuaTypes.LUA_TSTRING)
-            {
-			    if (LuaAPI.xlua_is_eq_str(L, 1, "None"))
-                {
-                    translator.PushUnityMMOSceneObjectType(L, UnityMMO.SceneObjectType.None);
-                }
-				else if (LuaAPI.xlua_is_eq_str(L, 1, "Role"))
-                {
-                    translator.PushUnityMMOSceneObjectType(L, UnityMMO.SceneObjectType.Role);
-                }
-				else if (LuaAPI.xlua_is_eq_str(L, 1, "Monster"))
-                {
-                    translator.PushUnityMMOSceneObjectType(L, UnityMMO.SceneObjectType.Monster);
-                }
-				else if (LuaAPI.xlua_is_eq_str(L, 1, "NPC"))
-                {
-                    translator.PushUnityMMOSceneObjectType(L, UnityMMO.SceneObjectType.NPC);
-                }
-				else if (LuaAPI.xlua_is_eq_str(L, 1, "DropItem"))
-                {
-                    translator.PushUnityMMOSceneObjectType(L, UnityMMO.SceneObjectType.DropItem);
-                }
-				else
-                {
-                    return LuaAPI.luaL_error(L, "invalid string for UnityMMO.SceneObjectType!");
-                }
-            }
-			
-            else
-            {
-                return LuaAPI.luaL_error(L, "invalid lua type for UnityMMO.SceneObjectType! Expect number or string, got + " + lua_type);
-            }
-
-            return 1;
-		}
-	}
-    
     public class UnityEngineTextAnchorWrap
     {
 		public static void __Register(RealStatePtr L)
@@ -2386,6 +2230,180 @@ namespace XLua.CSObjectWrap
             else
             {
                 return LuaAPI.luaL_error(L, "invalid lua type for UnityEngine.KeyCode! Expect number or string, got + " + lua_type);
+            }
+
+            return 1;
+		}
+	}
+    
+    public class UnityMMOSceneInfoKeyWrap
+    {
+		public static void __Register(RealStatePtr L)
+        {
+		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+		    Utils.BeginObjectRegister(typeof(UnityMMO.SceneInfoKey), L, translator, 0, 0, 0, 0);
+			Utils.EndObjectRegister(typeof(UnityMMO.SceneInfoKey), L, translator, null, null, null, null, null);
+			
+			Utils.BeginClassRegister(typeof(UnityMMO.SceneInfoKey), L, null, 9, 0, 0);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "None", UnityMMO.SceneInfoKey.None);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "EnterView", UnityMMO.SceneInfoKey.EnterView);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "LeaveView", UnityMMO.SceneInfoKey.LeaveView);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "PosChange", UnityMMO.SceneInfoKey.PosChange);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "TargetPos", UnityMMO.SceneInfoKey.TargetPos);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "JumpState", UnityMMO.SceneInfoKey.JumpState);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "HPChange", UnityMMO.SceneInfoKey.HPChange);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "NPCState", UnityMMO.SceneInfoKey.NPCState);
+            
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
+            
+            Utils.EndClassRegister(typeof(UnityMMO.SceneInfoKey), L, translator);
+        }
+		
+		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int __CastFrom(RealStatePtr L)
+		{
+			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
+            if (lua_type == LuaTypes.LUA_TNUMBER)
+            {
+                translator.PushUnityMMOSceneInfoKey(L, (UnityMMO.SceneInfoKey)LuaAPI.xlua_tointeger(L, 1));
+            }
+			
+            else if(lua_type == LuaTypes.LUA_TSTRING)
+            {
+			    if (LuaAPI.xlua_is_eq_str(L, 1, "None"))
+                {
+                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.None);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "EnterView"))
+                {
+                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.EnterView);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "LeaveView"))
+                {
+                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.LeaveView);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "PosChange"))
+                {
+                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.PosChange);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "TargetPos"))
+                {
+                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.TargetPos);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "JumpState"))
+                {
+                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.JumpState);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "HPChange"))
+                {
+                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.HPChange);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "NPCState"))
+                {
+                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.NPCState);
+                }
+				else
+                {
+                    return LuaAPI.luaL_error(L, "invalid string for UnityMMO.SceneInfoKey!");
+                }
+            }
+			
+            else
+            {
+                return LuaAPI.luaL_error(L, "invalid lua type for UnityMMO.SceneInfoKey! Expect number or string, got + " + lua_type);
+            }
+
+            return 1;
+		}
+	}
+    
+    public class UnityMMOSceneObjectTypeWrap
+    {
+		public static void __Register(RealStatePtr L)
+        {
+		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+		    Utils.BeginObjectRegister(typeof(UnityMMO.SceneObjectType), L, translator, 0, 0, 0, 0);
+			Utils.EndObjectRegister(typeof(UnityMMO.SceneObjectType), L, translator, null, null, null, null, null);
+			
+			Utils.BeginClassRegister(typeof(UnityMMO.SceneObjectType), L, null, 8, 0, 0);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "None", UnityMMO.SceneObjectType.None);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Role", UnityMMO.SceneObjectType.Role);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Monster", UnityMMO.SceneObjectType.Monster);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "NPC", UnityMMO.SceneObjectType.NPC);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Collectable", UnityMMO.SceneObjectType.Collectable);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "DropItem", UnityMMO.SceneObjectType.DropItem);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Interactive", UnityMMO.SceneObjectType.Interactive);
+            
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
+            
+            Utils.EndClassRegister(typeof(UnityMMO.SceneObjectType), L, translator);
+        }
+		
+		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int __CastFrom(RealStatePtr L)
+		{
+			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
+            if (lua_type == LuaTypes.LUA_TNUMBER)
+            {
+                translator.PushUnityMMOSceneObjectType(L, (UnityMMO.SceneObjectType)LuaAPI.xlua_tointeger(L, 1));
+            }
+			
+            else if(lua_type == LuaTypes.LUA_TSTRING)
+            {
+			    if (LuaAPI.xlua_is_eq_str(L, 1, "None"))
+                {
+                    translator.PushUnityMMOSceneObjectType(L, UnityMMO.SceneObjectType.None);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Role"))
+                {
+                    translator.PushUnityMMOSceneObjectType(L, UnityMMO.SceneObjectType.Role);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Monster"))
+                {
+                    translator.PushUnityMMOSceneObjectType(L, UnityMMO.SceneObjectType.Monster);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "NPC"))
+                {
+                    translator.PushUnityMMOSceneObjectType(L, UnityMMO.SceneObjectType.NPC);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Collectable"))
+                {
+                    translator.PushUnityMMOSceneObjectType(L, UnityMMO.SceneObjectType.Collectable);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "DropItem"))
+                {
+                    translator.PushUnityMMOSceneObjectType(L, UnityMMO.SceneObjectType.DropItem);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Interactive"))
+                {
+                    translator.PushUnityMMOSceneObjectType(L, UnityMMO.SceneObjectType.Interactive);
+                }
+				else
+                {
+                    return LuaAPI.luaL_error(L, "invalid string for UnityMMO.SceneObjectType!");
+                }
+            }
+			
+            else
+            {
+                return LuaAPI.luaL_error(L, "invalid lua type for UnityMMO.SceneObjectType! Expect number or string, got + " + lua_type);
             }
 
             return 1;

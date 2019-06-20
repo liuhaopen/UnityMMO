@@ -37,7 +37,7 @@ end
 function MainUIRoleHeadView:UpdateView(  )
 	local career = MainRole:GetInstance():GetCareer()
 	print('Cat:MainUIRoleHeadView.lua[39] career', career)
-	local headRes = GameResPath.GetRoleHeadRes(career, 0)
+	local headRes = ResPath.GetRoleHeadRes(career, 0)
 	UIHelper.SetRawImage(self.head_icon_raw, headRes)
 end
 

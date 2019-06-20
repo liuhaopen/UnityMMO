@@ -3,6 +3,7 @@ local SceneController = {}
 function SceneController:Init(  )
 	print('Cat:SceneController.lua[Init]')
     self.sceneNode = GameObject.Find("UICanvas/Scene")
+    self.sceneNode:SetActive(false)
 	self.mainCamera = Camera.main
 	self:InitEvents()
 
@@ -10,6 +11,7 @@ end
 
 function SceneController:InitEvents(  )
 	local on_start_game = function (  )
+        self.sceneNode:SetActive(true)
 		ECS:Init(SceneMgr.Instance.EntityManager)
 	end
     GlobalEventSystem:Bind(GlobalEvents.GameStart, on_start_game)

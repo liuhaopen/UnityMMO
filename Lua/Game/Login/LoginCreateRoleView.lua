@@ -38,7 +38,7 @@ function LoginCreateRoleView:InitView(  )
 	local info = {
 		data_list = {1,2}, 
 		item_con = self.item_con, 
-		prefab_path = GameResPath.GetFullUIPath("login/LoginCreateRoleItem.prefab"), 
+		prefab_path = ResPath.GetFullUIPath("login/LoginCreateRoleItem.prefab"), 
 		item_height = 128,
 		space_y = 5,
 		scroll_view = self.item_con,
@@ -55,7 +55,7 @@ function LoginCreateRoleView:InitView(  )
 			item:UpdateSelect()
 			if not item.UpdateHead then
 				item.UpdateHead = function(item)
-					local headRes = GameResPath.GetRoleHeadRes(v, 0)
+					local headRes = ResPath.GetRoleHeadRes(v, 0)
 					UIHelper.SetRawImage(item.role_head_raw, headRes)
 				end
 			end

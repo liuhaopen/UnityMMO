@@ -103,7 +103,7 @@ namespace UnityMMO
             //这里的timeline只作跳跃中的表现，如加粒子加女主尾巴等，状态和高度控制还是放在MovementUpdateSystem里，因为跳跃这个动作什么时候结束是未知的，你可能跳崖了，这时跳跃状态会一直维持至到碰到地面，所以不方便放在timeline里。
             var newJumpCount = math.clamp(jumpState.JumpCount+1, 0, GameConst.MaxJumpCount);
             var roleInfo = roleGameOE.GetComponent<RoleInfo>();
-            var assetPath = GameConst.GetRoleJumpResPath(roleInfo.Career, newJumpCount);
+            var assetPath = ResPath.GetRoleJumpResPath(roleInfo.Career, newJumpCount);
             var timelineInfo = new TimelineInfo{ResPath=assetPath, Owner=roleGameOE.Entity, StateChange=null};
             var uid = EntityManager.GetComponentData<UID>(roleGameOE.Entity);
             TimelineManager.GetInstance().AddTimeline(uid.Value, timelineInfo, EntityManager);
@@ -115,7 +115,7 @@ namespace UnityMMO
             var roleInfo = roleGameOE.GetComponent<RoleInfo>();
             var skillID = SkillManager.GetInstance().GetSkillIDByIndex(skillIndex);
           
-            string assetPath = GameConst.GetRoleSkillResPath(skillID);
+            string assetPath = ResPath.GetRoleSkillResPath(skillID);
             bool isNormalAttack = skillIndex == -1;//普通攻击
             if (!isNormalAttack)
                 SkillManager.GetInstance().ResetCombo();//使用非普攻技能时就重置连击索引

@@ -26,3 +26,8 @@ EventDispatcher = require("Game.Common.EventDispatcher")
 UI.AlertView = require("Game.Common.AlertView")
 MainRole = require("Game.Scene.MainRole")
 print('Cat:UIGlobal.lua[4] UI.AlertView', UI.AlertView)
+
+UINode = require("Game.Common.UINode")
+MeshNode = require("Game.Common.MeshNode")
+print('Cat:UIGlobal.lua[32] MeshNode', MeshNode)
+ResPath = require("Game.Common.ResPath")

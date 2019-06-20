@@ -67,7 +67,7 @@ public class NPCMgr
 
     private void CreateLooks(Entity ownerEntity, long typeID)
     {
-        var resPath = GameConst.GetNPCResPath(typeID);
+        var resPath = ResPath.GetNPCResPath(typeID);
         var bodyResID = ConfigNPC.GetInstance().GetBodyResID(typeID);
         if (bodyResID == 0)
         {

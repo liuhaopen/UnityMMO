@@ -53,8 +53,8 @@ sysinfo.txt
 UnityMMO.VC.db
 Assets/UIEditor/Res/Preview.meta
 .vscode/settings.json
-#Assets/AssetBundleRes/*
-#Assets/AssetBundleRes.meta
+Assets/AssetBundleRes/*
+Assets/AssetBundleRes.meta
 Server/game/ECS/ucrtbased.dll
 Server/game/ECS/ECSCore.exp
 Server/game/ECS/ECSCore.iobj

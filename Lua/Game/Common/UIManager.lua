@@ -63,6 +63,94 @@ function UIMgr:SetViewVisible(view, visible)
 	end
 end
 
+function UIMgr:AssignBaseFunc( view )
+	if not view then return end
+	
+	assert(not view.SetPosition, tostring(view).." already has SetPosition function")
+	assert(not view.SetLocalPosition, tostring(view).." already has SetLocalPosition function")
+	assert(not view.SetParent, tostring(view).." already has SetParent function")
+	assert(not view.GetPosition, tostring(view).." already has GetPosition function")
+	assert(not view.GetLocalPosition, tostring(view).." already has GetLocalPosition function")
+
+	view.SetPositionXYZ = function(view, x, y, z)
+		if view.is_loaded then
+			UI.SetPositionXYZ(view.transform, x, y, z)
+		else
+			view.__cachePos = {x,y,z}
+		end
+	end
+	view.SetLocalPositionXYZ = function(view, x, y, z)
+		if view.is_loaded then
+			UI.SetLocalPositionXYZ(view.transform, x, y, z)
+		else
+			view.__cacheLocalPos = {x,y,z}
+		end
+	end
+	view.GetPositionXYZ = function(view)
+		if view.is_loaded then
+			return UI.GetPositionXYZ(view.transform)
+		else
+			return view.__cachePos or Vector3.zero
+		end
+	end
+	view.GetLocalPositionXYZ = function(view)
+		if view.is_loaded then
+			return UI.GetLocalPositionXYZ(view.transform)
+		else
+			return view.__cacheLocalPos or Vector3.zero
+		end
+	end
+end
+
+function UIManager:AddToCanvas( node, canvasName )
+	if canvasName and self.canvas[canvasName] then
+		node.transform:SetParent(self.canvas[canvasName])
+		-- self:PushOpenedView(view)
+	end
+end
+
+function UIMgr:Load( view )
+	assert(view, "cannot open a nil view")
+	assert(view.UIConfig, "cannot find UIConfig in view")
+	assert(view.UIConfig.prefab_path, "cannot find UIConfig.prefab_path in view")
+	assert(self.canvas and next(self.canvas)~=nil, "must register canvas before show view")
+
+	for i,v in ipairs(self.before_show_func) do
+		v(view)
+	end
+	self:DressUpNode(view)
+	local on_load_succeed = function ( gameObject )
+		view.gameObject = gameObject
+		view.transform = gameObject.transform
+		view.gameObject.layer = CS.UnityEngine.LayerMask.NameToLayer("UI")
+		local canvas_name = view.UIConfig.canvas_name
+		if canvas_name and self.canvas[canvas_name] then
+			view.transform:SetParent(self.canvas[canvas_name])
+			self:PushOpenedView(view)
+		end
+		view.transform.localScale = Vector3.one
+        view.transform.anchoredPosition = Vector3.zero
+        local localPos = view.transform.localPosition
+        view.transform.localPosition = localPos
+		if view.UIConfig.components then
+			for i,v in ipairs(view.UIConfig.components) do
+				self:AddUIComponent(view, v[1], v[2])
+			end
+		end
+		if view._components_for_uimgr_ then
+			for i,v in ipairs(view._components_for_uimgr_) do
+				v:OnLoad()
+			end
+		end
+		view.is_loaded = true
+		if view.OnLoad then
+			view:OnLoad()
+		end
+	end
+	ResMgr:LoadPrefabGameObject(view.UIConfig.prefab_path, on_load_succeed)
+	return view
+end
+
 function UIMgr:Show( view )
 	assert(view, "cannot open a nil view")
 	assert(view.UIConfig, "cannot find UIConfig in view", view)

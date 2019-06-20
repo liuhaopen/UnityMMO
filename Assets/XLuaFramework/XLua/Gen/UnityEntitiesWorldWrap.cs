@@ -184,9 +184,9 @@ namespace XLua.CSObjectWrap
                 
                 {
                     System.Type _type = (System.Type)translator.GetObject(L, 2, typeof(System.Type));
-                    object[] _constructorArgumnents = translator.GetParams<object>(L, 3);
+                    object[] _constructorArguments = translator.GetParams<object>(L, 3);
                     
-                        Unity.Entities.ComponentSystemBase gen_ret = gen_to_be_invoked.CreateSystem( _type, _constructorArgumnents );
+                        Unity.Entities.ComponentSystemBase gen_ret = gen_to_be_invoked.CreateSystem( _type, _constructorArguments );
                         translator.Push(L, gen_ret);
                     
                     

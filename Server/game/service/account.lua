@@ -19,7 +19,14 @@ function account.account_get_role_list(user_info, req_data)
 				if role_id then
 					local is_ok, role_info = skynet.call(gameDBServer, "lua", "select_by_key", "RoleBaseInfo", "role_id", role_id)
 					if is_ok and role_info and role_info[1] then
-						table.insert(ack_data.role_list, role_info[1])
+						local is_ok, looks_info = skynet.call(gameDBServer, "lua", "select_by_key", "RoleLooksInfo", "role_id", role_id)
+						if is_ok then
+							role_info = role_info[1]
+							for k,v in pairs(looks_info[1]) do
+								role_info[k] = v
+							end
+						end
+						table.insert(ack_data.role_list, role_info)
 					end
 				end
 			end
