@@ -1,3 +1,6 @@
+# 资源文件来源
+先在[UnityMMO-Resource](https://github.com/liuhaopen/UnityMMO-Resource/tree/master/Assets/AssetBundleRes "UnityMMO-Resource")下载里面的文件并把Assets/AssetBundleRes及其meta文件复制到本目录里
+
 # 资源ID命名规则
 角色怪物NPC的类型ID都为4位数字：千分位代表场景节点类型，其中1角色，2怪物，3NPC  
 角色类型ID的百分位为性别，1男，2女，3人妖（开玩笑的），十和个位用于皮肤，所以1203就代表第3套皮肤的女角色   
