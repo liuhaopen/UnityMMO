@@ -28,6 +28,6 @@ MainRole = require("Game.Scene.MainRole")
 print('Cat:UIGlobal.lua[4] UI.AlertView', UI.AlertView)
 
 UINode = require("Game.Common.UINode")
-MeshNode = require("Game.Common.MeshNode")
-print('Cat:UIGlobal.lua[32] MeshNode', MeshNode)
+UILooksNode = require("Game.Common.UILooksNode")
+print('Cat:UIGlobal.lua[32] UILooksNode', UILooksNode)
 ResPath = require("Game.Common.ResPath")

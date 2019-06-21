@@ -44,6 +44,7 @@ function TaskController:DoTask( taskInfo )
 end
 
 function TaskController:DoConversation( npcID )
+    print('Cat:TaskController.lua[47] npcID', npcID)
 	local onApproachingNpc = function (  )
         local onGetTaskListInNPC = function ( ackData )
             print("Cat:SceneController [start:56] ackData:", ackData)
@@ -53,15 +54,26 @@ function TaskController:DoConversation( npcID )
             if hasTask then
             else
                 --show default conversation
+                local view = require("Game/Task/TaskDialogView").New()
+                local data = {
+                    npcID = npcID,
+                    content = "哈哈，你猜我是谁？",
+                }
+                view:SetData(data)
             end
         end
         NetDispatcher:SendMessage("Task_GetInfoListInNPC", {npcUID=npcUID}, onGetTaskListInNPC)
     end
     local goe = RoleMgr.GetInstance():GetMainRole()
     local moveQuery = goe:GetComponent(typeof(CS.UnityMMO.MoveQuery))
+    local npcPosList = {
+        [3000] = {x = 787.90, y = 166.19, z = 1073.90},
+        [3001] = {x = 749.90, y = 163.00, z = 1182.40},
+        [3002] = {x = 845.00, y = 169.00, z = 1221.00},
+    }
     local findInfo = {
-        destination = hit.point,
-        stoppingDistance = 1,
+        destination = npcPosList[npcID],
+        stoppingDistance = 1.2,
         onStop = onApproachingNpc,
     }
     --Cat_Todo : handle destination are in different scene

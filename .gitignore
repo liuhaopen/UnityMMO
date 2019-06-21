@@ -13,7 +13,6 @@ Logs/
 Server/lsocket/
 Server/skynet/
 App/
-Assets/UIEditor/Res/Preview/
 # Visual Studio cache directory
 .vs/
 build64/
@@ -51,7 +50,8 @@ sysinfo.txt
 *.sublime-project
 *.sublime-workspace
 UnityMMO.VC.db
-Assets/UIEditor/Res/Preview.meta
+Assets/UGUI-Editor/Res/Preview/*
+Assets/UGUI-Editor/Res/Preview.meta
 .vscode/settings.json
 Assets/AssetBundleRes/*
 Assets/AssetBundleRes.meta

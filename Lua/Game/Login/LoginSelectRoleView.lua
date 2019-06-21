@@ -142,21 +142,18 @@ function LoginSelectRoleView:GetRoleInfoByID( role_id )
 	return nil
 end
 
-function LoginSelectRoleView:SetPlayModelInfo( role_vo )
+function LoginSelectRoleView:UpdateRoleMesh( role_vo )
 	local show_data = {
-		showType = MeshNode.ShowType.Role,
+		showType = UILooksNode.ShowType.Role,
 		showRawImg = self.role_mesh_raw,
-		bodyID = role_vo.body,
-		hairID = role_vo.hair,
+		body = role_vo.body,
+		hair = role_vo.hair,
 		career = role_vo.career,
-		actionNameList = {"show"},
 		canRotate = true,
-		scale = 200,
 		position = Vector3(0, 0, 0),
-		needReplayAction = "show", --界面从隐藏到显示，需要重新摆pose
 	}
-	self.roleMeshNode = self.roleMeshNode or MeshNode.New()
-	self.roleMeshNode:SetData(show_data)
+	self.roleUILooksNode = self.roleUILooksNode or UILooksNode.New(self.role_mesh)
+	self.roleUILooksNode:SetData(show_data)
 end
 
 function LoginSelectRoleView:SetCurSelectRoleID( role_id )
@@ -177,7 +174,7 @@ function LoginSelectRoleView:SetCurSelectRoleID( role_id )
 	UIHelper.SetImage(self.role_tip_img, "login/login_role_tip_"..self.select_role_career..".png", true)
 	-- self.select_role_login_day = self.select_role_info.login_day
 	-- self.select_role_Create_time  = self.select_role_info.create_role_time
-	self:SetPlayModelInfo(self.select_role_info)
+	self:UpdateRoleMesh(self.select_role_info)
 end
 
 function LoginSelectRoleView:OnClose(  )

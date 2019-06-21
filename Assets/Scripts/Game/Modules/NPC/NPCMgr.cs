@@ -43,6 +43,8 @@ public class NPCMgr
         NPCGameOE.transform.SetParent(container);
         NPCGameOE.transform.localPosition = pos;
         Entity NPC = NPCGameOE.Entity;
+        Debug.Log("npc uid : "+uid);
+        NPCGameOE.GetComponent<UIDProxy>().Value = new UID{Value=uid};
         InitNPC(NPC, uid, typeID, pos, targetPos);
         return NPC;
 	}
@@ -53,7 +55,7 @@ public class NPCMgr
         // EntityManager.AddComponentData(NPC, new TargetPosition {Value = targetPos});
         EntityManager.AddComponentData(NPC, new LocomotionState {LocoState = LocomotionState.State.Idle});
         EntityManager.AddComponentData(NPC, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
-        EntityManager.SetComponentData(NPC, new UID {Value=uid});
+        // EntityManager.SetComponentData(NPC, new UID {Value=uid});
         EntityManager.AddComponentData(NPC, new TypeID {Value=typeID});
         EntityManager.AddComponentData(NPC, ActionData.Empty);
         EntityManager.AddComponentData(NPC, new SceneObjectTypeData {Value=SceneObjectType.NPC});
@@ -67,15 +69,8 @@ public class NPCMgr
 
     private void CreateLooks(Entity ownerEntity, long typeID)
     {
-        var resPath = ResPath.GetNPCResPath(typeID);
-        var bodyResID = ConfigNPC.GetInstance().GetBodyResID(typeID);
-        if (bodyResID == 0)
-        {
-            Debug.LogError("npc body res id 0, typeID:"+typeID);
-            return;
-        }
-        string bodyPath = resPath+"/model_clothe_"+bodyResID+".prefab";
-        XLuaFramework.ResourceManager.GetInstance().LoadAsset<GameObject>(bodyPath, delegate(UnityEngine.Object[] objs) {
+        var resPath = ResPath.GetNPCLooksPath(typeID);
+        XLuaFramework.ResourceManager.GetInstance().LoadAsset<GameObject>(resPath, delegate(UnityEngine.Object[] objs) {
             if (objs!=null && objs.Length>0)
             {
                 GameObject bodyObj = objs[0] as GameObject;
@@ -91,7 +86,7 @@ public class NPCMgr
             }
             else
             {
-                Debug.LogError("cannot fine file "+bodyPath);
+                Debug.LogError("cannot fine file "+resPath);
             }
         });
     }

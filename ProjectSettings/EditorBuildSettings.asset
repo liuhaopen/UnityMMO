@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/XLuaFramework/main.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/AssetBundleRes/scene/navmesh/navmesh_1001.unity
+    guid: 09c04ec94b098194ab2ac9e4699abcbd
   m_configObjects: {}

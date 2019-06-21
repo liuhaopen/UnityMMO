@@ -18,7 +18,7 @@ end
 
 function LoginCreateRoleView:OnLoad(  )
 	local names = {
-		"head_scroll/Viewport/head_con","close:obj","create_role:obj","item_con","head_scroll","role_tip:img","random:obj","role_name:input","effect","select_role_con",
+		"head_scroll/Viewport/head_con","close:obj","create_role:obj","item_con","head_scroll","role_tip:img","random:obj","role_name:input","effect","select_role_con:raw",
 	}
 	UI.GetChildren(self, self.transform, names)
 	self.transform.sizeDelta = Vector2.zero
@@ -88,7 +88,21 @@ function LoginCreateRoleView:SetCurSelectSex( sex )
 	-- self:UpdateRoleHead()
 	UIHelper.SetImage(self.role_tip_img, "login/login_role_tip_"..sex..".png", true)
 	self:OnClickRandomName()
+	self:UpdateRoleMesh(sex)
 	-- self:PlayRoleSound(sex)
+end
+
+function LoginCreateRoleView:UpdateRoleMesh( sex )
+	local show_data = {
+		showType = UILooksNode.ShowType.Role,
+		showRawImg = self.select_role_con_raw,
+		body = 1,
+		hair = 1,
+		career = sex==1 and 1 or 2,
+		canRotate = true,
+	}
+	self.roleUILooksNode = self.roleUILooksNode or UILooksNode.New(self.select_role_con)
+	self.roleUILooksNode:SetData(show_data)
 end
 
 function LoginCreateRoleView:OnClickRandomName(  )

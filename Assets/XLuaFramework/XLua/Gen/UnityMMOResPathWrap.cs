@@ -34,7 +34,7 @@ namespace XLua.CSObjectWrap
 		    Utils.BeginClassRegister(type, L, __CreateInstance, 14, 0, 0);
 			Utils.RegisterFunc(L, Utils.CLS_IDX, "GetRoleCareerResPath", _m_GetRoleCareerResPath_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetMonsterResPath", _m_GetMonsterResPath_xlua_st_);
-            Utils.RegisterFunc(L, Utils.CLS_IDX, "GetNPCResPath", _m_GetNPCResPath_xlua_st_);
+            Utils.RegisterFunc(L, Utils.CLS_IDX, "GetNPCLooksPath", _m_GetNPCLooksPath_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetRoleSkillResPath", _m_GetRoleSkillResPath_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetMonsterSkillResPath", _m_GetMonsterSkillResPath_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetRoleJumpResPath", _m_GetRoleJumpResPath_xlua_st_);
@@ -118,7 +118,7 @@ namespace XLua.CSObjectWrap
         }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_GetNPCResPath_xlua_st_(RealStatePtr L)
+        static int _m_GetNPCLooksPath_xlua_st_(RealStatePtr L)
         {
 		    try {
             
@@ -128,7 +128,7 @@ namespace XLua.CSObjectWrap
                 {
                     long _typeID = LuaAPI.lua_toint64(L, 1);
                     
-                        string gen_ret = UnityMMO.ResPath.GetNPCResPath( _typeID );
+                        string gen_ret = UnityMMO.ResPath.GetNPCLooksPath( _typeID );
                         LuaAPI.lua_pushstring(L, gen_ret);
                     
                     

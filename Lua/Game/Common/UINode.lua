@@ -1,5 +1,10 @@
 local UINode = BaseClass()
 
+function UINode:Constructor( parentTrans )
+	self.parentTrans = parentTrans
+	print('Cat:UINode.lua[5] self.parentTrans', self.parentTrans)
+end
+
 function UINode:Load(  )
 	assert(self.prefabPath, "cannot find prefabPath field")
 	local on_load_succeed = function ( gameObject )
@@ -14,12 +19,15 @@ function UINode:Load(  )
 		end
 		self.transform.localScale = Vector3.one
 		self.transform.localRotation = Quaternion.identity
+    	self.transform.anchoredPosition = Vector2.zero
         if self.__cacheLocalPos then
-        	UI.SetLocalPositionXYZ(self.transform, self.__cacheLocalPos.x, self.__cacheLocalPos.y, self.__cacheLocalPos.z)
+        	UI.SetLocalPositionXYZ(self.transform, self.__cacheLocalPos.x, self.__cacheLocalPos.y, self.__cacheLocalPos.z or 0)
         elseif self.__cachePos then
-        	UI.SetPositionXYZ(self.transform, self.__cachePos.x, self.__cachePos.y, self.__cachePos.z)
+        	UI.SetPositionXYZ(self.transform, self.__cachePos.x, self.__cachePos.y, self.__cachePos.z or 0)
         else
-        	self.transform.localPosition = Vector3.zero
+        	local localPos = self.transform.localPosition
+        	localPos.z = 0
+       		self.transform.localPosition = localPos
     	end
     	self.isLoaded = true
 		self:OnLoad()
@@ -32,6 +40,10 @@ end
 
 function UINode:OnLoad(  )
 	--override me
+end
+
+function UINode:Destroy(  )
+	GameObject.Destroy(self.gameObject)
 end
 
 function UINode:OnDestroy(  )

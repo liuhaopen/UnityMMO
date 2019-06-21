@@ -138,8 +138,15 @@ public class SceneMgr : MonoBehaviour
                 detector = mainRoleGOE.GetComponent<SceneDetectorBase>();
             }
             action(1);
-            //CAT_TODO:Debug模式下加载navmesh,现在暂时没用到navmesh
-            // if (!XLuaFramework.AppConfig.DebugMode)
+            if (XLuaFramework.AppConfig.DebugMode)
+            {
+                string navmeshPath = "Assets/AssetBundleRes/scene/navmesh/navmesh_"+scene_id+".unity";
+                AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(navmeshPath, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+                asy.completed += delegate(AsyncOperation asyOp){
+                    Debug.Log("load navmesh in debug mode ok:"+asyOp.isDone.ToString());
+                };
+            }
+            else
             {
                 string navmeshPath = "navmesh_"+scene_id;
                 XLuaFramework.ResourceManager.GetInstance().LoadNavMesh(navmeshPath);

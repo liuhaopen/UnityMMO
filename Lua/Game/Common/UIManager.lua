@@ -131,6 +131,7 @@ function UIMgr:Load( view )
 		view.transform.localScale = Vector3.one
         view.transform.anchoredPosition = Vector3.zero
         local localPos = view.transform.localPosition
+        localPos.z = 0
         view.transform.localPosition = localPos
 		if view.UIConfig.components then
 			for i,v in ipairs(view.UIConfig.components) do

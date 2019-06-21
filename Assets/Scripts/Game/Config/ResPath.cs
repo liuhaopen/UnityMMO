@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace UnityMMO
 {
     public static class ResPath
@@ -17,9 +19,15 @@ namespace UnityMMO
             return MonsterResPath+"/monster_"+typeID;
         }
 
-        public static string GetNPCResPath(long typeID)
+        public static string GetNPCLooksPath(long typeID)
         {
-            return NPCResPath+"/npc_"+typeID;
+            var bodyResID = ConfigNPC.GetInstance().GetBodyResID(typeID);
+            if (bodyResID == 0)
+            {
+                Debug.LogError("npc body res id 0, typeID:"+typeID);
+                return string.Empty;
+            }
+            return NPCResPath+"/npc_"+typeID+"/model_clothe_"+bodyResID+".prefab";
         }
 
         public static string GetRoleSkillResPath(int skillID)

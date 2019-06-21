@@ -30,10 +30,10 @@ public class SceneHelper
             Debug.Log(hit.collider.name);
             result.point = hit.point;
             var uid = hit.collider.GetComponentInParent<UIDProxy>();
-            // Debug.Log("uid : dddd : "+(uid!=null));
+            Debug.Log("uid : dddd : "+(uid!=null));
             if (uid != null)
             {
-                // Debug.Log("uid.Value.Value : "+uid.Value.Value);
+                Debug.Log("uid.Value.Value : "+uid.Value.Value);
                 result.entity = SceneMgr.Instance.GetSceneObject(uid.Value.Value);
             }
         }
