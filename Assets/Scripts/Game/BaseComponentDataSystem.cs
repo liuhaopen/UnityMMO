@@ -5,7 +5,7 @@ using Unity.Entities;
 using UnityEngine;
 using UnityEngine.Profiling;
 
-[DisableAutoCreation]
+// [DisableAutoCreation]
 public abstract class BaseComponentSystem : ComponentSystem
 {
     protected BaseComponentSystem(GameWorld world)
@@ -16,7 +16,7 @@ public abstract class BaseComponentSystem : ComponentSystem
     readonly protected GameWorld m_world;
 }
 
-[DisableAutoCreation]
+// [DisableAutoCreation]
  public abstract class BaseComponentSystem<T1> : BaseComponentSystem
  	where T1 : MonoBehaviour
  {
@@ -57,7 +57,7 @@ public abstract class BaseComponentSystem : ComponentSystem
  }
 
 
-[DisableAutoCreation]
+// [DisableAutoCreation]
 public abstract class BaseComponentSystem<T1,T2> : BaseComponentSystem
 	where T1 : MonoBehaviour
 	where T2 : MonoBehaviour
@@ -100,7 +100,7 @@ public abstract class BaseComponentSystem<T1,T2> : BaseComponentSystem
 }
 
 
-[DisableAutoCreation]
+// [DisableAutoCreation]
 public abstract class BaseComponentSystem<T1,T2,T3> : BaseComponentSystem
 	where T1 : MonoBehaviour
 	where T2 : MonoBehaviour
@@ -144,7 +144,7 @@ public abstract class BaseComponentSystem<T1,T2,T3> : BaseComponentSystem
 	protected abstract void Update(Entity entity,T1 data1,T2 data2,T3 data3);
 }
 
-[DisableAutoCreation]
+// [DisableAutoCreation]
 public abstract class BaseComponentDataSystem<T1> : BaseComponentSystem
 	where T1 : struct,IComponentData
 {
@@ -185,7 +185,7 @@ public abstract class BaseComponentDataSystem<T1> : BaseComponentSystem
 	protected abstract void Update(Entity entity,T1 data);
 }
 
-[DisableAutoCreation]
+// [DisableAutoCreation]
 public abstract class BaseComponentDataSystem<T1,T2> : BaseComponentSystem
 	where T1 : struct,IComponentData
 	where T2 : struct,IComponentData
@@ -230,7 +230,7 @@ public abstract class BaseComponentDataSystem<T1,T2> : BaseComponentSystem
 	protected abstract void Update(Entity entity,T1 data1,T2 data2);
 }
 
-[DisableAutoCreation]
+// [DisableAutoCreation]
 public abstract class BaseComponentDataSystem<T1,T2,T3> : BaseComponentSystem
 	where T1 : struct,IComponentData
 	where T2 : struct,IComponentData
@@ -279,7 +279,7 @@ public abstract class BaseComponentDataSystem<T1,T2,T3> : BaseComponentSystem
 }
 
 
-[DisableAutoCreation]
+// [DisableAutoCreation]
 public abstract class BaseComponentDataSystem<T1,T2,T3,T4> : BaseComponentSystem
 	where T1 : struct,IComponentData
 	where T2 : struct,IComponentData
@@ -330,7 +330,7 @@ public abstract class BaseComponentDataSystem<T1,T2,T3,T4> : BaseComponentSystem
 	protected abstract void Update(Entity entity,T1 data1,T2 data2,T3 data3,T4 data4);
 }
 
-[DisableAutoCreation]
+// [DisableAutoCreation]
 public abstract class BaseComponentDataSystem<T1,T2,T3,T4, T5> : BaseComponentSystem
 	where T1 : struct,IComponentData
 	where T2 : struct,IComponentData
@@ -384,7 +384,7 @@ public abstract class BaseComponentDataSystem<T1,T2,T3,T4, T5> : BaseComponentSy
 	protected abstract void Update(Entity entity,T1 data1,T2 data2,T3 data3,T4 data4, T5 data5);
 }
 
-[DisableAutoCreation]
+// [DisableAutoCreation]
 [AlwaysUpdateSystem]
 public abstract class InitializeComponentSystem<T> : BaseComponentSystem
 	where T : MonoBehaviour
@@ -426,7 +426,7 @@ public abstract class InitializeComponentSystem<T> : BaseComponentSystem
 }
 
 
-[DisableAutoCreation]
+// [DisableAutoCreation]
 [AlwaysUpdateSystem]
 public abstract class InitializeComponentDataSystem<T,K> : BaseComponentSystem
 	where T : struct, IComponentData
@@ -471,7 +471,7 @@ public abstract class InitializeComponentDataSystem<T,K> : BaseComponentSystem
 
 
 
-[DisableAutoCreation]
+// [DisableAutoCreation]
 [AlwaysUpdateSystem]
 public abstract class DeinitializeComponentSystem<T> : BaseComponentSystem
 	where T : MonoBehaviour
@@ -506,7 +506,7 @@ public abstract class DeinitializeComponentSystem<T> : BaseComponentSystem
 }
 
 
-[DisableAutoCreation]
+// [DisableAutoCreation]
 [AlwaysUpdateSystem]
 public abstract class DeinitializeComponentDataSystem<T> : BaseComponentSystem
 	where T : struct, IComponentData
@@ -540,7 +540,7 @@ public abstract class DeinitializeComponentDataSystem<T> : BaseComponentSystem
 	protected abstract void Deinitialize(Entity entity, T component);
 }
 
-[DisableAutoCreation]
+// [DisableAutoCreation]
 [AlwaysUpdateSystem]
 public abstract class InitializeComponentGroupSystem<T,S> : BaseComponentSystem
 	where T : MonoBehaviour
@@ -581,7 +581,7 @@ public abstract class InitializeComponentGroupSystem<T,S> : BaseComponentSystem
 
 
 
-[DisableAutoCreation]
+// [DisableAutoCreation]
 [AlwaysUpdateSystem]
 public abstract class DeinitializeComponentGroupSystem<T> : BaseComponentSystem
 	where T : MonoBehaviour

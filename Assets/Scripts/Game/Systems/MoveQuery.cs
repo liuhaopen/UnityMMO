@@ -163,7 +163,7 @@ class HandleMovementQueries : BaseComponentSystem
             }
             else
             {
-                var isReachTarget = query.navAgent.remainingDistance<=query.navAgent.stoppingDistance;
+                var isReachTarget = !query.navAgent.pathPending && query.navAgent.remainingDistance<=query.navAgent.stoppingDistance;
                 var newPos = query.navAgent.transform.localPosition;
                 // Debug.Log("newPos :"+newPos.x+" "+newPos.y+" "+newPos.z+" reach:"+isReachTarget);
                 query.isGrounded = query.charController.isGrounded;

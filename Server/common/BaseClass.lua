@@ -6,8 +6,10 @@ local function destroyFunc(self)
 
 	local now_super = self.__class_type 
 	while now_super ~= nil do	
-		if now_super.OnDestroy then  --每一个类调OnDestroy方法
-			now_super.OnDestroy(self)
+		local ondestroy = rawget(now_super, "OnDestroy")
+		print('Cat:BaseClass.lua[10] ondestroy', ondestroy)
+		if ondestroy then  --每一个类调OnDestroy方法
+			ondestroy(self)
 		end
 		now_super = now_super.super
 	end

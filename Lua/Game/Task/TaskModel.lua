@@ -15,12 +15,12 @@ function TaskModel:Reset(  )
 	
 end
 
-function TaskModel:GetTaskList( )
-	return self.taskList
+function TaskModel:GetTaskInfo( )
+	return self.taskInfo
 end
 
-function TaskModel:SetTaskList( value )
-	self.taskList = value
+function TaskModel:SetTaskInfo( value )
+	self.taskInfo = value
 end
 
 return TaskModel

@@ -133,6 +133,7 @@ public static class XLuaGenConfig
                 new List<string>(){"UnityEngine.Light", "SetLightDirty"},
                 new List<string>(){"UnityEngine.Light", "shadowRadius"},
                 new List<string>(){"UnityEngine.Light", "shadowAngle"},
+                new List<string>(){"UnityEngine.Input", "IsJoystickPreconfigured", "System.String"},
                 
                 new List<string>(){"UnityEngine.WWW", "MovieTexture"},
                 new List<string>(){"UnityEngine.WWW", "GetMovieTexture"},

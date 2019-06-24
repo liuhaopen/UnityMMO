@@ -60,10 +60,12 @@ function FightMgr:CalDefenderList( fight_info, attacker_aoi_handle )
 		for aoi_handle,v in pairs(around) do
 			local uid = self.aoi:get_user_data(aoi_handle, "uid")
 			local entity = self.sceneMgr:GetEntity(uid)
-			local hpData = self.entityMgr:GetComponentData(entity, "UMO.HP")
 			local isBeatable = self.entityMgr:HasComponent(entity, "UMO.Beatable")
-			if hpData.cur > 0 and isBeatable then
-				uid_defenders_map[uid] = true
+			if isBeatable then
+				local hpData = self.entityMgr:GetComponentData(entity, "UMO.HP")
+				if hpData.cur > 0 then
+					uid_defenders_map[uid] = true
+				end
 			end
 		end
 	end

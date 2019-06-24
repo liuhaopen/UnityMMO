@@ -96,8 +96,8 @@ end
 function UILooksNode:UpdateRenderTexture(  )
 	if self.renderTexture then return end
 	local imgWidth, imgHeight = UI.GetSizeDeltaXY(self.data.showRawImg.transform)
-	local renderWidth = self.data.renderWidth or imgWidth
-	local renderHeight = self.data.renderHeight or imgHeight
+	local renderWidth = self.data.renderWidth or 600
+	local renderHeight = self.data.renderHeight or 512
 	renderWidth = math.floor(renderWidth)
 	renderHeight = math.floor(renderHeight)
 	self.renderTexture = CS.UnityEngine.RenderTexture(renderWidth, renderHeight, 24)

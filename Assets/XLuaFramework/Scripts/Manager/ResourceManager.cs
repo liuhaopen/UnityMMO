@@ -125,18 +125,18 @@ public class AssetBundleInfo {
                 return abName;
             }
             abName = abName.ToLower();
-            // if (abName.Contains("/")) {
+            if (abName.Contains("/")) {
                 return abName;
-            // }
-            // for (int i = 0; i < m_AllManifest.Length; i++) {
-            //     int index = m_AllManifest[i].LastIndexOf('/');  
-            //     string path = m_AllManifest[i].Remove(0, index + 1);    //字符串操作函数都会产生GC
-            //     if (path.Equals(abName)) {
-            //         return m_AllManifest[i];
-            //     }
-            // }
-            // Debug.LogError("GetRealAssetPath Error:>>" + abName);
-            // return "";
+            }
+            for (int i = 0; i < m_AllManifest.Length; i++) {
+                int index = m_AllManifest[i].LastIndexOf('/');  
+                string path = m_AllManifest[i].Remove(0, index + 1);    //字符串操作函数都会产生GC
+                if (path.Equals(abName)) {
+                    return m_AllManifest[i];
+                }
+            }
+            Debug.LogError("GetRealAssetPath Error:>>" + abName);
+            return "";
         }
 
         public void LoadAsset<T>(string file_path, Action<UObject[]> action = null, LuaFunction func = null) where T : UObject {
@@ -219,6 +219,7 @@ public class AssetBundleInfo {
                 yield return StartCoroutine(OnLoadAssetBundle(abName, typeof(T)));
 
                 bundleInfo = GetLoadedAssetBundle(abName);
+                Debug.Log("abName : "+abName);
                 if (bundleInfo == null) {
                     m_LoadRequests.Remove(abName);
                     Debug.LogError("OnLoadAsset failed!--->>>" + abName);

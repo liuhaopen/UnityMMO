@@ -7,7 +7,7 @@ end
 
 function TaskDialogView:OnLoad(  )
 	local names = {
-		"skip_con/skip_btn:obj","bottom/npc:raw","bottom/btn:obj","bottom/npc_name:txt","bottom/chat:txt",
+		"skip_con/skip_btn:obj","bottom/npc:raw","bottom/btn:obj","bottom/npc_name:txt","bottom/chat:txt","click_bg:obj",
 	}
 	UI.GetChildren(self, self.transform, names)
 	self.transform.sizeDelta = Vector2.zero
@@ -16,17 +16,18 @@ function TaskDialogView:OnLoad(  )
 end
 
 function TaskDialogView:AddEvents(  )
-	print('Cat:TaskDialogView.lua[19]')
 	local on_click = function ( click_obj )
-	print('Cat:TaskDialogView.lua[20] click_obj', click_obj)
 		if self.btn_obj == click_obj then
 			self:Destroy()
 		elseif self.skip_btn_obj == click_obj then
+			self:Destroy()
+		elseif self.click_bg_obj == click_obj then
 			self:Destroy()
 		end
 	end
 	UI.BindClickEvent(self.btn_obj, on_click)
 	UI.BindClickEvent(self.skip_btn_obj, on_click)
+	UI.BindClickEvent(self.click_bg_obj, on_click)
 	
 end
 

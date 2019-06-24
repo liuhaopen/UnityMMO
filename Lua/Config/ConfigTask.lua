@@ -7,7 +7,7 @@ condition.type:条件类型 1等级 2已完成任务 3从npc领取 4进入某区
 condition.value:触发条件，根据触发类型而不同
 subTasks:每个任务都由几个子任务组成
 subType:具体每条子任务的类型 1对话 2打怪 3采集 4完成副本 5收集掉落物 6玩家自制道具 7护送 8探索某区域 9破坏某场景物品 10捕鱼 
-who:谁，0为自己 
+who:谁，0为自己，其它为NPC类型id
 --]]
 local config = {
 	[1] = {
@@ -17,8 +17,9 @@ local config = {
 		subTasks = {
 			{
 				subType = 1, content = {
-					{who=2, chat=1},
-					{who=1, chat=2}, 
+					{who=3001, chat=1},
+					{who=0, chat=2}, 
+					{who=3001, chat=3},
 				},
 			},
 		},

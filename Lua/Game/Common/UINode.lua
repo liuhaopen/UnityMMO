@@ -2,7 +2,7 @@ local UINode = BaseClass()
 
 function UINode:Constructor( parentTrans )
 	self.parentTrans = parentTrans
-	print('Cat:UINode.lua[5] self.parentTrans', self.parentTrans)
+	self.bindEventInfos = {}
 end
 
 function UINode:Load(  )
@@ -19,16 +19,29 @@ function UINode:Load(  )
 		end
 		self.transform.localScale = Vector3.one
 		self.transform.localRotation = Quaternion.identity
-    	self.transform.anchoredPosition = Vector2.zero
+		if self.transform.anchoredPosition then
+    		self.transform.anchoredPosition = Vector2.zero
+    	end
         if self.__cacheLocalPos then
         	UI.SetLocalPositionXYZ(self.transform, self.__cacheLocalPos.x, self.__cacheLocalPos.y, self.__cacheLocalPos.z or 0)
+        	self.__cacheLocalPos = nil
         elseif self.__cachePos then
         	UI.SetPositionXYZ(self.transform, self.__cachePos.x, self.__cachePos.y, self.__cachePos.z or 0)
+        	self.__cachePos = nil
         else
         	local localPos = self.transform.localPosition
         	localPos.z = 0
        		self.transform.localPosition = localPos
     	end
+    	if self.__cacheVisible ~= nil then
+    		self.gameObject:SetActive(self.__cacheVisible)
+    		self.__cacheVisible = nil
+    	end
+    	if self._components_ then
+			for i,v in ipairs(self._components_) do
+				v:OnLoad()
+			end
+		end
     	self.isLoaded = true
 		self:OnLoad()
 		if self.isNeedUpdateOnLoad then
@@ -42,12 +55,23 @@ function UINode:OnLoad(  )
 	--override me
 end
 
-function UINode:Destroy(  )
-	GameObject.Destroy(self.gameObject)
-end
-
 function UINode:OnDestroy(  )
-	--override me
+	GameObject.Destroy(self.gameObject)
+	self.isLoaded = nil
+	print('Cat:UINode.lua[63] self.bindEventInfos', self.bindEventInfos)
+	print("Cat:UINode [64] : ",debug.traceback())
+	for k,v in pairs(self.bindEventInfos) do
+		if v[1] and v[2] then
+			v[1]:UnBind(v[2])
+		end
+	end
+	if self._components_ then
+		for i,v in ipairs(self._components_) do
+			v:OnClose()
+		end
+		self._components_ = nil
+	end
+	self.bindEventInfos = nil
 end
 
 function UINode:OnUpdate(  )
@@ -61,6 +85,19 @@ function UINode:SetData( data )
 	else
 		self.isNeedUpdateOnLoad = true
 	end
+end
+
+function UINode:BindEvent( eventName, handleFunc, bindDispather )
+	assert(bindDispather~=nil, "bindDispather must be not nil!")
+	local hadBind = self.bindEventInfos[eventName..tostring(bindDispather)]
+	if hadBind then 
+		print('Cat:UINode.lua had bind event name : ', eventName)
+		return
+	end
+	print('Cat:UINode.lua[69] eventName..tostring(bindDispather)', eventName..tostring(bindDispather))
+	local eventID = bindDispather:Bind(eventName, handleFunc)
+	self.bindEventInfos[eventName..tostring(bindDispather)] = {bindDispather, eventID}
+	return eventID
 end
 
 function UINode:SetPositionXYZ( x, y, z )
@@ -79,6 +116,13 @@ function UINode:SetLocalPositionXYZ( x, y, z )
 	end
 end
 
+function UINode:SetParent( parent )
+	self.parentTrans = parent
+	if self.isLoaded then
+		self.transform:SetParent(parent)
+	end
+end
+
 function UINode:GetPositionXYZ(  )
 	if self.isLoaded then
 		return UI.GetPositionXYZ(self.transform)
@@ -93,6 +137,35 @@ function UINode:GetLocalPositionXYZ(  )
 	else
 		return self.__cacheLocalPos or Vector3.zero
 	end
+end
+
+function UINode:SetVisible( visible )
+	if self.isLoaded then
+		self.gameObject:SetActive(visible)
+	else
+		self.__cacheVisible = visible
+	end
+end
+
+function UINode:JustShowMe( subNode )
+	if self.lastShowSubNode ~= nil and self.lastShowSubNode ~= subNode then
+ 		self.lastShowSubNode:SetVisible(false)
+ 	end
+ 	self.lastShowSubNode = subNode
+ 	self.lastShowSubNode:SetVisible(true)
+end
+
+function UINode:AddUIComponent( component, arge )
+	print('Cat:UINode.lua[AddUIComponent] component, arge', component, tostring(arge))
+	assert(component~=nil, "cannot add nil component for view")
+	local new_comp = component.New()
+	new_comp:OnAwake(view, arge)
+	if self.isLoaded then
+		new_comp:OnLoad()
+	end
+	self._components_ = self._components_ or {}
+	table.insert(self._components_, new_comp)
+	return new_comp
 end
 
 return UINode

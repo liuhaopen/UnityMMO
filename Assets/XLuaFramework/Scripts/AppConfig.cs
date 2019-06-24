@@ -39,6 +39,11 @@ namespace XLuaFramework {
                 DebugMode = false;
                 UpdateMode = true;
             }
+            if (Application.platform == RuntimePlatform.WindowsPlayer)
+            {
+                DebugMode = false;
+                UpdateMode = false;
+            }
         }                
 
         

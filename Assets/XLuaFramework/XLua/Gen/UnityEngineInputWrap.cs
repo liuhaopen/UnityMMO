@@ -31,7 +31,7 @@ namespace XLua.CSObjectWrap
 			Utils.EndObjectRegister(type, L, translator, null, null,
 			    null, null, null);
 
-		    Utils.BeginClassRegister(type, L, __CreateInstance, 17, 26, 6);
+		    Utils.BeginClassRegister(type, L, __CreateInstance, 16, 26, 6);
 			Utils.RegisterFunc(L, Utils.CLS_IDX, "GetAxis", _m_GetAxis_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetAxisRaw", _m_GetAxisRaw_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetButton", _m_GetButton_xlua_st_);
@@ -41,7 +41,6 @@ namespace XLua.CSObjectWrap
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetMouseButtonDown", _m_GetMouseButtonDown_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetMouseButtonUp", _m_GetMouseButtonUp_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "ResetInputAxes", _m_ResetInputAxes_xlua_st_);
-            Utils.RegisterFunc(L, Utils.CLS_IDX, "IsJoystickPreconfigured", _m_IsJoystickPreconfigured_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetJoystickNames", _m_GetJoystickNames_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetTouch", _m_GetTouch_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "GetAccelerationEvent", _m_GetAccelerationEvent_xlua_st_);
@@ -334,31 +333,6 @@ namespace XLua.CSObjectWrap
                     
                     
                     return 0;
-                }
-                
-            } catch(System.Exception gen_e) {
-                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
-            }
-            
-        }
-        
-        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_IsJoystickPreconfigured_xlua_st_(RealStatePtr L)
-        {
-		    try {
-            
-            
-            
-                
-                {
-                    string _joystickName = LuaAPI.lua_tostring(L, 1);
-                    
-                        bool gen_ret = UnityEngine.Input.IsJoystickPreconfigured( _joystickName );
-                        LuaAPI.lua_pushboolean(L, gen_ret);
-                    
-                    
-                    
-                    return 1;
                 }
                 
             } catch(System.Exception gen_e) {

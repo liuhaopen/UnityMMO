@@ -48,6 +48,7 @@ public class RoleMgr
         Entity role = roleGameOE.Entity;
         RoleMgr.GetInstance().SetName(uid, name);
         InitRole(role, uid, typeID, pos, pos, curHp, maxHp, true);
+        roleGameOE.GetComponent<UIDProxy>().Value = new UID{Value=uid};
         EntityManager.AddComponentData(role, new PosSynchInfo {LastUploadPos = float3.zero});
         EntityManager.AddComponent(role, ComponentType.Create<UserCommand>());
         
@@ -78,6 +79,7 @@ public class RoleMgr
         roleGameOE.transform.SetParent(container);
         roleGameOE.transform.localPosition = pos;
         Entity role = roleGameOE.Entity;
+        roleGameOE.GetComponent<UIDProxy>().Value = new UID{Value=uid};
         InitRole(role, uid, typeID, pos, targetPos, curHp, maxHp);
         return role;
 	}
@@ -88,7 +90,7 @@ public class RoleMgr
         EntityManager.AddComponentData(role, new TargetPosition {Value = targetPos});
         EntityManager.AddComponentData(role, new LocomotionState {LocoState = LocomotionState.State.Idle});
         EntityManager.AddComponentData(role, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
-        EntityManager.SetComponentData(role, new UID {Value=uid});
+        // EntityManager.SetComponentData(role, new UID {Value=uid});
         EntityManager.AddComponentData(role, new SceneObjectTypeData {Value=SceneObjectType.Role});
         EntityManager.AddComponentData(role, new NameboardData {UIResState=NameboardData.ResState.WaitLoad});
         EntityManager.AddComponentData(role, new TypeID {Value=typeID});

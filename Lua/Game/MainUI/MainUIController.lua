@@ -19,6 +19,8 @@ function MainUIController:InitMainUIViews(  )
     local view = require("Game/MainUI/MainUIRoleHeadView").New()
     UIMgr:Show(view)
     
+    local view = require("Game/MainUI/MainUITaskTeamBaseView").New()
+    view:Load()
 end
 
 return MainUIController

@@ -43,6 +43,7 @@ public class MonsterMgr
         // Debug.Log("pos : "+pos.x+" "+pos.y+" "+pos.z);
         monsterGameOE.transform.localPosition = pos;
         Entity monster = monsterGameOE.Entity;
+        monsterGameOE.GetComponent<UIDProxy>().Value = new UID{Value=uid};
         InitMonster(monster, uid, typeID, pos, targetPos, curHp, maxHp);
         return monster;
 	}
@@ -53,7 +54,7 @@ public class MonsterMgr
         EntityManager.AddComponentData(monster, new TargetPosition {Value = targetPos});
         EntityManager.AddComponentData(monster, new LocomotionState {LocoState = curHp>0.001f?LocomotionState.State.Idle:LocomotionState.State.Dead, StartTime=0});
         EntityManager.AddComponentData(monster, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
-        EntityManager.SetComponentData(monster, new UID {Value=uid});
+        // EntityManager.SetComponentData(monster, new UID {Value=uid});
         EntityManager.AddComponentData(monster, new TypeID {Value=typeID});
         EntityManager.AddComponentData(monster, ActionData.Empty);
         EntityManager.AddComponentData(monster, new SceneObjectTypeData {Value=SceneObjectType.Monster});

@@ -1,5 +1,5 @@
-local TaskConst = require("Game/Task/TaskConst")
-require("Game/Task/TaskModel")
+TaskConst = require("Game/Task/TaskConst")
+TaskModel = require("Game/Task/TaskModel")
 
 TaskController = {}
 
@@ -29,13 +29,16 @@ end
 
 function TaskController:ReqTaskList(  )
 	local on_ack = function ( ack_data )
-		self.model:SetTaskList(ack_data)
+		self.model:SetTaskInfo(ack_data)
 		self.model:Fire(TaskConst.Events.AckTaskList)
 	end
     NetDispatcher:SendMessage("Task_GetInfoList", nil, on_ack)
 end
 
 function TaskController:DoTask( taskInfo )
+    print("Cat:TaskController [start:39] taskInfo:", taskInfo)
+    PrintTable(taskInfo)
+    print("Cat:TaskController [end]")
 	if not taskInfo then return end
 	if taskInfo.type == TaskConst.SubType.Talk then
 		self:DoConversation(taskInfo.npcID)
