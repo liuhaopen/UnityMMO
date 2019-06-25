@@ -1,18 +1,20 @@
 return [[
 
-#state:0未接取 1进行中 2已完成 3已完成未领取 4已领取奖励
-#condition要求数量 
-#curNum已完成数量
+#status:0未接取 1进行中 2已完成 3已完成未领取 4已领取奖励
+#maxProgress要求数量 
+#curProgress已完成数量
 .taskSubInfo {
-	typeID 0 : integer
-	state 1 : integer
-	condition 2 : integer
-	curNum 3 : integer
+	subTypeID 0 : integer
+	status 1 : integer
+	maxProgress 2 : integer
+	curProgress 3 : integer
 }
 
+#subTaskIndex:当前处于哪个子任务阶段
 .taskInfo {
 	taskID 0 : integer
-	subTaskList 1 : *taskSubInfo
+	subTaskIndex 1 : integer
+	subTaskList 2 : taskSubInfo
 }
 
 .taskNPCTaskInfo {

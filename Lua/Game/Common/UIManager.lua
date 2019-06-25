@@ -1,6 +1,6 @@
+--deprecated,UINode is better
 UIManager = UIManager or {}
 UIMgr = UIManager
-
 function UIMgr:Init( canvas_names, default_canvas_name )
 	self.canvas = {}
 	for i,v in ipairs(canvas_names) do

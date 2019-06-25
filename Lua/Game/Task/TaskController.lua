@@ -59,8 +59,14 @@ function TaskController:DoConversation( npcID )
                 --show default conversation
                 local view = require("Game/Task/TaskDialogView").New()
                 local data = {
-                    npcID = npcID,
-                    content = "哈哈，你猜我是谁？",
+                    {
+                        npcID = npcID,
+                        content = "哈哈，你猜我是谁？",
+                        btnName = "继续",
+                    },
+                    {
+                        
+                    },
                 }
                 view:SetData(data)
             end

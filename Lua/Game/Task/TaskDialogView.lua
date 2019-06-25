@@ -7,7 +7,7 @@ end
 
 function TaskDialogView:OnLoad(  )
 	local names = {
-		"skip_con/skip_btn:obj","bottom/npc:raw","bottom/btn:obj","bottom/npc_name:txt","bottom/chat:txt","click_bg:obj",
+		"skip_con/skip_btn:obj","bottom/npc:raw","bottom/btn:obj","bottom/npc_name:txt","bottom/chat:txt","click_bg:obj","btn/btn_label:txt"
 	}
 	UI.GetChildren(self, self.transform, names)
 	self.transform.sizeDelta = Vector2.zero
@@ -35,14 +35,14 @@ function TaskDialogView:OnUpdate(  )
 	print('Cat:TaskDialogView.lua[34]')
 	self.cfg = self.cfg or require("Config.ConfigNPC")
 	print('Cat:TaskDialogView.lua[36] self.cfg', self.cfg)
-	self.npc_name_txt.text = self.cfg[self.data.npcID].name
-	self.chat_txt.text = self.data.content
+
 	self:UpdateContent()
 	self:UpdateLooks()
 end
 
 function TaskDialogView:UpdateContent(  )
-	
+	self.npc_name_txt.text = self.cfg[self.data.npcID].name
+	self.chat_txt.text = self.data.content
 end
 
 function TaskDialogView:UpdateLooks( )

@@ -1,3 +1,4 @@
+--Cat_Todo : 因为通常需要用的数据量只占很少部分，所以最好就拆分文件存放(按任务大类拆，大类里还可再按id分段拆)
 --[[
 id:任务id
 taskType:任务类型 1主线 2支线 3日常 4公会
@@ -17,9 +18,19 @@ local config = {
 		subTasks = {
 			{
 				subType = 1, content = {
-					{who=3001, chat=1},
-					{who=0, chat=2}, 
-					{who=3001, chat=3},
+					{who=3001, chat=[[我家被怪物占领了，你可以帮我赶走它们吗？]]},
+					{who=0, chat=[[好啊，但是你能给我什么好处？]]}, 
+					{who=3001, chat=[[我愿意献上我所有的节操...]]},
+				},
+			},
+			{
+				subType = 2, content = {
+					{sceneID=1001, monsterTypeID=2000, num=10},
+				},
+			},
+			{
+				subType = 1, content = {
+					{who=3001, chat=4},
 				},
 			},
 		},

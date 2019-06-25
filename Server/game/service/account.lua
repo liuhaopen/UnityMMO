@@ -65,7 +65,6 @@ function account.account_create_role( user_info, req_data )
 				local left_shift_for_platform = role_bit+server_bit
 				new_role_id = (user_info.platform<<left_shift_for_platform)|(user_info.server_id<<left_shift_for_server)
 			end
-			print('Cat:account.lua[gen new_role_id] :', new_role_id)
 		end
 		assert(new_role_id, "gen role id failed!")
 		local is_create_succeed = false

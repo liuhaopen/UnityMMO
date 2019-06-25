@@ -9,6 +9,7 @@ local TaskConst = {
 		MainLine,
 		SubLine,
 	},
+	--TaskConst.SubType.Talk
 	SubType = {
 		Talk = 1,
 		KillMonster = 2,
