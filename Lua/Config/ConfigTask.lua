@@ -12,38 +12,48 @@ who:谁，0为自己，其它为NPC类型id
 --]]
 local config = {
 	[1] = {
-		id = 1, taskType = 1, name = [[主线1]], condition = {
+		id = 1, taskType = 1, name = [[帮小花赶怪]], condition = {
 			{conditionType = 1, conditionValue = 1},
-		},
+		}, nextTaskID = 2,
 		subTasks = {
 			{
-				subType = 1, content = {
+				subType = 1, contentID = 3001, content = {
 					{who=3001, chat=[[我家被怪物占领了，你可以帮我赶走它们吗？]]},
 					{who=0, chat=[[好啊，但是你能给我什么好处？]]}, 
 					{who=3001, chat=[[我愿意献上我所有的节操...]]},
 				},
 			},
 			{
-				subType = 2, content = {
-					{sceneID=1001, monsterTypeID=2000, num=10},
-				},
+				subType = 2, sceneID=1001, contentID=2000, maxProgress=10
 			},
 			{
-				subType = 1, content = {
-					{who=3001, chat=4},
+				subType = 1, contentID = 3001, content = {
+					{who=0, chat=[[我把怪物都打掉了，快给我节操吧]]},
+					{who=3001, chat=[[去那边地上捡吧...]]},
 				},
 			},
 		},
 	},
 	[2] = {
-		id = 2, taskType = 1, name = [[主线2]], condition = {
-			{conditionType = 1, conditionValue = 2}, {conditionType = 2, conditionValue = 1},
-		},
+		id = 2, taskType = 1, name = [[帮小白采花]], condition = {
+			{conditionType = 1, conditionValue = 1}, {conditionType = 2, conditionValue = 1},
+		}, nextTaskID = 3,
 		subTasks = {
 			{
-				subType = 1, content = {
-					{who=2, chat=1},
-					{who=1, chat=2}, 
+				subType = 1, contentID = 3002, content = {
+					{who=3002, chat=[[可以采朵花给我吗？]]},
+					{who=0, chat=[[没问题，但是你可以嫁给我吗？]]}, 
+					{who=3002, chat=[[你先采来看看嘛]]},
+				},
+			},
+			{
+				subType = 3, sceneID=1001, contentID=4000, maxProgress=1
+			},
+			{
+				subType = 1, contentID = 3002, content = {
+					{who=0, chat=[[我们结婚吧]]},
+					{who=3002, chat=[[来吧，刚好我怀了你的孩子...]]},
+					{who=0, chat=[[...我们好像才第一天认识]]},
 				},
 			},
 		},

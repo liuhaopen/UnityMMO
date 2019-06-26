@@ -33,28 +33,47 @@ function TaskController:ReqTaskList(  )
 		self.model:Fire(TaskConst.Events.AckTaskList)
 	end
     NetDispatcher:SendMessage("Task_GetInfoList", nil, on_ack)
+
+    local on_progress_changed = function ( ack_data )
+        self.model:UpdateTaskInfo(ack_data)
+        self.model:Fire(TaskConst.Events.AckTaskList)
+    end
+    NetDispatcher:Listen("Task_ProgressChanged", nil, on_progress_changed)
 end
 
 function TaskController:DoTask( taskInfo )
     print("Cat:TaskController [start:39] taskInfo:", taskInfo)
     PrintTable(taskInfo)
     print("Cat:TaskController [end]")
-	if not taskInfo then return end
-	if taskInfo.type == TaskConst.SubType.Talk then
-		self:DoConversation(taskInfo.npcID)
-	elseif taskInfo.type == TaskConst.SubType.KillMonster then
-	end
+	if not taskInfo or not taskInfo.subTypeID then return end
+
+    if not self.handleTaskFuncs then
+        self.handleTaskFuncs = {
+            [TaskConst.SubType.Talk] = TaskController.DoTalk,
+            [TaskConst.SubType.KillMonster] = TaskController.DoKillMonster,
+        }
+    end
+    local func = self.handleTaskFuncs[taskInfo.subTypeID]
+    if func then
+        func(self, taskInfo)
+    else
+        error("had not find handle func for subtype : "..taskInfo.subTypeID)
+    end
 end
 
-function TaskController:DoConversation( npcID )
+function TaskController:DoTalk( taskInfo )
+    local npcID = taskInfo.npcID
     print('Cat:TaskController.lua[47] npcID', npcID)
 	local onApproachingNpc = function (  )
         local onGetTaskListInNPC = function ( ackData )
             print("Cat:SceneController [start:56] ackData:", ackData)
             PrintTable(ackData)
             print("Cat:SceneController [end]")
-            local hasTask = ackData.taskList and #ackData.taskList > 0
-            if hasTask then
+            -- local hasTask = ackData.taskList and #ackData.taskList > 0
+            local taskNum = ackData.taskList and #ackData.taskList or 0
+            if taskNum == 1 then
+                
+            elseif taskNum > 1 then
             else
                 --show default conversation
                 local view = require("Game/Task/TaskDialogView").New()
@@ -65,7 +84,7 @@ function TaskController:DoConversation( npcID )
                         btnName = "继续",
                     },
                     {
-                        
+
                     },
                 }
                 view:SetData(data)
@@ -75,6 +94,7 @@ function TaskController:DoConversation( npcID )
     end
     local goe = RoleMgr.GetInstance():GetMainRole()
     local moveQuery = goe:GetComponent(typeof(CS.UnityMMO.MoveQuery))
+    --Cat_Todo : read npc pos from config file
     local npcPosList = {
         [3000] = {x = 787.90, y = 166.19, z = 1073.90},
         [3001] = {x = 749.90, y = 163.00, z = 1182.40},
@@ -87,6 +107,9 @@ function TaskController:DoConversation( npcID )
     }
     --Cat_Todo : handle destination are in different scene
     moveQuery:StartFindWay(findInfo)
+end
+
+function TaskController:DoKillMonster( taskInfo )
 end
 
 return TaskController

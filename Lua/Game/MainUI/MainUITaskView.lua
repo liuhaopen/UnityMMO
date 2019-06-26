@@ -18,11 +18,6 @@ function MainUITaskView:OnLoad(  )
 end
 
 function MainUITaskView:AddEvents(  )
-	local on_click = function ( click_btn )
-		
-	end
-	-- UIHelper.BindClickEvent(self.return_btn, on_click)
-
 	self:BindEvent(TaskConst.Events.AckTaskList, function()
 		self:OnUpdate()
 	end, self.model)
@@ -59,12 +54,19 @@ function MainUITaskView:OnUpdateItem( item, i, v )
 		print('Cat:MainUITaskView.lua[59] click_obj', click_obj)
 		if item.click_obj == click_obj then
 			print('Cat:MainUITaskView.lua[61]')
-			TaskController.GetInstance():DoTask({type = TaskConst.SubType.Talk, npcID = 3001})	
+			-- TaskController.GetInstance():DoTask({type = TaskConst.SubType.Talk, npcID = 3001})	
+			TaskController.GetInstance():DoTask(v)	
 		end
 	end
 	UI.BindClickEvent(item.click_obj, on_click)
 	
-	item.desc_txt.text = "主线任务1"
+	local cfg = ConfigMgr:GetTaskCfg(v.taskID)
+	if not cfg then return end
+	
+	local name = string.format("[%s]%s", TaskConst.Prefix[cfg.taskType], cfg.name)
+	item.name_txt.text = name
+	item.desc_txt.text = v.desc
+	item.status_txt.text = TaskConst.StatusStr[v.status]
 end
 
 return MainUITaskView

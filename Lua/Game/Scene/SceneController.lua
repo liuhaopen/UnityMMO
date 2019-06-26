@@ -43,7 +43,7 @@ function SceneController:InitEvents(  )
                 if sceneObjType.Value == CS.UnityMMO.SceneObjectType.NPC then
                     local typeID = ECS:GetComponentData(hit.entity, CS.UnityMMO.Component.TypeID)
                     print('Cat:SceneController.lua[43] typeID.Value', typeID.Value)
-                    TaskController:GetInstance():DoConversation(typeID.Value)
+                    TaskController:GetInstance():DoTalk({npcID=typeID.Value})
                 end
             end
         end
