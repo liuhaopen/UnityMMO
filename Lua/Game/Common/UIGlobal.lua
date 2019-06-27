@@ -19,7 +19,7 @@ NPCMgr = CS.UnityMMO.NPCMgr
 
 Entity = CS.Unity.Entities.Entity
 -- SkillMgr = CS.UnityMMO.SkillManager
-
+require "Common.Util.TableUtil"
 GlobalEvents = require("Game.Common.GlobalEvents")
 EventDispatcher = require("Game.Common.EventDispatcher")
 

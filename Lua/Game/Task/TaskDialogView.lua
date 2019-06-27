@@ -15,10 +15,18 @@ function TaskDialogView:OnLoad(  )
 	self:AddEvents()
 end
 
+-- function TaskDialogView:SetData( data )
+-- 	UINode.SetData(self, data)
+-- end
+
 function TaskDialogView:AddEvents(  )
 	local on_click = function ( click_obj )
 		if self.btn_obj == click_obj then
-			self:Destroy()
+			if self.curShowData.clickCallBack then
+				self.curShowData.clickCallBack()
+			else
+				self:Destroy()
+			end
 		elseif self.skip_btn_obj == click_obj then
 			self:Destroy()
 		elseif self.click_bg_obj == click_obj then
@@ -31,25 +39,64 @@ function TaskDialogView:AddEvents(  )
 	
 end
 
+function TaskDialogView:ShowNextTalk(  )
+    self.curShowTalkNum = self.curShowTalkNum + 1
+	self:OnUpdate()
+end
+
+function TaskDialogView:ProcessTaskInfo(  )
+	if not self.data then return end
+
+	local taskNum = self.data.taskList and #self.data.taskList or 0
+	if taskNum == 1 then
+        self.curShowData = table.deep_copy(self.data.taskList[1])
+        local taskCfg = ConfigMgr:GetTaskCfg(self.curShowData.taskID)
+        local subTaskCfg = taskCfg.subTasks[self.curShowData.subTaskIndex]
+        if not taskCfg or not subTaskCfg or not subTaskCfg.content or self.curShowData.subTypeID ~= TaskConst.SubType.Talk then
+        	self.curShowData = nil
+        end
+        self.curShowTalkNum = self.curShowTalkNum or 1
+        self.curShowData.content = subTaskCfg.content[self.curShowTalkNum].chat
+        self.curShowData.who = subTaskCfg.content[self.curShowTalkNum].who
+        self.curShowData.clickCallBack = function()
+        	self:ShowNextTalk()
+    	end
+    elseif taskNum > 1 then
+		--Cat_Todo : multi task in npc
+    else
+        --show default conversation
+        local view = require("Game/Task/TaskDialogView").New()
+        local data = {
+            {
+                npcID = npcID,
+                content = "哈哈，你猜我是谁？",
+                btnName = "继续",
+            },
+            {
+            },
+        }
+        view:SetData(data)
+    end
+end
+
 function TaskDialogView:OnUpdate(  )
-	print('Cat:TaskDialogView.lua[34]')
-	self.cfg = self.cfg or require("Config.ConfigNPC")
-	print('Cat:TaskDialogView.lua[36] self.cfg', self.cfg)
+	self:ProcessTaskInfo()
+	if not self.curShowData then return end
 
 	self:UpdateContent()
 	self:UpdateLooks()
 end
 
 function TaskDialogView:UpdateContent(  )
-	self.npc_name_txt.text = self.cfg[self.data.npcID].name
-	self.chat_txt.text = self.data.content
+	self.npc_name_txt.text = ConfigMgr:GetNPCName(self.curShowData.npcID)
+	self.chat_txt.text = self.curShowData.content
 end
 
 function TaskDialogView:UpdateLooks( )
 	local show_data = {
 		showType = UILooksNode.ShowType.NPC,
 		showRawImg = self.npc_raw,
-		npcID = self.data.npcID,
+		npcID = self.curShowData.who,
 		canRotate = true,
 	}
 	self.looksNode = self.looksNode or UILooksNode.New(self.npc)

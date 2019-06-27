@@ -22,6 +22,8 @@ function CMD.scene_get_role_look_info( user_info, req_data )
 end
 
 function CMD.scene_get_main_role_info( user_info, req_data )
+	-- local result = skynet.call(user_info.agent, "lua", "execute", "Task", "NPCHasTask", 11, 22)
+	-- print('Cat:scene.lua[29] result', result)
 	return sceneMgr.roleMgr:GetMainRoleInfo(user_info.cur_role_id)
 end
 

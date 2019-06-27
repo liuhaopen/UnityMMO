@@ -3,7 +3,7 @@ local sproto = require "Common.Util.sproto"
 local sprotoloader = require "Common.Util.sprotoloader"
 local print_r = require "Common.Util.print_r"
 require "Common.Util.util"
-local netdispatcher = require "game.netdispatcher"
+local Dispatcher = require "game.util.Dispatcher"
 
 skynet.register_protocol {
 	name = "client",
@@ -17,16 +17,40 @@ local user_info
 local c2s_sproto
 local CMD = {}
 
+local registerAllModule = function()
+	Dispatcher:Init()
+	local handlers = {
+		"game.account.Account",
+		"game.task.Task",
+	}
+	for i,v in ipairs(handlers) do
+		local sprotoHandler, publicClassName, publicFuncs = require(v)
+		Dispatcher:RegisterSprotoHandler(sprotoHandler)
+		if sprotoHandler.PublicClassName and sprotoHandler.PublicFuncs then
+			Dispatcher:RegisterPublicFuncs(sprotoHandler.PublicClassName, sprotoHandler.PublicFuncs)
+		end
+	end
+end
+
+function CMD.execute( source, className, funcName, ... )
+	local func = Dispatcher:GetPublicFunc(className, funcName)
+	if func then
+		return func(...)
+	end
+	return nil
+end
+
 function CMD.login(source, uid, sid, secret, platform, server_id)
 	-- you may use secret to make a encrypted data stream
 	skynet.error(string.format("%s is login", uid))
 	gate = source
 	userid = uid
 	subid = sid
-	user_info = {user_id=uid, platform=platform, server_id=server_id}
+	user_info = {user_id=uid, platform=platform, server_id=server_id, agent=skynet.self()}
+	print('Cat:msgagent.lua[50] user_info.agent', user_info.agent)
 	-- you may load user data from database
-
 	c2s_sproto = sprotoloader.load(1)
+	registerAllModule()
 end
 
 local function logout()
@@ -49,24 +73,25 @@ function CMD.afk(source)
 	skynet.call(world, "lua", "role_leave_game", user_info)
 end
 
+local is_game_play_proto = function ( tag )
+	return tag >= 100 and tag <= 199
+end
+
 skynet.start(function()
-	-- If you want to fork a work thread , you MUST do it in CMD.login
 	skynet.dispatch("lua", function(session, source, command, ...)
 		local f = assert(CMD[command])
 		skynet.ret(skynet.pack(f(source, ...)))
 	end)
 
 	skynet.dispatch("client", function(_,_, msg)
-		-- print('Cat:msgagent.lua[50] msg|'..msg.."| c2s_sproto:", c2s_sproto)
 		local tag, msg = string.unpack(">I4c"..#msg-4, msg)
-			-- print('Cat:msgagent.lua[62] tag:', tag, " msg:", msg)
 			--收到前端的请求,先解析再分发
 			local proto_info = c2s_sproto:query_proto(tag)
 			if proto_info and proto_info.name then
 				local content = c2s_sproto:request_decode(tag, msg)
 				-- print_r(content)
 				local response
-				if tag >= 100 and tag <= 199 then
+				if is_game_play_proto(tag) then
 					local world = skynet.uniqueservice("world")
 					--先取到角色所在场景的服务id
 					local scene_service = skynet.call(world, "lua", "get_role_scene_service", user_info.cur_role_id)
@@ -74,15 +99,14 @@ skynet.start(function()
 					-- print('Cat:msgagent.lua[70] user_info, content', user_info, content)
 					response = skynet.call(scene_service, "lua", proto_info.name, user_info, content)
 				else
-					local f = netdispatcher:dispatch(tag)
-					if f and f[proto_info.name] then
-						response = f[proto_info.name](user_info, content)
+					local handler = Dispatcher:GetSprotoHandler(proto_info.name)
+					if handler then
+						response = handler(user_info, content)
 					else
 						skynet.error("msgagent handle proto failed! cannot find handler:", proto_info.name)
 					end
 				end
 				local ok, response_str = pcall(c2s_sproto.response_encode, c2s_sproto, tag, response)
-				-- local decode_response_str = c2s_sproto:response_decode(tag, response_str)
 				-- print_r(decode_response_str)
 				if ok then
 					skynet.ret(response_str)

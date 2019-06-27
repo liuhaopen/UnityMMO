@@ -29,14 +29,18 @@ end
 
 function TaskController:ReqTaskList(  )
 	local on_ack = function ( ack_data )
-		self.model:SetTaskInfo(ack_data)
+		self.model:SetTaskInfos(ack_data)
 		self.model:Fire(TaskConst.Events.AckTaskList)
 	end
     NetDispatcher:SendMessage("Task_GetInfoList", nil, on_ack)
 
     local on_progress_changed = function ( ack_data )
         self.model:UpdateTaskInfo(ack_data)
-        self.model:Fire(TaskConst.Events.AckTaskList)
+        if ack_data.status == TaskConst.Status.Finished then
+            self.model:Fire(TaskConst.Events.ReqTaskList)
+        else
+            self.model:Fire(TaskConst.Events.AckTaskList)
+        end
     end
     NetDispatcher:Listen("Task_ProgressChanged", nil, on_progress_changed)
 end
@@ -69,26 +73,11 @@ function TaskController:DoTalk( taskInfo )
             print("Cat:SceneController [start:56] ackData:", ackData)
             PrintTable(ackData)
             print("Cat:SceneController [end]")
+            local view = require("Game/Task/TaskDialogView").New()
+            view:SetData(ackData)
             -- local hasTask = ackData.taskList and #ackData.taskList > 0
-            local taskNum = ackData.taskList and #ackData.taskList or 0
-            if taskNum == 1 then
-                
-            elseif taskNum > 1 then
-            else
-                --show default conversation
-                local view = require("Game/Task/TaskDialogView").New()
-                local data = {
-                    {
-                        npcID = npcID,
-                        content = "哈哈，你猜我是谁？",
-                        btnName = "继续",
-                    },
-                    {
-
-                    },
-                }
-                view:SetData(data)
-            end
+            -- local taskNum = ackData.taskList and #ackData.taskList or 0
+            
         end
         NetDispatcher:SendMessage("Task_GetInfoListInNPC", {npcUID=npcUID}, onGetTaskListInNPC)
     end

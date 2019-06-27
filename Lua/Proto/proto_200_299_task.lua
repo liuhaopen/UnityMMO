@@ -29,10 +29,10 @@ Task_GetInfoList 200 {
 #获取该NPC身上的任务列表
 Task_GetInfoListInNPC 201 {
 	request {
-		npcUID 0 : integer
+		npcID 0 : integer
 	}
 	response {
-		npcUID 0 : integer
+		npcID 0 : integer
 		taskList 1 : *taskNPCTaskInfo
 		content 2 : string
 	}
@@ -62,5 +62,6 @@ Task_ProgressChanged 204 {
 		taskInfo 0 : taskInfo
 	}
 }
+
 
 ]]

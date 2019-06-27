@@ -6,7 +6,6 @@ local start_arge = {...}
 local loginservice = tonumber(start_arge[1])
 local platform = tonumber(start_arge[2])
 local server_id = tonumber(start_arge[3])
-print('Cat:gated.lua[8] loginservice, platform', loginservice, platform)
 
 local server = {}
 local users = {}

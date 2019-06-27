@@ -214,6 +214,51 @@ local function dump(tb, dump_metatable, max_level)
 	return _dump(tb, level)
 end
 
+local function get_value_in_array(array, field, fieldValue)
+	if not array then return nil end
+	for i,v in ipairs(array) do
+		if v[field] == fieldValue then
+			return v
+		end
+	end	
+	return nil
+end
+
+local function remove_value_in_array(array, field, fieldValue)
+	if not array then return nil end
+	for i,v in ipairs(array) do
+		if v[field] == fieldValue then
+			table.remove(array, i)
+			return
+		end
+	end	
+	return
+end
+
+local function deep_copy(object)
+	-- @param object 需要深拷贝的对象
+	-- @return 深拷贝完成的对象
+
+	local lookup_table = {}
+	local function _copy(object)
+		if type(object) ~= "table" then
+			return object
+		elseif lookup_table[object] then
+			return lookup_table[object]
+		end
+
+		local new_table = {}
+		lookup_table[object] = new_table
+		for index, value in pairs(object) do
+			new_table[_copy(index)] = _copy(value)
+		end
+
+		return setmetatable(new_table, getmetatable(object))
+	end
+
+	return _copy(object)
+end
+
 table.count = count
 table.length = length
 table.setlen = setlen
@@ -230,3 +275,6 @@ table.filter = filter
 table.choose = choose
 table.circulator = circulator
 table.dump = dump
+table.get_value_in_array = get_value_in_array
+table.remove_value_in_array = remove_value_in_array
+table.deep_copy = deep_copy

@@ -15,11 +15,11 @@ function TaskModel:Reset(  )
 	self.taskInfo = nil
 end
 
-function TaskModel:GetTaskInfo( )
+function TaskModel:GetTaskInfos( )
 	return self.taskInfo
 end
 
-function TaskModel:SetTaskInfo( value )
+function TaskModel:SetTaskInfos( value )
 	self.taskInfo = value
 	if self.taskInfo and self.taskInfo.taskList then
 		for i,v in ipairs(self.taskInfo.taskList) do
@@ -49,10 +49,10 @@ function TaskModel:CompleteTaskInfo( taskInfo )
 				taskInfo.desc = taskInfo.desc..numStr
 			end
 		else
-			print('Cat:TaskModel.lua cannot find cfg for : '..taskInfo.typeID.." subTaskIndex:"..taskInfo.subTaskIndex)
+			print('Cat:TaskModel.lua cannot find cfg for : '..taskInfo.taskID.." subTaskIndex:"..taskInfo.subTaskIndex)
 		end
 	else
-		print("Cat:TaskModel.lua has not find complete func for : "..taskInfo.typeID.." subTaskIndex:"..taskInfo.subTaskIndex)
+		print("Cat:TaskModel.lua has not find complete func for : "..taskInfo.taskID.." subTaskIndex:"..taskInfo.subTaskIndex)
 	end
 end
 

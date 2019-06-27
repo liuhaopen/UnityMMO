@@ -25,7 +25,7 @@ end
 
 function MainUITaskView:OnUpdate(  )
 	print('Cat:MainUITaskView.lua[34] self.isLoaded', self.isLoaded)
-	local taskInfo = self.model:GetTaskInfo()
+	local taskInfo = self.model:GetTaskInfos()
 	if not taskInfo or not taskInfo.taskList or not self.isLoaded then return end
 	print("Cat:MainUITaskView [start:47] taskInfo.taskList:", taskInfo.taskList)
 	PrintTable(taskInfo.taskList)
