@@ -28,9 +28,20 @@ function TaskModel:SetTaskInfos( value )
 	end
 end
 
+function TaskModel:GetTaskInfo( taskID )
+	if self.taskInfo and self.taskInfo.taskList then
+		for i,v in ipairs(self.taskInfo.taskList) do
+			if v.taskID == taskID then
+				return v
+			end
+		end
+	end
+	return nil
+end
+
 --completing some data that server side were not sent but the client needed to use
 function TaskModel:CompleteTaskInfo( taskInfo )
-	if not taskInfo or not taskInfo.subTypeID then return end
+	if not taskInfo or not taskInfo.subType then return end
 	
 	if not self.completeFuncs then
 		self.completeFuncs = {
@@ -38,9 +49,10 @@ function TaskModel:CompleteTaskInfo( taskInfo )
 			[TaskConst.SubType.KillMonster] = TaskModel.CompleteTaskInfoKillMonster,
 		}
 	end
-	local func = self.completeFuncs[taskInfo.subTypeID]
+	local func = self.completeFuncs[taskInfo.subType]
+	print('Cat:TaskModel.lua[53] func, taskInfo.subType', func, taskInfo.subType)
 	if func then
-		local cfg = ConfigMgr:GetTaskCfg(taskInfo.typeID)
+		local cfg = ConfigMgr:GetTaskCfg(taskInfo.taskID)
 		local subCfg = cfg and cfg.subTasks and cfg.subTasks[taskInfo.subTaskIndex]
 		if cfg and subCfg then 
 			local isNeedShowNum = func(self, taskInfo, cfg, subCfg)
@@ -59,6 +71,7 @@ end
 function TaskModel:CompleteTaskInfoNPC( taskInfo, cfg, subCfg )
 	taskInfo.npcID = subCfg.contentID
 	local npcName = ConfigMgr:GetNPCName(taskInfo.npcID)
+	print('Cat:TaskModel.lua[74] npcName', npcName)
 	taskInfo.desc = string.format(TaskConst.Desc[TaskConst.SubType.Talk], npcName)
 end
 
@@ -74,7 +87,7 @@ function TaskModel:UpdateTaskInfo( taskInfo )
 	local isIn = false
 	if self.taskInfo and self.taskInfo.taskList then
 		for i,v in ipairs(self.taskInfo.taskList) do
-			if v.typeID == taskInfo.typeID then
+			if v.taskID == taskInfo.taskID then
 				self.taskInfo.taskList[i] = taskInfo
 				isIn = true
 				break

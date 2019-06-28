@@ -1,11 +1,15 @@
 local TaskConst = {
-	--SubType.Talk
+	--TaskConst.SubType.Talk
 	SubType = {
 		Talk = 1,
 		KillMonster = 2,
 		Collect = 3,
 	},
-	--Status.CanTake
+	--TaskConst.ClientDoTask[TaskConst.SubType.Talk]
+	ClientDoTask = {
+		[1] = true,
+	},
+	--TaskConst.Status.CanTake
 	Status = {
 		Unmet = 0,--条件未满足
 		CanTake = 1,--可接取
@@ -13,15 +17,14 @@ local TaskConst = {
 		Finished = 3,--已完成
 		Received = 4,--已领取奖励
 	},
-	-- ErrorCode.NoError
+	--TaskConst.ErrorCode.Unknow
 	ErrorCode = {
 		NoError = 0,
 		CannotDoByClient = 1,
 		HadNotTaskInfoInRole = 2,
 		HadNotTaskCfg = 3,
+		Unknow = 4,
 	},
-	ClientDoTask = {
-		[SubType.Talk] = true,
-	},
+	
 }
 return TaskConst

@@ -49,7 +49,7 @@ function TaskController:DoTask( taskInfo )
     print("Cat:TaskController [start:39] taskInfo:", taskInfo)
     PrintTable(taskInfo)
     print("Cat:TaskController [end]")
-	if not taskInfo or not taskInfo.subTypeID then return end
+	if not taskInfo or not taskInfo.subType then return end
 
     if not self.handleTaskFuncs then
         self.handleTaskFuncs = {
@@ -57,11 +57,11 @@ function TaskController:DoTask( taskInfo )
             [TaskConst.SubType.KillMonster] = TaskController.DoKillMonster,
         }
     end
-    local func = self.handleTaskFuncs[taskInfo.subTypeID]
+    local func = self.handleTaskFuncs[taskInfo.subType]
     if func then
         func(self, taskInfo)
     else
-        error("had not find handle func for subtype : "..taskInfo.subTypeID)
+        error("had not find handle func for subtype : "..taskInfo.subType)
     end
 end
 
@@ -75,9 +75,6 @@ function TaskController:DoTalk( taskInfo )
             print("Cat:SceneController [end]")
             local view = require("Game/Task/TaskDialogView").New()
             view:SetData(ackData)
-            -- local hasTask = ackData.taskList and #ackData.taskList > 0
-            -- local taskNum = ackData.taskList and #ackData.taskList or 0
-            
         end
         NetDispatcher:SendMessage("Task_GetInfoListInNPC", {npcUID=npcUID}, onGetTaskListInNPC)
     end

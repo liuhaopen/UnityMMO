@@ -45,6 +45,12 @@ local TaskConst = {
 		[1] = [[找<#88ff43>%s</color>对话]],
 		[2] = [[打败<#88ff43>%s</color>]],
 	},
+
+	--TaskConst.DialogBtnFlag.Continue
+	DialogBtnFlag = {
+		Continue = 1,
+		TakeTask = 2,
+	},
 }
 
 return TaskConst

@@ -1,6 +1,6 @@
 local skynet = require "skynet"
 require "Common.Util.TableUtil"
-local TaskConst = require "game.Task.TaskConst"
+local TaskConst = require "game.task.TaskConst"
 
 local Task = {
 	cfg = require "Config.ConfigTask",
@@ -9,6 +9,21 @@ local Task = {
 	cacheChangedTaskInfos = {}
 }
 
+local notifyNewChangedTaskInfo = function ( userInfo )
+	local taskInfo = Task.cacheChangedTaskInfos[userInfo.cur_role_id] and Task.cacheChangedTaskInfos[userInfo.cur_role_id][1]
+	print('Cat:Task.lua[15] taskInfo, ', taskInfo, Task.ackTaskProgressChanged[userInfo.cur_role_id])
+	if taskInfo and Task.ackTaskProgressChanged[userInfo.cur_role_id] then
+		Task.ackTaskProgressChanged[userInfo.cur_role_id](true, {taskInfo=taskInfo})
+		Task.ackTaskProgressChanged[userInfo.cur_role_id] = nil
+		table.remove(Task.cacheChangedTaskInfos[userInfo.cur_role_id], 1)
+	end
+end
+
+local addNewChangedTaskInfo = function ( userInfo, taskInfo )
+	Task.cacheChangedTaskInfos[userInfo.cur_role_id] = Task.cacheChangedTaskInfos[userInfo.cur_role_id] or {}
+	table.insert(Task.cacheChangedTaskInfos[userInfo.cur_role_id], taskInfo)
+	notifyNewChangedTaskInfo(userInfo, taskInfo)
+end
 local isTaskCanTake = function ( userInfo, taskID )
 	return true
 end
@@ -21,7 +36,7 @@ local createTaskInfoByID = function ( userInfo, taskID )
 		taskID = taskID, 
 		status = isCanTake and TaskConst.Status.CanTake or TaskConst.Status.Unmet, 
 		subTaskIndex = 1, 
-		subTypeID = subTaskCfg.subType, 
+		subType = subTaskCfg.subType, 
 		curProgress = 0, 
 		maxProgress = subTaskCfg.maxProgress
 	}
@@ -49,40 +64,36 @@ end
 
 local SprotoHandlers = {}
 function SprotoHandlers.Task_GetInfoList(userInfo, reqData)
-	print("Cat:Task [start:7] userInfo:", userInfo)
-	PrintTable(userInfo)
-	print("Cat:Task [end]")
-	print("Cat:Task [start:10] reqData:", reqData)
-	PrintTable(reqData)
-	print("Cat:Task [end]")
 	local taskInfos = Task.taskInfos[userInfo.cur_role_id]
 	if not taskInfos then
 		taskInfos = InitTaskInfos(userInfo)
 		Task.taskInfos[userInfo.cur_role_id] = taskInfos
 	end
-	print("Cat:Task [start:16] taskInfos:", taskInfos)
-	PrintTable(taskInfos)
-	print("Cat:Task [end]")
 	return taskInfos
 end
 
 function SprotoHandlers.Task_TakeTask( userInfo, reqData )
-end
-
-local notifyNewChangedTaskInfo = function ( userInfo )
-	local taskInfo = Task.cacheChangedTaskInfos[userInfo.cur_role_id] and Task.cacheChangedTaskInfos[userInfo.cur_role_id][1]
-	if taskInfo and Task.ackTaskProgressChanged[userInfo.cur_role_id] then
-		Task.ackTaskProgressChanged[userInfo.cur_role_id](true, taskInfo)
-		Task.ackTaskProgressChanged[userInfo.cur_role_id] = nil
-		table.remove(Task.cacheChangedTaskInfos[userInfo.cur_role_id], 1)
+	local taskInfos = Task.taskInfos[userInfo.cur_role_id]
+	local taskInfo = table.get_value_in_array(taskInfos and taskInfos.taskList, "taskID", reqData.taskID)
+	local result = TaskConst.ErrorCode.Unknow
+	if taskInfo then
+		if taskInfo.status == TaskConst.Status.CanTake then
+			taskInfo.status = TaskConst.Status.Doing
+			result = TaskConst.ErrorCode.NoError
+			skynet.timeout(1,function()
+				addNewChangedTaskInfo(userInfo, taskInfo)
+			end)
+		elseif taskInfo.status == TaskConst.Status.CanTake then
+		end
 	end
+	return {result=result}
 end
 
 function SprotoHandlers.Task_DoTask( userInfo, reqData )
 	local taskInfos = Task.taskInfos[userInfo.cur_role_id]
 	local taskInfo = table.get_value_in_array(taskInfos and taskInfos.taskList, "taskID", reqData.taskID)
 	if taskInfo then
-		if TaskConst.ClientDoTask[taskInfo.subTypeID] then
+		if TaskConst.ClientDoTask[taskInfo.subType] then
 			local cfg = Task.cfg[reqData.taskID]
 			if cfg and cfg.subTasks then
 				taskInfo.subTaskIndex = taskInfo.subTaskIndex + 1
@@ -96,14 +107,12 @@ function SprotoHandlers.Task_DoTask( userInfo, reqData )
 					table.insert(taskInfos.taskList, nextTaskInfo)
 				else
 					local nextSubTask = cfg.subTasks[taskInfo.subTaskIndex]
-					taskInfo.subTypeID = nextSubTask.subType
+					taskInfo.subType = nextSubTask.subType
 					taskInfo.curProgress = 0
 					taskInfo.maxProgress = nextSubTask.maxProgress or 1
 				end
 				skynet.timeout(1,function()
-					Task.cacheChangedTaskInfos[userInfo.cur_role_id] = Task.cacheChangedTaskInfos[userInfo.cur_role_id] or {}
-					table.insert(Task.cacheChangedTaskInfos[userInfo.cur_role_id], taskInfo)
-					notifyNewChangedTaskInfo(userInfo, taskInfo)
+					addNewChangedTaskInfo(userInfo, taskInfo)
 				end)
 				return {result=TaskConst.ErrorCode.NoError}
 			else
@@ -117,34 +126,47 @@ function SprotoHandlers.Task_DoTask( userInfo, reqData )
 	end
 end
 
-function SprotoHandlers.Task_GetInfoListInNPC( userInfo, reqData )
+local getTaskListInNPC = function ( roleID, npcID )
 	--Cat_Todo : check if it is close to npc 
-	local taskInfos = Task.taskInfos[userInfo.cur_role_id]
+	local taskInfos = Task.taskInfos[roleID]
+	local taskIDs = {}
 	if taskInfos and taskInfos.taskList then
-		
+		for i,v in ipairs(taskInfos.taskList) do
+			if v.subType == TaskConst.SubType.Talk and v.contentID == npcID then
+				table.insert(taskIDs, v.taskID)
+			end
+		end
 	end
-	return {npcUID=reqData.npcUID}
+	return taskIDs
+	--Cat_Todo : dynamic task
+end
+
+function SprotoHandlers.Task_GetInfoListInNPC( userInfo, reqData )
+	local taskIDs = getTaskListInNPC(userInfo.cur_role_id, reqData.npcID)
+	return {npcID=reqData.npcID, taskIDList=taskIDs}
 end
 
 function SprotoHandlers.Task_ProgressChanged( userInfo, reqData )
 	if not Task.ackTaskProgressChanged[userInfo.cur_role_id] then
-		Task.cacheChangedTaskInfos[userInfo.cur_role_id] = Task.cacheChangedTaskInfos[userInfo.cur_role_id] or {}
 		local taskInfo = Task.cacheChangedTaskInfos[userInfo.cur_role_id] and Task.cacheChangedTaskInfos[userInfo.cur_role_id][1]
 		if taskInfo then
 			table.remove(Task.cacheChangedTaskInfos[userInfo.cur_role_id], 1)
 			return taskInfo
 		else
 			Task.ackTaskProgressChanged[userInfo.cur_role_id] = skynet.response()
-			return NORET
+			return "_WaitForChange_"
 		end
+	else
+		--shouldn't be here,the client requested it again before replying
 	end
 	return {}
 end
 
 local PublicFuncs = {}
-
 function PublicFuncs.NPCHasTask( roleID, npcID )
-	return false
+	--Cat_Todo : cache npc status
+	local taskIDs = getTaskListInNPC(roleID, npcID)
+	return #taskIDs > 0
 end
 
 SprotoHandlers.PublicClassName = "Task"

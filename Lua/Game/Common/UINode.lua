@@ -58,8 +58,6 @@ end
 function UINode:OnDestroy(  )
 	GameObject.Destroy(self.gameObject)
 	self.isLoaded = nil
-	print('Cat:UINode.lua[63] self.bindEventInfos', self.bindEventInfos)
-	print("Cat:UINode [64] : ",debug.traceback())
 	for k,v in pairs(self.bindEventInfos) do
 		if v[1] and v[2] then
 			v[1]:UnBind(v[2])

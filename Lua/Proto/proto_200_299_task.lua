@@ -9,7 +9,7 @@ return [[
 	taskID 0 : integer
 	status 1 : integer
 	subTaskIndex 2 : integer
-	subTypeID 3 : integer
+	subType 3 : integer
 	curProgress 4 : integer
 	maxProgress 5 : integer
 	addition 6 : string
@@ -33,7 +33,7 @@ Task_GetInfoListInNPC 201 {
 	}
 	response {
 		npcID 0 : integer
-		taskList 1 : *taskNPCTaskInfo
+		taskIDList 1 : *integer
 		content 2 : string
 	}
 }
