@@ -18,12 +18,12 @@ function TestGraphsOwner:TestGraphsOwnerFSM(  )
 			{
 				id = 1,
 				type = "Blueprint.State.FSMSampleState",
-				name = "Patrol",
+				name = "PatrolState",
 			},
 			{
 				id = 2,
 				type = "Blueprint.State.FSMSampleState",
-				name = "Fight",
+				name = "FightState",
 			},
 		},
 	}

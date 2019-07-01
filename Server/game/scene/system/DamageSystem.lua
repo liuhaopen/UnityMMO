@@ -1,4 +1,5 @@
 local ECS = require "ECS"
+local skynet = require "skynet"
 local SceneConst = require "game.scene.SceneConst"
 local Time = Time
 local DamageSystem = ECS.BaseClass(ECS.ComponentSystem)
@@ -46,9 +47,15 @@ function DamageSystem:HandleDamage( entity, dEvents, hp )
 			change_target_pos_event_info = {key=SceneConst.InfoKey.HPChange, value=math.floor(hp.cur), time=Time.timeMS}
 		else
 			--enter dead state
-			-- self.m_EntityManager:SetComponentData(entity, "UMO.DeadState", 1)
 			if self.m_EntityManager:HasComponent(entity, "UMO.MonsterAI") then
-				self.sceneMgr.monsterMgr:TriggerState(uid, "Dead")
+				self.sceneMgr.monsterMgr:TriggerState(uid, "DeadState")
+				local killer = self.sceneMgr:GetEntity(hp.killedBy)
+				if self.m_EntityManager:HasComponent(killer, "UMO.MsgAgent") then
+					local agent = self.m_EntityManager:GetComponentData(killer, "UMO.MsgAgent")
+					local roleID = self.m_EntityManager:GetComponentData(killer, "UMO.TypeID")
+					local monsterID = self.m_EntityManager:GetComponentData(entity, "UMO.TypeID")
+					skynet.send(agent, "lua", "execute", "Task", "KillMonster", roleID, monsterID, 1)
+				end
 			end
 			change_target_pos_event_info = {key=SceneConst.InfoKey.HPChange, value=math.floor(hp.cur)..",dead", time=Time.timeMS}
 		end

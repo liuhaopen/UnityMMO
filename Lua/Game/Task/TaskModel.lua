@@ -45,8 +45,9 @@ function TaskModel:CompleteTaskInfo( taskInfo )
 	
 	if not self.completeFuncs then
 		self.completeFuncs = {
-			[TaskConst.SubType.Talk] = TaskModel.CompleteTaskInfoNPC,
-			[TaskConst.SubType.KillMonster] = TaskModel.CompleteTaskInfoKillMonster,
+			[TaskConst.SubType.Talk] = TaskModel.CompleteTalk,
+			[TaskConst.SubType.KillMonster] = TaskModel.CompleteKillMonster,
+			[TaskConst.SubType.Collect] = TaskModel.CompleteCollect,
 		}
 	end
 	local func = self.completeFuncs[taskInfo.subType]
@@ -68,18 +69,25 @@ function TaskModel:CompleteTaskInfo( taskInfo )
 	end
 end
 
-function TaskModel:CompleteTaskInfoNPC( taskInfo, cfg, subCfg )
+function TaskModel:CompleteTalk( taskInfo, cfg, subCfg )
 	taskInfo.npcID = subCfg.contentID
 	local npcName = ConfigMgr:GetNPCName(taskInfo.npcID)
 	print('Cat:TaskModel.lua[74] npcName', npcName)
 	taskInfo.desc = string.format(TaskConst.Desc[TaskConst.SubType.Talk], npcName)
 end
 
-function TaskModel:CompleteTaskInfoKillMonster( taskInfo )
+function TaskModel:CompleteKillMonster( taskInfo, cfg, subCfg )
 	taskInfo.monsterID = subCfg.contentID
 	local monsterName = ConfigMgr:GetMonsterName(taskInfo.monsterID)
 	taskInfo.desc = string.format(TaskConst.Desc[TaskConst.SubType.KillMonster], monsterName)
 	return true
+end
+
+function TaskModel:CompleteCollect( taskInfo, cfg, subCfg )
+	taskInfo.collectID = subCfg.contentID
+	local monsterName = ConfigMgr:GetMonsterName(taskInfo.collectID)
+	taskInfo.desc = string.format(TaskConst.Desc[TaskConst.SubType.Collect], monsterName)
+	return subCfg.maxProgress > 1
 end
 
 function TaskModel:UpdateTaskInfo( taskInfo )
@@ -99,6 +107,22 @@ function TaskModel:UpdateTaskInfo( taskInfo )
 		self.taskInfo.taskList = self.taskInfo.taskList or {}
 		table.insert(self.taskInfo.taskList, taskInfo)
 	end
+end
+
+function TaskModel:GetTaskType( taskID )
+	local cfg = ConfigMgr:GetTaskCfg(taskID)
+	return cfg and cfg.taskType or TaskConst.Type.Unknow
+end
+
+function TaskModel:GetTaskInfoByType( taskType )
+	if self.taskInfo and self.taskInfo.taskList then
+		for i,v in ipairs(self.taskInfo.taskList) do
+			if self:GetTaskType(v.taskID) == taskType then
+				return v
+			end
+		end
+	end
+	return nil
 end
 
 return TaskModel

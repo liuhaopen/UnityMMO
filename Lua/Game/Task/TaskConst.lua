@@ -5,12 +5,13 @@ local TaskConst = {
 		AckTaskList = "TaskConst.Events.AckTaskList",
 	},
 
-	--TaskConst.Type.MainLine
+	--TaskConst.Type.Unknow
 	Type = {
-		MainLine,
-		SubLine,
+		MainLine = 1,
+		SubLine = 2,
+		Unknow = 999,
 	},
-	--TaskConst.SubType.Talk
+	--TaskConst.SubType.Collect
 	SubType = {
 		Talk = 1,
 		KillMonster = 2,
@@ -44,12 +45,15 @@ local TaskConst = {
 	Desc = {
 		[1] = [[找<#88ff43>%s</color>对话]],
 		[2] = [[打败<#88ff43>%s</color>]],
+		[3] = [[采集<#88ff43>%s</color>]],
 	},
 
 	--TaskConst.DialogBtnFlag.Continue
 	DialogBtnFlag = {
 		Continue = 1,
 		TakeTask = 2,
+		DoTask = 3,
+		Ok = 4,
 	},
 }
 

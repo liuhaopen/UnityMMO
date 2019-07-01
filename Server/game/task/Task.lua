@@ -13,9 +13,12 @@ local notifyNewChangedTaskInfo = function ( userInfo )
 	local taskInfo = Task.cacheChangedTaskInfos[userInfo.cur_role_id] and Task.cacheChangedTaskInfos[userInfo.cur_role_id][1]
 	print('Cat:Task.lua[15] taskInfo, ', taskInfo, Task.ackTaskProgressChanged[userInfo.cur_role_id])
 	if taskInfo and Task.ackTaskProgressChanged[userInfo.cur_role_id] then
-		Task.ackTaskProgressChanged[userInfo.cur_role_id](true, {taskInfo=taskInfo})
+		-- Task.ackTaskProgressChanged[userInfo.cur_role_id](true, {taskInfo=taskInfo})
+		-- Task.ackTaskProgressChanged[userInfo.cur_role_id] = nil
+		-- table.remove(Task.cacheChangedTaskInfos[userInfo.cur_role_id], 1)
+		local co = Task.ackTaskProgressChanged[userInfo.cur_role_id]
 		Task.ackTaskProgressChanged[userInfo.cur_role_id] = nil
-		table.remove(Task.cacheChangedTaskInfos[userInfo.cur_role_id], 1)
+		skynet.wakeup(co)
 	end
 end
 
@@ -72,18 +75,40 @@ function SprotoHandlers.Task_GetInfoList(userInfo, reqData)
 	return taskInfos
 end
 
+local completeSubTask = function ( taskInfo )
+	if not taskInfo then return end
+	local cfg = Task.cfg[taskInfo.taskID]
+	if not cfg then return end
+	
+	taskInfo.subTaskIndex = taskInfo.subTaskIndex + 1
+	local isFinishTask = taskInfo.subTaskIndex > #cfg.subTasks
+	if isFinishTask then
+		taskInfo.subTaskIndex = #cfg.subTasks
+		taskInfo.status = TaskConst.Status.Finished
+		taskInfo.curProgress = taskInfo.maxProgress
+	else
+		local nextSubTask = cfg.subTasks[taskInfo.subTaskIndex]
+		taskInfo.subType = nextSubTask.subType
+		taskInfo.curProgress = 0
+		taskInfo.maxProgress = nextSubTask.maxProgress or 1
+	end	
+	return isFinishTask
+end
+
 function SprotoHandlers.Task_TakeTask( userInfo, reqData )
 	local taskInfos = Task.taskInfos[userInfo.cur_role_id]
 	local taskInfo = table.get_value_in_array(taskInfos and taskInfos.taskList, "taskID", reqData.taskID)
 	local result = TaskConst.ErrorCode.Unknow
 	if taskInfo then
 		if taskInfo.status == TaskConst.Status.CanTake then
+			completeSubTask(taskInfo)
 			taskInfo.status = TaskConst.Status.Doing
 			result = TaskConst.ErrorCode.NoError
 			skynet.timeout(1,function()
 				addNewChangedTaskInfo(userInfo, taskInfo)
 			end)
 		elseif taskInfo.status == TaskConst.Status.CanTake then
+			result = TaskConst.ErrorCode.NoError
 		end
 	end
 	return {result=result}
@@ -132,7 +157,9 @@ local getTaskListInNPC = function ( roleID, npcID )
 	local taskIDs = {}
 	if taskInfos and taskInfos.taskList then
 		for i,v in ipairs(taskInfos.taskList) do
-			if v.subType == TaskConst.SubType.Talk and v.contentID == npcID then
+			local cfg = Task.cfg[v.taskID]
+			local subCfg = cfg and cfg.subTasks[v.subTaskIndex]
+			if v.subType == TaskConst.SubType.Talk and subCfg and subCfg.contentID == npcID then
 				table.insert(taskIDs, v.taskID)
 			end
 		end
@@ -149,12 +176,15 @@ end
 function SprotoHandlers.Task_ProgressChanged( userInfo, reqData )
 	if not Task.ackTaskProgressChanged[userInfo.cur_role_id] then
 		local taskInfo = Task.cacheChangedTaskInfos[userInfo.cur_role_id] and Task.cacheChangedTaskInfos[userInfo.cur_role_id][1]
+		if not taskInfo then
+			Task.ackTaskProgressChanged[userInfo.cur_role_id] = coroutine.running()
+			skynet.wait(Task.ackTaskProgressChanged[userInfo.cur_role_id])
+		end
+		taskInfo = Task.cacheChangedTaskInfos[userInfo.cur_role_id] and Task.cacheChangedTaskInfos[userInfo.cur_role_id][1]
 		if taskInfo then
 			table.remove(Task.cacheChangedTaskInfos[userInfo.cur_role_id], 1)
-			return taskInfo
+			return {taskInfo=taskInfo}
 		else
-			Task.ackTaskProgressChanged[userInfo.cur_role_id] = skynet.response()
-			return "_WaitForChange_"
 		end
 	else
 		--shouldn't be here,the client requested it again before replying
@@ -169,7 +199,11 @@ function PublicFuncs.NPCHasTask( roleID, npcID )
 	return #taskIDs > 0
 end
 
+function PublicFuncs.KillMonster( roleID, monsterID, killNum )
+	print('Cat:Task.lua[203] roleID, monsterID, killNum', roleID, monsterID, killNum)
+	
+end
+
 SprotoHandlers.PublicClassName = "Task"
 SprotoHandlers.PublicFuncs = PublicFuncs
-
-return SprotoHandlers, "Task", PublicFuncs
+return SprotoHandlers

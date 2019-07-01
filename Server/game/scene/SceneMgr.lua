@@ -62,7 +62,7 @@ local update_around_objs = function ( sceneMgr, role_info )
 					target_pos = sceneMgr.entityMgr:GetComponentData(entity, "UMO.TargetPos")
 				end
 				local type_id = sceneMgr.entityMgr:GetComponentData(entity, "UMO.TypeID")
-				local eventStr = scene_obj_type.value..","..type_id.value..","..math.floor(pos.x)..","..math.floor(pos.y)..","..math.floor(pos.z)..","..math.floor(target_pos.x)..","..math.floor(target_pos.y)..","..math.floor(target_pos.z)
+				local eventStr = scene_obj_type.value..","..type_id..","..math.floor(pos.x)..","..math.floor(pos.y)..","..math.floor(pos.z)..","..math.floor(target_pos.x)..","..math.floor(target_pos.y)..","..math.floor(target_pos.z)
 				if sceneMgr.entityMgr:HasComponent(entity, "UMO.HP") then
 					local hp = sceneMgr.entityMgr:GetComponentData(entity, "UMO.HP")
 					eventStr = eventStr..","..math.floor(hp.cur)..","..math.floor(hp.max)

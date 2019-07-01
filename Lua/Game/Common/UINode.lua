@@ -100,9 +100,9 @@ end
 
 function UINode:SetPositionXYZ( x, y, z )
 	if self.isLoaded then
-		UI.SetPositionXYZ(self.transform, x, y, z)
+		UI.SetPositionXYZ(self.transform, x, y, z or 0)
 	else
-		self.__cachePos = {x=x,y=y,z}
+		self.__cachePos = {x=x,y=y,z=z}
 	end
 end
 
@@ -137,7 +137,7 @@ function UINode:GetLocalPositionXYZ(  )
 	end
 end
 
-function UINode:SetVisible( visible )
+function UINode:SetActive( visible )
 	if self.isLoaded then
 		self.gameObject:SetActive(visible)
 	else
@@ -147,10 +147,10 @@ end
 
 function UINode:JustShowMe( subNode )
 	if self.lastShowSubNode ~= nil and self.lastShowSubNode ~= subNode then
- 		self.lastShowSubNode:SetVisible(false)
+ 		self.lastShowSubNode:SetActive(false)
  	end
  	self.lastShowSubNode = subNode
- 	self.lastShowSubNode:SetVisible(true)
+ 	self.lastShowSubNode:SetActive(true)
 end
 
 function UINode:AddUIComponent( component, arge )

@@ -105,7 +105,7 @@ function cc.Show:reverse()
 end
 
 function cc.Show:update(time)
-    cc.Wrapper.SetVisible(self._target, true)
+    cc.Wrapper.SetActive(self._target, true)
 end
 --Show end
 
@@ -124,7 +124,7 @@ function cc.Hide:reverse()
 end
 
 function cc.Hide:update(time)
-    cc.Wrapper.SetVisible(self._target, false)
+    cc.Wrapper.SetActive(self._target, false)
 end
 --Hide end
 

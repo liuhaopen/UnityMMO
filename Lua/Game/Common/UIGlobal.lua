@@ -33,3 +33,4 @@ print('Cat:UIGlobal.lua[32] UILooksNode', UILooksNode)
 ResPath = require("Game.Common.ResPath")
 
 ConfigMgr = require("Tools.ConfigMgr")
+NoError = 0

@@ -20,10 +20,10 @@ local TaskConst = {
 	--TaskConst.ErrorCode.Unknow
 	ErrorCode = {
 		NoError = 0,
-		CannotDoByClient = 1,
-		HadNotTaskInfoInRole = 2,
-		HadNotTaskCfg = 3,
-		Unknow = 4,
+		Unknow = 1,
+		CannotDoByClient = 2000001,
+		HadNotTaskInfoInRole = 2000002,
+		HadNotTaskCfg = 2000003,
 	},
 	
 }

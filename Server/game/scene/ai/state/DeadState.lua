@@ -29,23 +29,26 @@ function DeadState:OnEnter(  )
 	self.wait_for_relive = self.cfg.ai.reborn_time/1000
 end
 
-function DeadState:OnUpdate( deltaTime )
-	if Time.time - self.dead_time > self.wait_for_relive then
-		--relive 
-		local hpData = self.entityMgr:GetComponentData(self.entity, "UMO.HP")
-		hpData.cur = hpData.max
-		local change_target_pos_event_info = {key=SceneConst.InfoKey.HPChange, value=math.floor(hpData.cur)..",relive", time=Time.timeMS}
-		self.sceneMgr.eventMgr:AddSceneEvent(self.uid, change_target_pos_event_info)
-		--set a new position
-		local radius = self.patrolInfo.radius/2
-		local randomPos = {
-			x=self.patrolInfo.x + math.random(-radius, radius), 
-			y=self.patrolInfo.y + math.random(-radius, radius), 
-			z=self.patrolInfo.z + math.random(-radius, radius)
-		}
-		SceneHelper.ChangePos(self.entity, randomPos, self.entityMgr, self.sceneMgr.eventMgr)
+function DeadState:Relive(  )
+	local hpData = self.entityMgr:GetComponentData(self.entity, "UMO.HP")
+	hpData.cur = hpData.max
+	local change_target_pos_event_info = {key=SceneConst.InfoKey.HPChange, value=math.floor(hpData.cur)..",relive", time=Time.timeMS}
+	self.sceneMgr.eventMgr:AddSceneEvent(self.uid, change_target_pos_event_info)
+	--set a new position
+	local radius = self.patrolInfo.radius/2
+	local randomPos = {
+		x=self.patrolInfo.x + math.random(-radius, radius), 
+		y=self.patrolInfo.y + math.random(-radius, radius), 
+		z=self.patrolInfo.z + math.random(-radius, radius)
+	}
+	SceneHelper.ChangePos(self.entity, randomPos, self.entityMgr, self.sceneMgr.eventMgr)
 
-		self.fsm:TriggerState("Patrol")
+	self.fsm:TriggerState("PatrolState")
+end
+
+function DeadState:OnUpdate( )
+	if Time.time - self.dead_time > self.wait_for_relive then
+		self:Relive()
 	end
 end
 

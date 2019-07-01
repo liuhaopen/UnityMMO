@@ -7,12 +7,12 @@ local WordManager = WordManager
 
 UI = BaseClass(CS.XLuaFramework.UIHelper)
 --下列接口会尝试多种设置的，如果你已经知道你的节点是什么类型的就别用下列接口了
-function UI.SetVisible( obj, is_show )
+function UI.SetActive( obj, is_show )
 	if not obj then return end
 	if obj.SetActive then
 		obj:SetActive(is_show)
-	elseif obj.SetVisible then
-		obj:SetVisible(is_show)
+	elseif obj.SetActive then
+		obj:SetActive(is_show)
 	end
 end
 --上列接口会尝试多种设置的，如果你已经知道你的节点是什么类型的就别用上列接口了
@@ -38,7 +38,7 @@ function UI.UpdateVisibleByJury( obj, is_show, reason )
 			if UpdateVisibleJuryTableForValue[tab_str] then
 				--没人投票的话就说明可以显示啦
 				-- print('Cat:UIHelper.lua[obj] jury:IsNoneVote()', jury:IsNoneVote())
-				UI.SetVisible(UpdateVisibleJuryTableForValue[tab_str], jury:IsNoneVote())
+				UI.SetActive(UpdateVisibleJuryTableForValue[tab_str], jury:IsNoneVote())
 			end
 		end
 		jury:CallBackOnResultChange(on_jury_change)

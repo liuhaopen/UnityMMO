@@ -30,8 +30,8 @@ function cc.Wrapper.GetPosition( node )
 	return pos.x, pos.y, pos.z
 end
 
-function cc.Wrapper.SetVisible( node, is_show )
-	UI.SetVisible(node, is_show)
+function cc.Wrapper.SetActive( node, is_show )
+	UI.SetActive(node, is_show)
 end
 
 function cc.Wrapper.GetVisible( node )

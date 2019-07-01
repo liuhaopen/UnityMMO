@@ -47,10 +47,29 @@ function TaskDialogView:ShowNextTalk(  )
 end
 
 function TaskDialogView:ReqTakeTask(  )
-	local ackTakeTask = function ( ack_data )
-        self:Destroy()
+	local ackTakeTask = function ( ackData )
+		if ackData.result == NoError then
+        	self:Destroy()
+        else
+        	Message:Show(ConfigMgr:GetErrorDesc(ackData.result))
+        end
     end
     NetDispatcher:SendMessage("Task_TakeTask", {taskID=self.curShowData.taskID}, ackTakeTask)
+end
+
+function TaskDialogView:ReqDoTask(  )
+	local ackDoTask = function ( ackData )
+		if ackData.result == NoError then
+        	self:Destroy()
+        else
+        	Message:Show(ConfigMgr:GetErrorDesc(ackData.result))
+        end
+    end
+    NetDispatcher:SendMessage("Task_DoTask", {taskID=self.curShowData.taskID}, ackDoTask)
+end
+
+function TaskDialogView:ClickOk(  )
+	self:Close()
 end
 
 function TaskDialogView:ProcessBtnNameAndCallBack( flag )
@@ -58,6 +77,8 @@ function TaskDialogView:ProcessBtnNameAndCallBack( flag )
 		self.flagMap = {
 			[TaskConst.DialogBtnFlag.Continue] = {name="继续", func=TaskDialogView.ShowNextTalk},
 			[TaskConst.DialogBtnFlag.TakeTask] = {name="接取", func=TaskDialogView.ReqTakeTask},
+			[TaskConst.DialogBtnFlag.DoTask]   = {name="接取", func=TaskDialogView.ReqDoTask},
+			[TaskConst.DialogBtnFlag.Ok] 	   = {name="确定", func=TaskDialogView.ClickOk},
 		}
 	end
 	local flagInfo = self.flagMap[flag]
@@ -92,17 +113,10 @@ function TaskDialogView:ProcessTaskInfo(  )
 		--Cat_Todo : multi task in npc
     else
         --show default conversation
-        local view = require("Game/Task/TaskDialogView").New()
-        local data = {
-            {
-                npcID = npcID,
-                content = "哈哈，你猜我是谁？",
-                btnName = "继续",
-            },
-            {
-            },
-        }
-        view:SetData(data)
+        self.curShowData = {}
+        self.curShowData.content = "哈哈，你猜我是谁？"
+        self.curShowData.who = self.data.npcID
+        self:ProcessBtnNameAndCallBack(TaskConst.DialogBtnFlag.Ok)
     end
 end
 

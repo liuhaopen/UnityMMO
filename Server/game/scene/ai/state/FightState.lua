@@ -44,7 +44,7 @@ function FightState:OnUpdate( )
 				if isOverHuntDis then
 					self.targetEnemyEntity = nil
 					self.blackboard:SetVariable("targetEnemyEntity", nil)
-					self.fsm:TriggerState("Patrol")
+					self.fsm:TriggerState("PatrolState")
 				elseif isMaxOk and isMinOk then
 					--离敌人距离刚好，发动攻击
 					self:Attack()
@@ -57,7 +57,7 @@ function FightState:OnUpdate( )
 		else
 			--没有攻击目标了，回去耕田吧
 			-- self:SetSubState(SubState.GoBack)
-			self.fsm:TriggerState("Patrol")
+			self.fsm:TriggerState("PatrolState")
 		end
 	-- elseif self.sub_state == SubState.Fighting then
 		--Cat_Todo : 攻击时间间隔需要加上其触发的技能等信息判断

@@ -3,17 +3,17 @@ local MonsterFSM = {
 		{
 			id = 1,
 			type = "Blueprint.State.PatrolState",
-			name = "Patrol",
+			name = "PatrolState",
 		},
 		{
 			id = 2,
 			type = "Blueprint.State.FightState",
-			name = "Fight",
+			name = "FightState",
 		},
 		{
 			id = 3,
 			type = "Blueprint.State.DeadState",
-			name = "Dead",
+			name = "DeadState",
 		},
 	},
 }

@@ -31,18 +31,33 @@ function TaskController:ReqTaskList(  )
 	local on_ack = function ( ack_data )
 		self.model:SetTaskInfos(ack_data)
 		self.model:Fire(TaskConst.Events.AckTaskList)
+        self:HandleAutoDoTask()
 	end
     NetDispatcher:SendMessage("Task_GetInfoList", nil, on_ack)
 
     local on_progress_changed = function ( ack_data )
-        self.model:UpdateTaskInfo(ack_data)
+        print("Cat:TaskController [start:38] on_progress_changed ack_data:", ack_data)
+        PrintTable(ack_data)
+        print("Cat:TaskController [end]")
+        self.model:UpdateTaskInfo(ack_data.taskInfo)
         if ack_data.status == TaskConst.Status.Finished then
             self.model:Fire(TaskConst.Events.ReqTaskList)
         else
             self.model:Fire(TaskConst.Events.AckTaskList)
+            self:HandleAutoDoTask()
         end
     end
     NetDispatcher:Listen("Task_ProgressChanged", nil, on_progress_changed)
+end
+
+function TaskController:HandleAutoDoTask(  )
+    if not self.curDoingTaskInfo then return end
+    
+    local lastDoingType = self.model:GetTaskType(self.curDoingTaskInfo.taskID)
+    local taskInfo = self.model:GetTaskInfoByType(lastDoingType)
+    if taskInfo and (taskInfo.status == TaskConst.Status.CanTake or taskInfo.status == TaskConst.Status.Doing or taskInfo.status == TaskConst.Status.Finished) then
+        self:DoTask(taskInfo)
+    end
 end
 
 function TaskController:DoTask( taskInfo )
@@ -55,10 +70,12 @@ function TaskController:DoTask( taskInfo )
         self.handleTaskFuncs = {
             [TaskConst.SubType.Talk] = TaskController.DoTalk,
             [TaskConst.SubType.KillMonster] = TaskController.DoKillMonster,
+            [TaskConst.SubType.Collect] = TaskController.DoCollect,
         }
     end
     local func = self.handleTaskFuncs[taskInfo.subType]
     if func then
+        self.curDoingTaskInfo = taskInfo
         func(self, taskInfo)
     else
         error("had not find handle func for subtype : "..taskInfo.subType)
@@ -67,16 +84,12 @@ end
 
 function TaskController:DoTalk( taskInfo )
     local npcID = taskInfo.npcID
-    print('Cat:TaskController.lua[47] npcID', npcID)
 	local onApproachingNpc = function (  )
         local onGetTaskListInNPC = function ( ackData )
-            print("Cat:SceneController [start:56] ackData:", ackData)
-            PrintTable(ackData)
-            print("Cat:SceneController [end]")
             local view = require("Game/Task/TaskDialogView").New()
             view:SetData(ackData)
         end
-        NetDispatcher:SendMessage("Task_GetInfoListInNPC", {npcUID=npcUID}, onGetTaskListInNPC)
+        NetDispatcher:SendMessage("Task_GetInfoListInNPC", {npcID=npcID}, onGetTaskListInNPC)
     end
     local goe = RoleMgr.GetInstance():GetMainRole()
     local moveQuery = goe:GetComponent(typeof(CS.UnityMMO.MoveQuery))
@@ -96,6 +109,11 @@ function TaskController:DoTalk( taskInfo )
 end
 
 function TaskController:DoKillMonster( taskInfo )
+    
+end
+
+function TaskController:DoCollect( taskInfo )
+    
 end
 
 return TaskController

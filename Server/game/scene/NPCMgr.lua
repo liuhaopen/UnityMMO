@@ -40,7 +40,7 @@ function NPCMgr:CreateNPC( type_id, pos_x, pos_y, pos_z )
 	self.entityMgr:SetComponentData(entity, "UMO.Position", {x=pos_x, y=pos_y, z=pos_z})
 	local scene_uid = SceneHelper:NewSceneUID(SceneConst.ObjectType.NPC)
 	self.entityMgr:SetComponentData(entity, "UMO.UID", scene_uid)
-	self.entityMgr:SetComponentData(entity, "UMO.TypeID", {value=type_id})
+	self.entityMgr:SetComponentData(entity, "UMO.TypeID", type_id)
 	self.entityMgr:SetComponentData(entity, "UMO.SceneObjType", {value=SceneConst.ObjectType.NPC})
 
 	local handle = self.aoi:add()

@@ -18,20 +18,21 @@ end
 
 function RoleMgr:InitArchetype(  )
 	self.role_archetype = self.entityMgr:CreateArchetype({
-		"UMO.Position", "UMO.TargetPos", "UMO.UID", "UMO.TypeID", "UMO.HP", "UMO.SceneObjType", "UMO.MoveSpeed", "UMO.AOIHandle", "UMO.Beatable", "UMO.DamageEvents"
+		"UMO.Position", "UMO.TargetPos", "UMO.UID", "UMO.TypeID", "UMO.HP", "UMO.SceneObjType", "UMO.MoveSpeed", "UMO.AOIHandle", "UMO.Beatable", "UMO.DamageEvents", "UMO.MsgAgent"
 	})
 end
 
-function RoleMgr:CreateRole( uid, roleID, pos_x, pos_y, pos_z, aoi_handle )
+function RoleMgr:CreateRole( uid, roleID, pos_x, pos_y, pos_z, aoi_handle, agent )
 	local role = self.entityMgr:CreateEntityByArcheType(self.role_archetype)
 	self.entityMgr:SetComponentData(role, "UMO.Position", {x=pos_x, y=pos_y, z=pos_z})
 	self.entityMgr:SetComponentData(role, "UMO.TargetPos", {x=pos_x, y=pos_y, z=pos_z})
 	self.entityMgr:SetComponentData(role, "UMO.UID", uid)
-	self.entityMgr:SetComponentData(role, "UMO.TypeID", {value=roleID})
+	self.entityMgr:SetComponentData(role, "UMO.TypeID", roleID)
 	self.entityMgr:SetComponentData(role, "UMO.HP", {cur=1000, max=1000})
 	self.entityMgr:SetComponentData(role, "UMO.SceneObjType", {value=SceneConst.ObjectType.Role})
 	self.entityMgr:SetComponentData(role, "UMO.MoveSpeed", {value=100})
 	self.entityMgr:SetComponentData(role, "UMO.AOIHandle", {value=aoi_handle})
+	self.entityMgr:SetComponentData(role, "UMO.MsgAgent", agent)
 	return role
 end
 
@@ -72,7 +73,7 @@ function RoleMgr:InitPosInfo( baseInfo )
 	end
 end
 
-function RoleMgr:RoleEnter( roleID )
+function RoleMgr:RoleEnter( roleID, agent )
 	if not self.roleList[roleID] then
 		local scene_uid = SceneHelper:NewSceneUID(SceneConst.ObjectType.Role)
 		local base_info = self:GetBaseInfoByRoleID(roleID)
@@ -86,7 +87,7 @@ function RoleMgr:RoleEnter( roleID )
 		-- self.aoi_handle_uid_map[handle] = scene_uid
 		self.sceneMgr.aoi:set_pos(handle, base_info.pos_x, base_info.pos_y, base_info.pos_z)
 
-		local entity = self:CreateRole(scene_uid, roleID, base_info.pos_x, base_info.pos_y, base_info.pos_z, handle)
+		local entity = self:CreateRole(scene_uid, roleID, base_info.pos_x, base_info.pos_y, base_info.pos_z, handle, agent)
 		self.sceneMgr:SetEntity(scene_uid, entity)
 		-- self.sceneMgr.aoi:set_user_data(handle, "entity", entity)
 	end
@@ -162,7 +163,7 @@ function RoleMgr:GetRoleLooksInfo( uid )
 	if entity then
 		local hpData = self.sceneMgr.entityMgr:GetComponentData(entity, "UMO.HP")
 		local role_id = self.sceneMgr.entityMgr:GetComponentData(entity, "UMO.TypeID")
-		local role_info = self:GetRole(role_id.value)
+		local role_info = self:GetRole(role_id)
 		if not role_info then
 			looks_info = {result=1}
 		end

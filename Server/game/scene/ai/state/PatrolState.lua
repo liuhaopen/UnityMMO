@@ -56,7 +56,7 @@ function PatrolState:CheckAround(  )
 		--发现敌人了，进入战斗状态
 		if nearestEnemy ~= nil then
 			self.blackboard:SetVariable("targetEnemyEntity", nearestEnemy)
-			self.fsm:TriggerState("Fight")
+			self.fsm:TriggerState("FightState")
 		end
 	end
 end

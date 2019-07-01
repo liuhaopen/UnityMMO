@@ -379,8 +379,8 @@ GetItemCreator = function ( self )
 				self.item_list[i] = item
 				item._real_index_for_item_creator_ = i
 			end
-			item:SetVisible(true)
-			item:SetPosition(self.get_item_pos_xy_func(item._real_index_for_item_creator_))
+			item:SetActive(true)
+			item:SetLocalPositionXYZ(self.get_item_pos_xy_func(item._real_index_for_item_creator_))
 			update_item_for_creator(self, item)
 		end
 	elseif info.prefab_path then
@@ -389,65 +389,69 @@ GetItemCreator = function ( self )
 			if not item then
 				local on_load_ok = function ( item )
 					UI.GetChildren(item, item.transform, info.child_names)
-					UIHelper.SetParent(item.transform, info.item_con)
-					if item.cacheIsActive ~= nil then
-						item.gameObject:SetActive(item.cacheIsActive)
-						item.cacheIsActive = nil
-					end
-					if item.cache_pos then
-						UI.SetLocalPositionXY(item.transform, item.cache_pos.x, item.cache_pos.y)
-						item.cache_pos = nil
-					end
-					if item.cache_data and item.UpdateView then
-						item:UpdateView(item.cache_data.index, item.cache_data.data)
+					-- UI.SetParent(item.transform, info.item_con)
+					if item.cache_data and item.OnUpdate then
+						item:OnUpdate(item.cache_data.index, item.cache_data.data)
 						item.cache_data = nil
 					end
 				end
-				item = {
-					UIConfig = {
-						prefab_path = info.prefab_path,
-					},
-					OnLoad = on_load_ok,
-					SetActive = function(item, isActive)
-						if item.is_loaded then
-							item.gameObject:SetActive(isActive)
-						else
-							item.cacheIsActive = isActive
-						end
-					end,
-					SetPosition = function(item, x, y)
-						if item.is_loaded then
-							UI.SetLocalPositionXY(item.transform, x, y)
-						else
-							item.cache_pos = {x=x, y=y}
-						end
-					end,
-					SetData = function(item, i, v)
-						if item.is_loaded and item.UpdateView then
-							item:UpdateView(i, v)
-						else
-							item.cache_data = {index=i, data=v}
-						end
-					end,
-					Destroy = function(item)
-						if item.is_loaded and item.gameObject then
-							UIMgr:RemoveAllComponents(item)
-							if item.destroy_callback then
-								item.destroy_callback(item)
-							end
-							GameObject.Destroy(item.gameObject)
-						end
-						item.had_destroyed = true
-					end,
-				}
-				UIMgr:Show(item)
+				-- item = {
+				-- 	UIConfig = {
+				-- 		prefab_path = info.prefab_path,
+				-- 	},
+				-- 	OnLoad = on_load_ok,
+				-- 	SetActive = function(item, isActive)
+				-- 		if item.is_loaded then
+				-- 			item.gameObject:SetActive(isActive)
+				-- 		else
+				-- 			item.cacheIsActive = isActive
+				-- 		end
+				-- 	end,
+				-- 	SetLocalPositionXYZ = function(item, x, y)
+				-- 		if item.is_loaded then
+				-- 			UI.SetLocalPositionXY(item.transform, x, y)
+				-- 		else
+				-- 			item.cache_pos = {x=x, y=y}
+				-- 		end
+				-- 	end,
+				-- 	SetData = function(item, i, v)
+				-- 		if item.is_loaded and item.UpdateView then
+				-- 			item:UpdateView(i, v)
+				-- 		else
+				-- 			item.cache_data = {index=i, data=v}
+				-- 		end
+				-- 	end,
+				-- 	Destroy = function(item)
+				-- 		if item.is_loaded and item.gameObject then
+				-- 			UIMgr:RemoveAllComponents(item)
+				-- 			if item.destroy_callback then
+				-- 				item.destroy_callback(item)
+				-- 			end
+				-- 			GameObject.Destroy(item.gameObject)
+				-- 		end
+				-- 		item.had_destroyed = true
+				-- 	end,
+				-- }
+				-- UIMgr:Show(item)
 				-- ResMgr:LoadPrefabGameObject(info.prefab_path, on_load_ok)
+				item = UINode.New()
+				item.prefabPath = info.prefab_path
+				item.parentTrans = info.item_con
+				item.SetData = function(item, i, v)
+					if item.isLoaded and item.OnUpdate then
+						item:OnUpdate(i, v)
+					else
+						item.cacheData = {index=i, data=v}
+					end
+				end
+				item.OnLoad = on_load_ok
+				item:Load()
 				self.item_list[i] = item
 				self.item_list[i]._real_index_for_item_creator_ = i
-				item.UpdateView = on_update_prefab_item
+				item.OnUpdate = on_update_prefab_item
 			end
 			item:SetActive(true)
-			item:SetPosition(self.get_item_pos_xy_func(item._real_index_for_item_creator_))
+			item:SetLocalPositionXYZ(self.get_item_pos_xy_func(item._real_index_for_item_creator_))
 			item:SetData(nil, self)
 		end
 	elseif info.obj_pool_type then
@@ -458,8 +462,8 @@ GetItemCreator = function ( self )
 				self.item_list[i] = item
 				item._real_index_for_item_creator_ = i
 			end
-			item:SetVisible(true)
-			item:SetPosition(self.get_item_pos_xy_func(item._real_index_for_item_creator_))
+			item:SetActive(true)
+			item:SetLocalPositionXYZ(self.get_item_pos_xy_func(item._real_index_for_item_creator_))
 			if item.SetItemSize and info.obj_pool_type == UIObjPool.UIType.AwardItem then
 				local item_size = info.item_width or info.item_height
 				item:SetItemSize(item_size, item_size)
@@ -476,10 +480,10 @@ GetItemCreator = function ( self )
 					gameObject = gameObj,
 					transform = gameObj.transform,
 					is_loaded = true,
-					SetPosition = function(item, x, y)
+					SetLocalPositionXYZ = function(item, x, y)
 						UIHelper.SetLocalPosition(item.transform, x, y)
 					end,
-					SetVisible = function(item, is_show)
+					SetActive = function(item, is_show)
 						item.gameObject:SetActive(is_show)
 					end,
 					AddUIComponent = UIPartical.AddUIComponent,
@@ -492,8 +496,8 @@ GetItemCreator = function ( self )
 				self.item_list[i] = item
 				item._real_index_for_item_creator_ = i
 			end
-			item:SetVisible(true)
-			item:SetPosition(self.get_item_pos_xy_func(item._real_index_for_item_creator_))
+			item:SetActive(true)
+			item:SetLocalPositionXYZ(self.get_item_pos_xy_func(item._real_index_for_item_creator_))
 			update_item_for_creator(self, item)
 		end
 		
@@ -604,7 +608,7 @@ HandleScrollChange = function ( self )
 				end
 				item._real_index_for_item_creator_ = new_real_index
 				-- item.gameObject.name = "item_list_creator_"..new_real_index
-				item:SetPosition(self.get_item_pos_xy_func(new_real_index))
+				item:SetLocalPositionXYZ(self.get_item_pos_xy_func(new_real_index))
 				if info.prefab_ab_name and info.prefab_res_name then
 					item:SetData(nil, self)
 				elseif info.on_update_item then
@@ -629,7 +633,7 @@ HandleScrollChange = function ( self )
 				end
 				item._real_index_for_item_creator_ = new_real_index
 				-- item.gameObject.name = "item_list_creator_"..new_real_index
-				item:SetPosition(self.get_item_pos_xy_func(new_real_index))
+				item:SetLocalPositionXYZ(self.get_item_pos_xy_func(new_real_index))
 				if info.prefab_ab_name and info.prefab_res_name then
 					item:SetData(nil, self)
 				elseif info.on_update_item then
@@ -661,7 +665,7 @@ function UI.ItemListCreator:HideAllItems()
 		return
 	end
 	for i,v in ipairs(self.item_list) do
-		v:SetVisible(false)
+		v:SetActive(false)
 	end
 end
 

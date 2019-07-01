@@ -9,8 +9,8 @@ function CMD.init(scene_id)
 	sceneMgr:Init(scene_id)
 end
 
-function CMD.role_enter_scene(roleID)
-	sceneMgr.roleMgr:RoleEnter(roleID)
+function CMD.role_enter_scene(roleID, agent)
+	sceneMgr.roleMgr:RoleEnter(roleID, agent)
 end
 
 function CMD.role_leave_scene(roleID)

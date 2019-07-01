@@ -3,7 +3,7 @@ local ECS = require "ECS"
 ECS.TypeManager.RegisterType("UMO.Position", {x=0, y=0, z=0})
 ECS.TypeManager.RegisterType("UMO.TargetPos", {x=0, y=0, z=0})
 ECS.TypeManager.RegisterType("UMO.UID", 0)
-ECS.TypeManager.RegisterType("UMO.TypeID", {value=0})--Role类型的话对应RoleID，Monster和NPC类型对应TypeID
+ECS.TypeManager.RegisterType("UMO.TypeID", 0)--Role类型的话对应RoleID，Monster和NPC类型对应TypeID
 ECS.TypeManager.RegisterType("UMO.SceneObjType", {value=0})
 ECS.TypeManager.RegisterType("UMO.HP", {cur=0, max=0, deathTime=0, killedBy})
 ECS.TypeManager.RegisterType("UMO.MoveSpeed", {value=0})
@@ -18,3 +18,4 @@ ECS.TypeManager.RegisterType("UMO.RoleInfo", {name="", base_info=nil})
 --0活着的，1死了，2幽灵
 -- ECS.TypeManager.RegisterType("UMO.DeadState", 0)
 ECS.TypeManager.RegisterType("UMO.Beatable", true)
+ECS.TypeManager.RegisterType("UMO.MsgAgent", nil)
