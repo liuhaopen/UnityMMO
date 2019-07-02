@@ -109,7 +109,30 @@ function TaskController:DoTalk( taskInfo )
 end
 
 function TaskController:DoKillMonster( taskInfo )
-    
+    print('Cat:TaskController.lua[112] taskInfo.sceneID, taskInfo.monsterID', taskInfo.sceneID, taskInfo.monsterID)
+    local monsterPos = ConfigMgr:GetMonsterPosInScene(taskInfo.sceneID, taskInfo.monsterID)
+    if not monsterPos then return end
+
+    local onApproachingMonster = function (  )
+        local goe = RoleMgr.GetInstance():GetMainRole()
+        if goe then
+            local autoFight = goe:GetComponent(typeof(CS.UnityMMO.AutoFight))
+            print('Cat:TaskController.lua[119] autoFight', autoFight)
+            autoFight.enabled = true
+        end
+    end
+    print("Cat:TaskController [start:123] monsterPos:", monsterPos)
+    PrintTable(monsterPos)
+    print("Cat:TaskController [end]")
+    local findInfo = {
+        destination = monsterPos,
+        stoppingDistance = 1,
+        onStop = onApproachingMonster,
+    }
+    --Cat_Todo : handle destination are in different scene
+    local goe = RoleMgr.GetInstance():GetMainRole()
+    local moveQuery = goe:GetComponent(typeof(CS.UnityMMO.MoveQuery))
+    moveQuery:StartFindWay(findInfo)
 end
 
 function TaskController:DoCollect( taskInfo )

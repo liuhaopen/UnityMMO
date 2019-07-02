@@ -78,6 +78,7 @@ end
 
 function TaskModel:CompleteKillMonster( taskInfo, cfg, subCfg )
 	taskInfo.monsterID = subCfg.contentID
+	taskInfo.sceneID = subCfg.sceneID
 	local monsterName = ConfigMgr:GetMonsterName(taskInfo.monsterID)
 	taskInfo.desc = string.format(TaskConst.Desc[TaskConst.SubType.KillMonster], monsterName)
 	return true

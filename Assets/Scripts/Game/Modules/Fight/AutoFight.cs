@@ -1,0 +1,96 @@
+using System.Collections.Generic;
+using Unity.Entities;
+using UnityEngine;
+
+namespace UnityMMO
+{
+public class AutoFight : MonoBehaviour 
+{
+    float lastAttackTime;
+    GameObjectEntity mainRoleGOE;
+    Transform mainRoleTrans;
+    MoveQuery mainRoleMoveQuery;
+    Entity target;
+
+    public AutoFight()
+    {
+        Reset();
+    }
+    public void Reset()
+    {
+        lastAttackTime = 0;
+        target = Entity.Null;
+    }
+
+    private void OnEnable() {
+        mainRoleGOE = RoleMgr.GetInstance().GetMainRole();
+        mainRoleTrans = mainRoleGOE.transform;
+        mainRoleMoveQuery = mainRoleGOE.GetComponent<MoveQuery>();
+    }
+
+    private void Update() 
+    {
+        Debug.Log("mainRoleMoveQuery.IsAutoFinding : "+mainRoleMoveQuery.IsAutoFinding+" lastTime:"+lastAttackTime+" target:"+(target!=Entity.Null));
+        if (mainRoleMoveQuery.IsAutoFinding || mainRoleMoveQuery.navAgent.pathPending || !mainRoleMoveQuery.navAgent.isStopped)
+            return;
+        if (Time.time - lastAttackTime < 0.8f)
+            return;
+        if (target == Entity.Null)
+        {
+            FindTarget();
+        }
+        else
+        {
+            AttackTarget();
+        }
+    }
+
+    private void FindTarget()
+    {
+        Entity nearestMon = Entity.Null;
+        float minDis = float.MaxValue;
+        //find the nearest monster
+        Dictionary<long, Entity> monsters = SceneMgr.Instance.GetSceneObjects(SceneObjectType.Monster);
+        foreach (var item in monsters)
+        {
+            var monsTrans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(item.Value);
+            var dis = Vector3.Distance(mainRoleTrans.position, monsTrans.position);
+            if (dis < minDis)
+            {
+                minDis = dis;
+                nearestMon = item.Value;
+            }
+        }
+        if (nearestMon != Entity.Null)
+        {
+            target = nearestMon;
+        }
+    }
+
+    private void AttackTarget()
+    {
+        var monsTrans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(target);
+        var dis = Vector3.Distance(mainRoleTrans.position, monsTrans.position);
+        if (dis <= 1.2)
+        {
+            lastAttackTime = Time.time;
+            SkillManager.GetInstance().CastSkill(-1);
+        }
+        else
+        {
+            var findInfo = new FindWayInfo{
+                destination = monsTrans.position,
+                stoppingDistance = 1.2f,
+                onStop = null,
+            };
+            mainRoleMoveQuery.StartFindWay(findInfo);
+        }
+    }
+
+    private void HasCD()
+    {
+
+    }
+
+}
+}

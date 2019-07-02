@@ -236,6 +236,9 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(UnityMMO.MainWorld), UnityMMOMainWorldWrap.__Register);
         
         
+            translator.DelayWrapLoader(typeof(UnityMMO.AutoFight), UnityMMOAutoFightWrap.__Register);
+        
+        
             translator.DelayWrapLoader(typeof(UnityMMO.MonsterMgr), UnityMMOMonsterMgrWrap.__Register);
         
         

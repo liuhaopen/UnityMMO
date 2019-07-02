@@ -70,7 +70,6 @@ public class MoveQuery : MonoBehaviour
 
         var uid = go.GetComponent<UIDProxy>();
         uid.Value = ownerGOE.EntityManager.GetComponentData<UID>(ownerGOE.Entity);
-        Debug.Log("uid.Value : "+uid.Value.Value);
         isAutoFinding = false;
         if (isNeedNavAgent)
         {
@@ -78,8 +77,6 @@ public class MoveQuery : MonoBehaviour
             navAgent.radius = this.radius;
             navAgent.height = this.height;
         }
-        // var hitCollision = go.GetComponent<HitCollision>();
-        // hitCollision.owner = hitCollOwner;
     }
 
     public void StartFindWay(FindWayInfo info)
@@ -90,14 +87,20 @@ public class MoveQuery : MonoBehaviour
             return;
         }
         navAgent.isStopped = false;
-        var moveSpeed = ownerGOE.EntityManager.GetComponentData<MoveSpeed>(ownerGOE.Entity);
-        navAgent.speed = moveSpeed.Value/GameConst.RealToLogic;
         navAgent.acceleration = 1000;
         navAgent.angularSpeed = 1000;
         navAgent.stoppingDistance = info.stoppingDistance;
+        UpdateSpeed();
         navAgent.destination = info.destination;
         onStop = info.onStop;
         isAutoFinding = true;
+        Debug.Log("start find way by move query");
+    }
+
+    public void UpdateSpeed()
+    {
+        var moveSpeed = ownerGOE.EntityManager.GetComponentData<MoveSpeed>(ownerGOE.Entity);
+        navAgent.speed = moveSpeed.Value/GameConst.RealToLogic;
     }
 
     public void StopFindWay()
@@ -163,9 +166,10 @@ class HandleMovementQueries : BaseComponentSystem
             }
             else
             {
+                query.UpdateSpeed();
                 var isReachTarget = !query.navAgent.pathPending && query.navAgent.remainingDistance<=query.navAgent.stoppingDistance;
                 var newPos = query.navAgent.transform.localPosition;
-                // Debug.Log("newPos :"+newPos.x+" "+newPos.y+" "+newPos.z+" reach:"+isReachTarget);
+                Debug.Log("newPos :"+newPos.x+" "+newPos.y+" "+newPos.z+" reach:"+isReachTarget+" remainDis:"+query.navAgent.remainingDistance+" stopDis:"+query.navAgent.stoppingDistance);
                 query.isGrounded = query.charController.isGrounded;
                 query.transform.localPosition = newPos;
                 if (isReachTarget)
@@ -180,6 +184,7 @@ class HandleMovementQueries : BaseComponentSystem
                     // var lastTargetPosVal = lastTargetPos.Value;
                     // if (nextTargetPos.x != lastTargetPosVal.x || nextTargetPos.y != lastTargetPosVal.y || nextTargetPos.z != lastTargetPosVal.z)
                     var dir = nextTargetPos - query.navAgent.transform.position;
+                    Debug.Log("nextTargetPos : "+nextTargetPos.x+" "+nextTargetPos.y+" "+nextTargetPos.z+" dir:"+dir.x+" "+dir.y+" "+dir.z);
                     nextTargetPos = nextTargetPos + dir*10;//for rotation in MovementUpdateSystem only
                     // lastTargetPos.Value = nextTargetPos;
                     query.ownerGOE.EntityManager.SetComponentData<TargetPosition>(query.ownerGOE.Entity, new TargetPosition{Value=nextTargetPos});

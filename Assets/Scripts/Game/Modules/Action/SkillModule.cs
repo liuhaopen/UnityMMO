@@ -1,3 +1,4 @@
+using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -86,6 +87,31 @@ public class SkillManager
     {
         //技能id：十万位是类型1角色，2怪物，3NPC，万位为职业，个十百位随便用
         return 100000+career*10000+comboIndex;
+    }
+
+    public void CastSkill(int skillIndex=-1)
+    {
+        var roleGameOE = RoleMgr.GetInstance().GetMainRole();
+        var roleInfo = roleGameOE.GetComponent<RoleInfo>();
+        var skillID = SkillManager.GetInstance().GetSkillIDByIndex(skillIndex);
+        
+        string assetPath = ResPath.GetRoleSkillResPath(skillID);
+        bool isNormalAttack = skillIndex == -1;//普通攻击
+        if (!isNormalAttack)
+            SkillManager.GetInstance().ResetCombo();//使用非普攻技能时就重置连击索引
+        var uid = SceneMgr.Instance.EntityManager.GetComponentData<UID>(roleGameOE.Entity);
+        Action<TimelineInfo.Event> afterAdd = null;
+        if (isNormalAttack)
+        {
+            //普攻的话增加连击索引
+            afterAdd = (TimelineInfo.Event e)=>
+            {
+                if (e == TimelineInfo.Event.AfterAdd)
+                    SkillManager.GetInstance().IncreaseCombo();
+            };
+        }
+        var timelineInfo = new TimelineInfo{ResPath=assetPath, Owner=roleGameOE.Entity,  StateChange=afterAdd};
+        TimelineManager.GetInstance().AddTimeline(uid.Value, timelineInfo, SceneMgr.Instance.EntityManager);
     }
 
     private SkillManager()

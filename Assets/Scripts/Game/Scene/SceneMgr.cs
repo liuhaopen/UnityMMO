@@ -16,7 +16,8 @@ public class SceneMgr : MonoBehaviour
 {
 	public static SceneMgr Instance;
     GameWorld m_GameWorld;
-    Dictionary<long, Entity> entityDic;
+    // Dictionary<long, Entity> entityDic;
+    Dictionary<SceneObjectType, Dictionary<long, Entity>> entitiesDic;
     SceneInfo curSceneInfo;
     Entity mainRole;
     public SceneDetectorBase detector;
@@ -44,7 +45,12 @@ public class SceneMgr : MonoBehaviour
     void Awake()
 	{
 		Instance = this; // worst singleton ever but it works
-        entityDic = new Dictionary<long, Entity>();
+        // entityDic = new Dictionary<long, Entity>();
+        entitiesDic = new Dictionary<SceneObjectType, Dictionary<long, Entity>>();
+        entitiesDic.Add(SceneObjectType.Role, new Dictionary<long, Entity>());
+        entitiesDic.Add(SceneObjectType.Monster, new Dictionary<long, Entity>());
+        entitiesDic.Add(SceneObjectType.NPC, new Dictionary<long, Entity>());
+
         var mainCamera = GameObject.Find("MainCamera");
         mainCameraTrans = mainCamera.transform;
         var camera = GameObject.Find("FreeLookCamera");
@@ -294,7 +300,8 @@ public class SceneMgr : MonoBehaviour
     public Entity AddMainRole(long uid, long typeID, string name, int career, Vector3 pos, float curHp, float maxHp)
 	{
         Entity role = RoleMgr.GetInstance().AddMainRole(uid, typeID, name, career, pos, curHp, maxHp);
-        entityDic.Add(uid, role);
+        // entityDic.Add(uid, role);
+        entitiesDic[SceneObjectType.Role].Add(uid, role);
 
         SkillManager.GetInstance().Init(career);
         return role;
@@ -319,7 +326,8 @@ public class SceneMgr : MonoBehaviour
             long curHP = Int64.Parse(info_strs[8]);
             long maxHP = Int64.Parse(info_strs[9]);
             Entity role = RoleMgr.GetInstance().AddRole(uid, typeID, pos, targetPos, curHP/GameConst.RealToLogic, maxHP/GameConst.RealToLogic);
-            entityDic.Add(uid, role);
+            // entityDic.Add(uid, role);
+            entitiesDic[SceneObjectType.Role].Add(uid, role);
             return role;
         }
         else if (type == SceneObjectType.Monster)
@@ -327,13 +335,15 @@ public class SceneMgr : MonoBehaviour
             long curHP = Int64.Parse(info_strs[8]);
             long maxHP = Int64.Parse(info_strs[9]);
             Entity monster = MonsterMgr.GetInstance().AddMonster(uid, typeID, pos, targetPos, curHP/GameConst.RealToLogic, maxHP/GameConst.RealToLogic);
-            entityDic.Add(uid, monster);
+            // entityDic.Add(uid, monster);
+            entitiesDic[SceneObjectType.Monster].Add(uid, monster);
             return monster;
         }
         else if (type == SceneObjectType.NPC)
         {
             Entity npc = NPCMgr.GetInstance().AddNPC(uid, typeID, pos, targetPos);
-            entityDic.Add(uid, npc);
+            // entityDic.Add(uid, npc);
+            entitiesDic[SceneObjectType.NPC].Add(uid, npc);
             return npc;
         }
         return Entity.Null;
@@ -386,7 +396,15 @@ public class SceneMgr : MonoBehaviour
             if (EntityManager.HasComponent<MoveQuery>(entity))
                 moveQuery = EntityManager.GetComponentObject<MoveQuery>(entity);
             EntityManager.DestroyEntity(entity);
-            entityDic.Remove(uid);
+            // entityDic.Remove(uid);
+            foreach (var item in entitiesDic)
+            {
+                if (item.Value.ContainsKey(uid))
+                {
+                    item.Value.Remove(uid);
+                    break;
+                }
+            }
             if (moveQuery!=null)
             {
                 GameObject.Destroy(moveQuery.gameObject);
@@ -398,11 +416,22 @@ public class SceneMgr : MonoBehaviour
     public Entity GetSceneObject(long uid)
     {
         // Debug.Log("GetSceneObject uid : "+uid.ToString()+" ContainsKey:"+entityDic.ContainsKey(uid).ToString());
-        if (entityDic.ContainsKey(uid))
-            return entityDic[uid];
+        // if (entityDic.ContainsKey(uid))
+            // return entityDic[uid];
+        foreach (var item in entitiesDic)
+        {
+            if (item.Value.ContainsKey(uid))
+            {
+                return item.Value[uid];
+            }
+        }
         return Entity.Null;
     }
 
+    public Dictionary<long, Entity> GetSceneObjects(SceneObjectType type)
+    {
+        return entitiesDic[type];
+    }
 
 }
 

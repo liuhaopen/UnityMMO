@@ -56,11 +56,11 @@ public class SynchFromNet {
         SprotoType.scene_listen_fight_event.request req = new SprotoType.scene_listen_fight_event.request();
         NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_listen_fight_event>(req, OnAckFightEvents);
         SprotoType.scene_listen_fight_event.response ack = result as SprotoType.scene_listen_fight_event.response;
-        Debug.Log("ack : "+(ack!=null).ToString()+" fightevents:"+(ack.fight_events!=null).ToString());
+        // Debug.Log("ack : "+(ack!=null).ToString()+" fightevents:"+(ack.fight_events!=null).ToString());
         if (ack==null || ack.fight_events==null)
             return;
         var len = ack.fight_events.Count;
-        Debug.Log("lisend fight event : "+len);
+        // Debug.Log("lisend fight event : "+len);
         for (int i = 0; i < len; i++)
         {
             HandleCastSkill(ack.fight_events[i]);

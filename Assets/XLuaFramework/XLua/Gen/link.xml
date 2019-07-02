@@ -20,6 +20,7 @@
 		<type fullname="UnityMMO.ECSHelper" preserve="all"/>
 		<type fullname="UnityMMO.GameInput" preserve="all"/>
 		<type fullname="UnityMMO.MainWorld" preserve="all"/>
+		<type fullname="UnityMMO.AutoFight" preserve="all"/>
 		<type fullname="UnityMMO.MonsterMgr" preserve="all"/>
 		<type fullname="UnityMMO.NPCMgr" preserve="all"/>
 		<type fullname="UnityMMO.RoleInfo" preserve="all"/>
