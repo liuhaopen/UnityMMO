@@ -23,6 +23,8 @@ public class NameboardSystem : BaseComponentSystem
 
     protected override void OnUpdate()
     {      
+        if (Camera.main == null)
+            return;
         var entityArray = Group.ToEntityArray(Allocator.TempJob);
         var nameboardArray = Group.ToComponentDataArray<NameboardData>(Allocator.TempJob);
         var posArray = Group.ToComponentArray<Transform>();

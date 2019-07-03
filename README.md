@@ -23,7 +23,5 @@ Platforms    : client for Windows and Android;server only for Linux
 见[Wiki](https://github.com/liuhaopen/UnityMMO/wiki/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0 "Wiki")  
 
 # 近况Gif
-19.06.16：升级unity版本到2019及Entities到最新的0.0.12preview32（代码又大换血）  
-19.06.18：增加寻路，点到哪里去哪里  
-完成怪物扣血和死亡复活逻辑：    
-![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/monster_kill_relive.gif)     
+19.07.03：初步实现了自动寻路去找npc对话和打怪两种任务：    
+![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/auto_talk_and_fight.gif)     

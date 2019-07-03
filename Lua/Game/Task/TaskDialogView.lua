@@ -142,7 +142,7 @@ function TaskDialogView:UpdateLooks( )
 			showRawImg = self.npc_raw,
 			body = 1,
 			hair = 1,
-			career = 1,
+			career = 2,
 			canRotate = true,
 		}
 	else

@@ -1,4 +1,3 @@
-require "Game/Common/UIHelper"
 require "Game/Common/UIManager"
 require "Game/Common/UIWidgetPool"
 require "Game/Common/UIComponent"

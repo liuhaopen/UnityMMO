@@ -6,26 +6,23 @@ local Task = {
 	cfg = require "Config.ConfigTask",
 	taskInfos = {},
 	ackTaskProgressChanged = {},
-	cacheChangedTaskInfos = {}
+	cacheChangedTaskInfos = {},
+	monsterTargetIDs = {},
 }
 
-local notifyNewChangedTaskInfo = function ( userInfo )
-	local taskInfo = Task.cacheChangedTaskInfos[userInfo.cur_role_id] and Task.cacheChangedTaskInfos[userInfo.cur_role_id][1]
-	print('Cat:Task.lua[15] taskInfo, ', taskInfo, Task.ackTaskProgressChanged[userInfo.cur_role_id])
-	if taskInfo and Task.ackTaskProgressChanged[userInfo.cur_role_id] then
-		-- Task.ackTaskProgressChanged[userInfo.cur_role_id](true, {taskInfo=taskInfo})
-		-- Task.ackTaskProgressChanged[userInfo.cur_role_id] = nil
-		-- table.remove(Task.cacheChangedTaskInfos[userInfo.cur_role_id], 1)
-		local co = Task.ackTaskProgressChanged[userInfo.cur_role_id]
-		Task.ackTaskProgressChanged[userInfo.cur_role_id] = nil
+local notifyNewChangedTaskInfo = function ( roleID )
+	local taskInfo = Task.cacheChangedTaskInfos[roleID] and Task.cacheChangedTaskInfos[roleID][1]
+	if taskInfo and Task.ackTaskProgressChanged[roleID] then
+		local co = Task.ackTaskProgressChanged[roleID]
+		Task.ackTaskProgressChanged[roleID] = nil
 		skynet.wakeup(co)
 	end
 end
 
-local addNewChangedTaskInfo = function ( userInfo, taskInfo )
-	Task.cacheChangedTaskInfos[userInfo.cur_role_id] = Task.cacheChangedTaskInfos[userInfo.cur_role_id] or {}
-	table.insert(Task.cacheChangedTaskInfos[userInfo.cur_role_id], taskInfo)
-	notifyNewChangedTaskInfo(userInfo, taskInfo)
+local addNewChangedTaskInfo = function ( roleID, taskInfo )
+	Task.cacheChangedTaskInfos[roleID] = Task.cacheChangedTaskInfos[roleID] or {}
+	table.insert(Task.cacheChangedTaskInfos[roleID], taskInfo)
+	notifyNewChangedTaskInfo(roleID, taskInfo)
 end
 local isTaskCanTake = function ( userInfo, taskID )
 	return true
@@ -41,9 +38,27 @@ local createTaskInfoByID = function ( userInfo, taskID )
 		subTaskIndex = 1, 
 		subType = subTaskCfg.subType, 
 		curProgress = 0, 
-		maxProgress = subTaskCfg.maxProgress
+		maxProgress = subTaskCfg.maxProgress,
+		contentID = subTaskCfg.contentID,
 	}
-	return taskInfo
+	return taskInfo, cfg, subTaskCfg
+end
+
+local addTargetMonsterIfKillTask = function ( roleID, taskInfo )
+	if taskInfo.subType == TaskConst.SubType.KillMonster then
+		Task.monsterTargetIDs[roleID] = Task.monsterTargetIDs[roleID] or {}
+		Task.monsterTargetIDs[roleID][taskInfo.contentID] = Task.monsterTargetIDs[roleID][taskInfo.contentID] or 0
+		Task.monsterTargetIDs[roleID][taskInfo.contentID] = Task.monsterTargetIDs[roleID][taskInfo.contentID] + 1
+	end 
+end
+
+local removeTargetMonsterIfKillTask = function ( roleID, taskInfo )
+	if taskInfo.subType == TaskConst.SubType.KillMonster and Task.monsterTargetIDs[roleID] and Task.monsterTargetIDs[roleID][taskInfo.contentID] then
+		Task.monsterTargetIDs[roleID][taskInfo.contentID] = Task.monsterTargetIDs[roleID][taskInfo.contentID] - 1
+		if Task.monsterTargetIDs[roleID][taskInfo.contentID] <= 0 then
+			Task.monsterTargetIDs[roleID][taskInfo.contentID] = nil
+		end
+	end 
 end
 
 local InitTaskInfos = function ( userInfo )
@@ -51,16 +66,25 @@ local InitTaskInfos = function ( userInfo )
 	Task.gameDBServer = Task.gameDBServer or skynet.localname(".GameDBServer")
 	-- local isSucceed, taskInfo = skynet.call(gameDBServer, "lua", "select_by_key", "TaskInfo", "roleID", userInfo.cur_role_id)
 	local hasTaskList, taskList = skynet.call(Task.gameDBServer, "lua", "select_by_key", "TaskList", "roleID", userInfo.cur_role_id)
-	if hasTaskList and taskList and #taskList > 0 then
-		taskInfos.taskList = taskList
-	else
+	local isDataOk = hasTaskList and taskList and #taskList > 0
+	if not isDataOk then
 		--init the first task
 		local firstMainTaskID = 1
-		-- skynet.call(gameDBServer, "lua", "insert", "TaskInfo", {role_id=userInfo.cur_role_id, main_task_id=firstMainTaskID})
-		local taskInfo = createTaskInfoByID(userInfo, firstMainTaskID)
+		local taskInfo, cfg, subTaskCfg = createTaskInfoByID(userInfo, firstMainTaskID)
 		taskInfos.taskList = {taskInfo}
 		taskInfo.roleID = userInfo.cur_role_id
 		skynet.call(Task.gameDBServer, "lua", "insert", "TaskList", taskInfo)
+		--need to use the 'id' value in the database, so query again
+		hasTaskList, taskList = skynet.call(Task.gameDBServer, "lua", "select_by_key", "TaskList", "roleID", userInfo.cur_role_id)
+		isDataOk = hasTaskList and taskList and #taskList > 0
+	end
+	if isDataOk then
+		taskInfos.taskList = taskList
+	end
+	if taskInfos and taskInfos.taskList then
+		for i,v in ipairs(taskInfos.taskList) do
+			addTargetMonsterIfKillTask(userInfo.cur_role_id, v)
+		end
 	end
 	return taskInfos
 end
@@ -75,11 +99,12 @@ function SprotoHandlers.Task_GetInfoList(userInfo, reqData)
 	return taskInfos
 end
 
-local completeSubTask = function ( taskInfo )
+local completeSubTask = function ( roleID, taskInfo )
 	if not taskInfo then return end
 	local cfg = Task.cfg[taskInfo.taskID]
 	if not cfg then return end
 	
+	removeTargetMonsterIfKillTask(roleID, taskInfo)
 	taskInfo.subTaskIndex = taskInfo.subTaskIndex + 1
 	local isFinishTask = taskInfo.subTaskIndex > #cfg.subTasks
 	if isFinishTask then
@@ -91,6 +116,12 @@ local completeSubTask = function ( taskInfo )
 		taskInfo.subType = nextSubTask.subType
 		taskInfo.curProgress = 0
 		taskInfo.maxProgress = nextSubTask.maxProgress or 1
+		taskInfo.contentID = nextSubTask.contentID or 0
+		addTargetMonsterIfKillTask(roleID, taskInfo)
+		print('Cat:Task.lua[118] taskInfo.id', taskInfo.id)
+		if taskInfo.id then
+			skynet.send(Task.gameDBServer, "lua", "update", "TaskList", "id", taskInfo.id, taskInfo)
+		end
 	end	
 	return isFinishTask
 end
@@ -101,11 +132,11 @@ function SprotoHandlers.Task_TakeTask( userInfo, reqData )
 	local result = TaskConst.ErrorCode.Unknow
 	if taskInfo then
 		if taskInfo.status == TaskConst.Status.CanTake then
-			completeSubTask(taskInfo)
+			completeSubTask(userInfo.cur_role_id, taskInfo)
 			taskInfo.status = TaskConst.Status.Doing
 			result = TaskConst.ErrorCode.NoError
 			skynet.timeout(1,function()
-				addNewChangedTaskInfo(userInfo, taskInfo)
+				addNewChangedTaskInfo(userInfo.cur_role_id, taskInfo)
 			end)
 		elseif taskInfo.status == TaskConst.Status.CanTake then
 			result = TaskConst.ErrorCode.NoError
@@ -122,22 +153,17 @@ function SprotoHandlers.Task_DoTask( userInfo, reqData )
 			local cfg = Task.cfg[reqData.taskID]
 			if cfg and cfg.subTasks then
 				taskInfo.subTaskIndex = taskInfo.subTaskIndex + 1
-				local isFinishTask = taskInfo.subTaskIndex > #cfg.subTasks
+				local isFinishTask = completeSubTask(userInfo.cur_role_id, taskInfo)
 				if isFinishTask then
-					taskInfo.subTaskIndex = #cfg.subTasks
-					taskInfo.status = TaskConst.Status.Finished
-					taskInfo.curProgress = taskInfo.maxProgress
 					table.remove_value_in_array(taskInfos.taskList, "taskID", reqData.taskID)
 					local nextTaskInfo = createTaskInfoByID(userInfo, cfg.nextTaskID)
+					nextTaskInfo.id = taskInfo.id
+					addTargetMonsterIfKillTask(userInfo.cur_role_id, nextTaskInfo)
 					table.insert(taskInfos.taskList, nextTaskInfo)
-				else
-					local nextSubTask = cfg.subTasks[taskInfo.subTaskIndex]
-					taskInfo.subType = nextSubTask.subType
-					taskInfo.curProgress = 0
-					taskInfo.maxProgress = nextSubTask.maxProgress or 1
+					skynet.send(Task.gameDBServer, "lua", "update", "TaskList", "id", taskInfo.id, nextTaskInfo)
 				end
 				skynet.timeout(1,function()
-					addNewChangedTaskInfo(userInfo, taskInfo)
+					addNewChangedTaskInfo(userInfo.cur_role_id, taskInfo)
 				end)
 				return {result=TaskConst.ErrorCode.NoError}
 			else
@@ -200,8 +226,27 @@ function PublicFuncs.NPCHasTask( roleID, npcID )
 end
 
 function PublicFuncs.KillMonster( roleID, monsterID, killNum )
-	print('Cat:Task.lua[203] roleID, monsterID, killNum', roleID, monsterID, killNum)
-	
+	-- print('Cat:Task.lua[203] roleID, monsterID, killNum', roleID, monsterID, killNum, Task.monsterTargetIDs[roleID])
+	if Task.monsterTargetIDs[roleID] and Task.monsterTargetIDs[roleID][monsterID] then
+		local taskInfos = Task.taskInfos[roleID]
+		if taskInfos and taskInfos.taskList then
+			for i,v in ipairs(taskInfos.taskList) do
+				-- print('Cat:Task.lua[216] v.curProgress', v.curProgress, v.contentID, v.subType)
+				if v.subType == TaskConst.SubType.KillMonster and v.contentID == monsterID then
+					v.curProgress = v.curProgress + killNum
+					if v.curProgress >= v.maxProgress then
+						completeSubTask(roleID, v)
+					else
+						addNewChangedTaskInfo(roleID, v)
+						--avoid frequent update database
+						if v.curProgress%5==0 then
+							skynet.send(Task.gameDBServer, "lua", "update", "TaskList", "id", v.id, v)
+						end
+					end
+				end
+			end
+		end
+	end
 end
 
 SprotoHandlers.PublicClassName = "Task"

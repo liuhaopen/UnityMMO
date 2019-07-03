@@ -18,9 +18,9 @@ function MainUITaskView:OnLoad(  )
 end
 
 function MainUITaskView:AddEvents(  )
-	self:BindEvent(TaskConst.Events.AckTaskList, function()
+	self:BindEvent(self.model, TaskConst.Events.AckTaskList, function()
 		self:OnUpdate()
-	end, self.model)
+	end)
 end
 
 function MainUITaskView:OnUpdate(  )

@@ -23,16 +23,10 @@ door_list = {{
 },
 },
 born_list = {{
-		pos_x = 73670,
-		pos_y = 16261,
-		pos_z = 114380,
+		pos_x = 75294,
+		pos_y = 16365,
+		pos_z = 116428,
 		born_id = 1,
-},
-{
-		pos_x = 65528,
-		pos_y = 16478,
-		pos_z = 117550,
-		born_id = 2,
 },
 },
 npc_list = {{

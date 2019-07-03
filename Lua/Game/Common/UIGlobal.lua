@@ -1,5 +1,3 @@
-UI = UI or {}
-
 Util = CS.XLuaFramework.Util
 AppConfig = CS.XLuaFramework.AppConfig
 ResMgr = CS.XLuaFramework.ResourceManager.GetInstance()
@@ -18,6 +16,8 @@ MonsterMgr = CS.UnityMMO.MonsterMgr
 NPCMgr = CS.UnityMMO.NPCMgr
 
 Entity = CS.Unity.Entities.Entity
+
+require "Game/Common/UIHelper"
 -- SkillMgr = CS.UnityMMO.SkillManager
 require "Common.Util.TableUtil"
 GlobalEvents = require("Game.Common.GlobalEvents")

@@ -209,7 +209,7 @@ end
 
 function LoginController:Disconnect()
 	print('Cat:LoginController.lua[Disconnect]', self.login_state)
-    if not self.login_info.had_disconnect_with_account_server and self.login_state == LoginConst.Status.WaitForGameServerConnect then
+    if not self.login_info.had_disconnect_with_account_server and (self.login_state == LoginConst.Status.WaitForGameServerConnect or self.login_state == LoginConst.Status.WaitForGameServerHandshake) then
         --每次登录流程中，进入游戏服务器时都会从帐号服务器断开，所以首次断开时可忽略，不需要弹断网的窗口
         self.login_info.had_disconnect_with_account_server = true
         return

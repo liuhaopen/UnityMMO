@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50640
 File Encoding         : 65001
 
-Date: 2019-06-28 17:40:31
+Date: 2019-07-03 15:41:51
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -93,6 +93,7 @@ CREATE TABLE `TaskList` (
   `subType` int(10) DEFAULT NULL,
   `curProgress` int(8) unsigned zerofill DEFAULT NULL,
   `maxProgress` int(8) unsigned DEFAULT NULL,
+  `contentID` int(8) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `role_id` (`roleID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;

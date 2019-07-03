@@ -2,7 +2,6 @@ local UINode = BaseClass()
 
 function UINode:Constructor( parentTrans )
 	self.parentTrans = parentTrans
-	self.bindEventInfos = {}
 end
 
 function UINode:Load(  )
@@ -58,10 +57,13 @@ end
 function UINode:OnDestroy(  )
 	GameObject.Destroy(self.gameObject)
 	self.isLoaded = nil
-	for k,v in pairs(self.bindEventInfos) do
-		if v[1] and v[2] then
-			v[1]:UnBind(v[2])
+	if self.bindEventInfos then
+		for k,v in pairs(self.bindEventInfos) do
+			if v[1] and v[2] then
+				v[1]:UnBind(v[2])
+			end
 		end
+		self.bindEventInfos = nil
 	end
 	if self._components_ then
 		for i,v in ipairs(self._components_) do
@@ -69,7 +71,6 @@ function UINode:OnDestroy(  )
 		end
 		self._components_ = nil
 	end
-	self.bindEventInfos = nil
 end
 
 function UINode:OnUpdate(  )
@@ -85,8 +86,9 @@ function UINode:SetData( data )
 	end
 end
 
-function UINode:BindEvent( eventName, handleFunc, bindDispather )
+function UINode:BindEvent( bindDispather, eventName, handleFunc )
 	assert(bindDispather~=nil, "bindDispather must be not nil!")
+	self.bindEventInfos = self.bindEventInfos or {}
 	local hadBind = self.bindEventInfos[eventName..tostring(bindDispather)]
 	if hadBind then 
 		print('Cat:UINode.lua had bind event name : ', eventName)

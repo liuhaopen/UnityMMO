@@ -30,7 +30,7 @@ public class AutoFight : MonoBehaviour
 
     private void Update() 
     {
-        Debug.Log("mainRoleMoveQuery.IsAutoFinding : "+mainRoleMoveQuery.IsAutoFinding+" lastTime:"+lastAttackTime+" target:"+(target!=Entity.Null));
+        // Debug.Log("mainRoleMoveQuery.IsAutoFinding : "+mainRoleMoveQuery.IsAutoFinding+" lastTime:"+lastAttackTime+" target:"+(target!=Entity.Null));
         if (mainRoleMoveQuery.IsAutoFinding || mainRoleMoveQuery.navAgent.pathPending || !mainRoleMoveQuery.navAgent.isStopped)
             return;
         if (Time.time - lastAttackTime < 0.8f)
@@ -89,7 +89,6 @@ public class AutoFight : MonoBehaviour
 
     private void HasCD()
     {
-
     }
 
 }

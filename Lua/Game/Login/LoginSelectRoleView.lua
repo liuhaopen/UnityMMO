@@ -91,7 +91,7 @@ function LoginSelectRoleView:UpdateRoleHeadItems( item, index, v )
 		local curLv = item.data.base_info and item.data.base_info.level or 0
 		item.role_lv_txt.text = curLv.."级"
 		local headRes = ResPath.GetRoleHeadRes(item.data.career, 0)
-		UIHelper.SetRawImage(item.role_head_raw, headRes)
+		UI.SetRawImage(item.role_head_raw, headRes)
 		
 		item.role_head_obj:SetActive(true)
 		item.name_bg_obj:SetActive(true)
@@ -99,7 +99,7 @@ function LoginSelectRoleView:UpdateRoleHeadItems( item, index, v )
 		item.role_name_txt.text = ""
 		item.role_lv_txt.text = ""
 		item.role_head_obj:SetActive(false)
-		UIHelper.SetImage(item.head_img, "login/login_circle_head1_1.png")
+		UI.SetRawImage(item.role_head_raw, ResPath.GetRoleHeadRes(2, 0))
 
 		item.name_bg_obj:SetActive(false)
 	end
