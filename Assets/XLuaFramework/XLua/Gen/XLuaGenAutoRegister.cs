@@ -311,6 +311,9 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(UnityMMO.FightFlyWord), UnityMMOFightFlyWordWrap.__Register);
         
         
+            translator.DelayWrapLoader(typeof(UnityMMO.LoadingView), UnityMMOLoadingViewWrap.__Register);
+        
+        
             translator.DelayWrapLoader(typeof(UnityMMO.Nameboard), UnityMMONameboardWrap.__Register);
         
         

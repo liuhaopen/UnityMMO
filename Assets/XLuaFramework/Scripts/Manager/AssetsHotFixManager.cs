@@ -17,7 +17,7 @@ public class AssetsHotFixManager : MonoBehaviour
         Instance = this;
     }
 
-    public void CheckExtractResource(Action on_ok) 
+    public void CheckExtractResource(Action<float> on_update, Action on_ok) 
     {
         bool isExists = Directory.Exists(AppConfig.DataPath) &&
             Directory.Exists(AppConfig.DataPath + "lua/") && File.Exists(AppConfig.DataPath + "files.txt");
@@ -92,45 +92,48 @@ public class AssetsHotFixManager : MonoBehaviour
         on_ok();
     }
 
-    public void UpdateResource(Action on_ok) 
+    public void UpdateResource(Action<float,string> on_update, Action<string> on_ok) 
     {
         if (AppConfig.UpdateMode) 
         {
-            StartCoroutine(OnUpdateResource(on_ok));
+            StartCoroutine(OnUpdateResource(on_update, on_ok));
         }
         else
         {
-            on_ok();
+            on_ok("");
         }
     }
 
-    IEnumerator OnUpdateResource(Action on_ok) 
+    IEnumerator OnUpdateResource(Action<float,string> on_update, Action<string> on_ok) 
     {
         Debug.Log("OnUpdateResource() AppConfig.UpdateMode:"+ AppConfig.UpdateMode.ToString());
-        
         string dataPath = AppConfig.DataPath;  //数据目录
         string url = AppConfig.WebUrl;
         string message = string.Empty;
         string random = DateTime.Now.ToString("yyyymmddhhmmss");
         string listUrl = url + "files.txt?v=" + random;
         Debug.LogWarning("OnUpdateResource() LoadUpdate---->>>" + listUrl);
-
+        //TODO:不要直接返回中文，否则处理不了多语言版本，应该改成读取外部配置文件的
+        on_update(0.01f, "下载最新资源列表文件...");
         WWW www = new WWW(listUrl); yield return www;
         if (www.error != null) {
-            OnUpdateFailed(string.Empty);
+            on_ok("下载最新资源列表文件失败!");
             yield break;
         }
         if (!Directory.Exists(dataPath)) {
             Directory.CreateDirectory(dataPath);
         }
+        on_update(0.1f, "更新资源列表文件...");
         File.WriteAllBytes(dataPath + "files.txt", www.bytes);
         string filesText = www.text;
         string[] files = filesText.Split('\n');
-
+        on_update(0.15f, "开始下载最新的资源文件...");
+        float percent = 0.15f;
         for (int i = 0; i < files.Length; i++) {
             if (string.IsNullOrEmpty(files[i])) continue;
             string[] keyValue = files[i].Split('|');
             string f = keyValue[0];
+            on_update(0.15f+0.85f*((i+1)/files.Length), "下载文件:"+f);
             string localfile = (dataPath + f).Trim();
             string path = Path.GetDirectoryName(localfile);
             if (!Directory.Exists(path)) {
@@ -158,15 +161,15 @@ public class AssetsHotFixManager : MonoBehaviour
         message = "更新完成!!";
         Debug.Log(message);
         // facade.SendMessageCommand(NotiData.UPDATE_MESSAGE, message);
-        on_ok();
+        on_ok("");
     }
 
-    void OnUpdateFailed(string file) 
-    {
-        string message = "更新失败!>" + file;
-        Debug.Log(message);
-        // facade.SendMessageCommand(NotiData.UPDATE_MESSAGE, message);
-    }
+    // void OnUpdateFailed(string file) 
+    // {
+    //     string message = "更新失败!>" + file;
+    //     Debug.Log(message);
+    //     // facade.SendMessageCommand(NotiData.UPDATE_MESSAGE, message);
+    // }
 
     bool IsDownOK(string file) 
     {

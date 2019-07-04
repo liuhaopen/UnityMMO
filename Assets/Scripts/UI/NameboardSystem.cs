@@ -62,15 +62,16 @@ public class NameboardSystem : BaseComponentSystem
             else if (nameboardData.UIResState == NameboardData.ResState.Loaded)
             {
                 var transform = EntityManager.GetComponentObject<RectTransform>(nameboardData.UIEntity);
-                transform.position = Camera.main.WorldToScreenPoint(BloodSlotWorldPos);
-                transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+                // transform.position = Camera.main.WorldToScreenPoint(BloodSlotWorldPos);
+                transform.position = BloodSlotWorldPos;
+                // transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
             }
         }
         else if (nameboardData.UIResState == NameboardData.ResState.Loaded)
         {
             //TODO: use object pool
             var transform = EntityManager.GetComponentObject<RectTransform>(nameboardData.UIEntity);
-            transform.localScale = Vector3.zero;
+            // transform.localScale = Vector3.zero;
             m_world.RequestDespawn(transform.gameObject, PostUpdateCommands);
             nameboardData.UIResState = NameboardData.ResState.Deleting;
             nameboardData.UIEntity = Entity.Null;
@@ -95,8 +96,8 @@ public struct NameboardSpawnRequest : IComponentData
         {
             Owner = Owner,
         };
-        commandBuffer.CreateEntity();
-        commandBuffer.AddComponent(data);
+        var entity = commandBuffer.CreateEntity();
+        commandBuffer.AddComponent(entity, data);
     }
 }
 
@@ -133,6 +134,7 @@ public class NameboardSpawnRequestSystem : BaseComponentSystem
             var request = spawnRequests[i];
             GameObjectEntity nameboardGOE = m_world.Spawn<GameObjectEntity>(ResMgr.GetInstance().GetPrefab("Nameboard"));
             nameboardGOE.transform.SetParent(nameboardCanvas);
+            nameboardGOE.transform.localScale = new Vector3(-1, 1, 1);
             var nameboardBehav = nameboardGOE.GetComponent<Nameboard>();
             var uid = EntityManager.GetComponentData<UID>(request.Owner);
             string name = SceneMgr.Instance.GetNameByUID(uid.Value);

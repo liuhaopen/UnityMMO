@@ -31,7 +31,7 @@ namespace ConsoleWindows
 			}
 			catch ( System.Exception e )
 			{
-				//Debug.Log( "Couldn't redirect output: " + e.Message );
+				Debug.Log( "Couldn't redirect output: " + e.Message );
 			}
 		}
 

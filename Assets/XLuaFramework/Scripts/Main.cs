@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using XLua;
+using UnityMMO;
 
 namespace XLuaFramework {
 
@@ -21,6 +22,7 @@ namespace XLuaFramework {
         State cur_state = State.None;
         SubState cur_sub_state = SubState.Enter;
         public bool IsNeedPrintConcole = true;
+        LoadingView loadingView;
         void Start() {
             Debug.Log("Main:Start()");
 
@@ -41,7 +43,10 @@ namespace XLuaFramework {
             this.gameObject.AddComponent<NetworkManager>();
             this.gameObject.AddComponent<XLuaManager>();
             UnityMMO.NetMsgDispatcher.GetInstance().Init();
-
+            Debug.Log("loading view active in main");
+            var loadingViewTrans = GameObject.Find("UICanvas/Top/LoadingView");
+            loadingViewTrans.gameObject.SetActive(true);
+            loadingView = loadingViewTrans.GetComponent<LoadingView>();
             JumpToState(State.CheckExtractResource);
         }
 
@@ -62,8 +67,11 @@ namespace XLuaFramework {
                     if (cur_sub_state == SubState.Enter)
                     {
                         cur_sub_state = SubState.Update;
+                        loadingView.SetData(0.0f, "首次解压游戏数据（不消耗流量）");
                         this.gameObject.AddComponent<AssetsHotFixManager>();
-                        AssetsHotFixManager.Instance.CheckExtractResource(delegate() {
+                        AssetsHotFixManager.Instance.CheckExtractResource(delegate(float percent){
+                            loadingView.SetData(0.3f*percent, "首次解压游戏数据（不消耗流量）");
+                        }, delegate() {
                             Debug.Log("Main.cs CheckExtractResource OK!!!");
                             JumpToState(State.UpdateResourceFromNet);
                         });
@@ -73,8 +81,18 @@ namespace XLuaFramework {
                     if (cur_sub_state == SubState.Enter)
                     {
                         cur_sub_state = SubState.Update;
-                        AssetsHotFixManager.Instance.UpdateResource(delegate() {
-                            Debug.Log("Main.cs UpdateResourceFromNet OK!!!");
+                        loadingView.SetData(0.3f, "从服务器下载最新的资源文件...");
+                        AssetsHotFixManager.Instance.UpdateResource(delegate(float percent, string tip){
+                            loadingView.SetData(0.3f+0.5f*percent, tip);
+                        }, delegate(string result) {
+                            if (result == "")
+                            {
+                                Debug.Log("Main.cs UpdateResourceFromNet OK!!!");
+                            }
+                            else
+                            {
+                                Debug.Log(result);
+                            }
                             JumpToState(State.InitAssetBundle);
                         });
                     }
@@ -83,7 +101,10 @@ namespace XLuaFramework {
                     if (cur_sub_state == SubState.Enter)
                     {
                         cur_sub_state = SubState.Update;
-                        ResourceManager.GetInstance().Initialize(AppConfig.AssetDir, delegate() {
+                        loadingView.SetData(0.8f, "初始化游戏资源...");
+                        ResourceManager.GetInstance().Initialize(AppConfig.AssetDir, delegate(float percent){
+                            loadingView.SetData(0.8f+0.2f*percent, "初始化游戏资源...");
+                        }, delegate() {
                             Debug.Log("Main.cs ResourceManager Initialize OK!!!");
                             JumpToState(State.StartLogin);
                         });
@@ -93,7 +114,9 @@ namespace XLuaFramework {
                     if (cur_sub_state == SubState.Enter)
                     {
                         cur_sub_state = SubState.Update;
+                        loadingView.SetData(1, "初始化游戏资源完毕");
                         XLuaManager.Instance.InitLuaEnv();
+                        loadingView.SetActive(false, 0.5f);
                         XLuaManager.Instance.StartLogin(delegate() {
                             Debug.Log("Main.cs XLuaManager StartLogin OK!!!");
                             JumpToState(State.StartGame);
@@ -104,11 +127,8 @@ namespace XLuaFramework {
                     if (cur_sub_state == SubState.Enter)
                     {
                         cur_sub_state = SubState.Update;
-                        Debug.Log("main.cs start game");
                         this.gameObject.AddComponent<UnityMMO.MainWorld>();
-                        Debug.Log("main.cs start game2");
                         UnityMMO.MainWorld.Instance.StartGame();
-                        Debug.Log("main.cs start game3");
                         JumpToState(State.Playing);
                     }
                     break;

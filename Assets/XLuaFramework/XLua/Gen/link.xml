@@ -45,6 +45,7 @@
 		<type fullname="UnityMMO.NetMsgDispatcher" preserve="all"/>
 		<type fullname="UnityMMO.SynchFromNet" preserve="all"/>
 		<type fullname="UnityMMO.FightFlyWord" preserve="all"/>
+		<type fullname="UnityMMO.LoadingView" preserve="all"/>
 		<type fullname="UnityMMO.Nameboard" preserve="all"/>
 		<type fullname="UnityMMO.Timer" preserve="all"/>
 		<type fullname="UnityMMO.TimerExtensions" preserve="all"/>

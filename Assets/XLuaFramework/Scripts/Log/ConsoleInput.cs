@@ -1,4 +1,4 @@
-//#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
 using System;
 
 namespace ConsoleWindows
@@ -88,4 +88,4 @@ namespace ConsoleWindows
 		}
 	}
 }
-//#endif
+#endif

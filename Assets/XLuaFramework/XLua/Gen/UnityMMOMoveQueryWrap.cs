@@ -21,10 +21,11 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(UnityMMO.MoveQuery);
-			Utils.BeginObjectRegister(type, L, translator, 0, 4, 18, 18);
+			Utils.BeginObjectRegister(type, L, translator, 0, 5, 18, 18);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Initialize", _m_Initialize);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "StartFindWay", _m_StartFindWay);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "UpdateSpeed", _m_UpdateSpeed);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "StopFindWay", _m_StopFindWay);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Shutdown", _m_Shutdown);
 			
@@ -168,6 +169,33 @@ namespace XLua.CSObjectWrap
                     UnityMMO.FindWayInfo _info;translator.Get(L, 2, out _info);
                     
                     gen_to_be_invoked.StartFindWay( _info );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_UpdateSpeed(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                UnityMMO.MoveQuery gen_to_be_invoked = (UnityMMO.MoveQuery)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    
+                    gen_to_be_invoked.UpdateSpeed(  );
                     
                     
                     

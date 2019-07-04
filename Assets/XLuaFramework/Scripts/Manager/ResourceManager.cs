@@ -47,7 +47,7 @@ public class AssetBundleInfo {
         }
 
         // Load AssetBundleManifest.
-        public void Initialize(string manifestName, Action initOK) {
+        public void Initialize(string manifestName, Action<float> onUpdate, Action initOK) {
             m_BaseDownloadingURL = AppConfig.GetRelativePath();
             Debug.Log("ResourceManager:Initialize() m_BaseDownloadingURL:" + m_BaseDownloadingURL);
             if (AppConfig.DebugMode)

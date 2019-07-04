@@ -122,7 +122,7 @@ public class GameWorld
         
 
         World.Active = m_ECSWorld;
-        m_EntityManager = m_ECSWorld.GetOrCreateSystem<EntityManager>();
+        m_EntityManager = m_ECSWorld.EntityManager;
 
         GameDebug.Assert(m_EntityManager.IsCreated);
 

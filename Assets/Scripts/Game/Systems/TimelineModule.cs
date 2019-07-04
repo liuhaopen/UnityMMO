@@ -84,7 +84,6 @@ public class TimelineSpawnSystem : BaseComponentSystem
                     CinemachineBrain mainCamBrian = SceneMgr.Instance.MainCameraTrans.GetComponent<Cinemachine.CinemachineBrain>();//将主摄像机传入
                     playerDirector.SetGenericBinding(at.sourceObject, mainCamBrian);
                     CinemachineTrack cinemachineTrack = (CinemachineTrack)at.sourceObject;
-                    int idx = 0;
                     try
                     {
                         foreach (var c in cinemachineTrack.GetClips())

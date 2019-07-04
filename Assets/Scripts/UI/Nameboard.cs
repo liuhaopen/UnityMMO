@@ -85,6 +85,10 @@ public class Nameboard : MonoBehaviour
         bloodObj = transform.Find("blood_con").gameObject;
     }
 
+    private void Update() {
+        transform.LookAt(Camera.main.transform.position);
+    }
+
 }
 
 }

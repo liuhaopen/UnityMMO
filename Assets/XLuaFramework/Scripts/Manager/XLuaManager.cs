@@ -127,7 +127,6 @@ public class XLuaManager : MonoBehaviour
             // Debug.Log("Load lua script : " + scriptPath);
             return Util.GetFileBytes(scriptPath);
         }
-        return null;
     }
 
     private void Update()

@@ -132,8 +132,8 @@ public struct SkillSpawnRequest : IComponentData
     public static void Create(EntityCommandBuffer commandBuffer, long UID, int SkillID)
     {
         var data = new SkillSpawnRequest(UID, SkillID);
-        commandBuffer.CreateEntity();
-        commandBuffer.AddComponent(data);
+        var entity = commandBuffer.CreateEntity();
+        commandBuffer.AddComponent(entity, data);
     }
 }
 

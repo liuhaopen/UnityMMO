@@ -472,38 +472,38 @@ public abstract class InitializeComponentDataSystem<T,K> : BaseComponentSystem
 
 
 // [DisableAutoCreation]
-[AlwaysUpdateSystem]
-public abstract class DeinitializeComponentSystem<T> : BaseComponentSystem
-	where T : MonoBehaviour
-{
-	EntityQuery OutgoingGroup;
-	string name;
+// [AlwaysUpdateSystem]
+// public abstract class DeinitializeComponentSystem<T> : BaseComponentSystem
+// 	where T : MonoBehaviour
+// {
+// 	EntityQuery OutgoingGroup;
+// 	string name;
 
-	public DeinitializeComponentSystem(GameWorld world) : base(world) {}
+// 	public DeinitializeComponentSystem(GameWorld world) : base(world) {}
 
-	protected override void OnCreateManager()
-	{
-		base.OnCreateManager();
-		name = GetType().Name;
-		// OutgoingGroup = GetComponentGroup(typeof(T), typeof(DespawningEntity));
-	}
+// 	protected override void OnCreateManager()
+// 	{
+// 		base.OnCreateManager();
+// 		name = GetType().Name;
+// 		// OutgoingGroup = GetComponentGroup(typeof(T), typeof(DespawningEntity));
+// 	}
     
-	protected override void OnUpdate()
-	{
-		Profiler.BeginSample(name);
+// 	protected override void OnUpdate()
+// 	{
+// 		Profiler.BeginSample(name);
 
-		var outgoingComponentArray = OutgoingGroup.ToComponentArray<T>();
-		var outgoingEntityArray = OutgoingGroup.ToEntityArray(Allocator.TempJob);
-		for (var i = 0; i < outgoingComponentArray.Length; i++)
-		{
-			Deinitialize(outgoingEntityArray[i], outgoingComponentArray[i]);
-		}
-		outgoingEntityArray.Dispose();
-		Profiler.EndSample();
-	}
+// 		var outgoingComponentArray = OutgoingGroup.ToComponentArray<T>();
+// 		var outgoingEntityArray = OutgoingGroup.ToEntityArray(Allocator.TempJob);
+// 		for (var i = 0; i < outgoingComponentArray.Length; i++)
+// 		{
+// 			Deinitialize(outgoingEntityArray[i], outgoingComponentArray[i]);
+// 		}
+// 		outgoingEntityArray.Dispose();
+// 		Profiler.EndSample();
+// 	}
 
-	protected abstract void Deinitialize(Entity entity, T component);
-}
+// 	protected abstract void Deinitialize(Entity entity, T component);
+// }
 
 
 // [DisableAutoCreation]

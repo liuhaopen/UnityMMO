@@ -45,8 +45,8 @@ public struct RoleLooksNetRequest : IComponentData
         var data = new RoleLooksNetRequest();
         data.roleUid = roleUid;
         data.owner = owner;
-        commandBuffer.CreateEntity();
-        commandBuffer.AddComponent(data);
+        var entity = commandBuffer.CreateEntity();
+        commandBuffer.AddComponent(entity, data);
     }
 }
 

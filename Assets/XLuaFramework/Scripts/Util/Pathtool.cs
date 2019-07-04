@@ -108,7 +108,7 @@ namespace XLuaFramework
             }
             catch (System.Exception ex)
             {
-                LogManager.LogError("Can't create local resource" + path);
+                LogManager.LogError("Can't create local resource" + path + " e:"+ex.Message);
                 return false;
             }
 
@@ -140,7 +140,7 @@ namespace XLuaFramework
                 }
                 catch (System.Exception ex)
                 {
-                    LogManager.LogError("Can't create local resource" + path);
+                    LogManager.LogError("Can't create local resource" + path + " msg:"+ex.Message);
                     return false;
                 }
             }

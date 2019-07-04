@@ -50,7 +50,7 @@ public class RoleMgr
         InitRole(role, uid, typeID, pos, pos, curHp, maxHp, true);
         roleGameOE.GetComponent<UIDProxy>().Value = new UID{Value=uid};
         EntityManager.AddComponentData(role, new PosSynchInfo {LastUploadPos = float3.zero});
-        EntityManager.AddComponent(role, ComponentType.Create<UserCommand>());
+        EntityManager.AddComponent(role, ComponentType.ReadWrite<UserCommand>());
         
         var roleInfo = roleGameOE.GetComponent<RoleInfo>();
         roleInfo.Name = name;

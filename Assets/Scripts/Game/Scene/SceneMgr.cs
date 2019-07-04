@@ -117,6 +117,7 @@ public class SceneMgr : MonoBehaviour
     {
         //load scene info from json file(which export from SceneInfoExporter.cs)
         XLuaFramework.ResourceManager.GetInstance().LoadAsset<TextAsset>(SceneInfoPath+"scene_"+scene_id.ToString() +"/scene_info.json", delegate(UnityEngine.Object[] objs) {
+            LoadingView.Instance.SetData(0.5f, "读取场景信息文件...");
             TextAsset txt = objs[0] as TextAsset;
             string scene_json = txt.text;
             scene_json = Repalce(scene_json);
@@ -150,6 +151,8 @@ public class SceneMgr : MonoBehaviour
                 AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(navmeshPath, UnityEngine.SceneManagement.LoadSceneMode.Additive);
                 asy.completed += delegate(AsyncOperation asyOp){
                     Debug.Log("load navmesh in debug mode ok:"+asyOp.isDone.ToString());
+                    LoadingView.Instance.SetData(1, "加载场景完毕");
+                    LoadingView.Instance.SetActive(false, 0.5f);
                 };
             }
             else
@@ -159,6 +162,8 @@ public class SceneMgr : MonoBehaviour
                 AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(navmeshPath, UnityEngine.SceneManagement.LoadSceneMode.Additive);
                 asy.completed += delegate(AsyncOperation asyOp){
                     Debug.Log("load navmesh:"+asyOp.isDone.ToString());
+                    LoadingView.Instance.SetData(1, "加载场景完毕");
+                    LoadingView.Instance.SetActive(false, 0.5f);
                 };
             }
         });
@@ -166,6 +171,8 @@ public class SceneMgr : MonoBehaviour
 
     public void LoadScene(int scene_id, float pos_x=0.0f, float pos_y=0.0f, float pos_z=0.0f)
     {
+        // LoadingView.Instance.SetActive(true);
+        LoadingView.Instance.SetData(0.2f, "加载基础场景...");
         Debug.Log("LoadScene scene_id "+(scene_id).ToString());
         isLoadingScene = true;
         isBaseWorldLoadOk = false;
@@ -178,9 +185,11 @@ public class SceneMgr : MonoBehaviour
                 baseworldTrans.GetChild(i).gameObject.layer = LayerMask.NameToLayer("Ground");
             }
             // (obj as GameObject).layer = LayerMask.NameToLayer("Ground");
+            LoadingView.Instance.SetData(0.3f, "加载场景信息文件...");
             LoadSceneInfo(scene_id, delegate(int result){
                 isLoadingScene = false;
                 isBaseWorldLoadOk = true;
+                LoadingView.Instance.SetData(0.7f, "加载场景完毕");
                 CorrectMainRolePos();
             });
         });

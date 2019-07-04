@@ -119,9 +119,10 @@ namespace XLua.CSObjectWrap
                 
                 {
                     string _manifestName = LuaAPI.lua_tostring(L, 2);
-                    System.Action _initOK = translator.GetDelegate<System.Action>(L, 3);
+                    System.Action<float> _onUpdate = translator.GetDelegate<System.Action<float>>(L, 3);
+                    System.Action _initOK = translator.GetDelegate<System.Action>(L, 4);
                     
-                    gen_to_be_invoked.Initialize( _manifestName, _initOK );
+                    gen_to_be_invoked.Initialize( _manifestName, _onUpdate, _initOK );
                     
                     
                     
