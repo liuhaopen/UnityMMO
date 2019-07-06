@@ -75,6 +75,11 @@ public class TimelineSpawnSystem : BaseComponentSystem
             var animator = EntityManager.GetComponentObject<Animator>(looksEntity);
             foreach (var at in playerDirector.playableAsset.outputs)
             {
+                if (at.sourceObject == null)
+                {
+                    Debug.Log("detect nil track in : "+timelineInfo.ResPath);
+                    continue;
+                }
                 if (at.sourceObject.GetType() == typeof(AnimationTrack))
                 {
                     playerDirector.SetGenericBinding(at.sourceObject, animator);

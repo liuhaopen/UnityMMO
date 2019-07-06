@@ -221,16 +221,10 @@ public class HandleRoleLooksSpawnRequests : BaseComponentSystem
             int career = request.career;
             int body = request.body;
             int hair = request.hair;
-            Debug.Log("body : "+body+" hair:"+hair);
-            // int bodyID = 1000+career*100+body;
-            // int hairID = 1000+career*100+hair;
-            // string careerPath = UnityMMO.GameConst.GetRoleCareerResPath(career);
-            // string roleResPath = "Assets/AssetBundleRes/role";
-            // string bodyPath = roleResPath+"/body/body_"+bodyID+"/model_body_"+bodyID+".prefab";
-            // string hairPath = roleResPath+"/hair/hair_"+hairID+"/model_hair_"+hairID+".prefab";
+            // Debug.Log("body : "+body+" hair:"+hair);
             string bodyPath = ResPath.GetRoleBodyResPath(career, body);
             string hairPath = ResPath.GetRoleHairResPath(career, hair);
-            Debug.Log("SpawnRoleLooks bodyPath : "+bodyPath);
+            // Debug.Log("SpawnRoleLooks bodyPath : "+bodyPath);
             XLuaFramework.ResourceManager.GetInstance().LoadAsset<GameObject>(bodyPath, delegate(UnityEngine.Object[] objs) {
                 if (objs!=null && objs.Length>0)
                 {
@@ -242,7 +236,7 @@ public class HandleRoleLooksSpawnRequests : BaseComponentSystem
                     bodyOE.transform.localPosition = Vector3.zero;
                     bodyOE.transform.localRotation = Quaternion.identity;
                     LoadHair(hairPath, bodyOE.transform.Find("head"));
-                    Debug.Log("load ok role model");
+                    // Debug.Log("load ok role model");
                     looksInfo.CurState = LooksInfo.State.Loaded;
                     looksInfo.LooksEntity = bodyOE.Entity;
                     EntityManager.SetComponentData<LooksInfo>(request.ownerEntity, looksInfo);

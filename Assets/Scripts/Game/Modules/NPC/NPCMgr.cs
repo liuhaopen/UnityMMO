@@ -43,7 +43,6 @@ public class NPCMgr
         NPCGameOE.transform.SetParent(container);
         NPCGameOE.transform.localPosition = pos;
         Entity NPC = NPCGameOE.Entity;
-        Debug.Log("npc uid : "+uid);
         NPCGameOE.GetComponent<UIDProxy>().Value = new UID{Value=uid};
         InitNPC(NPC, uid, typeID, pos, targetPos);
         return NPC;

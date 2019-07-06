@@ -47,17 +47,11 @@ function LoginController:InitEvents(  )
     self.login_succeed_handler = GlobalEventSystem:Bind(LoginConst.Event.LoginSucceed, LoginSucceed)
 
     local SelectRoleEnterGame = function ( role_id )
-        print('Cat:LoginController.lua[60] role_id', role_id)
         CS.UnityMMO.LoadingView.Instance:SetActive(true)
         local on_ack = function ( ack_data )
-            print("Cat:LoginController [start:54] ack_data:", ack_data)
-            PrintTable(ack_data)
-            print("Cat:LoginController [end]")
             if ack_data.result == 1 then
                 --进入游戏成功,先关掉所有界面
                 UIMgr:CloseAllView()
-                --显示加载界面
-
                 --请求角色信息和场景信息
                 self:ReqMainRole()
             else

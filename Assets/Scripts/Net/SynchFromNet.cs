@@ -130,7 +130,7 @@ public class SynchFromNet {
                 // Debug.Log("cur_change_info.key : "+cur_change_info.key.ToString()+" scene_obj:"+(scene_obj!=Entity.Null).ToString()+ " ContainsKey:"+changeFuncDic.ContainsKey((SceneInfoKey)cur_change_info.key).ToString()+" uid"+uid.ToString()+" value:"+cur_change_info.value.ToString());
                 if (cur_change_info.key == (int)SceneInfoKey.EnterView)
                 {
-                    Debug.Log("some one enter scene:uid:"+uid+" scene_obj==null:"+(scene_obj==Entity.Null).ToString());
+                    // Debug.Log("some one enter scene:uid:"+uid+" scene_obj==null:"+(scene_obj==Entity.Null).ToString());
                     if (scene_obj==Entity.Null)
                     {
                         scene_obj = SceneMgr.Instance.AddSceneObject(uid, cur_change_info.value);

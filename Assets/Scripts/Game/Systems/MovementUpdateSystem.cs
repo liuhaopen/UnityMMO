@@ -276,34 +276,35 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
         var locoStates = group.ToComponentDataArray<LocomotionState>(Allocator.TempJob);
         var curLocoStateObj = locoStates[0];
         // Debug.Log("curLocoStateObj.LocoState : "+curLocoStateObj.LocoState);
-        if (curLocoStateObj.LocoState==LocomotionState.State.BeHit|| curLocoStateObj.LocoState==LocomotionState.State.Dead)
-            return;
-        var input = GameInput.GetInstance().JoystickDir;
-        if (input.sqrMagnitude > 0)
+        if (curLocoStateObj.LocoState!=LocomotionState.State.BeHit && curLocoStateObj.LocoState!=LocomotionState.State.Dead)
         {
-            var forward = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.forward);
-            forward.y = 0;
-            var right = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.right);
-            float3 targetDirection = input.x * right + input.y * forward;
-            targetDirection.y = 0;
-            targetDirection = Vector3.Normalize(targetDirection);
-            float3 curPos = posArray[0].localPosition;
-            var speed = moveSpeedArray[0].Value;
-            var newTargetPos = new TargetPosition();
-            if (speed > 0)
-                newTargetPos.Value = curPos+targetDirection*(speed/GameConst.SpeedFactor*0.10f);//延着方向前进0.10秒为目标坐标
-            else
-                newTargetPos.Value = curPos;
-            newTargetPos.Value.y = targetPosArray[0].Value.y;
-            // Debug.Log("targetDirection : "+newTargetPos.Value.x+" "+newTargetPos.Value.y+" "+newTargetPos.Value.z);
-            // targetPosArray[0] = newTargetPos;
-            EntityManager.SetComponentData<TargetPosition>(entities[0], newTargetPos);
-        }
-        else if(!moveQuerys[0].IsAutoFinding)
-        {
-            var newTargetPos = new TargetPosition{Value=posArray[0].localPosition};
-            EntityManager.SetComponentData<TargetPosition>(entities[0], newTargetPos);
-            // targetPosArray[0] = newTargetPos;
+            var input = GameInput.GetInstance().JoystickDir;
+            if (input.sqrMagnitude > 0)
+            {
+                var forward = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.forward);
+                forward.y = 0;
+                var right = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.right);
+                float3 targetDirection = input.x * right + input.y * forward;
+                targetDirection.y = 0;
+                targetDirection = Vector3.Normalize(targetDirection);
+                float3 curPos = posArray[0].localPosition;
+                var speed = moveSpeedArray[0].Value;
+                var newTargetPos = new TargetPosition();
+                if (speed > 0)
+                    newTargetPos.Value = curPos+targetDirection*(speed/GameConst.SpeedFactor*0.10f);//延着方向前进0.10秒为目标坐标
+                else
+                    newTargetPos.Value = curPos;
+                newTargetPos.Value.y = targetPosArray[0].Value.y;
+                // Debug.Log("targetDirection : "+newTargetPos.Value.x+" "+newTargetPos.Value.y+" "+newTargetPos.Value.z);
+                // targetPosArray[0] = newTargetPos;
+                EntityManager.SetComponentData<TargetPosition>(entities[0], newTargetPos);
+            }
+            else if(!moveQuerys[0].IsAutoFinding)
+            {
+                var newTargetPos = new TargetPosition{Value=posArray[0].localPosition};
+                EntityManager.SetComponentData<TargetPosition>(entities[0], newTargetPos);
+                // targetPosArray[0] = newTargetPos;
+            }
         }
         entities.Dispose();
         targetPosArray.Dispose();

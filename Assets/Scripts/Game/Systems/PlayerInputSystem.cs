@@ -32,11 +32,11 @@ namespace UnityMMO
             var userCommandArray = group.ToComponentDataArray<UserCommand>(Allocator.TempJob);
             var targetPosArray = group.ToComponentDataArray<TargetPosition>(Allocator.TempJob);
             var moveSpeedArray = group.ToComponentDataArray<MoveSpeed>(Allocator.TempJob);
-            if (userCommandArray.Length==0)
-                return;
-            var userCommand = userCommandArray[0];
-            SampleInput(ref userCommand, dt);
-            // userCommandArray[0] = userCommand;
+            if (userCommandArray.Length > 0)
+            {
+                var userCommand = userCommandArray[0];
+                SampleInput(ref userCommand, dt);
+            }
             userCommandArray.Dispose();
             targetPosArray.Dispose();
             moveSpeedArray.Dispose();
