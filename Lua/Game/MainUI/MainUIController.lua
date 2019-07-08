@@ -21,6 +21,10 @@ function MainUIController:InitMainUIViews(  )
     
     local view = require("Game/MainUI/MainUITaskTeamBaseView").New()
     view:Load()
+
+    local view = require("Game/MainUI/MainUIActIconView").New()
+    view:Load()
+    
 end
 
 return MainUIController

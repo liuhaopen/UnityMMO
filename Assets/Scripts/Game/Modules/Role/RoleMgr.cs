@@ -86,7 +86,7 @@ public class RoleMgr
 
     private void InitRole(Entity role, long uid, long typeID, Vector3 pos, Vector3 targetPos, float curHp, float maxHp, bool isNeedNavAgent=false)
     {
-        EntityManager.AddComponentData(role, new MoveSpeed {Value = 12000});
+        EntityManager.AddComponentData(role, new MoveSpeed {Value = 1200});
         EntityManager.AddComponentData(role, new TargetPosition {Value = targetPos});
         EntityManager.AddComponentData(role, new LocomotionState {LocoState = LocomotionState.State.Idle});
         EntityManager.AddComponentData(role, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});

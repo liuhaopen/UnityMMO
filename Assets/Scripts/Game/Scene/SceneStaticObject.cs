@@ -46,7 +46,8 @@ public class SceneStaticObject : ISceneObject
     {
         if (m_LoadStaticObj == null)
         {
-            XLuaFramework.ResourceManager.GetInstance().LoadPrefabGameObjectWithAction(m_ResPath, delegate(UnityEngine.Object obj) {
+            //TODO:obj pool
+            XLuaFramework.ResourceManager.GetInstance().LoadPrefabGameObjectWithAction(m_ResPath, delegate(UnityEngine.Object obj){
                 m_LoadStaticObj = obj as GameObject;
                 // Debug.Log("LoadScene obj "+(obj!=null).ToString() +" m_LoadStaticObj : "+(m_LoadStaticObj!=null).ToString());
                 m_LoadStaticObj.transform.SetParent(parent);

@@ -161,5 +161,15 @@ scene_get_monster_detail 107 {
 	}
 }
 
+scene_enter_to 108 {
+	request {
+		scene_id 0 : integer
+		door_id 1 : integer
+	}
+	response {
+		result 0 : integer
+	}
+}
+
 ]]
 

@@ -42,6 +42,7 @@ namespace XLuaFramework {
             this.gameObject.AddComponent<ResourceManager>();
             this.gameObject.AddComponent<NetworkManager>();
             this.gameObject.AddComponent<XLuaManager>();
+            this.gameObject.AddComponent<TestManager>();
             UnityMMO.NetMsgDispatcher.GetInstance().Init();
             Debug.Log("loading view active in main");
             var loadingViewTrans = GameObject.Find("UICanvas/Top/LoadingView");

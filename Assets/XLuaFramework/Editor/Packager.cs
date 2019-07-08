@@ -162,8 +162,8 @@ public class Packager {
 
         BuildPipeline.BuildAssetBundles(streamPath, maps.ToArray(), BuildAssetBundleOptions.None, target);
 
-        BuildSceneBundles("Assets/AssetBundleRes/scene/navmesh", streamPath, target);
-        // BuildSceneBundles("Assets/AssetBundleRes/scene/baseworld", streamPath, target);
+        // BuildSceneBundles("Assets/AssetBundleRes/scene/navmesh", streamPath, target);
+        BuildSceneBundles("Assets/AssetBundleRes/scene/base_world", streamPath, target);
 
         BuildFileIndex(streamPath);
 
@@ -319,8 +319,8 @@ public class Packager {
         for (int i = 0; i < dirs.Length; i++)
         {
             string folder_name = Path.GetFileName(dirs[i]);
-            if (folder_name == "navmesh")
-                continue;
+            // if (folder_name == "navmesh")
+                // continue;
             string asset_name = "scene_" + folder_name;
             List<string> file_list = new List<string>();//文件列表
             paths.Clear(); files.Clear(); Recursive(dirs[i], false);

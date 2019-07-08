@@ -1,7 +1,7 @@
 # UnityMMO
 做游戏几年了,很多东西不好在工作项目上尝试(比如ECS),所以就有了本项目,我打算利用业余时间从头制作一个3D-MMO游戏,很多功能虽然都接触过,但我想换个做法(不然就不好玩了),反正没人逼着上线.前端上使用xlua,玩法系统用c#(主要是想用unity2018推的ECS,虽然目前还未完善各大系统都未对接不能用pure ecs),界面就用lua开发就行了.后端用Skynet(对比了其它几个开源项目后还是觉得skynet最简洁)  
 
-# 使用方法
+# Usage
 克隆本项目:git clone https://github.com/liuhaopen/UnityMMO.git --recurse  
 前端:  
 下载下来后整个目录就是Unity的项目目录,用Unity打开,运行main.unity场景即可进入游戏的登录界面  
@@ -12,16 +12,18 @@
 )运行:./run.sh跑起服务端  
 
 
-## Status and prerequisites
+## Status & Prerequisites
 Current status at a glance:
 ```
 Unity version: 2019.1.4f1
-Platforms    : client for Windows and Android;server only for Linux
+Platforms    : 
+client for Windows and Android(should also support iOS, but I have not tried);  
+server only for Linux;
 ```
 
-# 开发笔记
+# Design & Record
 见[Wiki](https://github.com/liuhaopen/UnityMMO/wiki/%E5%BC%80%E5%8F%91%E7%AC%94%E8%AE%B0 "Wiki")  
 
-# 近况Gif
+# Recent
 19.07.03：初步实现了自动寻路去找npc对话和打怪两种任务：    
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/auto_talk_and_fight.gif)     

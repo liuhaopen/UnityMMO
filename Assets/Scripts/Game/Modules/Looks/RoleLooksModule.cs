@@ -92,7 +92,7 @@ public class HandleRoleLooksNetRequest : BaseComponentSystem
             UnityMMO.NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_get_role_look_info>(req, (_) =>
             {
                 SprotoType.scene_get_role_look_info.response rsp = _ as SprotoType.scene_get_role_look_info.response;
-                Debug.Log("rsp.result : "+rsp.result.ToString()+" owner:"+owner.ToString());
+                // Debug.Log("rsp.result : "+rsp.result.ToString()+" owner:"+owner.ToString());
                 if (rsp.result == UnityMMO.GameConst.NetResultOk)
                 {
                     RoleMgr.GetInstance().SetName(req.uid, rsp.role_looks_info.name);

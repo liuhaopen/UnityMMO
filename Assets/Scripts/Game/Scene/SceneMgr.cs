@@ -19,13 +19,14 @@ public class SceneMgr : MonoBehaviour
     // Dictionary<long, Entity> entityDic;
     Dictionary<SceneObjectType, Dictionary<long, Entity>> entitiesDic;
     SceneInfo curSceneInfo;
-    Entity mainRole;
+    int curSceneID;
     public SceneDetectorBase detector;
     private SceneObjectLoadController m_Controller;
     const string SceneInfoPath = "Assets/AssetBundleRes/scene/";
     private bool isLoadingScene = false;
     bool isBaseWorldLoadOk = false;
-    public LayerMask groundLayer = 1 << 0;
+    
+    public LayerMask groundLayer;
     float lastCheckMainRolePosTime = 0;
     Transform moveQueryContainer = null;
     Transform flyWordContainer = null;
@@ -45,7 +46,8 @@ public class SceneMgr : MonoBehaviour
     void Awake()
 	{
 		Instance = this; // worst singleton ever but it works
-        // entityDic = new Dictionary<long, Entity>();
+        curSceneID = 0;
+        groundLayer = 1 << LayerMask.NameToLayer("Default") | 1 << LayerMask.NameToLayer("Ground");
         entitiesDic = new Dictionary<SceneObjectType, Dictionary<long, Entity>>();
         entitiesDic.Add(SceneObjectType.Role, new Dictionary<long, Entity>());
         entitiesDic.Add(SceneObjectType.Monster, new Dictionary<long, Entity>());
@@ -113,7 +115,7 @@ public class SceneMgr : MonoBehaviour
         return str;
     }
 
-    void LoadSceneInfo(int scene_id, Action<int> action)
+    void LoadSceneInfo(int scene_id, Action<int> on_ok)
     {
         //load scene info from json file(which export from SceneInfoExporter.cs)
         XLuaFramework.ResourceManager.GetInstance().LoadAsset<TextAsset>(SceneInfoPath+"scene_"+scene_id.ToString() +"/scene_info.json", delegate(UnityEngine.Object[] objs) {
@@ -128,7 +130,6 @@ public class SceneMgr : MonoBehaviour
             m_Controller = gameObject.GetComponent<SceneObjectLoadController>();
             if (m_Controller == null)
                 m_Controller = gameObject.AddComponent<SceneObjectLoadController>();
-
             int max_create_num = 19;
             int min_create_num = 0;
             m_Controller.Init(scene_info.Bounds.center, scene_info.Bounds.size, true, max_create_num, min_create_num, SceneSeparateTreeType.QuadTree);
@@ -144,55 +145,85 @@ public class SceneMgr : MonoBehaviour
             {
                 detector = mainRoleGOE.GetComponent<SceneDetectorBase>();
             }
-            action(1);
-            if (XLuaFramework.AppConfig.DebugMode)
-            {
-                string navmeshPath = "Assets/AssetBundleRes/scene/navmesh/navmesh_"+scene_id+".unity";
-                AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(navmeshPath, UnityEngine.SceneManagement.LoadSceneMode.Additive);
-                asy.completed += delegate(AsyncOperation asyOp){
-                    Debug.Log("load navmesh in debug mode ok:"+asyOp.isDone.ToString());
-                    LoadingView.Instance.SetData(1, "加载场景完毕");
-                    LoadingView.Instance.SetActive(false, 0.5f);
-                };
-            }
-            else
-            {
-                string navmeshPath = "navmesh_"+scene_id;
-                XLuaFramework.ResourceManager.GetInstance().LoadNavMesh(navmeshPath);
-                AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(navmeshPath, UnityEngine.SceneManagement.LoadSceneMode.Additive);
-                asy.completed += delegate(AsyncOperation asyOp){
-                    Debug.Log("load navmesh:"+asyOp.isDone.ToString());
-                    LoadingView.Instance.SetData(1, "加载场景完毕");
-                    LoadingView.Instance.SetActive(false, 0.5f);
-                };
-            }
+            on_ok(1);
         });
     }
 
     public void LoadScene(int scene_id, float pos_x=0.0f, float pos_y=0.0f, float pos_z=0.0f)
     {
-        // LoadingView.Instance.SetActive(true);
+        if (curSceneID == scene_id)
+            return;
+        if (curSceneID != 0)
+        {
+            UnloadScene();
+        }
+        curSceneID = scene_id;
+        LoadingView.Instance.SetActive(true);
         LoadingView.Instance.SetData(0.2f, "加载基础场景...");
         Debug.Log("LoadScene scene_id "+(scene_id).ToString());
         isLoadingScene = true;
         isBaseWorldLoadOk = false;
-        XLuaFramework.ResourceManager.GetInstance().LoadPrefabGameObjectWithAction(SceneInfoPath+"baseworld_"+scene_id+"/baseworld_"+scene_id+".prefab", delegate(UnityEngine.Object obj)
+        // string baseWroldRes = SceneInfoPath+"baseworld_"+scene_id+"/baseworld_"+scene_id+".prefab";
+        string navmeshPath = "";
+        if (XLuaFramework.AppConfig.DebugMode)
         {
-            Debug.Log("load base world ok!");
-            Transform baseworldTrans = (obj as GameObject).transform;
-            for (int i = 0; i < baseworldTrans.childCount; i++)
-            {
-                baseworldTrans.GetChild(i).gameObject.layer = LayerMask.NameToLayer("Ground");
-            }
-            // (obj as GameObject).layer = LayerMask.NameToLayer("Ground");
+            navmeshPath = "Assets/AssetBundleRes/scene/base_world/base_world_"+scene_id+".unity";
+        }
+        else
+        {
+            navmeshPath = "base_world_"+scene_id;
+            XLuaFramework.ResourceManager.GetInstance().LoadNavMesh(navmeshPath);
+        }
+        AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(navmeshPath, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+        asy.completed += delegate(AsyncOperation asyOp){
+            Debug.Log("load navmesh:"+asyOp.isDone.ToString());
             LoadingView.Instance.SetData(0.3f, "加载场景信息文件...");
             LoadSceneInfo(scene_id, delegate(int result){
                 isLoadingScene = false;
                 isBaseWorldLoadOk = true;
-                LoadingView.Instance.SetData(0.7f, "加载场景完毕");
                 CorrectMainRolePos();
+                LoadingView.Instance.SetData(1, "加载场景完毕");
+                LoadingView.Instance.SetActive(false, 0.5f);
             });
-        });
+        };
+        // string baseWroldRes = SceneInfoPath+"scene_"+scene_id.ToString() +"/BaseWorld/baseworld_"+scene_id+".prefab";
+        // XLuaFramework.ResourceManager.GetInstance().LoadPrefabGameObjectWithAction(baseWroldRes, delegate(UnityEngine.Object obj)
+        // {
+        //     Debug.Log("load base world ok!");
+        //     Transform baseworldTrans = (obj as GameObject).transform;
+        //     for (int i = 0; i < baseworldTrans.childCount; i++)
+        //     {
+        //         baseworldTrans.GetChild(i).gameObject.layer = LayerMask.NameToLayer("Ground");
+        //     }
+        //     // (obj as GameObject).layer = LayerMask.NameToLayer("Ground");
+        //     LoadingView.Instance.SetData(0.3f, "加载场景信息文件...");
+        //     LoadSceneInfo(scene_id, delegate(int result){
+        //         isLoadingScene = false;
+        //         isBaseWorldLoadOk = true;
+        //         LoadingView.Instance.SetData(0.7f, "加载场景完毕");
+        //         CorrectMainRolePos();
+        //     });
+        // });
+    }
+
+    public void UnloadScene()
+    {
+        string baseSceneName = "base_world_"+curSceneID;
+        AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(baseSceneName);
+        asy.completed += delegate(AsyncOperation asyOp){
+            Debug.Log("unload scene finish");
+        };
+        if (m_Controller != null)
+            m_Controller.ResetAllData();
+        RemoveAllSceneObjects();
+    }
+
+    public void ReqEnterScene(int scene_id, int door_id)
+    {
+        // SprotoType.scene_enter_to_scene.request req = new SprotoType.scene_listen_fight_event.request();
+        // NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_listen_fight_event>(req, ()=>{
+
+        // });
     }
 
     LightmapData[] lightmaps = null;
@@ -207,7 +238,6 @@ public class SceneMgr : MonoBehaviour
         int l1 = (scene_info.LightColorResPath == null) ? 0 : scene_info.LightColorResPath.Count;
         int l2 = (scene_info.LightDirResPath == null) ? 0 : scene_info.LightDirResPath.Count;
         int l = (l1 < l2) ? l2 : l1;
-        // Debug.Log("ApplyLightInfo : "+ l.ToString());
         if (l > 0)
         {
             lightmaps = new LightmapData[l];
@@ -217,8 +247,6 @@ public class SceneMgr : MonoBehaviour
                 {
                     int temp_i = i;
                     XLuaFramework.ResourceManager.GetInstance().LoadAsset<Texture2D>(scene_info.LightColorResPath[i], delegate(UnityEngine.Object[] objs) {
-                        // Debug.Log("load lightmap color texture : "+scene_info.LightColorResPath[i].ToString());
-                        // Debug.Log("i : "+temp_i.ToString()+" objs:"+(objs!=null).ToString());
                         lightmaps[temp_i] = new LightmapData();
                         if (objs != null && objs.Length > 0)
                             lightmaps[temp_i].lightmapColor = objs[0] as Texture2D;
@@ -230,7 +258,6 @@ public class SceneMgr : MonoBehaviour
                 {
                     int temp_i = i;
                     XLuaFramework.ResourceManager.GetInstance().LoadAsset<Texture2D>(scene_info.LightDirResPath[i], delegate(UnityEngine.Object[] objs) {
-                        // Debug.Log("load lightmap dir texture : "+scene_info.LightDirResPath[i].ToString());
                         lightmaps[temp_i] = new LightmapData();
                         if (objs != null && objs.Length > 0)
                             lightmaps[temp_i].lightmapDir = objs[0] as Texture2D;
@@ -260,7 +287,8 @@ public class SceneMgr : MonoBehaviour
         Vector3 newPos = originPos;
         Ray ray1 = new Ray(originPos + new Vector3(0, 10000, 0), Vector3.down);
         RaycastHit groundHit;
-        if (Physics.Raycast(ray1, out groundHit, 12000, groundLayer))
+        bool isRaycast = Physics.Raycast(ray1, out groundHit, 12000, groundLayer);
+        if (isRaycast)
         {
             newPos = groundHit.point;
             newPos.y += 0.1f;
@@ -290,6 +318,7 @@ public class SceneMgr : MonoBehaviour
                 // }
             }
         }
+        Debug.Log("get correct pos : "+originPos.x+" "+originPos.y+" "+originPos.z+" isRacast:"+isRaycast+" newPos : "+newPos.x+" "+newPos.y+" "+newPos.z);
         return newPos;
     }
     
@@ -344,12 +373,12 @@ public class SceneMgr : MonoBehaviour
             long curHP = Int64.Parse(info_strs[8]);
             long maxHP = Int64.Parse(info_strs[9]);
             Entity monster = MonsterMgr.GetInstance().AddMonster(uid, typeID, pos, targetPos, curHP/GameConst.RealToLogic, maxHP/GameConst.RealToLogic);
-            // entityDic.Add(uid, monster);
             entitiesDic[SceneObjectType.Monster].Add(uid, monster);
             return monster;
         }
         else if (type == SceneObjectType.NPC)
         {
+            Debug.Log("content : "+content+" newPos:"+pos.x+" "+pos.y+" "+pos.z);
             Entity npc = NPCMgr.GetInstance().AddNPC(uid, typeID, pos, targetPos);
             // entityDic.Add(uid, npc);
             entitiesDic[SceneObjectType.NPC].Add(uid, npc);
@@ -420,6 +449,32 @@ public class SceneMgr : MonoBehaviour
                 GameObject.Destroy(moveQuery.queryObj);
             }
         }
+    }
+
+    public void RemoveAllSceneObjects(bool isIncludeMainRole=false)
+    {
+        var mainRole = RoleMgr.GetInstance().GetMainRole();
+        foreach (var dic in entitiesDic)
+        {
+            foreach (var objs in dic.Value)
+            {
+                Entity entity = objs.Value;
+                if (!isIncludeMainRole && entity == mainRole.Entity)
+                {
+                    continue;
+                }
+                MoveQuery moveQuery=null;
+                if (EntityManager.HasComponent<MoveQuery>(entity))
+                    moveQuery = EntityManager.GetComponentObject<MoveQuery>(entity);
+                EntityManager.DestroyEntity(entity);
+                if (moveQuery!=null)
+                {
+                    GameObject.Destroy(moveQuery.gameObject);
+                    GameObject.Destroy(moveQuery.queryObj);
+                }
+            }
+        }
+        entitiesDic.Clear();
     }
 
     public Entity GetSceneObject(long uid)

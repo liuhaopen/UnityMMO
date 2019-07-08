@@ -169,7 +169,7 @@ class HandleMovementQueries : BaseComponentSystem
                 query.UpdateSpeed();
                 var isReachTarget = !query.navAgent.pathPending && query.navAgent.remainingDistance<=query.navAgent.stoppingDistance;
                 var newPos = query.navAgent.transform.localPosition;
-                Debug.Log("newPos :"+newPos.x+" "+newPos.y+" "+newPos.z+" reach:"+isReachTarget+" remainDis:"+query.navAgent.remainingDistance+" stopDis:"+query.navAgent.stoppingDistance);
+                // Debug.Log("newPos :"+newPos.x+" "+newPos.y+" "+newPos.z+" reach:"+isReachTarget+" remainDis:"+query.navAgent.remainingDistance+" stopDis:"+query.navAgent.stoppingDistance);
                 query.isGrounded = query.charController.isGrounded;
                 query.transform.localPosition = newPos;
                 if (isReachTarget)
@@ -179,10 +179,6 @@ class HandleMovementQueries : BaseComponentSystem
                 else
                 {
                     var nextTargetPos = query.navAgent.nextPosition;
-                    // var lastTargetPos = query.ownerGOE.EntityManager.GetComponentData<TargetPosition>(query.ownerGOE.Entity);
-                    // if (nextTargetPos != lastTargetPos.Value)
-                    // var lastTargetPosVal = lastTargetPos.Value;
-                    // if (nextTargetPos.x != lastTargetPosVal.x || nextTargetPos.y != lastTargetPosVal.y || nextTargetPos.z != lastTargetPosVal.z)
                     var dir = nextTargetPos - query.navAgent.transform.position;
                     Debug.Log("nextTargetPos : "+nextTargetPos.x+" "+nextTargetPos.y+" "+nextTargetPos.z+" dir:"+dir.x+" "+dir.y+" "+dir.z);
                     nextTargetPos = nextTargetPos + dir*10;//for rotation in MovementUpdateSystem only

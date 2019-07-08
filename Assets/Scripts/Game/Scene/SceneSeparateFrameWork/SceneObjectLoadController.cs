@@ -113,18 +113,30 @@ public class SceneObjectLoadController : MonoBehaviour
         Init(center, size, asyn, maxCreateCount, minCreateCount, 0.1f, 5, treeType);
     }
 
-    void OnDestroy()
-    {
+    public void ResetAllData() {
+        StopAllCoroutines();
         if (m_QuadTree)
             m_QuadTree.Clear();
         m_QuadTree = null;
         if (m_ProcessTaskQueue != null)
             m_ProcessTaskQueue.Clear();
         if (m_LoadedObjectList != null)
+        {
+            foreach (var item in m_LoadedObjectList)
+            {
+                DestroyObject(item, false);
+            }
             m_LoadedObjectList.Clear();
+        }
         m_ProcessTaskQueue = null;
         m_LoadedObjectList = null;
         m_TriggerHandle = null;
+        m_IsInitialized = false;
+    }
+
+    void OnDestroy()
+    {
+        ResetAllData();
     }
 
     /// <summary>

@@ -85,6 +85,7 @@ end
 
 function NetDispatcher:SendMessage( req_name, req_arg, response_call_back )
     print_net('Cat:NetDispatcher.lua[57] req_name, req_arg, response_call_back', req_name, req_arg, response_call_back)
+    if CS.UnityMMO.GameVariable.IsSingleMode then return end
     self.session = self.session + 1
     -- if self.session >= self.max_lua_net_session_id then
     --     self.session = self.min_lua_net_session_id

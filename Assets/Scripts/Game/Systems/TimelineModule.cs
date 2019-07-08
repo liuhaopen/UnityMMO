@@ -77,7 +77,7 @@ public class TimelineSpawnSystem : BaseComponentSystem
             {
                 if (at.sourceObject == null)
                 {
-                    Debug.Log("detect nil track in : "+timelineInfo.ResPath);
+                    // Debug.Log("detect nil track in : "+timelineInfo.ResPath);
                     continue;
                 }
                 if (at.sourceObject.GetType() == typeof(AnimationTrack))
