@@ -70,7 +70,7 @@ public class NPCMgr
     {
         var resPath = ResPath.GetNPCLooksPath(typeID);
         XLuaFramework.ResourceManager.GetInstance().LoadAsset<GameObject>(resPath, delegate(UnityEngine.Object[] objs) {
-            if (objs!=null && objs.Length>0)
+            if (objs!=null && objs.Length>0 && EntityManager.Exists(ownerEntity))
             {
                 GameObject bodyObj = objs[0] as GameObject;
                 GameObjectEntity bodyOE = m_world.Spawn<GameObjectEntity>(bodyObj);

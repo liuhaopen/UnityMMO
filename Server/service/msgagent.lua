@@ -70,7 +70,7 @@ function CMD.afk(source)
 	-- the connection is broken, but the user may back
 	-- skynet.error(string.format("AFK"))
 	local world = skynet.uniqueservice ("world")
-	skynet.call(world, "lua", "role_leave_game", user_info)
+	skynet.call(world, "lua", "role_leave_game", user_info.cur_role_id)
 end
 
 local is_game_play_proto = function ( tag )
@@ -93,6 +93,7 @@ skynet.start(function()
 				local response
 				if is_game_play_proto(tag) then
 					local world = skynet.uniqueservice("world")
+					-- response = skynet.call(world, "lua", "dispatch", proto_info.name, user_info, content)
 					--先取到角色所在场景的服务id
 					local scene_service = skynet.call(world, "lua", "get_role_scene_service", user_info.cur_role_id)
 					assert(scene_service, "cannot find scene service! req proto name:"..proto_info.name.." tag:"..tag)

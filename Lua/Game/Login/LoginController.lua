@@ -48,6 +48,7 @@ function LoginController:InitEvents(  )
 
     local SelectRoleEnterGame = function ( role_id )
         CS.UnityMMO.LoadingView.Instance:SetActive(true)
+        CS.UnityMMO.LoadingView.Instance:ResetData()
         local on_ack = function ( ack_data )
             if ack_data.result == 1 then
                 --进入游戏成功,先关掉所有界面
@@ -72,7 +73,7 @@ function LoginController:ReqMainRole(  )
         local role_info = ack_data.role_info
         local pos = Vector3.New(role_info.pos_x/GameConst.RealToLogic, role_info.pos_y/GameConst.RealToLogic, role_info.pos_z/GameConst.RealToLogic)
         SceneMgr.Instance:AddMainRole(role_info.scene_uid, role_info.role_id, role_info.name, role_info.career, pos, role_info.cur_hp, role_info.max_hp)
-        SceneMgr.Instance:LoadScene(role_info.scene_id)
+        -- SceneMgr.Instance:LoadScene(role_info.scene_id)
         
         MainRole:GetInstance():SetBaseInfo(role_info)
         GameVariable.IsNeedSynchSceneInfo = true

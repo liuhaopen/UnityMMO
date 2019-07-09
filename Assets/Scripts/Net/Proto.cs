@@ -882,7 +882,7 @@ namespace SprotoType {
 	}
 
 
-	public class scene_change_to_scene {
+	public class scene_enter_to {
 	
 		public class request : SprotoTypeBase {
 			private static int max_field_count = 2;
@@ -2581,9 +2581,9 @@ public class Protocol : ProtocolBase {
 		Protocol.SetProtocol<scene_change_aoi_radius> (scene_change_aoi_radius.Tag);
 		Protocol.SetRequest<SprotoType.scene_change_aoi_radius.request> (scene_change_aoi_radius.Tag);
 
-		Protocol.SetProtocol<scene_change_to_scene> (scene_change_to_scene.Tag);
-		Protocol.SetRequest<SprotoType.scene_change_to_scene.request> (scene_change_to_scene.Tag);
-		Protocol.SetResponse<SprotoType.scene_change_to_scene.response> (scene_change_to_scene.Tag);
+		Protocol.SetProtocol<scene_enter_to> (scene_enter_to.Tag);
+		Protocol.SetRequest<SprotoType.scene_enter_to.request> (scene_enter_to.Tag);
+		Protocol.SetResponse<SprotoType.scene_enter_to.response> (scene_enter_to.Tag);
 
 		Protocol.SetProtocol<scene_get_main_role_info> (scene_get_main_role_info.Tag);
 		Protocol.SetResponse<SprotoType.scene_get_main_role_info.response> (scene_get_main_role_info.Tag);
@@ -2638,7 +2638,7 @@ public class Protocol : ProtocolBase {
 		public const int Tag = 103;
 	}
 
-	public class scene_change_to_scene {
+	public class scene_enter_to {
 		public const int Tag = 108;
 	}
 

@@ -11,6 +11,8 @@ local SceneConst = {
 	    TargetPos=4,
 	    JumpState=5,
 	    HPChange=6,
+        NPCState=7,
+        SceneChange=8,
 	},
 }
 

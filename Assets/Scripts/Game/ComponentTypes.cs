@@ -92,6 +92,14 @@ namespace Component
         }
         public ResState UIResState;
         public Entity UIEntity;
+        public void Destroy()
+        {
+            Debug.Log("nameboard state : "+UIResState);
+            if (UIResState == ResState.Loaded)
+            {
+                SceneMgr.Instance.World.RequestDespawn(UIEntity);
+            }
+        }
     }
 
     public struct PosOffset : IComponentData
@@ -154,6 +162,13 @@ namespace Component
         }
         public Entity LooksEntity;
         public State CurState;
+        public void Destroy()
+        {
+            if (CurState == State.Loaded)
+            {
+                SceneMgr.Instance.World.RequestDespawn(LooksEntity);
+            }
+        }
     }
 
     public struct GroundInfo : IComponentData

@@ -12,6 +12,7 @@ public enum SceneInfoKey
     JumpState=5,
     HPChange=6,
     NPCState=7,
+    SceneChange=8,
 }
 
 public enum SceneObjectType

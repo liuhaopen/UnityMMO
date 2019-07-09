@@ -132,6 +132,8 @@ public class NameboardSpawnRequestSystem : BaseComponentSystem
         for(var i =0;i<spawnRequests.Length;i++)
         {
             var request = spawnRequests[i];
+            if (!EntityManager.Exists(request.Owner))
+                continue;
             GameObjectEntity nameboardGOE = m_world.Spawn<GameObjectEntity>(ResMgr.GetInstance().GetPrefab("Nameboard"));
             nameboardGOE.transform.SetParent(nameboardCanvas);
             nameboardGOE.transform.localScale = new Vector3(-1, 1, 1);

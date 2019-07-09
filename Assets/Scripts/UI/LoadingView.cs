@@ -20,7 +20,6 @@ public class LoadingView : MonoBehaviour
     
     void Start()
     {
-        Debug.Log("loading view start");
         Instance = this;
         proBar = transform.Find("pro_bar") as RectTransform;
         butterfly = transform.Find("butterfly") as RectTransform;
@@ -32,7 +31,10 @@ public class LoadingView : MonoBehaviour
     {
         curPercent = 0;
         nextPercent = 0;
+        playSpeed = 0;
         proBar.sizeDelta = new Vector2(0, proBar.sizeDelta.y);
+        var butterPos = butterfly.localPosition;
+        butterfly.localPosition = new Vector3(-551, butterPos.y, butterPos.z);
     }
 
     public void SetPlaySpeed(float speed)
@@ -70,7 +72,8 @@ public class LoadingView : MonoBehaviour
     public void SetData(float percent, string tipStr)
     {
         nextPercent = Mathf.Clamp01(percent);
-        playSpeed = Mathf.Min(0.4f, nextPercent-curPercent);
+        playSpeed = Mathf.Clamp(nextPercent-curPercent, 0.3f, 1);
+        // Debug.Log("loading percent : "+percent+" tips:"+tipStr+" playSpeed:"+playSpeed+" "+curPercent+" track:"+ new System.Diagnostics.StackTrace().ToString());
         tip.text = tipStr;
     }
 
@@ -79,8 +82,8 @@ public class LoadingView : MonoBehaviour
         if (curPercent == nextPercent)
             return;
         float newPercent = curPercent + playSpeed*Time.deltaTime;
-        newPercent = Mathf.Min(newPercent, nextPercent);
-        newPercent = Mathf.Clamp01(newPercent);
+        // Debug.Log("newPercent : "+newPercent+" cur:"+curPercent+" speed:"+playSpeed+" clamp:"+Mathf.Clamp(newPercent, 0, nextPercent));
+        newPercent = Mathf.Clamp(newPercent, 0, nextPercent);
         proBar.sizeDelta = new Vector2(maxProWidth*newPercent, proBar.sizeDelta.y);
         var butterPos = butterfly.localPosition;
         butterfly.localPosition = new Vector3(-551+maxProWidth*newPercent, butterPos.y, butterPos.z);

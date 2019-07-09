@@ -89,6 +89,8 @@ public class HandleRoleLooksNetRequest : BaseComponentSystem
             SprotoType.scene_get_role_look_info.request req = new SprotoType.scene_get_role_look_info.request();
             req.uid = requests[i].roleUid;
             Entity owner = requests[i].owner;
+            if (!EntityManager.Exists(owner))
+                continue;
             UnityMMO.NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_get_role_look_info>(req, (_) =>
             {
                 SprotoType.scene_get_role_look_info.response rsp = _ as SprotoType.scene_get_role_look_info.response;

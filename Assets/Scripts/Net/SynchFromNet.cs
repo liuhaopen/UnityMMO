@@ -29,6 +29,8 @@ public class SynchFromNet {
         changeFuncDic[SceneInfoKey.TargetPos] = ApplyChangeInfoTargetPos;
         changeFuncDic[SceneInfoKey.JumpState] = ApplyChangeInfoJumpState;
         changeFuncDic[SceneInfoKey.HPChange] = ApplyChangeInfoHPChange;
+        //The main role may not exist until the scene change event is received
+        changeFuncDic[SceneInfoKey.SceneChange] = ApplyChangeInfoSceneChange;
     }
 
     public void StartSynchFromNet()
@@ -144,7 +146,7 @@ public class SynchFromNet {
                         scene_obj = Entity.Null;
                     }
                 }
-                else if (scene_obj != Entity.Null && changeFuncDic.ContainsKey((SceneInfoKey)cur_change_info.key))
+                else if ((scene_obj != Entity.Null || (SceneInfoKey)cur_change_info.key == SceneInfoKey.SceneChange) && changeFuncDic.ContainsKey((SceneInfoKey)cur_change_info.key))
                 {
                     changeFuncDic[(SceneInfoKey)cur_change_info.key](scene_obj, cur_change_info);
                 }
@@ -164,12 +166,9 @@ public class SynchFromNet {
         long new_x = Int64.Parse(pos_strs[0]);
         long new_y = Int64.Parse(pos_strs[1]);
         long new_z = Int64.Parse(pos_strs[2]);
-        // if (SceneMgr.Instance.EntityManager.HasComponent<Transform>(entity))
-        {
-            Transform trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(entity);
-            trans.localPosition = SceneMgr.Instance.GetCorrectPos(new Vector3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic));
-            SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = trans.localPosition});
-        }
+        Transform trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(entity);
+        trans.localPosition = SceneMgr.Instance.GetCorrectPos(new Vector3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic));
+        SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = trans.localPosition});
     }
 
     private void ApplyChangeInfoTargetPos(Entity entity, SprotoType.info_item change_info)
@@ -206,6 +205,26 @@ public class SynchFromNet {
         var actionData = SceneMgr.Instance.EntityManager.GetComponentData<ActionData>(entity);
         actionData.Jump = 1;
         SceneMgr.Instance.EntityManager.SetComponentData(entity, actionData);
+    }
+
+    private void ApplyChangeInfoSceneChange(Entity entity, SprotoType.info_item change_info)
+    {
+        Debug.Log("ApplyChangeInfoSceneChange : "+change_info.value);
+        string[] strs = change_info.value.Split(',');
+        int sceneID = int.Parse(strs[0]);
+        LoadingView.Instance.SetActive(true);
+        LoadingView.Instance.ResetData();
+        SceneMgr.Instance.LoadScene(sceneID);
+
+        if (entity != Entity.Null)
+        {
+            long new_x = Int64.Parse(strs[1]);
+            long new_y = Int64.Parse(strs[2]);
+            long new_z = Int64.Parse(strs[3]);
+            Transform trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(entity);
+            trans.localPosition = SceneMgr.Instance.GetCorrectPos(new Vector3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic));
+            SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = trans.localPosition});
+        }
     }
     
     private void ApplyChangeInfoHPChange(Entity entity, SprotoType.info_item change_info)

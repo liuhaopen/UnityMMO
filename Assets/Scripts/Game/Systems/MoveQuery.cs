@@ -76,6 +76,24 @@ public class MoveQuery : MonoBehaviour
             navAgent = go.GetComponent<NavMeshAgent>();
             navAgent.radius = this.radius;
             navAgent.height = this.height;
+            // navAgent.Warp(this.transform.position);
+        }
+    }
+
+    public void UpdateNavAgent()
+    {
+        NavMeshHit closestHit;
+        // Debug.Log("transform.position : "+transform.position.x+" "+transform.position.y+" "+transform.position.z);
+        if (NavMesh.SamplePosition (transform.position, out closestHit, 100f, NavMesh.AllAreas)) {
+            transform.position = closestHit.position;
+            charController.transform.position = closestHit.position;
+            // Debug.Log("transform.position2 : "+transform.position.x+" "+transform.position.y+" "+transform.position.z);
+            //after load new scene, it will 
+            if (navAgent != null)
+                GameObject.DestroyImmediate(navAgent);
+            navAgent = charController.gameObject.AddComponent<NavMeshAgent>();
+            navAgent.radius = this.radius;
+            navAgent.height = this.height;
         }
     }
 
@@ -86,6 +104,12 @@ public class MoveQuery : MonoBehaviour
             Debug.LogError("has no NavMeshAgent Component!call my method Initialize(true)");
             return;
         }
+        else if (!navAgent.isOnNavMesh)
+        {
+            Debug.Log("nav agent is not on navmesh!");
+            return;
+        }
+        // navAgent.Warp(this.transform.position);
         navAgent.isStopped = false;
         navAgent.acceleration = 1000;
         navAgent.angularSpeed = 1000;
@@ -180,7 +204,7 @@ class HandleMovementQueries : BaseComponentSystem
                 {
                     var nextTargetPos = query.navAgent.nextPosition;
                     var dir = nextTargetPos - query.navAgent.transform.position;
-                    Debug.Log("nextTargetPos : "+nextTargetPos.x+" "+nextTargetPos.y+" "+nextTargetPos.z+" dir:"+dir.x+" "+dir.y+" "+dir.z);
+                    // Debug.Log("nextTargetPos : "+nextTargetPos.x+" "+nextTargetPos.y+" "+nextTargetPos.z+" dir:"+dir.x+" "+dir.y+" "+dir.z);
                     nextTargetPos = nextTargetPos + dir*10;//for rotation in MovementUpdateSystem only
                     // lastTargetPos.Value = nextTargetPos;
                     query.ownerGOE.EntityManager.SetComponentData<TargetPosition>(query.ownerGOE.Entity, new TargetPosition{Value=nextTargetPos});

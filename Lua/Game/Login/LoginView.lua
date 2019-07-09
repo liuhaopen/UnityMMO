@@ -10,7 +10,7 @@ function LoginView:DefaultVar( )
 end
 
 function LoginView:OnLoad(  )
-	local names = {"login", "account", "single_mode:obj", "server_ip", "port", "game_server_ip:input","game_port:input",}
+	local names = {"login", "account", "server_ip", "port", "game_server_ip:input","game_port:input",}
 	UI.GetChildren(self, self.transform, names)
 	self.login_btn_obj = self.login.gameObject
     self.account_txt = self.account:GetComponent("InputField")
@@ -42,15 +42,15 @@ function LoginView:AddEvents(  )
 	        print("Cat:LoginView [end]")
 	        GlobalEventSystem:Fire(LoginConst.Event.StartLogin, login_info)
 	        CookieWrapper:GetInstance():SaveCookie(CookieLevelType.Common, CookieTimeType.TYPE_ALWAYS, CookieKey.LastLoginInfo, login_info)
-		elseif click_obj == self.single_mode_obj then
-            UIMgr:CloseAllView()
-			GameVariable.IsSingleMode = true
-        	GlobalEventSystem:Fire(GlobalEvents.GameStart)
-        	CS.XLuaManager.Instance:OnLoginOk()
+		-- elseif click_obj == self.single_mode_obj then
+  --           UIMgr:CloseAllView()
+		-- 	GameVariable.IsSingleMode = true
+  --       	GlobalEventSystem:Fire(GlobalEvents.GameStart)
+  --       	CS.XLuaManager.Instance:OnLoginOk()
 		end
 	end
 	UIHelper.BindClickEvent(self.login_btn_obj, on_click)
-	UIHelper.BindClickEvent(self.single_mode_obj, on_click)
+	-- UIHelper.BindClickEvent(self.single_mode_obj, on_click)
 end
 
 function LoginView:UpdateView(  )

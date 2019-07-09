@@ -81,16 +81,19 @@ end
 local collect_events = function ( sceneMgr )
 	for _,role_info in pairs(sceneMgr.roleMgr.roleList) do
 		for _,interest_uid in pairs(role_info.around_objs) do
-			-- local event_list = sceneMgr.event_list[interest_uid]
 			local event_list = sceneMgr.eventMgr:GetSceneEvent(interest_uid)
 			if event_list then
 				for i,event_info in ipairs(event_list) do
-					role_info.change_obj_infos = SceneHelper.AddInfoItem(role_info.change_obj_infos, interest_uid, event_info)
+					if not event_info.is_private then
+						role_info.change_obj_infos = SceneHelper.AddInfoItem(role_info.change_obj_infos, interest_uid, event_info)
+					end
+					if event_info.is_private then
+						print('Cat:SceneMgr.lua[91] private event ')
+					end
 				end
 			end
 		end
 	end
-	-- sceneMgr.event_list = {}
 	sceneMgr.eventMgr:ClearAllSceneEvents()
 end
 
@@ -183,7 +186,7 @@ function SceneMgr:Init( scene_id )
 	self.ecs_world = ECS.InitWorld("scene_world")
 	self.entityMgr = ECS.World.Active:GetOrCreateManager(ECS.EntityManager.Name)
 	self.scene_cfg = require("config.scene.config_scene_"..scene_id)
-	self.cur_scene_id = scene_id
+	self.curSceneID = scene_id
 	self.roleMgr:Init(self)
 	self.monsterMgr:Init(self, self.scene_cfg.monster_list)
 	self.npcMgr:Init(self, self.scene_cfg.npc_list)
@@ -198,7 +201,7 @@ function SceneMgr:Init( scene_id )
 end
 
 function SceneMgr:GetCurSceneID(  )
-	return self.cur_scene_id
+	return self.curSceneID
 end
 
 return SceneMgr

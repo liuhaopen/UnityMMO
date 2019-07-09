@@ -21,11 +21,13 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(UnityMMO.LoadingView);
-			Utils.BeginObjectRegister(type, L, translator, 0, 4, 0, 0);
+			Utils.BeginObjectRegister(type, L, translator, 0, 6, 0, 0);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "ResetData", _m_ResetData);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "SetPlaySpeed", _m_SetPlaySpeed);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "SetActive", _m_SetActive);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Show", _m_Show);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Hide", _m_Hide);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "SetData", _m_SetData);
 			
 			
@@ -143,11 +145,80 @@ namespace XLua.CSObjectWrap
                 UnityMMO.LoadingView gen_to_be_invoked = (UnityMMO.LoadingView)translator.FastGetCSObj(L, 1);
             
             
-                
+			    int gen_param_count = LuaAPI.lua_gettop(L);
+            
+                if(gen_param_count == 3&& LuaTypes.LUA_TBOOLEAN == LuaAPI.lua_type(L, 2)&& LuaTypes.LUA_TNUMBER == LuaAPI.lua_type(L, 3)) 
+                {
+                    bool _isShow = LuaAPI.lua_toboolean(L, 2);
+                    float _delayTime = (float)LuaAPI.lua_tonumber(L, 3);
+                    
+                    gen_to_be_invoked.SetActive( _isShow, _delayTime );
+                    
+                    
+                    
+                    return 0;
+                }
+                if(gen_param_count == 2&& LuaTypes.LUA_TBOOLEAN == LuaAPI.lua_type(L, 2)) 
                 {
                     bool _isShow = LuaAPI.lua_toboolean(L, 2);
                     
                     gen_to_be_invoked.SetActive( _isShow );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+            return LuaAPI.luaL_error(L, "invalid arguments to UnityMMO.LoadingView.SetActive!");
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_Show(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                UnityMMO.LoadingView gen_to_be_invoked = (UnityMMO.LoadingView)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    
+                    gen_to_be_invoked.Show(  );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_Hide(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                UnityMMO.LoadingView gen_to_be_invoked = (UnityMMO.LoadingView)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    
+                    gen_to_be_invoked.Hide(  );
                     
                     
                     

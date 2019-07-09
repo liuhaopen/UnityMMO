@@ -47,7 +47,7 @@ public class RoleMgr
         roleGameOE.transform.localPosition = pos;
         Entity role = roleGameOE.Entity;
         RoleMgr.GetInstance().SetName(uid, name);
-        InitRole(role, uid, typeID, pos, pos, curHp, maxHp, true);
+        InitRole(role, uid, typeID, pos, pos, curHp, maxHp, false);
         roleGameOE.GetComponent<UIDProxy>().Value = new UID{Value=uid};
         EntityManager.AddComponentData(role, new PosSynchInfo {LastUploadPos = float3.zero});
         EntityManager.AddComponent(role, ComponentType.ReadWrite<UserCommand>());
@@ -86,7 +86,7 @@ public class RoleMgr
 
     private void InitRole(Entity role, long uid, long typeID, Vector3 pos, Vector3 targetPos, float curHp, float maxHp, bool isNeedNavAgent=false)
     {
-        EntityManager.AddComponentData(role, new MoveSpeed {Value = 1200});
+        EntityManager.AddComponentData(role, new MoveSpeed {Value = 2200});
         EntityManager.AddComponentData(role, new TargetPosition {Value = targetPos});
         EntityManager.AddComponentData(role, new LocomotionState {LocoState = LocomotionState.State.Idle});
         EntityManager.AddComponentData(role, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});

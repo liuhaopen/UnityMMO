@@ -8,6 +8,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using UnityMMO.Component;
 using XLua;
 
 namespace UnityMMO
@@ -119,13 +120,13 @@ public class SceneMgr : MonoBehaviour
     {
         //load scene info from json file(which export from SceneInfoExporter.cs)
         XLuaFramework.ResourceManager.GetInstance().LoadAsset<TextAsset>(SceneInfoPath+"scene_"+scene_id.ToString() +"/scene_info.json", delegate(UnityEngine.Object[] objs) {
-            LoadingView.Instance.SetData(0.5f, "读取场景信息文件...");
+            LoadingView.Instance.SetData(0.4f, "读取场景信息文件...");
             TextAsset txt = objs[0] as TextAsset;
             string scene_json = txt.text;
             scene_json = Repalce(scene_json);
             SceneInfo scene_info = JsonUtility.FromJson<SceneInfo>(scene_json);
             curSceneInfo = scene_info;
-            ApplyLightInfo(scene_info);
+            // ApplyLightInfo(scene_info);//TODO:bake light
             
             m_Controller = gameObject.GetComponent<SceneObjectLoadController>();
             if (m_Controller == null)
@@ -149,7 +150,7 @@ public class SceneMgr : MonoBehaviour
         });
     }
 
-    public void LoadScene(int scene_id, float pos_x=0.0f, float pos_y=0.0f, float pos_z=0.0f)
+    public void LoadScene(int scene_id)
     {
         if (curSceneID == scene_id)
             return;
@@ -158,34 +159,42 @@ public class SceneMgr : MonoBehaviour
             UnloadScene();
         }
         curSceneID = scene_id;
-        LoadingView.Instance.SetActive(true);
-        LoadingView.Instance.SetData(0.2f, "加载基础场景...");
+        LoadingView.Instance.SetData(0.2f, "加载场景信息文件...");
         Debug.Log("LoadScene scene_id "+(scene_id).ToString());
         isLoadingScene = true;
         isBaseWorldLoadOk = false;
-        // string baseWroldRes = SceneInfoPath+"baseworld_"+scene_id+"/baseworld_"+scene_id+".prefab";
-        string navmeshPath = "";
-        if (XLuaFramework.AppConfig.DebugMode)
-        {
-            navmeshPath = "Assets/AssetBundleRes/scene/base_world/base_world_"+scene_id+".unity";
-        }
-        else
-        {
-            navmeshPath = "base_world_"+scene_id;
-            XLuaFramework.ResourceManager.GetInstance().LoadNavMesh(navmeshPath);
-        }
-        AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(navmeshPath, UnityEngine.SceneManagement.LoadSceneMode.Additive);
-        asy.completed += delegate(AsyncOperation asyOp){
-            Debug.Log("load navmesh:"+asyOp.isDone.ToString());
-            LoadingView.Instance.SetData(0.3f, "加载场景信息文件...");
-            LoadSceneInfo(scene_id, delegate(int result){
+        LoadSceneInfo(scene_id, delegate(int result){
+            string navmeshPath = "";
+            if (XLuaFramework.AppConfig.DebugMode)
+            {
+                navmeshPath = "Assets/AssetBundleRes/scene/base_world/base_world_"+scene_id+".unity";
+            }
+            else
+            {
+                navmeshPath = "base_world_"+scene_id;
+                XLuaFramework.ResourceManager.GetInstance().LoadNavMesh(navmeshPath);
+            }
+            LoadingView.Instance.SetData(0.6f, "加载基础场景...");
+            AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(navmeshPath, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+            asy.completed += delegate(AsyncOperation asyOp){
+                Debug.Log("load navmesh:"+asyOp.isDone.ToString());
                 isLoadingScene = false;
                 isBaseWorldLoadOk = true;
                 CorrectMainRolePos();
                 LoadingView.Instance.SetData(1, "加载场景完毕");
                 LoadingView.Instance.SetActive(false, 0.5f);
-            });
-        };
+                var mainRole = RoleMgr.GetInstance().GetMainRole();
+                if (mainRole != null)
+                {
+                    Debug.Log("reset nav agent");
+                    var moveQuery = mainRole.GetComponent<MoveQuery>();
+                    moveQuery.UpdateNavAgent();
+                    // moveQuery.navAgent.enabled = false;
+                    // moveQuery.navAgent.enabled = true;
+                }
+            };
+        });
+        
         // string baseWroldRes = SceneInfoPath+"scene_"+scene_id.ToString() +"/BaseWorld/baseworld_"+scene_id+".prefab";
         // XLuaFramework.ResourceManager.GetInstance().LoadPrefabGameObjectWithAction(baseWroldRes, delegate(UnityEngine.Object obj)
         // {
@@ -220,10 +229,13 @@ public class SceneMgr : MonoBehaviour
 
     public void ReqEnterScene(int scene_id, int door_id)
     {
-        // SprotoType.scene_enter_to_scene.request req = new SprotoType.scene_listen_fight_event.request();
-        // NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_listen_fight_event>(req, ()=>{
-
-        // });
+        SprotoType.scene_enter_to.request req = new SprotoType.scene_enter_to.request();
+        req.scene_id = scene_id;
+        req.door_id = door_id;
+        NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_enter_to>(req, (ack)=>{
+            SprotoType.scene_enter_to.response rsp = ack as SprotoType.scene_enter_to.response;
+            Debug.Log("enter new scene result : "+rsp.result);
+        });
     }
 
     LightmapData[] lightmaps = null;
@@ -430,24 +442,49 @@ public class SceneMgr : MonoBehaviour
         Entity entity = GetSceneObject(uid);
         if (entity!=Entity.Null)
         {
-            MoveQuery moveQuery=null;
-            if (EntityManager.HasComponent<MoveQuery>(entity))
-                moveQuery = EntityManager.GetComponentObject<MoveQuery>(entity);
-            EntityManager.DestroyEntity(entity);
-            // entityDic.Remove(uid);
+            RemoveSceneEntity(entity, true);
+        }
+    }
+
+    public void RemoveSceneEntity(Entity entity, bool deleInDic)
+    {
+        if (EntityManager.HasComponent<Transform>(entity))
+        {
+            var goe = EntityManager.GetComponentObject<Transform>(entity);
+            Debug.Log("remove all scene obj : "+goe.gameObject.name);
+        }
+        
+        MoveQuery moveQuery=null;
+        if (EntityManager.HasComponent<MoveQuery>(entity))
+            moveQuery = EntityManager.GetComponentObject<MoveQuery>(entity);
+        if (EntityManager.HasComponent<NameboardData>(entity))
+        {
+            var nameboardData = EntityManager.GetComponentData<NameboardData>(entity);
+            nameboardData.Destroy();
+        }
+        if (EntityManager.HasComponent<LooksInfo>(entity))
+        {
+            var looks = EntityManager.GetComponentData<LooksInfo>(entity);
+            looks.Destroy();
+        }
+        World.RequestDespawn(entity);
+        // EntityManager.DestroyEntity(entity);
+        if (deleInDic)
+        {
+            var UIDData = EntityManager.GetComponentData<UID>(entity);
             foreach (var item in entitiesDic)
             {
-                if (item.Value.ContainsKey(uid))
+                if (item.Value.ContainsKey(UIDData.Value))
                 {
-                    item.Value.Remove(uid);
+                    item.Value.Remove(UIDData.Value);
                     break;
                 }
             }
-            if (moveQuery!=null)
-            {
-                GameObject.Destroy(moveQuery.gameObject);
-                GameObject.Destroy(moveQuery.queryObj);
-            }
+        }
+        if (moveQuery!=null)
+        {
+            GameObject.Destroy(moveQuery.gameObject);
+            GameObject.Destroy(moveQuery.queryObj);
         }
     }
 
@@ -463,18 +500,10 @@ public class SceneMgr : MonoBehaviour
                 {
                     continue;
                 }
-                MoveQuery moveQuery=null;
-                if (EntityManager.HasComponent<MoveQuery>(entity))
-                    moveQuery = EntityManager.GetComponentObject<MoveQuery>(entity);
-                EntityManager.DestroyEntity(entity);
-                if (moveQuery!=null)
-                {
-                    GameObject.Destroy(moveQuery.gameObject);
-                    GameObject.Destroy(moveQuery.queryObj);
-                }
+                RemoveSceneEntity(entity, false);
             }
+            dic.Value.Clear();
         }
-        entitiesDic.Clear();
     }
 
     public Entity GetSceneObject(long uid)

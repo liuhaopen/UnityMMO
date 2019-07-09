@@ -27,13 +27,11 @@ public class SceneHelper
         RaycastHit hit=new RaycastHit();
         if(Physics.Raycast(ray,out hit))
         {
-            Debug.Log(hit.collider.name);
+            // Debug.Log("get click scene object : "+hit.collider.name);
             result.point = hit.point;
             var uid = hit.collider.GetComponentInParent<UIDProxy>();
-            Debug.Log("uid : dddd : "+(uid!=null));
             if (uid != null)
             {
-                Debug.Log("uid.Value.Value : "+uid.Value.Value);
                 result.entity = SceneMgr.Instance.GetSceneObject(uid.Value.Value);
             }
         }

@@ -14,7 +14,24 @@ function CMD.role_enter_scene(roleID, agent)
 end
 
 function CMD.role_leave_scene(roleID)
+	-- local role_info = sceneMgr.roleMgr.roleList[roleID]
+	-- local data = nil
+	-- if role_info then
+	-- 	data = {
+	-- 		ack_scene_get_objs_info_change=role_info.ack_scene_get_objs_info_change,
+	-- 		ack_scene_listen_fight_event=role_info.ack_scene_listen_fight_event,
+	-- 	}
+	-- end
 	sceneMgr.roleMgr:RoleLeave(roleID)
+	-- return data
+end
+
+function CMD.scene_enter_to( user_info, req_data )
+	local world = skynet.uniqueservice("world")
+	print('Cat:scene.lua[22] world, req_data.scene_id, req_data.door_id', world, req_data.scene_id, req_data.door_id)
+	local result = skynet.call(world, "lua", "change_to_scene", user_info, req_data.scene_id, req_data.door_id)
+	print('Cat:scene.lua[24] result', result)
+	return {result=result}
 end
 
 function CMD.scene_get_role_look_info( user_info, req_data )
@@ -32,7 +49,7 @@ function CMD.scene_walk( user_info, req_data )
 end
 
 function CMD.scene_get_objs_info_change( user_info, req_data )
-	-- print('Cat:scene.lua[scene_get_objs_info_change] user_info, role_id', user_info, user_info.cur_role_id)
+	print('Cat:scene.lua[scene_get_objs_info_change] user_info, role_id', user_info, user_info.cur_role_id, sceneMgr.curSceneID)
 	local role_info = sceneMgr.roleMgr.roleList[user_info.cur_role_id]
 	if role_info and not role_info.ack_scene_get_objs_info_change then
 		--synch info at fixed time

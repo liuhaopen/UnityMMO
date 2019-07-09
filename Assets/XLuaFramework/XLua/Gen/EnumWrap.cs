@@ -2244,7 +2244,7 @@ namespace XLua.CSObjectWrap
 		    Utils.BeginObjectRegister(typeof(UnityMMO.SceneInfoKey), L, translator, 0, 0, 0, 0);
 			Utils.EndObjectRegister(typeof(UnityMMO.SceneInfoKey), L, translator, null, null, null, null, null);
 			
-			Utils.BeginClassRegister(typeof(UnityMMO.SceneInfoKey), L, null, 9, 0, 0);
+			Utils.BeginClassRegister(typeof(UnityMMO.SceneInfoKey), L, null, 10, 0, 0);
             
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "None", UnityMMO.SceneInfoKey.None);
             
@@ -2261,6 +2261,8 @@ namespace XLua.CSObjectWrap
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "HPChange", UnityMMO.SceneInfoKey.HPChange);
             
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "NPCState", UnityMMO.SceneInfoKey.NPCState);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "SceneChange", UnityMMO.SceneInfoKey.SceneChange);
             
 			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
             
@@ -2310,6 +2312,10 @@ namespace XLua.CSObjectWrap
 				else if (LuaAPI.xlua_is_eq_str(L, 1, "NPCState"))
                 {
                     translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.NPCState);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "SceneChange"))
+                {
+                    translator.PushUnityMMOSceneInfoKey(L, UnityMMO.SceneInfoKey.SceneChange);
                 }
 				else
                 {

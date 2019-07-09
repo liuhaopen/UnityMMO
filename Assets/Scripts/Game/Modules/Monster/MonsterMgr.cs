@@ -81,7 +81,7 @@ public class MonsterMgr
         }
         string bodyPath = resPath+"/model_clothe_"+bodyResID+".prefab";
         XLuaFramework.ResourceManager.GetInstance().LoadAsset<GameObject>(bodyPath, delegate(UnityEngine.Object[] objs) {
-            if (objs!=null && objs.Length>0)
+            if (objs!=null && objs.Length>0 && EntityManager.Exists(ownerEntity))
             {
                 GameObject bodyObj = objs[0] as GameObject;
                 GameObjectEntity bodyOE = m_world.Spawn<GameObjectEntity>(bodyObj);
