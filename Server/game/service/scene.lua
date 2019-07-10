@@ -49,7 +49,7 @@ function CMD.scene_walk( user_info, req_data )
 end
 
 function CMD.scene_get_objs_info_change( user_info, req_data )
-	print('Cat:scene.lua[scene_get_objs_info_change] user_info, role_id', user_info, user_info.cur_role_id, sceneMgr.curSceneID)
+	-- print('Cat:scene.lua[scene_get_objs_info_change] user_info, role_id', user_info, user_info.cur_role_id, sceneMgr.curSceneID)
 	local role_info = sceneMgr.roleMgr.roleList[user_info.cur_role_id]
 	if role_info and not role_info.ack_scene_get_objs_info_change then
 		--synch info at fixed time

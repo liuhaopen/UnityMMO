@@ -73,7 +73,6 @@ public class DestroyDespawning : ComponentSystem
         var entityArray = Group.ToEntityArray(Allocator.TempJob);
         for (var i = 0; i < entityArray.Length; i++)
         {
-            Debug.Log("DestroyDespawning"+i);
             PostUpdateCommands.DestroyEntity(entityArray[i]);
         }
         entityArray.Dispose();

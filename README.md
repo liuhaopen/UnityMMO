@@ -27,3 +27,5 @@ server only for Linux;
 # Recent
 19.07.03：初步实现了自动寻路去找npc对话和打怪两种任务：    
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/auto_talk_and_fight.gif)     
+19.07.10：增加一个副本场景：    
+![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/change_scene.gif)     

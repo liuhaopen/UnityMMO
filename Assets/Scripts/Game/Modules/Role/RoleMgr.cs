@@ -90,7 +90,6 @@ public class RoleMgr
         EntityManager.AddComponentData(role, new TargetPosition {Value = targetPos});
         EntityManager.AddComponentData(role, new LocomotionState {LocoState = LocomotionState.State.Idle});
         EntityManager.AddComponentData(role, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
-        // EntityManager.SetComponentData(role, new UID {Value=uid});
         EntityManager.AddComponentData(role, new SceneObjectTypeData {Value=SceneObjectType.Role});
         EntityManager.AddComponentData(role, new NameboardData {UIResState=NameboardData.ResState.WaitLoad});
         EntityManager.AddComponentData(role, new TypeID {Value=typeID});
@@ -114,6 +113,7 @@ public class RoleMgr
 
     public void SetName(long uid, string name)
     {
+        Debug.Log("set name uid : "+uid+" name:"+name+" track:" + new System.Diagnostics.StackTrace().ToString());
         names[uid] = name;
     }
 }

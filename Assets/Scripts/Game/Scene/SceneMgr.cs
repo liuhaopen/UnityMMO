@@ -68,10 +68,8 @@ public class SceneMgr : MonoBehaviour
 
     void Update()
     {
-        // Debug.Log("detector : "+(detector!=null).ToString()+" cont : "+(m_Controller != null).ToString());
         if (detector != null && m_Controller != null)
             m_Controller.RefreshDetector(detector);
-        // CheckMainRolePos();
     }
 
     public void CheckMainRolePos()
@@ -109,7 +107,6 @@ public class SceneMgr : MonoBehaviour
     {
         str = System.Text.RegularExpressions.Regex.Replace(str, @"<", "lt;");
         str = System.Text.RegularExpressions.Regex.Replace(str, @">", "gt;");
-        // str = System.Text.RegularExpressions.Regex.Replace(str, @"\\", "quot;");
         str = System.Text.RegularExpressions.Regex.Replace(str, @"\r", "");
         str = System.Text.RegularExpressions.Regex.Replace(str, @"\n", "");
         str = System.Text.RegularExpressions.Regex.Replace(str, @"\/", "/");
@@ -189,30 +186,9 @@ public class SceneMgr : MonoBehaviour
                     Debug.Log("reset nav agent");
                     var moveQuery = mainRole.GetComponent<MoveQuery>();
                     moveQuery.UpdateNavAgent();
-                    // moveQuery.navAgent.enabled = false;
-                    // moveQuery.navAgent.enabled = true;
                 }
             };
         });
-        
-        // string baseWroldRes = SceneInfoPath+"scene_"+scene_id.ToString() +"/BaseWorld/baseworld_"+scene_id+".prefab";
-        // XLuaFramework.ResourceManager.GetInstance().LoadPrefabGameObjectWithAction(baseWroldRes, delegate(UnityEngine.Object obj)
-        // {
-        //     Debug.Log("load base world ok!");
-        //     Transform baseworldTrans = (obj as GameObject).transform;
-        //     for (int i = 0; i < baseworldTrans.childCount; i++)
-        //     {
-        //         baseworldTrans.GetChild(i).gameObject.layer = LayerMask.NameToLayer("Ground");
-        //     }
-        //     // (obj as GameObject).layer = LayerMask.NameToLayer("Ground");
-        //     LoadingView.Instance.SetData(0.3f, "加载场景信息文件...");
-        //     LoadSceneInfo(scene_id, delegate(int result){
-        //         isLoadingScene = false;
-        //         isBaseWorldLoadOk = true;
-        //         LoadingView.Instance.SetData(0.7f, "加载场景完毕");
-        //         CorrectMainRolePos();
-        //     });
-        // });
     }
 
     public void UnloadScene()
@@ -376,7 +352,6 @@ public class SceneMgr : MonoBehaviour
             long curHP = Int64.Parse(info_strs[8]);
             long maxHP = Int64.Parse(info_strs[9]);
             Entity role = RoleMgr.GetInstance().AddRole(uid, typeID, pos, targetPos, curHP/GameConst.RealToLogic, maxHP/GameConst.RealToLogic);
-            // entityDic.Add(uid, role);
             entitiesDic[SceneObjectType.Role].Add(uid, role);
             return role;
         }
@@ -392,7 +367,6 @@ public class SceneMgr : MonoBehaviour
         {
             Debug.Log("content : "+content+" newPos:"+pos.x+" "+pos.y+" "+pos.z);
             Entity npc = NPCMgr.GetInstance().AddNPC(uid, typeID, pos, targetPos);
-            // entityDic.Add(uid, npc);
             entitiesDic[SceneObjectType.NPC].Add(uid, npc);
             return npc;
         }
@@ -467,8 +441,8 @@ public class SceneMgr : MonoBehaviour
             var looks = EntityManager.GetComponentData<LooksInfo>(entity);
             looks.Destroy();
         }
-        World.RequestDespawn(entity);
-        // EntityManager.DestroyEntity(entity);
+        var trans = EntityManager.GetComponentObject<Transform>(entity);
+        World.RequestDespawn(trans.gameObject);
         if (deleInDic)
         {
             var UIDData = EntityManager.GetComponentData<UID>(entity);
@@ -497,9 +471,7 @@ public class SceneMgr : MonoBehaviour
             {
                 Entity entity = objs.Value;
                 if (!isIncludeMainRole && entity == mainRole.Entity)
-                {
                     continue;
-                }
                 RemoveSceneEntity(entity, false);
             }
             dic.Value.Clear();

@@ -126,22 +126,22 @@ end
 
 function RoleMgr:GetMainRoleInfo( roleID )
 	local role_info = self.roleList[roleID]
-	role_info = role_info and role_info.base_info or nil
-	if role_info then
+	local base_info = role_info and role_info.base_info or nil
+	if base_info then
 		local entity = self.sceneMgr:GetEntity(self.roleList[roleID].scene_uid)
 		local hpData = self.sceneMgr.entityMgr:GetComponentData(entity, "UMO.HP")
 		local result =  {
 			role_info={
-				scene_uid=self.roleList[roleID].scene_uid,
-				role_id=roleID,
-				career=role_info.career,
-				name=role_info.name,
-				scene_id = self.sceneMgr.curSceneID,
-				pos_x = role_info.pos_x,
-				pos_y = role_info.pos_y,
-				pos_z = role_info.pos_z,
-				cur_hp = hpData.cur,
-				max_hp = hpData.max,
+				scene_uid = self.roleList[roleID].scene_uid,
+				role_id   = roleID,
+				career    = base_info.career,
+				name      = base_info.name,
+				scene_id  = self.sceneMgr.curSceneID,
+				pos_x     = base_info.pos_x,
+				pos_y     = base_info.pos_y,
+				pos_z     = base_info.pos_z,
+				cur_hp    = hpData.cur,
+				max_hp    = hpData.max,
 				base_info = {
 					level = 0,
 				},
@@ -181,17 +181,15 @@ function RoleMgr:GetRoleLooksInfo( uid )
 		looks_info = {
 			result = 0,
 			role_looks_info = {
-				career = role_info.base_info.career or 1,
-				name = role_info.name,
-				hp = hpData.cur,
-				max_hp = hpData.max,
-				body = role_info.looks_info.body or 0,
-				hair = role_info.looks_info.hair or 0,
-				-- body = 0,
-				-- hair = 0,
-				weapon = role_info.looks_info.weapon or 0,
-				wing = role_info.looks_info.wing or 0,
-				horse = 0,
+				career   = role_info.base_info.career or 1,
+				name     = role_info.base_info.name,
+				hp 		 = hpData.cur,
+				max_hp   = hpData.max,
+				body 	 = role_info.looks_info.body or 0,
+				hair 	 = role_info.looks_info.hair or 0,
+				weapon   = role_info.looks_info.weapon or 0,
+				wing 	 = role_info.looks_info.wing or 0,
+				horse 	 = 0,
 			}
 		}
 	else

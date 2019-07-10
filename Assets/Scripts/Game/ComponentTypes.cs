@@ -94,10 +94,10 @@ namespace Component
         public Entity UIEntity;
         public void Destroy()
         {
-            Debug.Log("nameboard state : "+UIResState);
-            if (UIResState == ResState.Loaded)
+            if (UIResState == ResState.Loaded && SceneMgr.Instance.EntityManager.HasComponent<Transform>(UIEntity))
             {
-                SceneMgr.Instance.World.RequestDespawn(UIEntity);
+                var trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(UIEntity);
+                SceneMgr.Instance.World.RequestDespawn(trans.gameObject);
             }
         }
     }
@@ -164,9 +164,10 @@ namespace Component
         public State CurState;
         public void Destroy()
         {
-            if (CurState == State.Loaded)
+            if (CurState == State.Loaded && SceneMgr.Instance.EntityManager.HasComponent<Transform>(LooksEntity))
             {
-                SceneMgr.Instance.World.RequestDespawn(LooksEntity);
+                var trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(LooksEntity);
+                SceneMgr.Instance.World.RequestDespawn(trans.gameObject);
             }
         }
     }
