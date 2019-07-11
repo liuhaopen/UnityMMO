@@ -1,20 +1,20 @@
-local MainUIMenuView = BaseClass(UINode)
+local BagView = BaseClass(UINode)
 
-function MainUIMenuView:Constructor( )
-	self.prefabPath = "Assets/AssetBundleRes/ui/mainui/MainUIMenuView.prefab"
-	self.canvasName = "MainUI"
+function BagView:Constructor( )
+	self.prefabPath = "Assets/AssetBundleRes/ui/bag/BagView.prefab"
+	self.canvasName = "Normal"
 end
 
-function MainUIMenuView:OnLoad(  )
+function BagView:OnLoad(  )
 	local names = {
-		"bag:obj",
+		
 	}
 	UI.GetChildren(self, self.transform, names)
 	self:AddEvents()
 	self:OnUpdate()
 end
 
-function MainUIMenuView:AddEvents(  )
+function BagView:AddEvents(  )
 	local on_click = function ( click_obj )
 		if self.bag_obj == click_obj then
 			local view = require("Game/Bag/BagView").New()
@@ -28,7 +28,7 @@ function MainUIMenuView:AddEvents(  )
 	
 end
 
-function MainUIMenuView:OnUpdate(  )
+function BagView:OnUpdate(  )
 end
 
-return MainUIMenuView
+return BagView

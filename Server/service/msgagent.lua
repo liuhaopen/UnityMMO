@@ -22,6 +22,7 @@ local registerAllModule = function()
 	local handlers = {
 		"game.account.Account",
 		"game.task.Task",
+		"game.bag.BagMgr",
 	}
 	for i,v in ipairs(handlers) do
 		local sprotoHandler, publicClassName, publicFuncs = require(v)

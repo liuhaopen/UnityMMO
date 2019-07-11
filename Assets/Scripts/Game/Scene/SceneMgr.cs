@@ -306,7 +306,7 @@ public class SceneMgr : MonoBehaviour
                 // }
             }
         }
-        Debug.Log("get correct pos : "+originPos.x+" "+originPos.y+" "+originPos.z+" isRacast:"+isRaycast+" newPos : "+newPos.x+" "+newPos.y+" "+newPos.z);
+        // Debug.Log("get correct pos : "+originPos.x+" "+originPos.y+" "+originPos.z+" isRacast:"+isRaycast+" newPos : "+newPos.x+" "+newPos.y+" "+newPos.z);
         return newPos;
     }
     
@@ -422,12 +422,11 @@ public class SceneMgr : MonoBehaviour
 
     public void RemoveSceneEntity(Entity entity, bool deleInDic)
     {
-        if (EntityManager.HasComponent<Transform>(entity))
-        {
-            var goe = EntityManager.GetComponentObject<Transform>(entity);
-            Debug.Log("remove all scene obj : "+goe.gameObject.name);
-        }
-        
+        // if (EntityManager.HasComponent<Transform>(entity))
+        // {
+        //     var goe = EntityManager.GetComponentObject<Transform>(entity);
+        //     Debug.Log("remove all scene obj : "+goe.gameObject.name);
+        // }
         MoveQuery moveQuery=null;
         if (EntityManager.HasComponent<MoveQuery>(entity))
             moveQuery = EntityManager.GetComponentObject<MoveQuery>(entity);

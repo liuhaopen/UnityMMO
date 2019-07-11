@@ -1,8 +1,8 @@
-require "Game/Common/UIManager"
-require "Game/Common/UIWidgetPool"
-require "Game/Common/UIComponent"
-require("Game.Common.ItemListCreator")
-require("Game/Common/Message")
+require "Game.Common.UIManager"
+require "Game.Common.UIWidgetPool"
+require "Common.UI.UIComponent"
+require("Common.UI.ItemListCreator")
+require("Game.Common.Message")
 
 --管理器--
 local Game = {}

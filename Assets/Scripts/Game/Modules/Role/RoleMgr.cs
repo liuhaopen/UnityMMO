@@ -113,7 +113,6 @@ public class RoleMgr
 
     public void SetName(long uid, string name)
     {
-        Debug.Log("set name uid : "+uid+" name:"+name+" track:" + new System.Diagnostics.StackTrace().ToString());
         names[uid] = name;
     }
 }

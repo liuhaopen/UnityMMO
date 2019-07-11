@@ -19,3 +19,5 @@ ECS.TypeManager.RegisterType("UMO.RoleInfo", {name="", base_info=nil})
 -- ECS.TypeManager.RegisterType("UMO.DeadState", 0)
 ECS.TypeManager.RegisterType("UMO.Beatable", true)
 ECS.TypeManager.RegisterType("UMO.MsgAgent", nil)
+--buff struct : duration, startTime, ...other field
+ECS.TypeManager.RegisterType("UMO.BuffHpToMp", {})

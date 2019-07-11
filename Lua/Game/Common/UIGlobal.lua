@@ -17,7 +17,7 @@ NPCMgr = CS.UnityMMO.NPCMgr
 
 Entity = CS.Unity.Entities.Entity
 
-require "Game/Common/UIHelper"
+require "Common.UI.UIHelper"
 -- SkillMgr = CS.UnityMMO.SkillManager
 require "Common.Util.TableUtil"
 GlobalEvents = require("Game.Common.GlobalEvents")
@@ -27,9 +27,8 @@ UI.AlertView = require("Game.Common.AlertView")
 MainRole = require("Game.Scene.MainRole")
 print('Cat:UIGlobal.lua[4] UI.AlertView', UI.AlertView)
 
-UINode = require("Game.Common.UINode")
-UILooksNode = require("Game.Common.UILooksNode")
-print('Cat:UIGlobal.lua[32] UILooksNode', UILooksNode)
+UINode = require("Common.UI.UINode")
+UILooksNode = require("Common.UI.UILooksNode")
 ResPath = require("Game.Common.ResPath")
 
 ConfigMgr = require("Tools.ConfigMgr")

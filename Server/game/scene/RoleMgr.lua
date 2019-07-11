@@ -74,7 +74,7 @@ function RoleMgr:InitPosInfo( baseInfo, targetDoor )
 end
 
 function RoleMgr:RoleEnter( roleID, agent )
-	print('Cat:RoleMgr.lua[77] self.roleList[roleID]', self.roleList[roleID], roleID)
+	print('Cat:RoleMgr.lua[role enter] self.roleList[roleID]', self.roleList[roleID], roleID)
 	if not self.roleList[roleID] then
 		local scene_uid = SceneHelper:NewSceneUID(SceneConst.ObjectType.Role)
 		local base_info = self:GetBaseInfoByRoleID(roleID)
@@ -92,7 +92,6 @@ function RoleMgr:RoleEnter( roleID, agent )
 		self.sceneMgr:SetEntity(scene_uid, entity)
 		-- self.sceneMgr.aoi:set_user_data(handle, "entity", entity)
 		local changeSceneStr = self.sceneMgr.curSceneID..","..base_info.pos_x..","..base_info.pos_y..","..base_info.pos_z
-		print('Cat:RoleMgr.lua[94] changeSceneStr', changeSceneStr)
 		local change_scene_event_info = {key=SceneConst.InfoKey.SceneChange, value=changeSceneStr}
 		change_scene_event_info.is_private = true
 		-- self.sceneMgr.eventMgr:AddSceneEvent(scene_uid, change_scene_event_info)

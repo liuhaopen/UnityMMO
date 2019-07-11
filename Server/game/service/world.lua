@@ -33,15 +33,6 @@ function CMD.role_enter_game( user_info, role_id )
 end
 
 function CMD.role_leave_game(role_id)
-	print('Cat:world.lua[36] role_id', role_id)
-	-- local role_id_in_account 
-	-- --wait for optimization
-	-- for role_id,v in pairs(online_role) do
-	-- 	if v.user_id == user_info.user_id then
-	-- 		role_id_in_account = role_id
-	-- 		break
-	-- 	end
-	-- end
 	-- print('Cat:world.lua[44] role_id_in_account', role_id_in_account, online_role[role_id_in_account])
 	if role_id and online_role[role_id] then
 		skynet.call(online_role[role_id].scene_service, "lua", "role_leave_scene", role_id)
@@ -55,14 +46,12 @@ end
 
 function CMD.change_to_scene( user_info, scene_id, door_id )
 	local role_id = user_info.cur_role_id
-	print('Cat:world.lua[57] role_id, scene_id, door_id', role_id, scene_id, door_id)
 	local result = 1
 	local lastScene = role_id and online_role[role_id] and online_role[role_id].scene_service
 	local newScene = scene_services[scene_id]
 	if lastScene == newScene then
 		result = 3
 	else
-		print('Cat:world.lua[64] newScene, scene_id', newScene, scene_id)
 		if newScene then
 			user_info.scene_service = newScene
 			online_role[role_id] = user_info
