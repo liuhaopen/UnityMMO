@@ -69,6 +69,12 @@ public class AutoFight : MonoBehaviour
 
     private void AttackTarget()
     {
+        var isExist = SceneMgr.Instance.EntityManager.Exists(target);
+        if (!isExist)
+        {
+            target = Entity.Null;
+            return;
+        }
         var monsTrans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(target);
         var dis = Vector3.Distance(mainRoleTrans.position, monsTrans.position);
         if (dis <= 1.2)

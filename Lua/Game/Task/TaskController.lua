@@ -5,14 +5,7 @@ TaskController = {}
 
 function TaskController:Init(  )
 	self.model = TaskModel:GetInstance()
-	-- TaskConst.Events.ReqTaskList
 
-	local onGameStart = function (  )
-		self.model:Reset()
-		self:ReqTaskList()
-        
-	end
-    GlobalEventSystem:Bind(GlobalEvents.GameStart, onGameStart)
     self:AddEvents()
 end
 
@@ -21,20 +14,19 @@ function TaskController:GetInstance()
 end
 
 function TaskController:AddEvents(  )
+    local onGameStart = function (  )
+        self.model:Reset()
+        self:ReqTaskList()
+        self:ListenTaskProgressChange()
+    end
+    GlobalEventSystem:Bind(GlobalEvents.GameStart, onGameStart)
+
 	self.model:Bind(TaskConst.Events.ReqTaskList, function()
 		self:ReqTaskList()
 	end)
-	
 end
 
-function TaskController:ReqTaskList(  )
-	local on_ack = function ( ack_data )
-		self.model:SetTaskInfos(ack_data)
-		self.model:Fire(TaskConst.Events.AckTaskList)
-        self:HandleAutoDoTask()
-	end
-    NetDispatcher:SendMessage("Task_GetInfoList", nil, on_ack)
-
+function TaskController:ListenTaskProgressChange(  )
     local on_progress_changed = function ( ack_data )
         print("Cat:TaskController [start:38] on_progress_changed ack_data:", ack_data)
         PrintTable(ack_data)
@@ -48,6 +40,16 @@ function TaskController:ReqTaskList(  )
         end
     end
     NetDispatcher:Listen("Task_ProgressChanged", nil, on_progress_changed)
+end
+
+function TaskController:ReqTaskList(  )
+	local on_ack = function ( ack_data )
+		self.model:SetTaskInfos(ack_data)
+		self.model:Fire(TaskConst.Events.AckTaskList)
+        self:HandleAutoDoTask()
+	end
+    NetDispatcher:SendMessage("Task_GetInfoList", nil, on_ack)
+
 end
 
 function TaskController:HandleAutoDoTask(  )

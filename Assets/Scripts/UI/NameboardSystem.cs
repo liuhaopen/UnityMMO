@@ -142,7 +142,7 @@ public class NameboardSpawnRequestSystem : BaseComponentSystem
             string name = SceneMgr.Instance.GetNameByUID(uid.Value);
             nameboardBehav.Name = name;
             var isMainRole = RoleMgr.GetInstance().IsMainRoleEntity(request.Owner);
-            Debug.Log("name : "+name+" isMainRole:"+isMainRole);
+            // Debug.Log("name : "+name+" isMainRole:"+isMainRole);
             nameboardBehav.CurColorStyle = isMainRole ? Nameboard.ColorStyle.Green : Nameboard.ColorStyle.Red;
             if (EntityManager.HasComponent<NameboardData>(request.Owner))
             {

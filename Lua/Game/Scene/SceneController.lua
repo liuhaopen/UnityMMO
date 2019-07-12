@@ -37,6 +37,10 @@ function SceneController:InitEvents(  )
                     stoppingDistance = 0,
                 }
                 moveQuery:StartFindWay(findInfo)
+                local fightAi = goe:GetComponent(typeof(CS.UnityMMO.AutoFight))
+                if fightAi then
+                    fightAi.enabled = false
+                end
             elseif ECS:HasComponent(hit.entity, CS.UnityMMO.Component.SceneObjectTypeData) then
                 local sceneObjType = ECS:GetComponentData(hit.entity, CS.UnityMMO.Component.SceneObjectTypeData)
                 print('Cat:SceneController.lua[41] sceneObjType', sceneObjType.Value)

@@ -174,10 +174,10 @@ public class SceneMgr : MonoBehaviour
             LoadingView.Instance.SetData(0.6f, "加载基础场景...");
             AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(navmeshPath, UnityEngine.SceneManagement.LoadSceneMode.Additive);
             asy.completed += delegate(AsyncOperation asyOp){
-                Debug.Log("load navmesh:"+asyOp.isDone.ToString());
+                Debug.Log("load base world:"+asyOp.isDone.ToString());
                 isLoadingScene = false;
                 isBaseWorldLoadOk = true;
-                CorrectMainRolePos();
+                // CorrectMainRolePos();
                 LoadingView.Instance.SetData(1, "加载场景完毕");
                 LoadingView.Instance.SetActive(false, 0.5f);
                 var mainRole = RoleMgr.GetInstance().GetMainRole();
@@ -187,6 +187,7 @@ public class SceneMgr : MonoBehaviour
                     var moveQuery = mainRole.GetComponent<MoveQuery>();
                     moveQuery.UpdateNavAgent();
                 }
+                CorrectSceneObjectsPos();
             };
         });
     }
@@ -201,6 +202,12 @@ public class SceneMgr : MonoBehaviour
         if (m_Controller != null)
             m_Controller.ResetAllData();
         RemoveAllSceneObjects();
+        var mainRole = RoleMgr.GetInstance().GetMainRole();
+        if (mainRole != null)
+        {
+            var fight = mainRole.GetComponent<AutoFight>();
+            fight.enabled = false;
+        }
     }
 
     public void ReqEnterScene(int scene_id, int door_id)
@@ -268,6 +275,21 @@ public class SceneMgr : MonoBehaviour
         Vector3 newPos = GetCorrectPos(oldPos);
         Debug.Log("old pos:"+oldPos.x+" "+oldPos.y+" "+oldPos.z+" newPos:"+newPos.x+" "+newPos.y+" "+newPos.z);
         mainRole.transform.localPosition = newPos;
+    }
+
+    public void CorrectSceneObjectsPos()
+    {
+        foreach (var dic in entitiesDic)
+        {
+            foreach (var objs in dic.Value)
+            {
+                Entity entity = objs.Value;
+                var trans = EntityManager.GetComponentObject<Transform>(entity);
+                Debug.Log("CorrectSceneObjectsPos : "+trans.gameObject.name);
+                var correctPos = GetCorrectPos(trans.localPosition);
+                trans.localPosition = correctPos;
+            }
+        }
     }
 
     public Vector3 GetCorrectPos(Vector3 originPos)
@@ -422,11 +444,6 @@ public class SceneMgr : MonoBehaviour
 
     public void RemoveSceneEntity(Entity entity, bool deleInDic)
     {
-        // if (EntityManager.HasComponent<Transform>(entity))
-        // {
-        //     var goe = EntityManager.GetComponentObject<Transform>(entity);
-        //     Debug.Log("remove all scene obj : "+goe.gameObject.name);
-        // }
         MoveQuery moveQuery=null;
         if (EntityManager.HasComponent<MoveQuery>(entity))
             moveQuery = EntityManager.GetComponentObject<MoveQuery>(entity);
@@ -469,11 +486,16 @@ public class SceneMgr : MonoBehaviour
             foreach (var objs in dic.Value)
             {
                 Entity entity = objs.Value;
-                if (!isIncludeMainRole && entity == mainRole.Entity)
+                if (!isIncludeMainRole && mainRole != null && entity == mainRole.Entity)
                     continue;
                 RemoveSceneEntity(entity, false);
             }
             dic.Value.Clear();
+        }
+        if (mainRole != null)
+        {
+            var uidData = EntityManager.GetComponentData<UID>(mainRole.Entity);
+            entitiesDic[SceneObjectType.Role].Add(uidData.Value, mainRole.Entity);
         }
     }
 
