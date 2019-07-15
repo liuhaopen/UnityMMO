@@ -1,23 +1,23 @@
-local MainUIMenuView = BaseClass(UINode)
+local BagWarehouseView = BaseClass(UINode)
 
-function MainUIMenuView:Constructor( )
-	self.prefabPath = "Assets/AssetBundleRes/ui/mainui/MainUIMenuView.prefab"
-	self.canvasName = "MainUI"
+function BagWarehouseView:Constructor( )
+	self.prefabPath = "Assets/AssetBundleRes/ui/bag/BagWarehouseView.prefab"
+	self.canvasName = "Normal"
 end
 
-function MainUIMenuView:OnLoad(  )
+function BagWarehouseView:OnLoad(  )
 	local names = {
-		"bag:obj",
+		
 	}
 	UI.GetChildren(self, self.transform, names)
 	self:AddEvents()
 	self:OnUpdate()
 end
 
-function MainUIMenuView:AddEvents(  )
+function BagWarehouseView:AddEvents(  )
 	local on_click = function ( click_obj )
 		if self.bag_obj == click_obj then
-			local view = require("Game.Bag.BagMainView").New()
+			local view = require("Game/Bag/BagWarehouseView").New()
     		view:Load()
 		-- elseif self.main_city_obj == click_obj then
 			-- SceneMgr.Instance:ReqEnterScene(1001, 0)
@@ -28,7 +28,7 @@ function MainUIMenuView:AddEvents(  )
 	
 end
 
-function MainUIMenuView:OnUpdate(  )
+function BagWarehouseView:OnUpdate(  )
 end
 
-return MainUIMenuView
+return BagWarehouseView

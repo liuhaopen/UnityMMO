@@ -24,6 +24,20 @@ function ConfigMgr:GetSceneCfg( sceneID )
 	return require("Config.config_scene_"..sceneID)
 end
 
+function ConfigMgr:GetGoodsCfg( goodsTypeID )
+	local cfg = require("Config.ConfigGoods")
+	if cfg[goodsTypeID] then
+		return cfg[goodsTypeID]
+	else
+		if not self.defaultGoodsCfg then
+			self.defaultGoodsCfg = {
+				type_id = 100000, name = [[默认道具]], icon = 1000000, type = 1, 
+			}
+		end
+		return self.defaultGoodsCfg
+	end
+end
+
 function ConfigMgr:GetMonsterPosInScene( sceneID, monsterID )
 	local cfg = self:GetSceneCfg(sceneID)
 	if cfg and cfg.monster_list then

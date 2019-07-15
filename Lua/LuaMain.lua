@@ -30,9 +30,10 @@ function Game.InitUI()
     
     local pre_load_prefab = {
         "Assets/AssetBundleRes/ui/common/Background.prefab",
+        "Assets/AssetBundleRes/ui/common/GoodsItem.prefab",
     }
     UIWidgetPool:Init("UICanvas/HideUI")
-    UIWidgetPool:RegisterWidgets(pre_load_prefab, call_back)
+    UIWidgetPool:RegisterWidgets(pre_load_prefab)
 end
 
 function Game:InitControllers()

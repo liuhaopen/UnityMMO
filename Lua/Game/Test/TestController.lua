@@ -21,12 +21,11 @@ end
 function TestController:Update(  )
 	if CS.UnityEngine.Input.GetKeyUp(CS.UnityEngine.KeyCode.F) then 
 		print('Cat:TestController.lua[25] f up')
-        local view = require("Game/Task/TaskDialogView").New()
-        local data = {
-        	npcID = 3002,
-        	content = "哈哈哈哈",
-    	}
-        view:SetData(data)
+		if self.view_f then
+			self.view_f:Destroy()
+			self.view_f = nil
+		end
+        self.view_f = require("Game/Test/TestGoodsItem").New()
 		-- local testView = require("Game/Test/TestView")
 		-- UIMgr:Show(testView.New())
 

@@ -29,6 +29,8 @@ print('Cat:UIGlobal.lua[4] UI.AlertView', UI.AlertView)
 
 UINode = require("Common.UI.UINode")
 UILooksNode = require("Common.UI.UILooksNode")
+GoodsItem = require("Game.Common.UI.GoodsItem")
+
 ResPath = require("Game.Common.ResPath")
 
 ConfigMgr = require("Tools.ConfigMgr")
