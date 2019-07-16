@@ -1,0 +1,1 @@
+--中毒buff,用n个定时HurtBuff实现就可以了

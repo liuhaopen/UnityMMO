@@ -6,6 +6,7 @@ local TabInfo = {
 }
 function BagMainView:Constructor( )
 	self.prefabPath = ResPath.GetFullUIPath("bag/BagMainView.prefab")
+	self.isShowBackground = true
 	self.canvasName = "Normal"
 end
 

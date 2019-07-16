@@ -168,4 +168,10 @@ function UINode:AddUIComponent( component, arge )
 	return new_comp
 end
 
+function UINode:InitComponents(  )
+	if self.isShowBackground then
+		self:AddUIComponent(UI.Background)
+	end
+end
+
 return UINode
