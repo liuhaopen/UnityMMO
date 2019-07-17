@@ -5,54 +5,54 @@ return [[
 #pos：1普通背包 2仓库 3玩家身上装备
 #cell:道具在哪个格子
 #num:数量
-.goods_info {
+.goodsInfo {
 	goods_uid 0 : integer
 	goods_type_id 1 : integer
 	pos 2 : integer
 	cell 3 : integer
-	count 4 : integer
+	num 4 : integer
 }
 
-.goods_detail {
+.goodsDetail {
 	
 }
 
 #获取背包列表，pos：1普通背包 2仓库 3玩家身上装备
-bag_get_info 300 {
+Bag_GetInfo 300 {
 	request {
 		pos 0 : integer
 	}
 	response {
 		pos 0 : integer
-		cell_num 1 : integer
-		goods_list 2 : *goods_info
+		cellNum 1 : integer
+		goodsList 2 : *goodsInfo
 	}
 }
 
 #获取背包变更列表
-bag_get_change_list 301 {
+Bag_GetChangeList 301 {
 	request {
 	}
 	response {
-		goods_list 0 : *goods_info
+		goodsList 0 : *goodsInfo
 	}
 }
 
 #获取道具的详细信息
-bag_get_goods_detail 302 {
+Bag_GetGoodsDetail 302 {
 	request {
-		goods_uid 0 : integer
+		goodsUID 0 : integer
 	}
 	response {
-		detail 0 : goods_detail
+		detail 0 : goodsDetail
 	}
 }
 
 #使用道具
-bag_use_goods 303 {
+Bag_UseGoods 303 {
 	request {
-		goods_uid 0 : integer
-		count 1 : integer
+		goodsUID 0 : integer
+		num 1 : integer
 	}
 	response {
 		result 0 : integer
@@ -60,10 +60,10 @@ bag_use_goods 303 {
 }
 
 #出售道具
-bag_sell_goods 304 {
+Bag_SellGoods 304 {
 	request {
-		goods_uid 0 : integer
-		count 1 : integer
+		goodsUID 0 : integer
+		num 1 : integer
 	}
 	response {
 		result 0 : integer
@@ -71,9 +71,19 @@ bag_sell_goods 304 {
 }
 
 #丢掉道具
-bag_drop_goods 305 {
+Bag_DropGoods 305 {
 	request {
-		goods_uid 0 : integer
+		goodsUID 0 : integer
+	}
+	response {
+		result 0 : integer
+	}
+}
+
+#整理背包
+Bag_Sort 306 {
+	request {
+		pos 0 : integer
 	}
 	response {
 		result 0 : integer

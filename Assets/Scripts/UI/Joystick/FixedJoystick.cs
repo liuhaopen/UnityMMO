@@ -26,11 +26,15 @@ public class FixedJoystick : Joystick
         ClampJoystick();
         handle.anchoredPosition = (inputVector * background.sizeDelta.x / 2f) * handleLimit;
         GameInput.GetInstance().JoystickDir = inputVector;
+        if (Event.current != null)
+            Event.current.Use();
     }
 
     public override void OnPointerDown(PointerEventData eventData)
     {
         OnDrag(eventData);
+        if (Event.current != null)
+            Event.current.Use();
     }
 
     public override void OnPointerUp(PointerEventData eventData)
@@ -38,5 +42,7 @@ public class FixedJoystick : Joystick
         inputVector = Vector2.zero;
         handle.anchoredPosition = Vector2.zero;
         GameInput.GetInstance().JoystickDir = inputVector;
+        if (Event.current != null)
+            Event.current.Use();
     }
 }

@@ -17,7 +17,7 @@ local user_info
 local c2s_sproto
 local CMD = {}
 
-local registerAllModule = function()
+local registerAllModule = function( user_info )
 	Dispatcher:Init()
 	local handlers = {
 		"game.account.Account",
@@ -25,10 +25,15 @@ local registerAllModule = function()
 		"game.bag.BagMgr",
 	}
 	for i,v in ipairs(handlers) do
-		local sprotoHandler, publicClassName, publicFuncs = require(v)
-		Dispatcher:RegisterSprotoHandler(sprotoHandler)
-		if sprotoHandler.PublicClassName and sprotoHandler.PublicFuncs then
-			Dispatcher:RegisterPublicFuncs(sprotoHandler.PublicClassName, sprotoHandler.PublicFuncs)
+		local handler = require(v)
+		if handler then
+			Dispatcher:RegisterSprotoHandler(handler)
+			if handler.PublicClassName and handler.PublicFuncs then
+				Dispatcher:RegisterPublicFuncs(handler.PublicClassName, handler.PublicFuncs)
+				if handler.PublicFuncs.Init then
+					handler.PublicFuncs.Init(user_info)
+				end
+			end
 		end
 	end
 end
@@ -51,7 +56,7 @@ function CMD.login(source, uid, sid, secret, platform, server_id)
 	print('Cat:msgagent.lua[50] user_info.agent', user_info.agent)
 	-- you may load user data from database
 	c2s_sproto = sprotoloader.load(1)
-	registerAllModule()
+	registerAllModule(user_info)
 end
 
 local function logout()
@@ -103,7 +108,12 @@ skynet.start(function()
 				else
 					local handler = Dispatcher:GetSprotoHandler(proto_info.name)
 					if handler then
-						response = handler(user_info, content)
+						--Cat_Todo : for temporary
+						if tag >= 300 and tag <= 399 then
+							response = handler(content)
+						else
+							response = handler(user_info, content)
+						end
 					else
 						skynet.error("msgagent handle proto failed! cannot find handler:", proto_info.name)
 					end

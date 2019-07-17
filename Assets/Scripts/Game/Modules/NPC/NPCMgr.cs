@@ -92,8 +92,12 @@ public class NPCMgr
 
     public string GetName(Entity entity)
     {
-        var typeIDData = EntityManager.GetComponentData<TypeID>(entity);
-        return ConfigNPC.GetInstance().GetName(typeIDData.Value);
+        if (EntityManager.HasComponent<TypeID>(entity))
+        {
+            var typeIDData = EntityManager.GetComponentData<TypeID>(entity);
+            return ConfigNPC.GetInstance().GetName(typeIDData.Value);
+        }
+        return "神秘人";
     }
 }
 

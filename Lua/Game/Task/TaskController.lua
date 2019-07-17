@@ -43,8 +43,8 @@ function TaskController:ListenTaskProgressChange(  )
 end
 
 function TaskController:ReqTaskList(  )
-	local on_ack = function ( ack_data )
-		self.model:SetTaskInfos(ack_data)
+	local on_ack = function ( ackData )
+		self.model:SetTaskInfos(ackData)
 		self.model:Fire(TaskConst.Events.AckTaskList)
         self:HandleAutoDoTask()
 	end

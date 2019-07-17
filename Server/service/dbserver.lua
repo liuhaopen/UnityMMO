@@ -113,6 +113,16 @@ function CMD.select_by_key( tablename, key, value )
 	return true, result
 end
 
+function CMD.select_by_condition( tablename, condition )
+	local sql = string.format("select * from %s where %s;", tablename, condition)
+	local result = db:query(sql)
+	if result.errno then
+		skynet.error(result.err)
+		return false
+	end
+	return true, result
+end
+
 function CMD.select_all( tablename )
 	local sql = string.format("select * from %s;", tablename)
 	local result = db:query(sql)
