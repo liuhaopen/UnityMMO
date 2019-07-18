@@ -40,5 +40,12 @@ skynet.start(function()
 		name = ".GameDBServer",
 	})
 
+	local id_service = skynet.newservice("id_service")
+	skynet.call(id_service, "lua", "open", {
+		platform_id = platform_id,
+		server_id = server_id,
+		name = ".id_service",
+	})
+
 	skynet.exit()
 end)

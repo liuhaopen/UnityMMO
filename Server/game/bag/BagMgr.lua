@@ -1,21 +1,18 @@
 local skynet = require "skynet"
 local BagConst = require "game.bag.BagConst"
-local BagMgr = {
-	bagLists = {}
+local this = {
+	bagLists = {},
+	user_info = nil,
 }
 
-function BagMgr:Init( user_info )
-	self.user_info = user_info
-end
-
-function BagMgr:InitBagList( pos )
-	self.gameDBServer = self.gameDBServer or skynet.localname(".GameDBServer")
-	local condition = string.format("role_id=%s and pos=%s", self.user_info.cur_role_id, pos)
-	local hasBagList, goodsList = skynet.call(self.gameDBServer, "lua", "select_by_condition", "Bag", condition)
-	print('Cat:BagMgr.lua[15] hasBagList', hasBagList)
-	print("Cat:BagMgr [start:16] goodsList:", goodsList)
+local function initBagList( pos )
+	this.gameDBServer = this.gameDBServer or skynet.localname(".GameDBServer")
+	local condition = string.format("role_id=%s and pos=%s", this.user_info.cur_role_id, pos)
+	local hasBagList, goodsList = skynet.call(this.gameDBServer, "lua", "select_by_condition", "Bag", condition)
+	print('Cat:this.lua[15] hasBagList', hasBagList)
+	print("Cat:this [start:16] goodsList:", goodsList)
 	PrintTable(goodsList)
-	print("Cat:BagMgr [end]")
+	print("Cat:this [end]")
 	local bagInfo = {cellNum=200, pos=pos}
 	if hasBagList then
 		local sort_func = function ( a, b )
@@ -29,16 +26,8 @@ function BagMgr:InitBagList( pos )
 	return bagInfo
 end
 
-function BagMgr:GetBagInfo( reqData )
-	print("Cat:BagMgr [start:29] reqData:", reqData, self.user_info.cur_role_id)
-	PrintTable(reqData)
-	print("Cat:BagMgr [end]")
-	local bagList = self.bagLists[reqData.pos]
-	if not bagList then
-		bagList = self:InitBagList(reqData.pos)
-		self.bagLists[reqData.pos] = bagList
-	end
-	return bagList
+local generateGoodsUID = function (  )
+	
 end
 
 local findEmptyCell = function ( bagInfo )
@@ -51,29 +40,49 @@ local findEmptyCell = function ( bagInfo )
 	return cell
 end
 
-function BagMgr:AddGoods( goodsTypeID, num, pos )
-	local bagInfo = self.bagLists[pos]
+local notifyBagChange = function (  )
+	
+end
+
+local function addGoods( goodsTypeID, num, pos )
+	local bagInfo = this.bagLists[pos]
 	if bagInfo and bagInfo.goodsList then
 		local emptyCell, index = findEmptyCell(bagInfo)
 		local newGoods = {
 
 		}
 		table.insert(bagInfo.goodsList, index, newGoods)
+		Task.cacheChangedTaskInfos[roleID] = Task.cacheChangedTaskInfos[roleID] or {}
+		table.insert(Task.cacheChangedTaskInfos[roleID], taskInfo)
+		-- notifyBagChange(roleID, taskInfo)
 	else
 		--Cat_Todo : uninit?
 	end
 end
 
-function BagMgr:GetChangeList(  )
-	if not self.co_change_list then
-		local changeList = self.cacheChangeList and self.cacheChangeList
+local SprotoHandlers = {}
+function SprotoHandlers.Bag_GetInfo( reqData )
+	print("Cat:this [start:29] reqData:", reqData, this.user_info.cur_role_id)
+	PrintTable(reqData)
+	print("Cat:this [end]")
+	local bagList = this.bagLists[reqData.pos]
+	if not bagList then
+		bagList = initBagList(reqData.pos)
+		this.bagLists[reqData.pos] = bagList
+	end
+	return bagList
+end
+
+function SprotoHandlers.Bag_GetChangeList( reqData )
+	if not this.co_change_list then
+		local changeList = this.cacheChangeList and this.cacheChangeList
 		if not changeList then
-			self.co_change_list = coroutine.running()
-			skynet.wait(self.co_change_list)
+			this.co_change_list = coroutine.running()
+			skynet.wait(this.co_change_list)
 		end
-		changeList = self.cacheChangeList and self.cacheChangeList
+		changeList = this.cacheChangeList and this.cacheChangeList
 		if changeList then
-			table.remove(self.cacheChangeList, 1)
+			table.remove(this.cacheChangeList, 1)
 			return {goodsList=changeList}
 		else
 		end
@@ -83,21 +92,19 @@ function BagMgr:GetChangeList(  )
 	return {}
 end
 
-local SprotoHandlers = {}
-function SprotoHandlers.Bag_GetInfo( reqData )
-	return BagMgr:GetBagInfo(reqData)
-end
-
-function SprotoHandlers.Bag_GetChangeList( reqData )
-	return BagMgr:GetChangeList()
-end
-
 local PublicFuncs = {}
 function PublicFuncs.Init( user_info )
-	BagMgr:Init(user_info)
+	this.user_info = user_info
+	local id_service = skynet.localname(".id_service")
+	print('Cat:BagMgr.lua[99] id_service', id_service)
+	for i=1,100 do
+		local uid = skynet.call(id_service, "lua", "gen_uid", "goods")
+		print('Cat:BagMgr.lua[101] uid', uid)
+	end
+
 end
 function PublicFuncs.AddBagGoods( goodsTypeID, num )
-	BagMgr:AddGoods(goodsTypeID, num, BagConst.Pos.Bag)
+	addGoods(goodsTypeID, num, BagConst.Pos.Bag)
 end
 
 SprotoHandlers.PublicClassName = "Bag"
