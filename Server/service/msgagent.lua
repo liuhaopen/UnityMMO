@@ -3,6 +3,7 @@ local sproto = require "Common.Util.sproto"
 local sprotoloader = require "Common.Util.sprotoloader"
 local print_r = require "Common.Util.print_r"
 require "Common.Util.util"
+ErrorCode = require "game.config.ErrorCode"
 local Dispatcher = require "game.util.Dispatcher"
 
 skynet.register_protocol {
@@ -23,6 +24,7 @@ local registerAllModule = function( user_info )
 		"game.account.Account",
 		"game.task.Task",
 		"game.bag.BagMgr",
+		"game.gm.GM",
 	}
 	for i,v in ipairs(handlers) do
 		local handler = require(v)
@@ -31,7 +33,7 @@ local registerAllModule = function( user_info )
 			if handler.PublicClassName and handler.PublicFuncs then
 				Dispatcher:RegisterPublicFuncs(handler.PublicClassName, handler.PublicFuncs)
 				if handler.PublicFuncs.Init then
-					handler.PublicFuncs.Init(user_info)
+					handler.PublicFuncs.Init(user_info, Dispatcher)
 				end
 			end
 		end
@@ -109,7 +111,7 @@ skynet.start(function()
 					local handler = Dispatcher:GetSprotoHandler(proto_info.name)
 					if handler then
 						--Cat_Todo : for temporary
-						if tag >= 300 and tag <= 399 then
+						if tag >= 300 and tag <= 499 then
 							response = handler(content)
 						else
 							response = handler(user_info, content)

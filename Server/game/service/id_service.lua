@@ -40,10 +40,8 @@ end
 function CMD.open( conf )
 	this.server_id = conf.server_id
 	this.platform_id = conf.platform_id
-	print('Cat:id_service.lua[oepn] conf.name', conf.name)
 	skynet.register(conf.name)
-
-	test_gen_uid()
+	-- test_gen_uid()
 end
 
 local tilNextTime = function ( lastTimestamp )

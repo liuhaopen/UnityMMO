@@ -10,22 +10,37 @@ Target Server Type    : MYSQL
 Target Server Version : 50640
 File Encoding         : 65001
 
-Date: 2019-07-03 15:41:51
+Date: 2019-07-19 19:35:19
 */
 
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
--- Table structure for Account
+-- Table structure for Bag
 -- ----------------------------
-DROP TABLE IF EXISTS `Account`;
-CREATE TABLE `Account` (
-  `account_id` bigint(20) NOT NULL,
-  `role_id_1` bigint(20) DEFAULT NULL,
-  `role_id_2` bigint(20) DEFAULT NULL,
-  `role_id_3` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`account_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `Bag`;
+CREATE TABLE `Bag` (
+  `goods_uid` bigint(20) unsigned NOT NULL,
+  `goods_type_id` int(10) unsigned NOT NULL,
+  `role_id` bigint(20) unsigned NOT NULL,
+  `pos` tinyint(10) unsigned NOT NULL,
+  `cell` smallint(10) unsigned NOT NULL,
+  `num` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`goods_uid`),
+  KEY `role_id` (`role_id`) USING BTREE,
+  KEY `pos` (`pos`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+-- Table structure for BagInfo
+-- ----------------------------
+DROP TABLE IF EXISTS `BagInfo`;
+CREATE TABLE `BagInfo` (
+  `role_id` bigint(20) unsigned zerofill NOT NULL,
+  `pos` varchar(255) DEFAULT NULL,
+  `cell_num` mediumint(10) unsigned zerofill NOT NULL,
+  KEY `role_id` (`role_id`,`pos`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for Property
@@ -46,16 +61,29 @@ CREATE TABLE `Property` (
 -- ----------------------------
 DROP TABLE IF EXISTS `RoleBaseInfo`;
 CREATE TABLE `RoleBaseInfo` (
-  `role_id` bigint(20) NOT NULL,
+  `role_id` bigint(20) unsigned NOT NULL,
   `name` varchar(18) NOT NULL,
   `career` tinyint(4) NOT NULL,
-  `level` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `level` smallint(5) unsigned DEFAULT '0',
   `scene_id` int(11) DEFAULT NULL,
   `pos_x` int(11) DEFAULT NULL,
   `pos_y` int(11) DEFAULT NULL,
   `pos_z` int(11) DEFAULT NULL,
+  `coin` int(11) unsigned zerofill DEFAULT NULL,
+  `diamond` int(11) unsigned zerofill DEFAULT NULL,
   PRIMARY KEY (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Table structure for RoleList
+-- ----------------------------
+DROP TABLE IF EXISTS `RoleList`;
+CREATE TABLE `RoleList` (
+  `account_id` bigint(20) unsigned NOT NULL,
+  `role_id` bigint(20) unsigned NOT NULL,
+  `create_time` bigint(20) unsigned NOT NULL,
+  KEY `account_id` (`account_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for RoleLooksInfo
@@ -68,16 +96,6 @@ CREATE TABLE `RoleLooksInfo` (
   `weapon` int(10) DEFAULT NULL,
   `wing` int(10) DEFAULT NULL,
   PRIMARY KEY (`role_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- ----------------------------
--- Table structure for TaskInfo
--- ----------------------------
-DROP TABLE IF EXISTS `TaskInfo`;
-CREATE TABLE `TaskInfo` (
-  `roleID` bigint(50) NOT NULL,
-  `mainTaskID` int(11) DEFAULT NULL,
-  PRIMARY KEY (`roleID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
@@ -96,4 +114,4 @@ CREATE TABLE `TaskList` (
   `contentID` int(8) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `role_id` (`roleID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;

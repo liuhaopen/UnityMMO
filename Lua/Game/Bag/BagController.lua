@@ -26,9 +26,12 @@ end
 
 function BagController:ReqBagList( pos )
 	local on_ack = function ( ackData )
+		print("Cat:BagController [start:29] ackData: ", ackData)
+		PrintTable(ackData)
+		print("Cat:BagController [end]")
 		self.model:SetBagInfo(ackData)
 	end
-    NetDispatcher:SendMessage("Bag_GetInfo", pos, on_ack)
+    NetDispatcher:SendMessage("Bag_GetInfo", {pos=pos}, on_ack)
 end
 
 function BagController:ListenBagChange(  )

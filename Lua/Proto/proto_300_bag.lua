@@ -31,8 +31,6 @@ Bag_GetInfo 300 {
 
 #获取背包变更列表
 Bag_GetChangeList 301 {
-	request {
-	}
 	response {
 		goodsList 0 : *goodsInfo
 	}

@@ -84,7 +84,7 @@ public class MoveQuery : MonoBehaviour
     {
         NavMeshHit closestHit;
         // Debug.Log("transform.position : "+transform.position.x+" "+transform.position.y+" "+transform.position.z);
-        if (NavMesh.SamplePosition (transform.position, out closestHit, 100f, NavMesh.AllAreas)) {
+        if (NavMesh.SamplePosition(transform.position, out closestHit, 100f, NavMesh.AllAreas)) {
             transform.position = closestHit.position;
             charController.transform.position = closestHit.position;
             // Debug.Log("transform.position2 : "+transform.position.x+" "+transform.position.y+" "+transform.position.z);

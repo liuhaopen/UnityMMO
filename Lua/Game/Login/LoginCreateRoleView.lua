@@ -127,7 +127,6 @@ function LoginCreateRoleView:AddEvents(  )
 		if click_btn == self.close_obj then
             UIMgr:Close(self)--返回上个界面
         elseif click_btn == self.random_obj then
-        	print('Cat:LoginCreateRoleView.lua[117]')
 			self:OnClickRandomName()
         elseif click_btn == self.create_role_obj then
 			--请求创建角色
@@ -135,8 +134,9 @@ function LoginCreateRoleView:AddEvents(  )
 	        	print("Cat:LoginCreateRoleView [start:35] ack_data:", ack_data)
 	        	PrintTable(ack_data)
 	        	print("Cat:LoginCreateRoleView [end]")
-	            if ack_data.result == 1 then
+	            if ack_data.result == 0 then
 	                UIMgr:CloseAllView()
+	                require("Game/Login/LoginSceneBgView"):SetActive(false)
 	                --正式进入游戏场景
 	                GlobalEventSystem:Fire(LoginConst.Event.SelectRoleEnterGame, ack_data.role_id)
 	            else

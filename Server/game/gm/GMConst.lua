@@ -1,0 +1,4 @@
+local GMConst = {
+	
+}
+return GMConst

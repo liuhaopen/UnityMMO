@@ -188,6 +188,7 @@ public class SceneMgr : MonoBehaviour
                     moveQuery.UpdateNavAgent();
                 }
                 CorrectSceneObjectsPos();
+                CorrectMainRolePos();
             };
         });
     }
@@ -272,7 +273,7 @@ public class SceneMgr : MonoBehaviour
         if (!isBaseWorldLoadOk || mainRole == null || curSceneInfo==null)
             return;
         Vector3 oldPos = mainRole.transform.localPosition;
-        Vector3 newPos = GetCorrectPos(oldPos);
+        Vector3 newPos = GetCorrectPos(oldPos, true);
         Debug.Log("old pos:"+oldPos.x+" "+oldPos.y+" "+oldPos.z+" newPos:"+newPos.x+" "+newPos.y+" "+newPos.z);
         mainRole.transform.localPosition = newPos;
     }
@@ -285,14 +286,15 @@ public class SceneMgr : MonoBehaviour
             {
                 Entity entity = objs.Value;
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
-                Debug.Log("CorrectSceneObjectsPos : "+trans.gameObject.name);
+                // Debug.Log("CorrectSceneObjectsPos : "+trans.gameObject.name);
                 var correctPos = GetCorrectPos(trans.localPosition);
+                // Debug.Log("trans.localPosition : "+trans.localPosition.x+" "+trans.localPosition.y+" "+trans.localPosition.z+" correctpos:"+correctPos.x+" "+correctPos.y+" "+correctPos.z);
                 trans.localPosition = correctPos;
             }
         }
     }
 
-    public Vector3 GetCorrectPos(Vector3 originPos)
+    public Vector3 GetCorrectPos(Vector3 originPos, bool returnClosePointIfRaycastFail=false)
     {
         Vector3 newPos = originPos;
         Ray ray1 = new Ray(originPos + new Vector3(0, 10000, 0), Vector3.down);
@@ -303,7 +305,7 @@ public class SceneMgr : MonoBehaviour
             newPos = groundHit.point;
             newPos.y += 0.1f;
         }
-        else
+        else if (returnClosePointIfRaycastFail)
         {
             //wrong pos, return a nearest safe position
             if (curSceneInfo != null)

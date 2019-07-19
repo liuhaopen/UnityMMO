@@ -43,6 +43,8 @@ function Game:InitControllers()
         "Game/MainUI/MainUIController", 
         "Game/Task/TaskController", 
         "Game/Scene/SceneController", 
+        "Game/Bag/BagController", 
+        "Game/GM/GMController", 
     }
     for i,v in ipairs(ctrl_paths) do
         local ctrl = require(v)

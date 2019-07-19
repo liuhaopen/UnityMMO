@@ -22,6 +22,8 @@ public class MovementUpdateSystem : BaseComponentSystem
 
     protected override void OnUpdate()
     {
+        if (SceneMgr.Instance.IsLoadingScene)
+            return;
         float dt = Time.deltaTime;
         var entities = group.ToEntityArray(Allocator.TempJob);
         var targetPositions = group.ToComponentDataArray<TargetPosition>(Allocator.TempJob);
@@ -203,13 +205,6 @@ class MovementHandleGroundCollision : BaseComponentSystem
                 // locoStates[i] = locoState;
                 EntityManager.SetComponentData<LocomotionState>(entities[i], locoState);
             }
-            // Manually calculate resulting velocity as characterController.velocity is linked to Time.deltaTime
-            // var newPos = query.moveQueryResult;
-            // var oldPos = query.moveQueryStart;
-            // var velocity = (newPos - oldPos) / Time.deltaTime;
-            // locoState.velocity = velocity;
-            // locoState.position = query.moveQueryResult;
-            // EntityManager.SetComponentData(charAbility.character, locoState);
         }
         entities.Dispose();
         locoStates.Dispose();
