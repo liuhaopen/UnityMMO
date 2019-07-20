@@ -2,6 +2,7 @@ local TaskDialogView = BaseClass(UINode)
 
 function TaskDialogView:Constructor(  )
 	self.prefabPath = "Assets/AssetBundleRes/ui/task/TaskDialogView.prefab"
+	self.canvasName = "Normal"
 	self.model = TaskModel:GetInstance()
 	self:Load()
 end

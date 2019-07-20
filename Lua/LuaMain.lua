@@ -1,5 +1,5 @@
 require "Game.Common.UIManager"
-require "Game.Common.UIWidgetPool"
+PrefabPool = require "Game.Common.PrefabPool"
 require "Common.UI.UIComponent"
 require("Common.UI.ItemListCreator")
 require("Game.Common.Message")
@@ -17,6 +17,7 @@ end
 --初始化完成
 function Game:OnInitOK()
     print('Cat:Game.lua[Game.OnInitOK()]')
+    Game:InitLuaPool()
     Game:InitUI()
     Game:InitControllers()
 end
@@ -31,9 +32,10 @@ function Game.InitUI()
     local pre_load_prefab = {
         "Assets/AssetBundleRes/ui/common/Background.prefab",
         "Assets/AssetBundleRes/ui/common/GoodsItem.prefab",
+        "Assets/AssetBundleRes/ui/common/WindowBig.prefab",
     }
-    UIWidgetPool:Init("UICanvas/HideUI")
-    UIWidgetPool:RegisterWidgets(pre_load_prefab)
+    PrefabPool:Init("UICanvas/HideUI")
+    PrefabPool:Register(pre_load_prefab)
 end
 
 function Game:InitControllers()
@@ -57,6 +59,21 @@ function Game:InitControllers()
             assert(false, 'Cat:Main.lua error : you must forgot write a return in you controller file :'..v)
         end
     end
+end
+
+function Game:InitLuaPool(  )
+    LuaPool = require "Game.Common.LuaPool"
+    local info = {
+        ["Pool-Window"] = {
+            name="Pool-Window", maxNum=5, prototype = require("Game.Common.UI.Window")
+        },
+        ["Pool-TabBar"] = {
+            name="Pool-TabBar", maxNum=5, createFunc=function()
+                return require("Game.Common.UI.TabBar").New()
+            end
+        },
+    }
+    LuaPool:Init(info)
 end
 
 --销毁--

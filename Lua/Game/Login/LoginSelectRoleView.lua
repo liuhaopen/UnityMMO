@@ -32,7 +32,7 @@ function LoginSelectRoleView:AddEvents(  )
 			CookieWrapper:GetInstance():SaveCookie(CookieLevelType.Common, CookieTimeType.TYPE_ALWAYS, CookieKey.LastSelectRoleID, self.select_role_id)
 		end
 	end
-	UIHelper.BindClickEvent(self.start_obj, on_click)
+	UI.BindClickEvent(self.start_obj, on_click)
 
 end
 

@@ -7,47 +7,51 @@ end
 function UINode:Load(  )
 	assert(self.prefabPath, "cannot find prefabPath field")
 	local on_load_succeed = function ( gameObject )
-		self.gameObject = gameObject
-		self.transform = gameObject.transform
-		self.gameObject.layer = CS.UnityEngine.LayerMask.NameToLayer("UI")
-		if self.parentTrans then
-			self.transform:SetParent(self.parentTrans)
-		else
-			self.canvasName = self.canvasName or "Normal"
-			UIMgr:AddToCanvas(self, self.canvasName)
-		end
-		self.transform.localScale = Vector3.one
-		self.transform.localRotation = Quaternion.identity
-		if self.transform.anchoredPosition then
-    		self.transform.anchoredPosition = Vector2.zero
-    	end
-        if self.__cacheLocalPos then
-        	UI.SetLocalPositionXYZ(self.transform, self.__cacheLocalPos.x, self.__cacheLocalPos.y, self.__cacheLocalPos.z or 0)
-        	self.__cacheLocalPos = nil
-        elseif self.__cachePos then
-        	UI.SetPositionXYZ(self.transform, self.__cachePos.x, self.__cachePos.y, self.__cachePos.z or 0)
-        	self.__cachePos = nil
-        else
-        	local localPos = self.transform.localPosition
-        	localPos.z = 0
-       		self.transform.localPosition = localPos
-    	end
-    	if self.__cacheVisible ~= nil then
-    		self.gameObject:SetActive(self.__cacheVisible)
-    		self.__cacheVisible = nil
-    	end
-    	if self._components_ then
-			for i,v in ipairs(self._components_) do
-				v:OnLoad()
-			end
-		end
-    	self.isLoaded = true
-		self:OnLoad()
-		if self.isNeedUpdateOnLoad then
-			self:OnUpdate()
-		end
+		self:Init(gameObject)
 	end
 	ResMgr:LoadPrefabGameObject(self.prefabPath, on_load_succeed)
+end
+
+function UINode:Init( gameObject )
+	self.gameObject = gameObject
+	self.transform = gameObject.transform
+	self.gameObject.layer = CS.UnityEngine.LayerMask.NameToLayer("UI")
+	if self.parentTrans then
+		self.transform:SetParent(self.parentTrans)
+	elseif self.canvasName then
+		self.canvasName = self.canvasName
+		UIMgr:AddToCanvas(self, self.canvasName)
+	end
+	self.transform.localScale = Vector3.one
+	self.transform.localRotation = Quaternion.identity
+	if self.transform.anchoredPosition then
+		self.transform.anchoredPosition = Vector2.zero
+	end
+    if self.__cacheLocalPos then
+    	UI.SetLocalPositionXYZ(self.transform, self.__cacheLocalPos.x, self.__cacheLocalPos.y, self.__cacheLocalPos.z or 0)
+    	self.__cacheLocalPos = nil
+    elseif self.__cachePos then
+    	UI.SetPositionXYZ(self.transform, self.__cachePos.x, self.__cachePos.y, self.__cachePos.z or 0)
+    	self.__cachePos = nil
+    else
+    	local localPos = self.transform.localPosition
+    	localPos.z = 0
+   		self.transform.localPosition = localPos
+	end
+	if self.__cacheVisible ~= nil then
+		self.gameObject:SetActive(self.__cacheVisible)
+		self.__cacheVisible = nil
+	end
+	if self._components_ then
+		for i,v in ipairs(self._components_) do
+			v:OnLoad()
+		end
+	end
+	self.isLoaded = true
+	self:OnLoad()
+	if self.isNeedUpdateOnLoad then
+		self:OnUpdate()
+	end
 end
 
 function UINode:OnLoad(  )
@@ -55,8 +59,14 @@ function UINode:OnLoad(  )
 end
 
 function UINode:OnDestroy(  )
-	GameObject.Destroy(self.gameObject)
 	self.isLoaded = nil
+	self.destroyed = true
+	if self.autoDestroyNodes then
+		for i,v in ipairs(self.autoDestroyNodes) do
+			v:Destroy()
+		end
+		self.autoDestroyNodes = nil
+	end
 	if self.bindEventInfos then
 		for k,v in pairs(self.bindEventInfos) do
 			if v[1] and v[2] then
@@ -71,6 +81,7 @@ function UINode:OnDestroy(  )
 		end
 		self._components_ = nil
 	end
+	GameObject.Destroy(self.gameObject)
 end
 
 function UINode:OnUpdate(  )
@@ -123,6 +134,13 @@ function UINode:SetParent( parent )
 	end
 end
 
+function UINode:SetCanvas( canvasName )
+	self.canvasName = canvasName
+	if self.isLoaded then
+		UIMgr:AddToCanvas(self, self.canvasName)
+	end
+end
+
 function UINode:GetPositionXYZ(  )
 	if self.isLoaded then
 		return UI.GetPositionXYZ(self.transform)
@@ -153,6 +171,12 @@ function UINode:JustShowMe( subNode )
  	end
  	self.lastShowSubNode = subNode
  	self.lastShowSubNode:SetActive(true)
+end
+
+--关闭界面时销毁该节点
+function UINode:AutoDestroy( deleteNode )
+	self.autoDestroyNodes = self.autoDestroyNodes or {}
+	table.insert(self.autoDestroyNodes, deleteNode)
 end
 
 function UINode:AddUIComponent( component, arge )

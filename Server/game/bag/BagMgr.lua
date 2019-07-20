@@ -12,9 +12,6 @@ local function initBagList( pos )
 	local condition = string.format("role_id=%s and pos=%s", this.user_info.cur_role_id, pos)
 	local hasBagList, goodsList = skynet.call(this.gameDBServer, "lua", "select_by_condition", "Bag", condition)
 	print('Cat:this.lua[15] hasBagList', hasBagList, pos)
-	print("Cat:this [start:16] goodsList:", goodsList)
-	PrintTable(goodsList)
-	print("Cat:this [end]")
 	local bagInfo = {cellNum=200, pos=pos}
 	if hasBagList then
 		local sort_func = function ( a, b )
@@ -120,9 +117,6 @@ end
 
 local SprotoHandlers = {}
 function SprotoHandlers.Bag_GetInfo( reqData )
-	print("Cat:this [start:29] reqData:", reqData, this.user_info.cur_role_id)
-	PrintTable(reqData)
-	print("Cat:this [end]")
 	local bagList = this.bagLists[reqData.pos]
 	if not bagList then
 		bagList = initBagList(reqData.pos)

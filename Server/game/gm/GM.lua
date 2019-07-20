@@ -5,6 +5,7 @@ local this = {
 	user_info = nil,
 	gmList = {
 		{gmName="增加道具", defaultGMStr="goods,100000,1"},
+		{gmName="清空背包", defaultGMStr="clearAllGoods"},
 	},
 }
 
@@ -20,6 +21,10 @@ function gmHandler.goods( gmParts )
 		return 0
 	end
 	return 1
+end
+
+function gmHandler.clearAllGoods( gmParts )
+
 end
 
 local SprotoHandlers = {}

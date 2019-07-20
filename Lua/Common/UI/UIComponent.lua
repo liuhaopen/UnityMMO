@@ -21,7 +21,7 @@ end
 UI.Background = BaseClass(UI.UIComponent)
 function UI.Background:OnLoad()
 	-- print('Cat:UIComponent.lua[23] self.alpha, self.is_click_to_close', self.alpha, self.is_click_to_close)
-	local bg = UIWidgetPool:CreateWidget("Background")
+	local bg = PrefabPool:Get("Background")
 	self.bg_img = bg.gameObject:GetComponent("RawImage")
 	self.bg_obj = bg.gameObject
 	if self.alpha then
@@ -55,7 +55,7 @@ end
 function UI.Background:OnClose()
 	print('Cat:UI.lua[Background OnClose]')
 	if self.bg_widget then
-		UIWidgetPool:RecycleWidget(self.bg_widget)
+		PrefabPool:Recycle(self.bg_widget)
 		self.bg_widget = nil
 	end
 end

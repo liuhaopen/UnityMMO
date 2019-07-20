@@ -58,7 +58,7 @@ local Split = Split
 UI.G_ComponentMapForGetChildren = {
 	img = "Image", txtnav = "Text", tog = "Toggle", imgex = "ImageExtend", outline = "Outline", raw = "RawImage", scroll = "ScrollRect", input = "InputField", txt = "TextMeshProUGUI",
 }
-function UI.GetChildren( self, parent, names )
+function UI.GetChildren( self, parent, names, ignoreExist )
 	assert(parent, "UIHelper:GetChildren() cannot find transform!")
 	for i=1,#names do
 		local name_parts = Split(names[i], ":")
@@ -67,7 +67,9 @@ function UI.GetChildren( self, parent, names )
 		if short_name and find(short_name,"/") then
 			short_name = gsub(short_name,".+/","")
 		end
-		assert(self[short_name] == nil, short_name .. " already exists")
+		if not ignoreExist then
+			assert(self[short_name] == nil, short_name .. " already exists")
+		end
 		if short_name then
 			self[short_name] = parent:Find(full_name)
 		end
@@ -347,4 +349,17 @@ function UI.GetSizeDeltaY(transform)
 		return size.y
 	end
 	return 0
+end
+
+function UI.SetBg( self, rawImg, bg_res, is_auto_size, loaded_call_back )
+	if not rawImg then return end
+	rawImg.gameObject:SetActive(false)
+	local on_loaded = function (  )
+		if self.destroyed then return end
+		rawImg.gameObject:SetActive(true)
+		if loaded_call_back then
+			loaded_call_back()
+		end
+	end
+	lua_resM:setOutsideRawImage(self, rawImg, GameResPath.GetViewBigBg(bg_res), is_auto_size, on_loaded)
 end

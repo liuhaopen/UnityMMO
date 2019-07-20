@@ -9,4 +9,8 @@ function ResPath.GetRoleHeadRes( career, head_id )
 	return "Assets/AssetBundleRes/ui/roleHead/head_"..res_id..".png"
 end
 
+function ResPath.GetBgPath( name )
+	return "Assets/AssetBundleRes/ui/bigimage/"..name..".png"
+end
+
 return ResPath

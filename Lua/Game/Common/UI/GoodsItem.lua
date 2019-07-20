@@ -1,7 +1,7 @@
 local GoodsItem = BaseClass(UINode)
 
 function GoodsItem:Constructor( parentTrans )
-	self.widget = UIWidgetPool:CreateWidget("GoodsItem")
+	self.widget = PrefabPool:Get("GoodsItem")
 	self.gameObject = self.widget.gameObject
 	self.transform = self.widget.transform
 	self.transform:SetParent(parentTrans)
