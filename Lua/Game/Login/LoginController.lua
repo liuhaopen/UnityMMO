@@ -201,8 +201,6 @@ function LoginController:OnReceiveMsg( bytes )
     end
 end
 
-
-
 function LoginController:Disconnect()
 	print('Cat:LoginController.lua[Disconnect]', self.login_state)
     if not self.login_info.had_disconnect_with_account_server and (self.login_state == LoginConst.Status.WaitForGameServerConnect or self.login_state == LoginConst.Status.WaitForGameServerHandshake) then

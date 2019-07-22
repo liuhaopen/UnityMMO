@@ -21,7 +21,7 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(UnityMMO.SceneMgr);
-			Utils.BeginObjectRegister(type, L, translator, 0, 18, 11, 4);
+			Utils.BeginObjectRegister(type, L, translator, 0, 20, 11, 4);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "CheckMainRolePos", _m_CheckMainRolePos);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Init", _m_Init);
@@ -31,6 +31,7 @@ namespace XLua.CSObjectWrap
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "ReqEnterScene", _m_ReqEnterScene);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "ApplyDetector", _m_ApplyDetector);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "CorrectMainRolePos", _m_CorrectMainRolePos);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "CorrectSceneObjectsPos", _m_CorrectSceneObjectsPos);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetCorrectPos", _m_GetCorrectPos);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "ApplyMainRole", _m_ApplyMainRole);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "AddMainRole", _m_AddMainRole);
@@ -38,6 +39,7 @@ namespace XLua.CSObjectWrap
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetNameByUID", _m_GetNameByUID);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetSceneObjTypeByUID", _m_GetSceneObjTypeByUID);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "RemoveSceneObject", _m_RemoveSceneObject);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "RemoveSceneEntity", _m_RemoveSceneEntity);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "RemoveAllSceneObjects", _m_RemoveAllSceneObjects);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetSceneObject", _m_GetSceneObject);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetSceneObjects", _m_GetSceneObjects);
@@ -328,7 +330,7 @@ namespace XLua.CSObjectWrap
         }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_GetCorrectPos(RealStatePtr L)
+        static int _m_CorrectSceneObjectsPos(RealStatePtr L)
         {
 		    try {
             
@@ -339,6 +341,47 @@ namespace XLua.CSObjectWrap
             
             
                 
+                {
+                    
+                    gen_to_be_invoked.CorrectSceneObjectsPos(  );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_GetCorrectPos(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
+            
+            
+			    int gen_param_count = LuaAPI.lua_gettop(L);
+            
+                if(gen_param_count == 3&& translator.Assignable<UnityEngine.Vector3>(L, 2)&& LuaTypes.LUA_TBOOLEAN == LuaAPI.lua_type(L, 3)) 
+                {
+                    UnityEngine.Vector3 _originPos;translator.Get(L, 2, out _originPos);
+                    bool _returnClosePointIfRaycastFail = LuaAPI.lua_toboolean(L, 3);
+                    
+                        UnityEngine.Vector3 gen_ret = gen_to_be_invoked.GetCorrectPos( _originPos, _returnClosePointIfRaycastFail );
+                        translator.PushUnityEngineVector3(L, gen_ret);
+                    
+                    
+                    
+                    return 1;
+                }
+                if(gen_param_count == 2&& translator.Assignable<UnityEngine.Vector3>(L, 2)) 
                 {
                     UnityEngine.Vector3 _originPos;translator.Get(L, 2, out _originPos);
                     
@@ -353,6 +396,8 @@ namespace XLua.CSObjectWrap
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }
+            
+            return LuaAPI.luaL_error(L, "invalid arguments to UnityMMO.SceneMgr.GetCorrectPos!");
             
         }
         
@@ -523,6 +568,35 @@ namespace XLua.CSObjectWrap
                     long _uid = LuaAPI.lua_toint64(L, 2);
                     
                     gen_to_be_invoked.RemoveSceneObject( _uid );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_RemoveSceneEntity(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    Unity.Entities.Entity _entity;translator.Get(L, 2, out _entity);
+                    bool _deleInDic = LuaAPI.lua_toboolean(L, 3);
+                    
+                    gen_to_be_invoked.RemoveSceneEntity( _entity, _deleInDic );
                     
                     
                     

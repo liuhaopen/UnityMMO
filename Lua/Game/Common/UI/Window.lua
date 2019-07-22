@@ -9,12 +9,12 @@ local StyleInfo = {
 		widgetName = "WindowBig",
 	},
 }
-function Window:Constructor( parentTrans )
+function Window:Constructor( )
 	self:Reset()
 end
 
 function Window.Create( )
-	return LuaPool:Get("Pool-Window")
+	return LuaPool:Get("Window")
 end
 
 function Window:Reset()
@@ -25,7 +25,7 @@ end
 function Window:Load( data )
 	self.lastData = self.data
 	self.data = data
-	if not self.data or not self.data.style then 
+	if not self.data then 
 		LogError("Window:Load data nil")
 		return 
 	end
@@ -74,7 +74,7 @@ end
 
 function Window:OnLoad(  )
 	local names = {
-		"tab_scroll/Viewport/tab_scroll_con","tab_con","tab_scroll","close:obj","tab_line","sub_view_con","bg:raw",
+		"tab_scroll/Viewport/tab_scroll_con","tab_con","tab_scroll","close:obj","tab_line","bg:raw",
 	}
 	UI.GetChildren(self, self.transform, names, true)
 

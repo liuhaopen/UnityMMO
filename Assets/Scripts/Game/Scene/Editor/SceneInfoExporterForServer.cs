@@ -33,6 +33,9 @@ public class SceneInfoExporterForServer : Editor
         export_info.npc_list = new List<NPCInfo>(npc_list);
         MonsterInfo[] monster_list = Selection.activeTransform.GetComponentsInChildren<MonsterInfo>();
         export_info.monster_list = new List<MonsterInfo>(monster_list);
+        CollectableInfo[] collectable_list = Selection.activeTransform.GetComponentsInChildren<CollectableInfo>();
+        export_info.collectable_list = new List<CollectableInfo>(collectable_list);
+        
         string content = LuaUtility.ToLua(export_info);
         content = "local config = " + content;
         Debug.Log(content);

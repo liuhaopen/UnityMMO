@@ -361,5 +361,8 @@ function UI.SetBg( self, rawImg, bg_res, is_auto_size, loaded_call_back )
 			loaded_call_back()
 		end
 	end
-	lua_resM:setOutsideRawImage(self, rawImg, GameResPath.GetViewBigBg(bg_res), is_auto_size, on_loaded)
+	if not is_auto_size then
+		is_auto_size = false
+	end
+	UIHelper.SetRawImage(rawImg, bg_res, is_auto_size, on_loaded)
 end

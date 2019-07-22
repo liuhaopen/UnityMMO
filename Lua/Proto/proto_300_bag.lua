@@ -6,8 +6,8 @@ return [[
 #cell:道具在哪个格子
 #num:数量
 .goodsInfo {
-	goods_uid 0 : integer
-	goods_type_id 1 : integer
+	uid 0 : integer
+	typeID 1 : integer
 	pos 2 : integer
 	cell 3 : integer
 	num 4 : integer
@@ -39,7 +39,7 @@ Bag_GetChangeList 301 {
 #获取道具的详细信息
 Bag_GetGoodsDetail 302 {
 	request {
-		goodsUID 0 : integer
+		uid 0 : integer
 	}
 	response {
 		detail 0 : goodsDetail
@@ -49,7 +49,7 @@ Bag_GetGoodsDetail 302 {
 #使用道具
 Bag_UseGoods 303 {
 	request {
-		goodsUID 0 : integer
+		uid 0 : integer
 		num 1 : integer
 	}
 	response {
@@ -60,7 +60,7 @@ Bag_UseGoods 303 {
 #出售道具
 Bag_SellGoods 304 {
 	request {
-		goodsUID 0 : integer
+		uid 0 : integer
 		num 1 : integer
 	}
 	response {
@@ -71,7 +71,7 @@ Bag_SellGoods 304 {
 #丢掉道具
 Bag_DropGoods 305 {
 	request {
-		goodsUID 0 : integer
+		uid 0 : integer
 	}
 	response {
 		result 0 : integer

@@ -9,7 +9,7 @@ local this = {
 
 local function initBagList( pos )
 	this.gameDBServer = this.gameDBServer or skynet.localname(".GameDBServer")
-	local condition = string.format("role_id=%s and pos=%s", this.user_info.cur_role_id, pos)
+	local condition = string.format("roleID=%s and pos=%s", this.user_info.cur_role_id, pos)
 	local hasBagList, goodsList = skynet.call(this.gameDBServer, "lua", "select_by_condition", "Bag", condition)
 	print('Cat:this.lua[15] hasBagList', hasBagList, pos)
 	local bagInfo = {cellNum=200, pos=pos}
@@ -41,7 +41,7 @@ end
 local findGoodsInList = function ( goodsList, goodsTypeID )
 	if not goodsList then return end
 	for i,v in ipairs(goodsList) do
-		if v.goods_type_id == goodsTypeID then
+		if v.typeID == goodsTypeID then
 			return v, i
 		end
 	end
@@ -83,24 +83,24 @@ local changeGoodsNum = function( goodsTypeID, num, pos, notify )
 					skynet.error("bag change goods num less than 0")
 				end
 				goodsInfo.num = 0
-				skynet.call(this.gameDBServer, "lua", "delete", "Bag", "goods_uid", goodsInfo.goods_uid)
+				skynet.call(this.gameDBServer, "lua", "delete", "Bag", "uid", goodsInfo.uid)
 			else
-				skynet.call(this.gameDBServer, "lua", "update", "Bag", "goods_uid", goodsInfo.goods_uid, goodsInfo)
+				skynet.call(this.gameDBServer, "lua", "update", "Bag", "uid", goodsInfo.uid, goodsInfo)
 			end
 			newGoods = goodsInfo
 		else
 			local emptyCell = findEmptyCell(bagInfo)
 			print('Cat:BagMgr.lua[81] emptyCell', emptyCell)
 			this.id_service = this.id_service or skynet.localname(".id_service")
-			local goods_uid = skynet.call(this.id_service, "lua", "gen_uid", "goods")
+			local uid = skynet.call(this.id_service, "lua", "gen_uid", "goods")
 			local addNum = math.min(overlapNum, num)
 			newGoods = {
-				goods_uid = goods_uid,
-				goods_type_id = goodsTypeID,
+				uid = uid,
+				typeID = goodsTypeID,
 				num = addNum,
 				pos = pos,
 				cell = emptyCell,
-				role_id = this.user_info.cur_role_id,
+				roleID = this.user_info.cur_role_id,
 			}
 			table.insert(bagInfo.goodsList, emptyCell, newGoods)
 			skynet.call(this.gameDBServer, "lua", "insert", "Bag", newGoods)
@@ -126,7 +126,7 @@ function SprotoHandlers.Bag_GetInfo( reqData )
 end
 
 function SprotoHandlers.Bag_GetChangeList( reqData )
-	print('Cat:BagMgr.lua[131  req get change list')
+	print('Cat:BagMgr.lua[131] req get change list')
 	if not this.coForGoodsChangeList then
 		if not this.cacheChangeList or #this.cacheChangeList <= 0 then
 			this.coForGoodsChangeList = coroutine.running()
@@ -150,7 +150,7 @@ function PublicFuncs.Init( user_info )
 	this.user_info = user_info
 	
 end
-function PublicFuncs.AddBagGoods( goodsTypeID, num )
+function PublicFuncs.ChangeBagGoods( goodsTypeID, num )
 	print('Cat:BagMgr.lua[137] goodsTypeID, num', goodsTypeID, num)
 	changeGoodsNum(goodsTypeID, num, BagConst.Pos.Bag, true)
 end

@@ -5,23 +5,28 @@ function UINode:Constructor( parentTrans )
 end
 
 function UINode:Load(  )
-	assert(self.prefabPath, "cannot find prefabPath field")
-	local on_load_succeed = function ( gameObject )
-		self:Init(gameObject)
+	assert(self.viewCfg, "has no assign viewCfg before load")
+	-- local isEmptyContainer = self.viewCfg.prefabPath and string.find(self.viewCfg.prefabPath, "common/EmptyContainer.prefab")
+	-- if isEmptyContainer then
+	-- 	self.viewCfg.prefabPoolName = "EmptyContainer"
+	-- 	self.viewCfg.prefabPath = nil
+	-- end
+	assert(self.viewCfg.prefabPath or self.viewCfg.prefabPoolName, "has no assign prefabPath or prefabPoolName field")
+	if self.viewCfg.prefabPath then
+		local on_load_succeed = function ( gameObject )
+			print('Cat:UINode.lua[17] self.viewCfg.prefabPath, gameObject', self.viewCfg.prefabPath, gameObject)
+			self:Init(gameObject)
+		end
+		ResMgr:LoadPrefabGameObject(self.viewCfg.prefabPath, on_load_succeed)
+	elseif self.viewCfg.prefabPoolName then
+		local widget = PrefabPool:Get(self.viewCfg.prefabPoolName)
+		print('Cat:UINode.lua[21] widget', widget)
+		self.viewCfg.prefabPoolObj = widget
+		self:Init(widget.gameObject)
 	end
-	ResMgr:LoadPrefabGameObject(self.prefabPath, on_load_succeed)
 end
 
-function UINode:Init( gameObject )
-	self.gameObject = gameObject
-	self.transform = gameObject.transform
-	self.gameObject.layer = CS.UnityEngine.LayerMask.NameToLayer("UI")
-	if self.parentTrans then
-		self.transform:SetParent(self.parentTrans)
-	elseif self.canvasName then
-		self.canvasName = self.canvasName
-		UIMgr:AddToCanvas(self, self.canvasName)
-	end
+function UINode:UpdateTransform(  )
 	self.transform.localScale = Vector3.one
 	self.transform.localRotation = Quaternion.identity
 	if self.transform.anchoredPosition then
@@ -38,25 +43,38 @@ function UINode:Init( gameObject )
     	localPos.z = 0
    		self.transform.localPosition = localPos
 	end
+end
+
+function UINode:Init( gameObject )
+	self.gameObject = gameObject
+	if self.viewCfg and self.viewCfg.name then
+		gameObject.name = self.viewCfg.name
+	end
+	self.transform = gameObject.transform
+	self.gameObject.layer = CS.UnityEngine.LayerMask.NameToLayer("UI")
+	if self.parentTrans then
+		self.transform:SetParent(self.parentTrans)
+	elseif self.viewCfg and self.viewCfg.canvasName then
+		UIMgr:AddToCanvas(self, self.viewCfg.canvasName)
+	end
+	self:UpdateTransform()
 	if self.__cacheVisible ~= nil then
 		self.gameObject:SetActive(self.__cacheVisible)
 		self.__cacheVisible = nil
 	end
-	if self._components_ then
-		for i,v in ipairs(self._components_) do
-			v:OnLoad()
-		end
-	end
+	self:InitComponents()
 	self.isLoaded = true
-	self:OnLoad()
+	if self.OnLoad then
+		self:OnLoad()
+	end
 	if self.isNeedUpdateOnLoad then
 		self:OnUpdate()
 	end
 end
 
-function UINode:OnLoad(  )
-	--override me
-end
+-- function UINode:OnLoad(  )
+-- 	--override me
+-- end
 
 function UINode:OnDestroy(  )
 	self.isLoaded = nil
@@ -75,11 +93,11 @@ function UINode:OnDestroy(  )
 		end
 		self.bindEventInfos = nil
 	end
-	if self._components_ then
-		for i,v in ipairs(self._components_) do
+	if self.viewCfg and self.viewCfg.components then
+		for i,v in ipairs(self.viewCfg.components) do
 			v:OnClose()
 		end
-		self._components_ = nil
+		self.viewCfg.components = nil
 	end
 	GameObject.Destroy(self.gameObject)
 end
@@ -131,13 +149,14 @@ function UINode:SetParent( parent )
 	self.parentTrans = parent
 	if self.isLoaded then
 		self.transform:SetParent(parent)
+		self:UpdateTransform()
 	end
 end
 
 function UINode:SetCanvas( canvasName )
-	self.canvasName = canvasName
+	self.viewCfg.canvasName = canvasName
 	if self.isLoaded then
-		UIMgr:AddToCanvas(self, self.canvasName)
+		UIMgr:AddToCanvas(self, self.viewCfg.canvasName)
 	end
 end
 
@@ -183,18 +202,25 @@ function UINode:AddUIComponent( component, arge )
 	print('Cat:UINode.lua[AddUIComponent] component, arge', component, tostring(arge))
 	assert(component~=nil, "cannot add nil component for view")
 	local new_comp = component.New()
-	new_comp:OnAwake(view, arge)
+	new_comp:OnAwake(self, arge)
 	if self.isLoaded then
 		new_comp:OnLoad()
 	end
-	self._components_ = self._components_ or {}
-	table.insert(self._components_, new_comp)
+	self.viewCfg.components = self.viewCfg.components or {}
+	table.insert(self.viewCfg.components, new_comp)
 	return new_comp
 end
 
 function UINode:InitComponents(  )
-	if self.isShowBackground then
+	if not self.viewCfg then return end
+	
+	if self.viewCfg.isShowBackground then
 		self:AddUIComponent(UI.Background)
+	end
+	if self.viewCfg and self.viewCfg.components then
+		for i,v in ipairs(self.viewCfg.components) do
+			v:OnLoad()
+		end
 	end
 end
 

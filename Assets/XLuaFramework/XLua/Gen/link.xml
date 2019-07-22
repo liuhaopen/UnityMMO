@@ -110,9 +110,23 @@
 
 	<assembly fullname="UnityEngine.UI">
 	    <type fullname="UnityEngine.UI.InputField" preserve="all"/>
+		<type fullname="UnityEngine.UI.Graphic" preserve="all"/>
+		<type fullname="UnityEngine.EventSystems.UIBehaviour" preserve="all"/>
 		<type fullname="UnityEngine.UI.MaskableGraphic" preserve="all"/>
+		<type fullname="UnityEngine.UI.MaskableGraphic+CullStateChangedEvent" preserve="all"/>
 		<type fullname="UnityEngine.UI.ScrollRect" preserve="all"/>
+		<type fullname="UnityEngine.UI.ScrollRect+MovementType" preserve="all"/>
+		<type fullname="UnityEngine.UI.ScrollRect+ScrollbarVisibility" preserve="all"/>
 		<type fullname="UnityEngine.UI.Image" preserve="all"/>
+		<type fullname="UnityEngine.UI.Image+Type" preserve="all"/>
+		<type fullname="UnityEngine.UI.Image+FillMethod" preserve="all"/>
+		<type fullname="UnityEngine.UI.Image+OriginHorizontal" preserve="all"/>
+		<type fullname="UnityEngine.UI.Image+OriginVertical" preserve="all"/>
+		<type fullname="UnityEngine.UI.Image+Origin90" preserve="all"/>
+		<type fullname="UnityEngine.UI.Image+Origin180" preserve="all"/>
+		<type fullname="UnityEngine.UI.Image+Origin360" preserve="all"/>
+		<type fullname="UnityEngine.UI.RawImage" preserve="all"/>
+		<type fullname="UnityEngine.UI.ScrollRect+ScrollRectEvent" preserve="all"/>
 		
 	</assembly>
 

@@ -37,6 +37,7 @@ function PrefabPool:Get( name )
 		return table.remove(pool, #pool)
 	else
 		local gameObject = Util.InstantiateObject(self.prefab_map[name])
+		gameObject.name = name
 		local widget = {prefab_name=name, gameObject=gameObject, transform=gameObject.transform}
 		return widget
 	end

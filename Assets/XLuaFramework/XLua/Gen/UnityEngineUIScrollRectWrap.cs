@@ -552,7 +552,7 @@ namespace XLua.CSObjectWrap
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			
                 UnityEngine.UI.ScrollRect gen_to_be_invoked = (UnityEngine.UI.ScrollRect)translator.FastGetCSObj(L, 1);
-                translator.Push(L, gen_to_be_invoked.movementType);
+                translator.PushUnityEngineUIScrollRectMovementType(L, gen_to_be_invoked.movementType);
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }
@@ -664,7 +664,7 @@ namespace XLua.CSObjectWrap
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			
                 UnityEngine.UI.ScrollRect gen_to_be_invoked = (UnityEngine.UI.ScrollRect)translator.FastGetCSObj(L, 1);
-                translator.Push(L, gen_to_be_invoked.horizontalScrollbarVisibility);
+                translator.PushUnityEngineUIScrollRectScrollbarVisibility(L, gen_to_be_invoked.horizontalScrollbarVisibility);
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }
@@ -678,7 +678,7 @@ namespace XLua.CSObjectWrap
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			
                 UnityEngine.UI.ScrollRect gen_to_be_invoked = (UnityEngine.UI.ScrollRect)translator.FastGetCSObj(L, 1);
-                translator.Push(L, gen_to_be_invoked.verticalScrollbarVisibility);
+                translator.PushUnityEngineUIScrollRectScrollbarVisibility(L, gen_to_be_invoked.verticalScrollbarVisibility);
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }

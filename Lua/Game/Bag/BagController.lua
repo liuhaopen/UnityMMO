@@ -44,4 +44,9 @@ function BagController:ListenBagChange(  )
     NetDispatcher:Listen("Bag_GetChangeList", nil, onBagChanged)
 end
 
+function BagController:ShowGoodsTips( showData )
+    if not showData then return end
+    
+end
+
 return BagController

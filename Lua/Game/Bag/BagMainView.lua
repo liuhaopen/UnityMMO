@@ -5,9 +5,19 @@ local TabInfo = {
 	{id=BagConst.TabID.Warehouse, name="仓库"},
 }
 function BagMainView:Constructor( )
-	-- self.prefabPath = ResPath.GetFullUIPath("bag/BagMainView.prefab")
-	-- self.canvasName = "Normal"
-	self.isShowBackground = true
+	self.viewCfg = {
+		name = "BagMainView",
+		prefabPoolName = "EmptyContainer",
+		canvasName = "Normal",
+		isShowBackground = true,
+	}	
+end
+
+function BagMainView:OnLoad(  )
+	local names = {
+		"container"
+	}
+	UI.GetChildren(self, self.transform, names)
 
 	self.window = UI.Window.Create()
 	local winData = {
@@ -18,21 +28,12 @@ function BagMainView:Constructor( )
 			self:OnSwitchTab(tabID)
 		end,
 		onClose = function()
-			-- self:Destroy()
-			self.window:Destroy()
+			self:Destroy()
 		end,
 	}
 	self.window:Load(winData)
-	-- self.window:SetParent(self.transform)
-	self.window:SetCanvas("Normal")
+	self.window:SetParent(self.container)
 	self:AutoDestroy(self.window)
-end
-
-function BagMainView:OnLoad(  )
-	local names = {
-		
-	}
-	UI.GetChildren(self, self.transform, names)
 
 	self:AddEvents()
 	self:OnUpdate()
@@ -45,14 +46,17 @@ end
 
 function BagMainView:OnSwitchTab( tabID )
 	if tabID == BagConst.TabID.Bag then
+		print('Cat:BagMainView.lua[49] self.bagView', self.bagView)
 		if not self.bagView then
-			self.bagView = require("Game.Bag.BagView").New(self.sub_con)
+			self.bagView = require("Game.Bag.BagView").New(self.container)
+			self.bagView:Load()
 			self:AutoDestroy(self.bagView)
 		end
 		self:JustShowMe(self.bagView)
 	elseif tabID == BagConst.TabID.Warehouse then
 		if not self.warehouseView then
-			self.warehouseView = require("Game.Bag.WarehouseView").New(self.sub_con)
+			self.warehouseView = require("Game.Bag.WarehouseView").New(self.container)
+			self.warehouseView:Load()
 			self:AutoDestroy(self.warehouseView)
 		end
 		self:JustShowMe(self.warehouseView)

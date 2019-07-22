@@ -14,7 +14,7 @@ function gmHandler.goods( gmParts )
 	if #gmParts ~= 3 then
 		return 1
 	end
-	local func = this.dispatcher:GetPublicFunc("Bag", "AddBagGoods")
+	local func = this.dispatcher:GetPublicFunc("Bag", "ChangeBagGoods")
 	print('Cat:GM.lua[14] func', func)
 	if func then
 		func(tonumber(gmParts[2]), tonumber(gmParts[3]))

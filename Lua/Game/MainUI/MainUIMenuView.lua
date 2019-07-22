@@ -1,8 +1,10 @@
 local MainUIMenuView = BaseClass(UINode)
 
 function MainUIMenuView:Constructor( )
-	self.prefabPath = "Assets/AssetBundleRes/ui/mainui/MainUIMenuView.prefab"
-	self.canvasName = "MainUI"
+	self.viewCfg = {
+		prefabPath = "Assets/AssetBundleRes/ui/mainui/MainUIMenuView.prefab",
+		canvasName = "MainUI",
+	}
 end
 
 function MainUIMenuView:OnLoad(  )

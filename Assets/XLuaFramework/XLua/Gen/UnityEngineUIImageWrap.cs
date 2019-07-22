@@ -326,7 +326,7 @@ namespace XLua.CSObjectWrap
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			
                 UnityEngine.UI.Image gen_to_be_invoked = (UnityEngine.UI.Image)translator.FastGetCSObj(L, 1);
-                translator.Push(L, gen_to_be_invoked.type);
+                translator.PushUnityEngineUIImageType(L, gen_to_be_invoked.type);
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }
@@ -368,7 +368,7 @@ namespace XLua.CSObjectWrap
                 ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			
                 UnityEngine.UI.Image gen_to_be_invoked = (UnityEngine.UI.Image)translator.FastGetCSObj(L, 1);
-                translator.Push(L, gen_to_be_invoked.fillMethod);
+                translator.PushUnityEngineUIImageFillMethod(L, gen_to_be_invoked.fillMethod);
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }

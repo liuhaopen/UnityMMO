@@ -1,8 +1,10 @@
 local BagWarehouseView = BaseClass(UINode)
 
 function BagWarehouseView:Constructor( )
-	self.prefabPath = "Assets/AssetBundleRes/ui/bag/BagWarehouseView.prefab"
-	self.canvasName = "Normal"
+	self.viewCfg = {
+		prefabPath = "Assets/AssetBundleRes/ui/bag/BagWarehouseView.prefab",
+		canvasName = "Normal",
+	}
 end
 
 function BagWarehouseView:OnLoad(  )

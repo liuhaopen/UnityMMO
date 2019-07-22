@@ -21,9 +21,10 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(UnityMMO.MoveQuery);
-			Utils.BeginObjectRegister(type, L, translator, 0, 5, 18, 18);
+			Utils.BeginObjectRegister(type, L, translator, 0, 6, 18, 18);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Initialize", _m_Initialize);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "UpdateNavAgent", _m_UpdateNavAgent);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "StartFindWay", _m_StartFindWay);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "UpdateSpeed", _m_UpdateSpeed);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "StopFindWay", _m_StopFindWay);
@@ -150,6 +151,33 @@ namespace XLua.CSObjectWrap
             }
             
             return LuaAPI.luaL_error(L, "invalid arguments to UnityMMO.MoveQuery.Initialize!");
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_UpdateNavAgent(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                UnityMMO.MoveQuery gen_to_be_invoked = (UnityMMO.MoveQuery)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    
+                    gen_to_be_invoked.UpdateNavAgent(  );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
             
         }
         

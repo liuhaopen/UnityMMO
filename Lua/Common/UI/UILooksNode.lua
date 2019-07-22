@@ -6,7 +6,9 @@ UILooksNode.ShowType = {
 	NPC = 3,
 }
 function UILooksNode:Constructor( parentTrans )
-	self.prefabPath = "Assets/AssetBundleRes/ui/common/UILooksNode.prefab"
+	self.viewCfg = {
+		prefabPath = "Assets/AssetBundleRes/ui/common/UILooksNode.prefab",
+	}
 	self.cacheRole = {}
 	self.cacheNPC = {}
 	self:Load()
@@ -19,7 +21,6 @@ function UILooksNode:OnLoad(  )
 	UI.GetChildren(self, self.transform, names)
 
 	self.camera = self.camera:GetComponent("Camera")
-	print('Cat:UILooksNode.lua[20] self.camera', self.camera)
 	UI.SetLocalPositionXYZ(self.transform, 9999, -9999, 12345)
 	self:AddEvents()
 end

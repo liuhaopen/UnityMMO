@@ -16,6 +16,7 @@ using static XLuaManager;
 using System.Reflection;
 using UnityMMO;
 using System.Linq;
+using UnityEngine.EventSystems;
 //using System.Reflection;
 //using System.Linq;
 
@@ -63,16 +64,30 @@ public static class XLuaGenConfig
                 typeof(Plane),
                 typeof(RectTransform),
                 typeof(TextMesh),
+                typeof(Graphic),
+                typeof(UIBehaviour),
                 typeof(MaskableGraphic),
+                typeof(MaskableGraphic.CullStateChangedEvent),
                 typeof(ScrollRect),
+                typeof(ScrollRect.MovementType),
+                typeof(ScrollRect.ScrollbarVisibility),
                 typeof(Image),
+                typeof(Image.Type),
+                typeof(Image.FillMethod),
+                typeof(Image.OriginHorizontal),
+                typeof(Image.OriginVertical),
+                typeof(Image.Origin90),
+                typeof(Image.Origin180),
+                typeof(Image.Origin360),
                 typeof(Animator),
                 typeof(CircleRawImage),
+                typeof(RawImage),
                 typeof(Camera),
                 typeof(Physics),
                 typeof(Input),
                 typeof(KeyCode),
                 typeof(RenderTexture),
+                typeof(UnityEngine.UI.ScrollRect.ScrollRectEvent),
                 typeof(UnityEngine.Debug)
             };
 
@@ -114,6 +129,9 @@ public static class XLuaGenConfig
                 typeof(Action<string>),
                 typeof(Action<double>),
                 typeof(UnityEngine.Events.UnityAction),
+                typeof(UnityEngine.Events.UnityAction<UnityEngine.Vector2>),
+                typeof(UnityEngine.Events.UnityEvent<UnityEngine.Vector2>),
+                // typeof(UnityEngine.UI.ScrollRect.ScrollRectEvent),
                 typeof(System.Collections.IEnumerator)
             };
 

@@ -33,6 +33,7 @@ function Game.InitUI()
         "Assets/AssetBundleRes/ui/common/Background.prefab",
         "Assets/AssetBundleRes/ui/common/GoodsItem.prefab",
         "Assets/AssetBundleRes/ui/common/WindowBig.prefab",
+        "Assets/AssetBundleRes/ui/common/EmptyContainer.prefab",
     }
     PrefabPool:Init("UICanvas/HideUI")
     PrefabPool:Register(pre_load_prefab)
@@ -64,11 +65,14 @@ end
 function Game:InitLuaPool(  )
     LuaPool = require "Game.Common.LuaPool"
     local info = {
-        ["Pool-Window"] = {
-            name="Pool-Window", maxNum=5, prototype = require("Game.Common.UI.Window")
+        ["Window"] = {
+            name="Window", maxNum = 5, prototype = require("Game.Common.UI.Window")
         },
-        ["Pool-TabBar"] = {
-            name="Pool-TabBar", maxNum=5, createFunc=function()
+        ["GoodsItem"] = {
+            name="GoodsItem", maxNum = 50, prototype = require("Game.Common.UI.GoodsItem")
+        },
+        ["TabBar"] = {
+            name="TabBar", maxNum = 5, createFunc = function()
                 return require("Game.Common.UI.TabBar").New()
             end
         },

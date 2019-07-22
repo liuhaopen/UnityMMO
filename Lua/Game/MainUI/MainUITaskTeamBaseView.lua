@@ -1,10 +1,12 @@
 local MainUITaskTeamBaseView = BaseClass(UINode)
 
 function MainUITaskTeamBaseView:Constructor( )
-	self.prefabPath = "Assets/AssetBundleRes/ui/mainui/MainUITaskTeamBaseView.prefab"
-	self.canvasName = "MainUI"
+	self.viewCfg = {
+		prefabPath = "Assets/AssetBundleRes/ui/mainui/MainUITaskTeamBaseView.prefab",
+		canvasName = "MainUI",
+		curTabID = nil,
+	}
 	self.model = TaskModel:GetInstance()
-	self.curTabID = nil
 end
 
 function MainUITaskTeamBaseView:OnLoad(  )

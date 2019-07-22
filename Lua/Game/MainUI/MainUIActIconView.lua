@@ -2,8 +2,10 @@
 local MainUIActIconView = BaseClass(UINode)
 
 function MainUIActIconView:Constructor( )
-	self.prefabPath = "Assets/AssetBundleRes/ui/mainui/MainUIActIconView.prefab"
-	self.canvasName = "MainUI"
+	self.viewCfg = {
+		prefabPath = "Assets/AssetBundleRes/ui/mainui/MainUIActIconView.prefab",
+		canvasName = "MainUI",
+	}
 end
 
 function MainUIActIconView:OnLoad(  )
