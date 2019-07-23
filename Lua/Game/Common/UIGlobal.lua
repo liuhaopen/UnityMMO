@@ -17,6 +17,9 @@ NPCMgr = CS.UnityMMO.NPCMgr
 LogError = CS.UnityEngine.Debug.LogError
 Entity = CS.Unity.Entities.Entity
 
+LRoleMgr = require("Game.Scene.LRoleMgr")
+ErrorCode = require("Game.Error.ErrorCode")
+ColorUtil = require("Game.Common.ColorUtil")
 require "Common.UI.UIHelper"
 require "Common.Util.TableUtil"
 

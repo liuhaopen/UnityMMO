@@ -71,6 +71,10 @@ function Game:InitLuaPool(  )
         ["GoodsItem"] = {
             name="GoodsItem", maxNum = 50, prototype = require("Game.Common.UI.GoodsItem")
         },
+        ["GoodsInfoView"] = {
+            name="GoodsInfoView", maxNum = 50, prototype = require("Game.Common.UI.GoodsInfoView")
+        },
+        
         ["TabBar"] = {
             name="TabBar", maxNum = 5, createFunc = function()
                 return require("Game.Common.UI.TabBar").New()

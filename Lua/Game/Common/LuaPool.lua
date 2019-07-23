@@ -20,6 +20,9 @@ function LuaPool:Get( name )
 	end
 	local objs = self.pool[name]
 	if objs and #objs > 0 then
+		if name=="GoodsInfoView" then
+			print('Cat:LuaPool.lua[24] #objs', #objs)
+		end
 		return table.remove(objs, #objs)
 	end
 	local info = self.objInfos[name]
@@ -39,8 +42,8 @@ end
 function LuaPool:Recycle( name, obj )
 	if name then
 		if obj then
-			if obj.Reset then
-				obj:Reset()
+			if obj.Recycle then
+				obj:Recycle()
 			end
 			local objs = self.pool[name]
 			objs = objs or {}

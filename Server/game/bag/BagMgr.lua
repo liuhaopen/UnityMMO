@@ -115,6 +115,22 @@ local changeGoodsNum = function( goodsTypeID, num, pos, notify )
 	end
 end
 
+local getGoodsByUID = function ( uid )
+	if not this.bagLists then
+		return
+	end
+	for pos,bagList in pairs(this.bagLists) do
+		if bagList.goodsList then
+			for i,goodsInfo in ipairs(bagList.goodsList) do
+				if goodsInfo.uid == uid then
+					return goodsInfo, pos, i
+				end
+			end
+		end
+	end
+	return nil
+end
+
 local SprotoHandlers = {}
 function SprotoHandlers.Bag_GetInfo( reqData )
 	local bagList = this.bagLists[reqData.pos]
@@ -123,6 +139,19 @@ function SprotoHandlers.Bag_GetInfo( reqData )
 		this.bagLists[reqData.pos] = bagList
 	end
 	return bagList
+end
+
+function SprotoHandlers.Bag_DropGoods( reqData )
+	local goodsInfo, pos, index = getGoodsByUID(reqData.uid)
+	print('Cat:BagMgr.lua[146] goodsInfo, pos, index', goodsInfo, pos, index, reqData.uid)
+	if goodsInfo then
+		goodsInfo.num = 0
+		addNewGoodsToNotifyCache(goodsInfo, true)
+		table.remove(this.bagLists[pos], index)
+		return {result = ErrorCode.Succeed}
+	else
+		return {result = ErrorCode.CannotFindGoods}
+	end
 end
 
 function SprotoHandlers.Bag_GetChangeList( reqData )

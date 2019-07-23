@@ -16,6 +16,7 @@ public class RoleMgr
     GameObjectEntity mainRoleGOE;
     Dictionary<string, GameObject> prefabDic = new Dictionary<string, GameObject>();
     Dictionary<long, string> names = new Dictionary<long, string>();
+    Dictionary<long, RoleLooksInfo> looksInfos = new Dictionary<long, RoleLooksInfo>();
     public EntityManager EntityManager { get => m_GameWorld.GetEntityManager();}
     public Transform RoleContainer { get => container; set => container = value; }
 
@@ -63,6 +64,15 @@ public class RoleMgr
     public GameObjectEntity GetMainRole()
     {
         return mainRoleGOE;
+    }
+
+    public long GetMainRoleUID()
+    {
+        if (mainRoleGOE != null)
+        {
+            return EntityManager.GetComponentData<UID>(mainRoleGOE.Entity).Value;
+        }
+        return 0;
     }
 
     public bool IsMainRoleEntity(Entity entity)
@@ -115,6 +125,39 @@ public class RoleMgr
     {
         names[uid] = name;
     }
+
+    public void UpdateLooksInfo(long uid, RoleLooksInfo info)
+    {
+        //Cat_TODO:增加时间字段，如果取值时超过一定时间就向服务器拿最新的
+        looksInfos[uid] = info;
+    }
+
+    public RoleLooksInfo GetlooksInfo(long uid)
+    {
+        RoleLooksInfo info = new RoleLooksInfo();
+        looksInfos.TryGetValue(uid, out info);
+        return info;
+    }
+
+    public RoleLooksInfo GetMainRoleLooksInfo()
+    {
+        long uid = GetMainRoleUID();
+        return GetlooksInfo(uid);
+    }
 }
 
+    public struct RoleLooksInfo
+    {
+        public Int64 uid;
+        public int career;
+        public int body;
+        public int hair;
+        public int weapon;
+        public int wing;
+        public int horse;
+        public Int64 hp;
+        public Int64 maxHp;
+        public string name;
+        // public RoleLooksInfo() => this.name = "NoOne";
+    }
 }

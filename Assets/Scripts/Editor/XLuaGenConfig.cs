@@ -17,6 +17,7 @@ using System.Reflection;
 using UnityMMO;
 using System.Linq;
 using UnityEngine.EventSystems;
+using Cinemachine;
 //using System.Reflection;
 //using System.Linq;
 
@@ -87,6 +88,7 @@ public static class XLuaGenConfig
                 typeof(Input),
                 typeof(KeyCode),
                 typeof(RenderTexture),
+                typeof(CinemachineFreeLook),
                 typeof(UnityEngine.UI.ScrollRect.ScrollRectEvent),
                 typeof(UnityEngine.Debug)
             };

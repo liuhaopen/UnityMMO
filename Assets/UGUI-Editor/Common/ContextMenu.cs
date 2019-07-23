@@ -135,6 +135,7 @@ static public class ContextMenu
             if (targets != null && targets.Length > 0)
             {
                 AddItem("保存", false, UIEditorHelper.SaveLayoutForMenu);
+                AddItem("打开界面", false, UIEditorHelper.LoadLayout);
                 AddItem("另存为", false, UIEditorHelper.SaveAnotherLayoutContextMenu);
                 AddItem("重新加载", false, UIEditorHelper.ReLoadLayoutForMenu);
 

@@ -51,29 +51,27 @@ local ColorUtil = {
 }
 
 --获取颜色类型对应的颜色
-function ColorUtil:GetColor(color)
-	if color == ColorType.WHITE then --白色
-		return  ColorUtil.WHITE
-	elseif color == ColorType.GREEN then --绿色
-		return  ColorUtil.GREEN
-	elseif color == ColorType.BLUE then --蓝色
-		return  ColorUtil.BLUE
-	elseif color == ColorType.PURPLE then --紫色
-		return  ColorUtil.PURPLE
-	elseif color == ColorType.ORANGE then --橙色
-		return  ColorUtil.ORANGE
-	elseif color == ColorType.RED then --红色
-		return  ColorUtil.RED
-	elseif color == ColorType.PINK then --粉色
-		return  ColorUtil.PINK
+function ColorUtil:GetStr(index)
+	if index == ColorUtil.Index.Green then --绿色
+		return  ColorUtil.Str.Green
+	elseif index == ColorUtil.Index.Blue then --蓝色
+		return  ColorUtil.Str.Blue
+	elseif index == ColorUtil.Index.Purple then --紫色
+		return  ColorUtil.Str.Purple
+	elseif index == ColorUtil.Index.Orange then --橙色
+		return  ColorUtil.Str.Orange
+	elseif index == ColorUtil.Index.Red then --红色
+		return  ColorUtil.Str.Red
+	elseif index == ColorUtil.Index.Pink then --粉色
+		return  ColorUtil.Str.Pink
 	else
-		return ColorUtil.WHITE
+		return ColorUtil.Str.White
 	end
 end
 
 --将字符串颜色值转化为Color颜色，支持#FFFFFF和FFFFFF输入，支持6和8位字符
 function ColorUtil:ConvertHexToRGBColor(Hex_str)
-	if not Hex_str then return ColorUtilValue.WHITE end
+	if not Hex_str then return ColorUtil.Value.White end
 	local _hex = string.gsub(Hex_str,"#","")
 	string.lower(_hex)
 	local r,g,b,a = 1,1,1,1
@@ -90,3 +88,5 @@ function ColorUtil:ConvertHexToRGBColor(Hex_str)
 	local color = Color(r,g,b,a)
 	return color
 end
+
+return ColorUtil

@@ -14,13 +14,11 @@ function UINode:Load(  )
 	assert(self.viewCfg.prefabPath or self.viewCfg.prefabPoolName, "has no assign prefabPath or prefabPoolName field")
 	if self.viewCfg.prefabPath then
 		local on_load_succeed = function ( gameObject )
-			print('Cat:UINode.lua[17] self.viewCfg.prefabPath, gameObject', self.viewCfg.prefabPath, gameObject)
 			self:Init(gameObject)
 		end
 		ResMgr:LoadPrefabGameObject(self.viewCfg.prefabPath, on_load_succeed)
 	elseif self.viewCfg.prefabPoolName then
 		local widget = PrefabPool:Get(self.viewCfg.prefabPoolName)
-		print('Cat:UINode.lua[21] widget', widget)
 		self.viewCfg.prefabPoolObj = widget
 		self:Init(widget.gameObject)
 	end
@@ -62,7 +60,7 @@ function UINode:Init( gameObject )
 		self.gameObject:SetActive(self.__cacheVisible)
 		self.__cacheVisible = nil
 	end
-	self:InitComponents()
+	self:InitComponents()--这句一定要在self.isLoaded = true之前，不然会重复调用组件的OnLoad方法
 	self.isLoaded = true
 	if self.OnLoad then
 		self:OnLoad()
@@ -72,13 +70,12 @@ function UINode:Init( gameObject )
 	end
 end
 
--- function UINode:OnLoad(  )
--- 	--override me
--- end
-
 function UINode:OnDestroy(  )
 	self.isLoaded = nil
 	self.destroyed = true
+	if self.attachNode then
+		self:Detach()
+	end
 	if self.autoDestroyNodes then
 		for i,v in ipairs(self.autoDestroyNodes) do
 			v:Destroy()
@@ -217,11 +214,37 @@ function UINode:InitComponents(  )
 	if self.viewCfg.isShowBackground then
 		self:AddUIComponent(UI.Background)
 	end
+	-- if self.viewCfg.components then
+	-- 	for i,v in ipairs(view.UIConfig.components) do
+	-- 		self:AddUIComponent(view, v[1], v[2])
+	-- 	end
+	-- end
 	if self.viewCfg and self.viewCfg.components then
 		for i,v in ipairs(self.viewCfg.components) do
 			v:OnLoad()
 		end
 	end
+end
+
+--有些时候我们只想扩展一个旧的UINode而不想另外新创建一个prefab，这时可以新建一个类，继承UINode并Attach(旧的UINode)
+function UINode:Attach( uiNode )
+	self.transform = uiNode.transform
+	self.gameObject = uiNode.gameObject
+	self.attachNode = uiNode
+	self:InitComponents()
+	self.isLoaded = true
+	if self.OnLoad then
+		self:OnLoad()
+	end
+	if self.isNeedUpdateOnLoad then
+		self:OnUpdate()
+	end
+end
+
+function UINode:Detach(  )
+	self.transform = nil
+	self.gameObject = nil
+	self.attachNode = nil
 end
 
 return UINode

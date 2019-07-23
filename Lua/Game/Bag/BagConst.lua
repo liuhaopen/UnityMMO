@@ -22,6 +22,24 @@ local BagConst = {
 		Warehouse = 2,
 		Equip = 3,
 	},
+	--BagConst.GoodsType.Money
+	GoodsType = {
+		Money = 1,--货币如钻石、铜币等
+		Exp = 2,--经验类如经验丹等
+		Weapon = 10,--武器
+		Helmet = 11,--头盔
+		Necklace = 12,--项链
+		Clothing = 13,--衣服
+		Scroll = 14,--卷轴
+		Pants = 15,--裤子
+		Bracelet = 16,--手镯
+		Handguard = 17,--护手
+		Ring = 18,--戒指
+		Shoe = 19,--鞋子
+		Guard = 20,--守护
+		NameCard = 30,--更名卡
+
+	},
 	--BagConst.MaxCell
 	MaxCell = 50,
 }

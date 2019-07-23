@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50640
 File Encoding         : 65001
 
-Date: 2019-07-19 19:35:19
+Date: 2019-07-23 21:24:40
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -20,15 +20,14 @@ SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
 DROP TABLE IF EXISTS `Bag`;
 CREATE TABLE `Bag` (
-  `goods_uid` bigint(20) unsigned NOT NULL,
-  `goods_type_id` int(10) unsigned NOT NULL,
-  `role_id` bigint(20) unsigned NOT NULL,
+  `uid` bigint(20) unsigned NOT NULL,
+  `typeID` int(10) unsigned NOT NULL,
+  `roleID` bigint(20) unsigned NOT NULL,
   `pos` tinyint(10) unsigned NOT NULL,
   `cell` smallint(10) unsigned NOT NULL,
   `num` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`goods_uid`),
-  KEY `role_id` (`role_id`) USING BTREE,
-  KEY `pos` (`pos`) USING BTREE
+  PRIMARY KEY (`uid`),
+  KEY `role_id` (`roleID`,`pos`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------

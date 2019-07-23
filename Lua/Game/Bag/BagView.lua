@@ -10,9 +10,11 @@ end
 
 function BagView:OnLoad(  )
 	local names = {
-		"item_scroll","sort:obj","role_look:raw","item_scroll/Viewport/item_con","swallow:obj",
+		"item_scroll","sort:obj","role_look:raw","item_scroll/Viewport/item_con","swallow:obj","name:txt","equip_con",
 	}
 	UI.GetChildren(self, self.transform, names)
+
+	self:InitEquips()
 	self:AddEvents()
 	self:OnUpdate()
 end
@@ -44,32 +46,48 @@ end
 
 function BagView:UpdateGoodsItems(  )
 	local goodsList = self.model:GetFullGoodsList(BagConst.Pos.Bag)
-	print("Cat:BagView [start:46] goodsList: ", goodsList)
-	PrintTable(goodsList)
-	print("Cat:BagView [end]")
 	self.goods_item_com = self.goods_item_com or self:AddUIComponent(UI.ItemListCreator)
+	self.infoViewShowData = self.infoViewShowData or {
+		comeFrom = "BagView"
+	}
 	local info = {
 		data_list = goodsList, 
 		item_con = self.item_con, 
 		scroll_view = self.item_scroll,
-		lua_pool_name = "GoodsItem",
+		create_frequency = 0.1,
+		create_num_per_time = 5,
+		item_class = require("Game.Bag.BagGoodsItem"),
 		item_width = 86,
 		item_height = 86,
-		space_x = 5,
-		space_y = 5,
+		space_x = 4,
+		space_y = 4,
 		on_update_item = function(item, i, v)
-			local isEmpty = not v
-			if isEmpty then
-				item:SetBg("Assets/AssetBundleRes/ui/bag/bag_item_bg.png")
-			else
-				item:SetIcon(v.typeID, v.num)
-			end
+			item:SetShowData(self.infoViewShowData)
+			item:SetData(v)
 		end,
 	}
 	self.goods_item_com:UpdateItems(info)
 end
 
 function BagView:UpdateRoleLooks(  )
+	local mainRoleLooksInfo = LRoleMgr:GetMainRoleLooksInfo()
+	if not mainRoleLooksInfo then return end
+	
+	local show_data = {
+		showType = UILooksNode.ShowType.Role,
+		showRawImg = self.role_look_raw,
+		body = mainRoleLooksInfo.body,
+		hair = mainRoleLooksInfo.hair,
+		career = mainRoleLooksInfo.career,
+		canRotate = true,
+		position = Vector3(0, 0, 0),
+	}
+	self.roleUILooksNode = self.roleUILooksNode or UILooksNode.New(self.role_look)
+	self.roleUILooksNode:SetData(show_data)
+	self.name_txt.text = mainRoleLooksInfo.name
+end
+
+function BagView:InitEquips(  )
 	
 end
 

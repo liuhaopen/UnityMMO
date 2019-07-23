@@ -25,6 +25,7 @@
 		<type fullname="UnityMMO.NPCMgr" preserve="all"/>
 		<type fullname="UnityMMO.RoleInfo" preserve="all"/>
 		<type fullname="UnityMMO.RoleMgr" preserve="all"/>
+		<type fullname="UnityMMO.RoleLooksInfo" preserve="all"/>
 		<type fullname="UnityMMO.ResMgr" preserve="all"/>
 		<type fullname="UnityMMO.BornInfo" preserve="all"/>
 		<type fullname="UnityMMO.BornInfoData" preserve="all"/>

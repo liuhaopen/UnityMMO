@@ -293,6 +293,9 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(UnityMMO.RoleMgr), UnityMMORoleMgrWrap.__Register);
         
         
+            translator.DelayWrapLoader(typeof(UnityMMO.RoleLooksInfo), UnityMMORoleLooksInfoWrap.__Register);
+        
+        
             translator.DelayWrapLoader(typeof(UnityMMO.ResMgr), UnityMMOResMgrWrap.__Register);
         
         
@@ -328,13 +331,13 @@ namespace XLua.CSObjectWrap
         
             translator.DelayWrapLoader(typeof(UnityMMO.MoveQuery), UnityMMOMoveQueryWrap.__Register);
         
-        
-            translator.DelayWrapLoader(typeof(UnityMMO.PlayerInputSystem), UnityMMOPlayerInputSystemWrap.__Register);
-        
         }
         
         static void wrapInit2(LuaEnv luaenv, ObjectTranslator translator)
         {
+        
+            translator.DelayWrapLoader(typeof(UnityMMO.PlayerInputSystem), UnityMMOPlayerInputSystemWrap.__Register);
+        
         
             translator.DelayWrapLoader(typeof(UnityMMO.TestManager), UnityMMOTestManagerWrap.__Register);
         

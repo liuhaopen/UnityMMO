@@ -98,6 +98,17 @@ public class HandleRoleLooksNetRequest : BaseComponentSystem
                 if (rsp.result == UnityMMO.GameConst.NetResultOk)
                 {
                     RoleMgr.GetInstance().SetName(req.uid, rsp.role_looks_info.name);
+                    RoleMgr.GetInstance().UpdateLooksInfo(req.uid, new RoleLooksInfo{
+                        uid=req.uid, career=(int)rsp.role_looks_info.career,
+                        body=(int)rsp.role_looks_info.body,
+                        hair=(int)rsp.role_looks_info.hair,
+                        weapon=(int)rsp.role_looks_info.weapon,
+                        wing=(int)rsp.role_looks_info.wing,
+                        horse=(int)rsp.role_looks_info.horse,
+                        hp=(int)rsp.role_looks_info.hp,
+                        maxHp=(int)rsp.role_looks_info.max_hp,
+                        name=rsp.role_looks_info.name,
+                    });
                     if (m_world.GetEntityManager().HasComponent<HealthStateData>(owner))
                     {
                         var hpData = m_world.GetEntityManager().GetComponentData<HealthStateData>(owner);

@@ -54,4 +54,13 @@ function BagModel:UpdateBagInfos( bagInfos )
 	end
 end
 
+function BagModel:GetGoodsName( typeID, needColor )
+	local cfg = ConfigMgr:GetGoodsCfg(typeID)
+	if needColor then
+		return string.format("<color=%s>%s</color>", ColorUtil:GetStr(cfg.color), cfg.name)
+	else
+		return cfg.name
+	end
+end
+
 return BagModel

@@ -150,7 +150,7 @@ UpdateItemsGrid = function ( self )
 			self.cur_create_index = self.cur_create_index + 1
 			if self.cur_create_index > self.max_create_num then
 				if self.step_create_item_id then
-					GlobalTimerQuest:CancelQuest(self.step_create_item_id)
+					self.step_create_item_id:Stop()
 					self.step_create_item_id = nil
 				end
 				if self.scroll_view_scr then
@@ -181,7 +181,8 @@ UpdateItemsGrid = function ( self )
 					end
 				end
 			end
-			self.step_create_item_id = GlobalTimerQuest:AddPeriodQuest(step_create_item, info.create_frequency, -1)
+			self.step_create_item_id = Timer.New(step_create_item, info.create_frequency, -1)
+			self.step_create_item_id:Start()
 		end
 		step_create_item()
 	else
@@ -378,7 +379,8 @@ GetItemCreator = function ( self )
 		creator = function(i, v)
 			local item = self.item_list[i]
 			if not item then
-				item = info.item_class.New(info.item_con)
+				item = info.item_class.New()
+				item:SetParent(info.item_con)
 				self.item_list[i] = item
 				item._real_index_for_item_creator_ = i
 			end
@@ -437,36 +439,6 @@ GetItemCreator = function ( self )
 			update_item_for_creator(self, item)
 		end
 		self.destroy_pool_type = info.lua_pool_name
-	elseif info.ui_factory_type then
-		creator = function(i, v)
-			local item = self.item_list[i]
-			if not item then
-				local gameObj = UiFactory.createChild(info.item_con, info.ui_factory_type)
-				item = {
-					gameObject = gameObj,
-					transform = gameObj.transform,
-					is_loaded = true,
-					SetLocalPositionXYZ = function(item, x, y)
-						UIHelper.SetLocalPosition(item.transform, x, y)
-					end,
-					SetActive = function(item, is_show)
-						item.gameObject:SetActive(is_show)
-					end,
-					AddUIComponent = UIPartical.AddUIComponent,
-					RemoveUIComponent = UIPartical.RemoveUIComponent,
-					Destroy=LuaResManager.__DestroyPrefab, 
-				}
-				item.transform.pivot = Vector2(0, 1)--作为子节点的话一般轴点都是左上角的啦
-				item.transform.anchorMin = Vector2(0, 1)
-				item.transform.anchorMax = Vector2(0, 1)
-				self.item_list[i] = item
-				item._real_index_for_item_creator_ = i
-			end
-			item:SetActive(true)
-			item:SetLocalPositionXYZ(self.get_item_pos_xy_func(item._real_index_for_item_creator_))
-			update_item_for_creator(self, item)
-		end
-		
 	else
 		--没有指定创建节点的方式
 		assert(false, "has not specify create way!")
@@ -779,7 +751,7 @@ function UI.ItemListCreator:OnClose()
 		self.scroll_view_scr = nil
 	end
 	if self.step_create_item_id then
-		GlobalTimerQuest:CancelQuest(self.step_create_item_id)
+		self.step_create_item_id:Stop()
 		self.step_create_item_id = nil
 	end
 end
