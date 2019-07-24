@@ -33,11 +33,11 @@ local ColorUtil = {
 	--ColorUtil.Index.Green
 	Index = {
 		Green = 0,
-		Blue = 0,
-		Purple = 0,
-		Orange = 0,
-		Red = 0,
-		Pink = 0,
+		Blue = 1,
+		Purple = 2,
+		Orange = 3,
+		Red = 4,
+		Pink = 5,
 	},	
 	--ColorUtil.Name[ColorUtil.Index.Green]
 	Name = {

@@ -147,7 +147,7 @@ function SprotoHandlers.Bag_DropGoods( reqData )
 	if goodsInfo then
 		goodsInfo.num = 0
 		addNewGoodsToNotifyCache(goodsInfo, true)
-		table.remove(this.bagLists[pos], index)
+		-- table.remove(this.bagLists[pos], index)
 		return {result = ErrorCode.Succeed}
 	else
 		return {result = ErrorCode.CannotFindGoods}

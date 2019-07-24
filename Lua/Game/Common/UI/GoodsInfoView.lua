@@ -18,7 +18,7 @@ end
 
 function GoodsInfoView:OnLoad(  )
 	local names = {
-		"layout/info_con/desc_scroll/Viewport/desc_con/overdue:txt","layout/info_con/desc_scroll/Viewport/desc_con/desc:txt","layout/info_con/head_con/name:txt","layout/info_con/head_con/icon_con","layout/info_con/head_con/num:txt","layout/info_con/head_con/level:txt","layout","layout/info_con/desc_scroll/Viewport/desc_con/use_desc:txt","layout/get_way_con:obj","layout/info_con","layout/info_con/head_con",
+		"layout/info_con/desc_scroll/Viewport/desc_con/overdue:txt","layout/info_con/desc_scroll/Viewport/desc_con/desc:txt","layout/info_con/head_con/name:txt","layout/info_con/head_con/icon_con","layout/info_con/head_con/num:txt","layout/info_con/head_con/level:txt","layout","layout/info_con/desc_scroll/Viewport/desc_con/use_desc:txt","layout/get_way_con:obj","layout/info_con","layout/info_con/head_con","layout/info_con/desc_scroll/Viewport/desc_con/title_use:obj",
 		
 	}
 	UI.GetChildren(self, self.transform, names)
@@ -30,11 +30,17 @@ function GoodsInfoView:OnLoad(  )
 	UI.GetChildren(self.btns, self.transform, btnsName)
 
 	self.overdue_txt.text = ""
+	self:AddEvents()
 end
 
 function GoodsInfoView:AddEvents( )
 	local on_click = function ( click_obj )
+		print('Cat:GoodsInfoView.lua[37] click_obj', click_obj, self.btns.drop_btn_obj)
 		if self.btns.drop_btn_obj == click_obj then
+			if not self.goodsInfo or not self.goodsInfo.uid then
+				Message:Show("道具信息有误")
+				return
+			end
 			local on_ack = function ( ackData )
 		        print("Cat:GoodsInfoView [start:29] ackData: ", ackData)
 		        PrintTable(ackData)
@@ -44,7 +50,7 @@ function GoodsInfoView:AddEvents( )
 		        	self:Destroy()
 		        end
 		    end
-		    NetDispatcher:SendMessage("Bag_DropGoods", {uid=uid}, on_ack)
+		    NetDispatcher:SendMessage("Bag_DropGoods", {uid=self.goodsInfo.uid}, on_ack)
 		elseif self.btns.store_btn_obj == click_obj then
 		elseif self.btns.buy_btn_obj == click_obj then
 		elseif self.btns.sell_btn_obj == click_obj then
@@ -114,6 +120,22 @@ end
 
 function GoodsInfoView:UpdateInfo(  )
 	self.name_txt.text = self.model:GetGoodsName(self.goodsInfo.typeID, true)
+	if not self.goodsInfo.cfg then
+		self.goodsInfo.cfg = ConfigMgr:GetGoodsCfg(self.goodsInfo.typeID)
+	end
+	local intro_str = Trim(self.goodsInfo.cfg and self.goodsInfo.cfg.intro or "")
+	self.desc_txt.text = intro_str
+	
+	local use_intro_str = Trim(self.goodsInfo.cfg and self.goodsInfo.cfg.use_intro or "")
+	if use_intro_str ~= "" then
+		self.use_desc_txt.text = use_intro_str
+		self.title_use_obj:SetActive(true)
+		UI.SetSizeDeltaY(self.use_desc, self.use_desc_txt.preferredHeight+20)
+	else
+		self.use_desc_txt.text = ""
+		self.title_use_obj:SetActive(false)
+		UI.SetSizeDeltaY(self.use_desc, 0)
+	end
 end
 
 function GoodsInfoView:Recycle(  )

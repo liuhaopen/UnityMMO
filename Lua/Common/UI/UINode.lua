@@ -90,11 +90,11 @@ function UINode:OnDestroy(  )
 		end
 		self.bindEventInfos = nil
 	end
-	if self.viewCfg and self.viewCfg.components then
-		for i,v in ipairs(self.viewCfg.components) do
+	if self.viewCfg and self.viewCfg.loadedComponents then
+		for i,v in ipairs(self.viewCfg.loadedComponents) do
 			v:OnClose()
 		end
-		self.viewCfg.components = nil
+		self.viewCfg.loadedComponents = nil
 	end
 	GameObject.Destroy(self.gameObject)
 end
@@ -203,8 +203,8 @@ function UINode:AddUIComponent( component, arge )
 	if self.isLoaded then
 		new_comp:OnLoad()
 	end
-	self.viewCfg.components = self.viewCfg.components or {}
-	table.insert(self.viewCfg.components, new_comp)
+	self.viewCfg.loadedComponents = self.viewCfg.loadedComponents or {}
+	table.insert(self.viewCfg.loadedComponents, new_comp)
 	return new_comp
 end
 
@@ -214,13 +214,13 @@ function UINode:InitComponents(  )
 	if self.viewCfg.isShowBackground then
 		self:AddUIComponent(UI.Background)
 	end
-	-- if self.viewCfg.components then
-	-- 	for i,v in ipairs(view.UIConfig.components) do
-	-- 		self:AddUIComponent(view, v[1], v[2])
-	-- 	end
-	-- end
-	if self.viewCfg and self.viewCfg.components then
+	if self.viewCfg.components then
 		for i,v in ipairs(self.viewCfg.components) do
+			self:AddUIComponent(v[1], v[2])
+		end
+	end
+	if self.viewCfg and self.viewCfg.loadedComponents then
+		for i,v in ipairs(self.viewCfg.loadedComponents) do
 			v:OnLoad()
 		end
 	end
