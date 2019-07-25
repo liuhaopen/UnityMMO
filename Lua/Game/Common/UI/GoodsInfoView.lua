@@ -30,6 +30,9 @@ function GoodsInfoView:OnLoad(  )
 	UI.GetChildren(self.btns, self.transform, btnsName)
 
 	self.overdue_txt.text = ""
+	self.iconNode = LuaPool:Get("GoodsItem")
+	self.iconNode:SetParent(self.icon_con)
+	-- self.iconNode:SetSize(tf, x, y)
 	self:AddEvents()
 end
 
@@ -119,10 +122,15 @@ function GoodsInfoView:UpdateGetWay(  )
 end
 
 function GoodsInfoView:UpdateInfo(  )
-	self.name_txt.text = self.model:GetGoodsName(self.goodsInfo.typeID, true)
 	if not self.goodsInfo.cfg then
 		self.goodsInfo.cfg = ConfigMgr:GetGoodsCfg(self.goodsInfo.typeID)
 	end
+
+	self.name_txt.text = self.model:GetGoodsName(self.goodsInfo.typeID, true)
+	self.num_txt.text = string.format("<color=#5C3536>数量: %s</color>", self.goodsInfo.num)
+	self.level_txt.text = string.format("<color=#5C3536>等级: %s</color>", self.goodsInfo.cfg.level)
+	self.iconNode:SetIcon(self.goodsInfo.typeID, self.goodsInfo.num)
+
 	local intro_str = Trim(self.goodsInfo.cfg and self.goodsInfo.cfg.intro or "")
 	self.desc_txt.text = intro_str
 	

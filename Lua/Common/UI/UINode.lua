@@ -142,6 +142,10 @@ function UINode:SetLocalPositionXYZ( x, y, z )
 	end
 end
 
+function UINode:SetSizeDeltaXY( x, y )
+	
+end
+
 function UINode:SetParent( parent )
 	self.parentTrans = parent
 	if self.isLoaded then

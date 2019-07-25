@@ -2,7 +2,7 @@
 用于创建Item列表的组件,支持三种创建方式:
 )传入Item类名:使用字段item_class
 )传入prefab资源名:使用字段prefab_path
-)对象池类型如:Pool-GoodsItem:使用字段lua_pool_name
+)对象池类型如:GoodsItem:使用字段lua_pool_name
 )单个控件如：UIType.Label使用字段ui_factory_type
 各字段使用说明:
 data_list:子节点的信息列表

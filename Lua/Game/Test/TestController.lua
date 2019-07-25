@@ -35,7 +35,7 @@ function TestController:Update(  )
 	elseif CS.UnityEngine.Input.GetKeyUp(CS.UnityEngine.KeyCode.H) then 
 		print('Cat:TestController.lua[h click]', self)
 		-- self:TestGenericMethod()
-		GMController:GetInstance():ReqExcuteGM([[goods,100000,3]])
+		GMController:GetInstance():ReqExcuteGM([[goods,100000,13]])
 	end
 end
 

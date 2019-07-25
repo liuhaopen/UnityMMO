@@ -63,7 +63,7 @@ function GoodsItem:SetIconVisible( isShow )
 	self.icon_obj:SetActive(isShow)
 end
 
-function GoodsItem:SetNum(  )
+function GoodsItem:SetNum( num )
 	self.num_txt.text = num
 end
 
@@ -71,5 +71,11 @@ function GoodsItem:SetClickFunc( clickFunc, arge )
 	self.clickFunc = clickFunc
 	self.clickArge = arge
 end
+
+
+function GoodsItem:SetSize( x, y )
+	
+end
+
 
 return GoodsItem

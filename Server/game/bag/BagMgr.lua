@@ -1,5 +1,7 @@
 local skynet = require "skynet"
 local BagConst = require "game.bag.BagConst"
+local GoodsCfg = require "Config.ConfigGoods"
+print('Cat:BagMgr.lua[4] GoodsCfg', GoodsCfg)
 local this = {
 	bagLists = {},
 	user_info = nil,
@@ -25,7 +27,7 @@ local function initBagList( pos )
 	return bagInfo
 end
 
-local findEmptyCell = function ( bagInfo )
+local findEmptyCellIndex = function ( bagInfo )
 	local cell = 1
 	if bagInfo and bagInfo.goodsList then
 		cell = #bagInfo.goodsList + 1
@@ -38,11 +40,15 @@ local findEmptyCell = function ( bagInfo )
 	return cell
 end
 
-local findGoodsInList = function ( goodsList, goodsTypeID )
+--ignoreFullOverlap：是否忽略数量已满重叠数的道具
+local findGoodsInList = function ( goodsList, goodsTypeID, ignoreFullOverlap )
 	if not goodsList then return end
+	local cfg = ignoreFullOverlap and GoodsCfg[goodsTypeID]
 	for i,v in ipairs(goodsList) do
 		if v.typeID == goodsTypeID then
-			return v, i
+			if not ignoreFullOverlap or v.num < cfg.overlap then
+				return v, i
+			end
 		end
 	end
 	return nil
@@ -61,23 +67,39 @@ local addNewGoodsToNotifyCache = function ( goodsInfo, notify )
 	PrintTable(goodsInfo)
 	print("Cat:BagMgr [end]")
 	this.cacheChangeList = this.cacheChangeList or {}
-	table.insert(this.cacheChangeList, goodsInfo)
+	local hasFind = false
+	for i,v in ipairs(this.cacheChangeList) do
+		if v.uid == goodsInfo.uid then
+			hasFind = true
+			this.cacheChangeList[i] = goodsInfo
+			break
+		end
+	end
+	if not hasFind then
+		table.insert(this.cacheChangeList, goodsInfo)
+	end
 	if notify then
 		notifyBagChange()
 	end
 end
 
-local changeGoodsNum = function( goodsTypeID, num, pos, notify )
+local changeGoodsNum = nil
+changeGoodsNum = function( goodsTypeID, diffNum, pos, notify )
+	print('Cat:BagMgr.lua[81] goodsTypeID, diffNum, pos, notify', goodsTypeID, diffNum, pos, notify)
 	this.gameDBServer = this.gameDBServer or skynet.localname(".GameDBServer")
-
 	local bagInfo = this.bagLists[pos]
 	if bagInfo and bagInfo.goodsList then
-		local goodsInfo, goodsIndex = findGoodsInList(bagInfo.goodsList)
-		local overlapNum = 10
+		local goodsInfo, goodsIndex = findGoodsInList(bagInfo.goodsList, goodsTypeID, true)
+		local cfg = GoodsCfg[goodsTypeID]
+		local overlapNum = cfg and cfg.overlap or 1
+		print('Cat:BagMgr.lua[90] overlapNum', goodsInfo, goodsIndex, overlapNum)
 		local newGoods
 		if goodsInfo and goodsInfo.num < overlapNum then
-			goodsInfo.num = goodsInfo.num + num
+			local goodsLastNum = goodsInfo.num
+			goodsInfo.num = math.min(overlapNum, goodsInfo.num + diffNum)
+			print('Cat:BagMgr.lua[90] goodsInfo.num, diffNum', goodsInfo.num, diffNum)
 			if goodsInfo.num <= 0 then
+				--diffNum可以为负数，道具数为0，该清除掉该道具了
 				table.remove(bagInfo.goodsList, goodsIndex)
 				if goodsInfo.num < 0 then
 					skynet.error("bag change goods num less than 0")
@@ -85,15 +107,26 @@ local changeGoodsNum = function( goodsTypeID, num, pos, notify )
 				goodsInfo.num = 0
 				skynet.call(this.gameDBServer, "lua", "delete", "Bag", "uid", goodsInfo.uid)
 			else
+				--更新道具数量
 				skynet.call(this.gameDBServer, "lua", "update", "Bag", "uid", goodsInfo.uid, goodsInfo)
+				diffNum = diffNum-(goodsInfo.num-goodsLastNum)
+				print('Cat:BagMgr.lua[113] diffNum', diffNum)
+				if diffNum > 0 then
+					changeGoodsNum(goodsTypeID, diffNum, pos, false)
+				end
 			end
 			newGoods = goodsInfo
 		else
-			local emptyCell = findEmptyCell(bagInfo)
+			--已达到该道具的最大重叠数，所以在占另外的背包格子
+			local emptyCell = findEmptyCellIndex(bagInfo)
+			if emptyCell > BagConst.MaxCell then
+				--Cat_Todo : handle full cell
+				return
+			end
 			print('Cat:BagMgr.lua[81] emptyCell', emptyCell)
 			this.id_service = this.id_service or skynet.localname(".id_service")
 			local uid = skynet.call(this.id_service, "lua", "gen_uid", "goods")
-			local addNum = math.min(overlapNum, num)
+			local addNum = math.min(overlapNum, diffNum)
 			newGoods = {
 				uid = uid,
 				typeID = goodsTypeID,
@@ -104,8 +137,9 @@ local changeGoodsNum = function( goodsTypeID, num, pos, notify )
 			}
 			table.insert(bagInfo.goodsList, emptyCell, newGoods)
 			skynet.call(this.gameDBServer, "lua", "insert", "Bag", newGoods)
-			if num > overlapNum then
-				changeGoodsNum(goodsTypeID, num - overlapNum, pos, notify)
+			diffNum = diffNum-addNum
+			if diffNum > 0 then
+				changeGoodsNum(goodsTypeID, diffNum, pos, false)
 			end
 		end
 		addNewGoodsToNotifyCache(newGoods, notify)
@@ -123,7 +157,7 @@ local getGoodsByUID = function ( uid )
 		if bagList.goodsList then
 			for i,goodsInfo in ipairs(bagList.goodsList) do
 				if goodsInfo.uid == uid then
-					return goodsInfo, pos, i
+					return goodsInfo, i
 				end
 			end
 		end
@@ -142,12 +176,13 @@ function SprotoHandlers.Bag_GetInfo( reqData )
 end
 
 function SprotoHandlers.Bag_DropGoods( reqData )
-	local goodsInfo, pos, index = getGoodsByUID(reqData.uid)
-	print('Cat:BagMgr.lua[146] goodsInfo, pos, index', goodsInfo, pos, index, reqData.uid)
+	local goodsInfo, index = getGoodsByUID(reqData.uid)
+	print('Cat:BagMgr.lua[146] goodsInfo, pos, index', goodsInfo, index, reqData.uid)
 	if goodsInfo then
 		goodsInfo.num = 0
 		addNewGoodsToNotifyCache(goodsInfo, true)
-		-- table.remove(this.bagLists[pos], index)
+		skynet.call(this.gameDBServer, "lua", "delete", "Bag", "uid", goodsInfo.uid)
+		table.remove(this.bagLists[goodsInfo.pos].goodsList, index)
 		return {result = ErrorCode.Succeed}
 	else
 		return {result = ErrorCode.CannotFindGoods}
@@ -179,9 +214,9 @@ function PublicFuncs.Init( user_info )
 	this.user_info = user_info
 	
 end
-function PublicFuncs.ChangeBagGoods( goodsTypeID, num )
-	print('Cat:BagMgr.lua[137] goodsTypeID, num', goodsTypeID, num)
-	changeGoodsNum(goodsTypeID, num, BagConst.Pos.Bag, true)
+function PublicFuncs.ChangeBagGoods( goodsTypeID, diffNum )
+	print('Cat:BagMgr.lua[137] goodsTypeID, diffNum', goodsTypeID, diffNum)
+	changeGoodsNum(goodsTypeID, diffNum, BagConst.Pos.Bag, true)
 end
 
 SprotoHandlers.PublicClassName = "Bag"
