@@ -143,6 +143,11 @@
 		
 	</assembly>
 
+	<assembly fullname="Cinemachine">
+	    <type fullname="Cinemachine.CinemachineFreeLook" preserve="all"/>
+		
+	</assembly>
+
 	<assembly fullname="Unity.Entities">
 	    <type fullname="Unity.Entities.World" preserve="all"/>
 		<type fullname="Unity.Entities.Entity" preserve="all"/>
@@ -158,6 +163,7 @@
 
 	<assembly fullname="Unity.TextMeshPro">
 	    <type fullname="TMPro.TextMeshProUGUI" preserve="all"/>
+		<type fullname="TMPro.TMP_InputField" preserve="all"/>
 		<type fullname="TMPro.TMP_Text" preserve="all"/>
 		
 	</assembly>

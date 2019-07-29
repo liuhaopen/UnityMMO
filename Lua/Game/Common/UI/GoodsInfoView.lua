@@ -8,6 +8,7 @@ function GoodsInfoView:Constructor( )
 			{UI.Background, {is_click_to_close=true, alpha=0.5}},
 		},
 	}
+	print('Cat:GoodsInfoView.lua[11] self, self.Destroy', self, self.Unload)
 	self.model = BagModel:GetInstance()
 	self:Load()
 end
@@ -30,7 +31,7 @@ function GoodsInfoView:OnLoad(  )
 	UI.GetChildren(self.btns, self.transform, btnsName)
 
 	self.overdue_txt.text = ""
-	self.iconNode = LuaPool:Get("GoodsItem")
+	self.iconNode = GoodsItem.Create()
 	self.iconNode:SetParent(self.icon_con)
 	-- self.iconNode:SetSize(tf, x, y)
 	self:AddEvents()
@@ -50,7 +51,7 @@ function GoodsInfoView:AddEvents( )
 		        print("Cat:GoodsInfoView [end]")
 		        if ackData.result == ErrorCode.Succeed then
 		        	Message:Show("销毁成功")
-		        	self:Destroy()
+		        	self:Unload()
 		        end
 		    end
 		    NetDispatcher:SendMessage("Bag_DropGoods", {uid=self.goodsInfo.uid}, on_ack)
@@ -147,12 +148,12 @@ function GoodsInfoView:UpdateInfo(  )
 end
 
 function GoodsInfoView:Recycle(  )
-	LuaPool:Recycle("GoodsInfoView", self)
+	
 end
 
-function GoodsInfoView:Destroy(  )
-	print('Cat:GoodsInfoView.lua[Destroy]')
-	self:Recycle()
+function GoodsInfoView:Unload(  )
+	LuaPool:Recycle("GoodsInfoView", self)
+	self:Hide()
 end
 
 return GoodsInfoView

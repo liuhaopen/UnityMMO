@@ -70,6 +70,10 @@ function UINode:Init( gameObject )
 	end
 end
 
+function UINode:Unload(  )
+	self:Destroy()
+end
+
 function UINode:OnDestroy(  )
 	self.isLoaded = nil
 	self.destroyed = true
@@ -78,7 +82,11 @@ function UINode:OnDestroy(  )
 	end
 	if self.autoDestroyNodes then
 		for i,v in ipairs(self.autoDestroyNodes) do
-			v:Destroy()
+			if v.Unload then
+				v:Unload()
+			else
+				v:Destroy()
+			end
 		end
 		self.autoDestroyNodes = nil
 	end
@@ -142,10 +150,6 @@ function UINode:SetLocalPositionXYZ( x, y, z )
 	end
 end
 
-function UINode:SetSizeDeltaXY( x, y )
-	
-end
-
 function UINode:SetParent( parent )
 	self.parentTrans = parent
 	if self.isLoaded then
@@ -200,7 +204,7 @@ function UINode:AutoDestroy( deleteNode )
 end
 
 function UINode:AddUIComponent( component, arge )
-	print('Cat:UINode.lua[AddUIComponent] component, arge', component, tostring(arge))
+	print('Cat:UINode.lua[AddUIComponent] component, arge', component, tostring(arge), self)
 	assert(component~=nil, "cannot add nil component for view")
 	local new_comp = component.New()
 	new_comp:OnAwake(self, arge)
@@ -249,6 +253,10 @@ function UINode:Detach(  )
 	self.transform = nil
 	self.gameObject = nil
 	self.attachNode = nil
+end
+
+function UINode:Hide(  )
+	self.transform:SetParent(PrefabPool.hide_container)
 end
 
 return UINode

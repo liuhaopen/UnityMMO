@@ -33,7 +33,11 @@ function Game.InitUI()
         "Assets/AssetBundleRes/ui/common/Background.prefab",
         "Assets/AssetBundleRes/ui/common/GoodsItem.prefab",
         "Assets/AssetBundleRes/ui/common/WindowBig.prefab",
+        "Assets/AssetBundleRes/ui/common/WindowNoTab.prefab",
         "Assets/AssetBundleRes/ui/common/EmptyContainer.prefab",
+        "Assets/AssetBundleRes/ui/common/Button1.prefab",
+        "Assets/AssetBundleRes/ui/common/Button2.prefab",
+        "Assets/AssetBundleRes/ui/common/Button3.prefab",
     }
     PrefabPool:Init("UICanvas/HideUI")
     PrefabPool:Register(pre_load_prefab)

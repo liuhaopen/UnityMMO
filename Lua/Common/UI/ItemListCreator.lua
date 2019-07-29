@@ -3,7 +3,7 @@
 )传入Item类名:使用字段item_class
 )传入prefab资源名:使用字段prefab_path
 )对象池类型如:GoodsItem:使用字段lua_pool_name
-)单个控件如：UIType.Label使用字段ui_factory_type
+)单个控件如：字段prefab_pool_name
 各字段使用说明:
 data_list:子节点的信息列表
 create_frequency:分时加载,即每隔这么多秒加载一个子节点
@@ -388,7 +388,7 @@ GetItemCreator = function ( self )
 			item:SetLocalPositionXYZ(self.get_item_pos_xy_func(item._real_index_for_item_creator_))
 			update_item_for_creator(self, item)
 		end
-	elseif info.prefab_path then
+	elseif info.prefab_path or info.prefab_pool_name then
 		creator = function(i, v)
 			local item = self.item_list[i]
 			if not item then
@@ -401,9 +401,15 @@ GetItemCreator = function ( self )
 				end
 				item = UINode.New()
 				item.parentTrans = info.item_con
-				item.viewCfg = {
-					prefabPath = info.prefab_path,
-				}
+				if info.prefab_path then
+					item.viewCfg = {
+						prefabPath = info.prefab_path,
+					}
+				elseif info.prefab_pool_name then
+					item.viewCfg = {
+						prefabPoolName = info.prefab_pool_name,
+					}
+				end
 				item.SetData = function(item, i, v)
 					if item.isLoaded and item.OnUpdate then
 						item:OnUpdate(i, v)
@@ -712,6 +718,8 @@ ResizeItemList = function( self, min_item_num )
 		for i=min_item_num+1, #self.item_list do
 			if self.destroy_pool_type then
 				LuaPool:Recycle(self.destroy_pool_type, self.item_list[i])
+			elseif self.item_list[i].Unload then
+				self.item_list[i]:Unload()
 			else
 				self.item_list[i]:Destroy()
 			end
@@ -741,8 +749,11 @@ function UI.ItemListCreator:OnClose()
 		self.item_list = {} 
 	else
 		for k,v in pairs(self.item_list) do
-			v:Destroy()
-			v = nil
+			if v.Unload then
+				v:Unload()
+			else
+				v:Destroy()
+			end
 		end
 		self.item_list = {}
 	end

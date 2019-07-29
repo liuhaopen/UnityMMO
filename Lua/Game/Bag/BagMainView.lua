@@ -28,7 +28,7 @@ function BagMainView:OnLoad(  )
 			self:OnSwitchTab(tabID)
 		end,
 		onClose = function()
-			self:Destroy()
+			self:Unload()
 		end,
 	}
 	self.window:Load(winData)

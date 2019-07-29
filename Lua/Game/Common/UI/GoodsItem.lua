@@ -7,8 +7,8 @@ function GoodsItem:Constructor(  )
 	self:Load()
 end
 
-function GoodsItem.Create( )
-	return LuaPool:Get("Pool-GoodsItem")
+function GoodsItem.Create()
+	return LuaPool:Get("GoodsItem")
 end
 
 function GoodsItem:Reset(  )

@@ -1,12 +1,15 @@
 local Window = BaseClass(UINode)
--- Window.Style = {
--- 	Big = 1,
--- 	Normal = 2,
--- 	Small = 3,
--- }
+
 local StyleInfo = {
 	["WindowStyle.Big"] = {
-		widgetName = "WindowBig",
+		widgetName = "WindowBig", nodes = {
+			"tab_scroll/Viewport/tab_scroll_con","tab_con","tab_scroll","close:obj","tab_line","bg:raw","title:raw",
+		},
+	},
+	["WindowStyle.NoTab"] = {
+		widgetName = "WindowNoTab", nodes = {
+			"close:obj","bg:raw","title:raw",
+		},
 	},
 }
 function Window:Constructor( )
@@ -22,6 +25,15 @@ function Window:Reset()
 	self.data = nil
 end
 
+--[[
+data可含字段：
+style:见文件上部分的StyleInfo，目前有两大窗体，一个带标签页一个没有
+tabInfo:标签页数据,详见SetTabInfo函数
+onSwitchTab:切换标签页时触发的回调
+onClose:关闭按钮点击回调
+bg:背景图
+title:标题图
+--]]
 function Window:Load( data )
 	self.lastData = self.data
 	self.data = data
@@ -36,6 +48,9 @@ function Window:Load( data )
 	if self.data.bg then
 		self:SetBG(self.data.bg)
 	end
+	if self.data.title then
+		self:SetTitle(self.data.title)
+	end
 	if self.data.tabInfo then
 		self:SetTabInfo(self.data.tabInfo)
 	end
@@ -49,7 +64,18 @@ end
 
 function Window:SetBG( bg )
 	if self.isLoaded then
-		UI.SetBg(self, self.bg_raw, ResPath.GetBgPath(bg))
+		if bg ~= "default" then
+			UI.SetBg(self, self.bg_raw, ResPath.GetBgPath(bg))
+		else
+			UI.SetRawImage(self.bg_raw, "Assets/AssetBundleRes/ui/common/com_default_win_bg.png")
+			self.bg_raw.gameObject:SetActive(true)
+		end
+	end
+end
+
+function Window:SetTitle( title )
+	if self.isLoaded then
+		UI.SetRawImage(self.title_raw, title, true)
 	end
 end
 
@@ -62,6 +88,7 @@ function Window:SetStyle( style )
 		if not styleInfo then
 			LogError("Window:SetData cannot find style info by : "..self.data.style)
 		end
+		self.curStyleInfo = styleInfo
 		if self.gameObject then
 			GameObject.Destroy(self.gameObject)
 			self.gameObject = nil
@@ -73,10 +100,9 @@ function Window:SetStyle( style )
 end
 
 function Window:OnLoad(  )
-	local names = {
-		"tab_scroll/Viewport/tab_scroll_con","tab_con","tab_scroll","close:obj","tab_line","bg:raw",
-	}
-	UI.GetChildren(self, self.transform, names, true)
+	if not self.curStyleInfo then return end
+	
+	UI.GetChildren(self, self.transform, self.curStyleInfo.nodes, true)
 
 	self:AddEvents()
 end
@@ -90,7 +116,6 @@ function Window:AddEvents(  )
 		end
 	end
 	UI.BindClickEvent(self.close_obj, on_click)
-	
 end
 
 function Window:SetTabInfo( info )

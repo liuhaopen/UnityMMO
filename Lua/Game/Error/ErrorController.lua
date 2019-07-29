@@ -11,7 +11,7 @@ function ErrorController.InitEvents()
 	local func = function(msg, stackTrace,msg_type)
 		if msg_type == CS.UnityEngine.LogType.Warning or msg_type == CS.UnityEngine.LogType.Exception or msg_type == CS.UnityEngine.LogType.Assert or msg_type == CS.UnityEngine.LogType.Error then
 			--显示报错界面
-			-- local view = require("Game/Error/ErrorView")
+			-- local view = require("Game/GM/ErrorView")
 			-- view:Open()
 		end
 	end

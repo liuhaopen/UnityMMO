@@ -230,6 +230,9 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(UnityEngine.RenderTexture), UnityEngineRenderTextureWrap.__Register);
         
         
+            translator.DelayWrapLoader(typeof(Cinemachine.CinemachineFreeLook), CinemachineCinemachineFreeLookWrap.__Register);
+        
+        
             translator.DelayWrapLoader(typeof(UnityEngine.UI.ScrollRect.ScrollRectEvent), UnityEngineUIScrollRectScrollRectEventWrap.__Register);
         
         
@@ -252,6 +255,9 @@ namespace XLua.CSObjectWrap
         
         
             translator.DelayWrapLoader(typeof(TMPro.TextMeshProUGUI), TMProTextMeshProUGUIWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(TMPro.TMP_InputField), TMProTMP_InputFieldWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(TMPro.TMP_Text), TMProTMP_TextWrap.__Register);
@@ -325,16 +331,16 @@ namespace XLua.CSObjectWrap
         
             translator.DelayWrapLoader(typeof(UnityMMO.SceneMgr), UnityMMOSceneMgrWrap.__Register);
         
+        }
+        
+        static void wrapInit2(LuaEnv luaenv, ObjectTranslator translator)
+        {
         
             translator.DelayWrapLoader(typeof(UnityMMO.FindWayInfo), UnityMMOFindWayInfoWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(UnityMMO.MoveQuery), UnityMMOMoveQueryWrap.__Register);
         
-        }
-        
-        static void wrapInit2(LuaEnv luaenv, ObjectTranslator translator)
-        {
         
             translator.DelayWrapLoader(typeof(UnityMMO.PlayerInputSystem), UnityMMOPlayerInputSystemWrap.__Register);
         

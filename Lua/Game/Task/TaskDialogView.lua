@@ -30,12 +30,12 @@ function TaskDialogView:AddEvents(  )
 			if self.curShowData.clickCallBack then
 				self.curShowData.clickCallBack()
 			else
-				self:Destroy()
+				self:Unload()
 			end
 		elseif self.skip_btn_obj == click_obj then
-			self:Destroy()
+			self:Unload()
 		elseif self.click_bg_obj == click_obj then
-			self:Destroy()
+			self:Unload()
 		end
 	end
 	UI.BindClickEvent(self.btn_obj, on_click)
@@ -52,7 +52,7 @@ end
 function TaskDialogView:ReqTakeTask(  )
 	local ackTakeTask = function ( ackData )
 		if ackData.result == NoError then
-        	self:Destroy()
+        	self:Unload()
         else
         	Message:Show(ConfigMgr:GetErrorDesc(ackData.result))
         end
@@ -63,7 +63,7 @@ end
 function TaskDialogView:ReqDoTask(  )
 	local ackDoTask = function ( ackData )
 		if ackData.result == NoError then
-        	self:Destroy()
+        	self:Unload()
         else
         	Message:Show(ConfigMgr:GetErrorDesc(ackData.result))
         end

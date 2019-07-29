@@ -119,6 +119,7 @@ public static class XLuaGenConfig
     [LuaCallCSharp]
     public static List<Type> LuaCallCSharpTextMeshPro = new List<Type>() {
                 typeof(TextMeshProUGUI),
+                typeof(TMP_InputField),
                 typeof(TMP_Text),
                 
     };

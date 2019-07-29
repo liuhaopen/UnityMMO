@@ -56,7 +56,7 @@ local find = string.find
 local gsub = string.gsub
 local Split = Split
 UI.G_ComponentMapForGetChildren = {
-	img = "Image", txtnav = "Text", tog = "Toggle", imgex = "ImageExtend", outline = "Outline", raw = "RawImage", scroll = "ScrollRect", input = "InputField", txt = "TextMeshProUGUI",
+	img = "Image", txtnav = "Text", tog = "Toggle", imgex = "ImageExtend", outline = "Outline", raw = "RawImage", scroll = "ScrollRect", input = "InputField", txt = "TextMeshProUGUI", inp = "TMP_InputField",
 }
 function UI.GetChildren( self, parent, names, ignoreExist )
 	assert(parent, "UIHelper:GetChildren() cannot find transform!")

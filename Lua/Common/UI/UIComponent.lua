@@ -38,7 +38,12 @@ function UI.Background:OnLoad()
 	if self.is_click_to_close then
 		self.bg_img.raycastTarget = true
 		local on_click = function ( )
-			UIMgr:Close(self.view_owner)
+			print('Cat:UIComponent.lua[41] self.view_owner.Unload', self.view_owner, self.view_owner.Unload)
+			if self.view_owner.Unload then
+				self.view_owner:Unload()
+			else
+				UIMgr:Close(self.view_owner)
+			end
 		end
 		UI.BindClickEvent(self.bg_obj, on_click)
 	end
