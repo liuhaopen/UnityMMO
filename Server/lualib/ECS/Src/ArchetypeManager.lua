@@ -188,7 +188,8 @@ function ArchetypeManager:GetChunkWithEmptySlots( archetype, sharedComponentData
         newChunk = ECS.Chunk.New()
     else
         newChunk = self.m_EmptyChunkPool:Begin()
-        newChunk.ChunkListNode.Remove()
+        newChunk = newChunk:GetChunk()
+        newChunk.ChunkListNode:Remove()
     end
 
     self:ConstructChunk(archetype, newChunk, sharedComponentDataIndices)

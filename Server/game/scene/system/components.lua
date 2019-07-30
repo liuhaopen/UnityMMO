@@ -9,6 +9,9 @@ ECS.TypeManager.RegisterType("UMO.HP", {cur=0, max=0, deathTime=0, killedBy})
 ECS.TypeManager.RegisterType("UMO.MoveSpeed", {value=0})
 ECS.TypeManager.RegisterType("UMO.PatrolInfo", {x=0, y=0, z=0, radius=0})--怪物有一个中心点，以此点划圆巡逻
 ECS.TypeManager.RegisterType("UMO.AOIHandle", {value=0})
+--CD数组，元素结构为{[skill_id]=end_time}
+ECS.TypeManager.RegisterType("UMO.CD", {})
+ECS.TypeManager.RegisterType("UMO.Skill", {caster=0, skill_id=0, targets={}})
 
 --里面是个数组，元素结构：attacker攻击者，damage伤害值，direction攻击方向，impulse推力
 ECS.TypeManager.RegisterType("UMO.DamageEvents", {})

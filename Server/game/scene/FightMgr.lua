@@ -17,7 +17,8 @@ function FightMgr:CastSkill( uid, req_data )
 	if not entity then return end
 	
 	local aoi_handle = self.entityMgr:GetComponentData(entity, "UMO.AOIHandle")
-	local is_can_cast = true
+	-- local cdData = self.entityMgr:GetComponentData(entity, "UMO.CD")
+	local is_can_cast = true--cdData[req_data.skill_id]
 	local fight_event = nil
 	if is_can_cast then
 		fight_event = {

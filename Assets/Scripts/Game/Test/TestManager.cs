@@ -7,7 +7,7 @@ public class TestManager : MonoBehaviour {
         if (Input.GetKeyUp(UnityEngine.KeyCode.U))
         {
             Debug.Log("key U up");
-            SceneMgr.Instance.LoadScene(2001);
+            // SceneMgr.Instance.LoadScene(2001);
         //     account_select_role_enter_game.request req = new account_select_role_enter_game.request();
         //     req.role_id = 123654;
         //     NetMsgDispatcher.GetInstance().SendMessage<Protocol.account_select_role_enter_game>(req, (_) =>
