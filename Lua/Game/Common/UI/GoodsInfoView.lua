@@ -8,12 +8,10 @@ function GoodsInfoView:Constructor( )
 			{UI.Background, {is_click_to_close=true, alpha=0.5}},
 		},
 	}
-	print('Cat:GoodsInfoView.lua[11] self, self.Destroy', self, self.Unload)
 	self.model = BagModel:GetInstance()
-	self:Load()
 end
 
-function GoodsInfoView.Create(  )
+function GoodsInfoView.Create()
 	return LuaPool:Get("GoodsInfoView")
 end
 
@@ -32,8 +30,10 @@ function GoodsInfoView:OnLoad(  )
 
 	self.overdue_txt.text = ""
 	self.iconNode = GoodsItem.Create()
+	self.iconNode:Load()
 	self.iconNode:SetParent(self.icon_con)
-	-- self.iconNode:SetSize(tf, x, y)
+	self.iconNode:SetSizeType("Medium")
+
 	self:AddEvents()
 end
 
@@ -89,18 +89,18 @@ function GoodsInfoView:UpdateBtns()
 	for k,v in pairs(self.btns) do
 		v.gameObject:SetActive(false)
 	end
+	local showBtnList = {}
 	if self.showData and self.showData.comeFrom then
-		if self.showData.comeFrom == "BagView" then
-			self.showData.btnList = self.showData.btnList or {}
-			table.insert(self.showData.btnList, "drop_btn")
-			table.insert(self.showData.btnList, "store_btn")
+		local comeFrom = self.showData.comeFrom
+		if comeFrom == "BagView" then
+			-- self.showData.btnList = self.showData.btnList or {}
+			table.insert(showBtnList, "drop_btn")
+		elseif comeFrom == "WarehouseView" then
+			table.insert(showBtnList, "store_btn")
 		end
 	end
-	print("Cat:GoodsInfoView [start:83] self.showData.b", self.showData)
-	PrintTable(self.showData.btnList)
-	print("Cat:GoodsInfoView [end]")
-	if self.showData and self.showData.btnList then
-		for i,v in ipairs(self.showData.btnList) do
+	if showBtnList then
+		for i,v in ipairs(showBtnList) do
 			self.btns[v.."_obj"]:SetActive(true)
 		end
 	end
@@ -148,12 +148,12 @@ function GoodsInfoView:UpdateInfo(  )
 end
 
 function GoodsInfoView:Recycle(  )
-	
 end
 
 function GoodsInfoView:Unload(  )
-	LuaPool:Recycle("GoodsInfoView", self)
+	print('Cat:GoodsInfoView.lua[Unload]')
 	self:Hide()
+	LuaPool:Recycle("GoodsInfoView", self)
 end
 
 return GoodsInfoView

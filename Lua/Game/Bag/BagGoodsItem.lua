@@ -1,7 +1,8 @@
 local BagGoodsItem = BaseClass(UINode)
 
 function BagGoodsItem:Constructor( )
-	self.goodsItem = LuaPool:Get("GoodsItem")
+	self.goodsItem = GoodsItem.Create()
+	self.goodsItem:Load()
 	self:Attach(self.goodsItem)
 end
 
@@ -33,7 +34,6 @@ function BagGoodsItem:SetShowData( showData )
 end
 
 function BagGoodsItem:OnDestroy(  )
-	print('Cat:BagGoodsItem.lua[23] self.goodsItem', self.goodsItem)
 	if self.goodsItem then
 		LuaPool:Recycle("GoodsItem", self.goodsItem)
 		self.goodsItem = nil

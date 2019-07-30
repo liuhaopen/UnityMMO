@@ -33,8 +33,11 @@ function BagView:AddEvents(  )
 	UI.BindClickEvent(self.swallow_obj, on_click)
 	UI.BindClickEvent(self.sort_obj, on_click)
 	
-	self:BindEvent(self.model, BagConst.Event.BagChange, function()
-		self:UpdateGoodsItems()
+	self:BindEvent(self.model, BagConst.Event.BagChange, function(pos)
+		print('Cat:BagView.lua[37] pos', pos)
+		if not pos or pos == BagConst.Pos.Bag then
+			self:UpdateGoodsItems()
+		end
 	end)
 end
 

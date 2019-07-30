@@ -5,6 +5,14 @@ function UINode:Constructor( parentTrans )
 end
 
 function UINode:Load(  )
+	if self.isLoaded then 
+		if self.viewCfg.parentTrans then
+			self.transform:SetParent(self.viewCfg.parentTrans)
+		elseif self.viewCfg and self.viewCfg.canvasName then
+			UIMgr:AddToCanvas(self, self.viewCfg.canvasName)
+		end
+		return 
+	end
 	assert(self.viewCfg, "has no assign viewCfg before load")
 	-- local isEmptyContainer = self.viewCfg.prefabPath and string.find(self.viewCfg.prefabPath, "common/EmptyContainer.prefab")
 	-- if isEmptyContainer then
@@ -50,8 +58,8 @@ function UINode:Init( gameObject )
 	end
 	self.transform = gameObject.transform
 	self.gameObject.layer = CS.UnityEngine.LayerMask.NameToLayer("UI")
-	if self.parentTrans then
-		self.transform:SetParent(self.parentTrans)
+	if self.viewCfg and self.viewCfg.parentTrans then
+		self.transform:SetParent(self.viewCfg.parentTrans)
 	elseif self.viewCfg and self.viewCfg.canvasName then
 		UIMgr:AddToCanvas(self, self.viewCfg.canvasName)
 	end
@@ -105,6 +113,9 @@ function UINode:OnDestroy(  )
 		self.viewCfg.loadedComponents = nil
 	end
 	GameObject.Destroy(self.gameObject)
+	if self.unloadCallBack then
+		self.unloadCallBack()
+	end
 end
 
 function UINode:OnUpdate(  )
@@ -128,7 +139,7 @@ function UINode:BindEvent( bindDispather, eventName, handleFunc )
 		print('Cat:UINode.lua had bind event name : ', eventName)
 		return
 	end
-	print('Cat:UINode.lua[69] eventName..tostring(bindDispather)', eventName..tostring(bindDispather))
+	-- print('Cat:UINode.lua[69] eventName..tostring(bindDispather)', eventName..tostring(bindDispather))
 	local eventID = bindDispather:Bind(eventName, handleFunc)
 	self.bindEventInfos[eventName..tostring(bindDispather)] = {bindDispather, eventID}
 	return eventID
@@ -151,7 +162,8 @@ function UINode:SetLocalPositionXYZ( x, y, z )
 end
 
 function UINode:SetParent( parent )
-	self.parentTrans = parent
+	self.viewCfg = self.viewCfg or {}
+	self.viewCfg.parentTrans = parent
 	if self.isLoaded then
 		self.transform:SetParent(parent)
 		self:UpdateTransform()
@@ -204,7 +216,7 @@ function UINode:AutoDestroy( deleteNode )
 end
 
 function UINode:AddUIComponent( component, arge )
-	print('Cat:UINode.lua[AddUIComponent] component, arge', component, tostring(arge), self)
+	-- print('Cat:UINode.lua[AddUIComponent] component, arge', component, tostring(arge), self)
 	assert(component~=nil, "cannot add nil component for view")
 	local new_comp = component.New()
 	new_comp:OnAwake(self, arge)
@@ -257,6 +269,10 @@ end
 
 function UINode:Hide(  )
 	self.transform:SetParent(PrefabPool.hide_container)
+end
+
+function UINode:SetUnloadCallBack( callBack )
+	self.unloadCallBack = callBack
 end
 
 return UINode

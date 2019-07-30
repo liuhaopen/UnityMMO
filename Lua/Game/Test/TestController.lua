@@ -20,8 +20,18 @@ end
 
 function TestController:Update(  )
 	if GetKeyUp(CS.UnityEngine.KeyCode.Z) then
-		local view = require("Game.GM.GMView").New()
-		view:Load()
+		print('Cat:TestController.lua[23] self.gmView', self.gmView)
+		if self.gmView then
+			self.gmView:Unload()
+			self.gmView = nil
+		else
+			self.gmView = require("Game.GM.GMView").New()
+			self.gmView:Load()
+			self.gmView:SetUnloadCallBack(function()
+				print('Cat:TestController.lua[30]self.gmView')
+				self.gmView = nil
+			end)
+		end
 	elseif GetKeyUp(CS.UnityEngine.KeyCode.F) then 
 		print('Cat:TestController.lua[25] f up')
 		if self.view_f then

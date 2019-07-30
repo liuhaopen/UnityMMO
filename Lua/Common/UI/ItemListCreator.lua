@@ -400,7 +400,6 @@ GetItemCreator = function ( self )
 					end
 				end
 				item = UINode.New()
-				item.parentTrans = info.item_con
 				if info.prefab_path then
 					item.viewCfg = {
 						prefabPath = info.prefab_path,
@@ -410,6 +409,7 @@ GetItemCreator = function ( self )
 						prefabPoolName = info.prefab_pool_name,
 					}
 				end
+				item.viewCfg.parentTrans = info.item_con
 				item.SetData = function(item, i, v)
 					if item.isLoaded and item.OnUpdate then
 						item:OnUpdate(i, v)
@@ -432,6 +432,7 @@ GetItemCreator = function ( self )
 			local item = self.item_list[i]
 			if not item then
 				item = LuaPool:Get(info.lua_pool_name)
+				item:Load()
 				item:SetParent(info.item_con)
 				self.item_list[i] = item
 				item._real_index_for_item_creator_ = i

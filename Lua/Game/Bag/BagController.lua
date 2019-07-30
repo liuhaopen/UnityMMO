@@ -1,5 +1,6 @@
 BagConst = require("Game/Bag/BagConst")
 BagModel = require("Game/Bag/BagModel")
+local GoodsInfoView = require("Game.Common.UI.GoodsInfoView")
 
 BagController = {}
 
@@ -62,8 +63,10 @@ function BagController:ShowGoodsTips( goodsInfo, showData )
     end
     if not goodsInfo.cfg then return end
 
-    local infoView = require("Game.Common.UI.GoodsInfoView").Create()
+    local infoView = GoodsInfoView.Create()
+    print('Cat:BagController.lua[ShowGoodsTips] infoView', infoView)
     infoView:SetData(goodsInfo, showData)
+    infoView:Load()
     -- if goodsInfo.cfg.type == 
 end
 

@@ -14,7 +14,7 @@ function LuaPool:Register( objInfo )
 end
 
 function LuaPool:Get( name )
-	print('Cat:LuaPool.lua[17] name', name)
+	-- print('Cat:LuaPool.lua[Get] name', name)
 	if not name then
 		LogError("LuaPool:Get error : name nil")
 		return
@@ -41,7 +41,7 @@ function LuaPool:Get( name )
 end
 
 function LuaPool:Recycle( name, obj )
-	print('Cat:LuaPool.lua[43] name, obj', name, obj)
+	-- print('Cat:LuaPool.lua[Recycle] name, obj', name, obj)
 	if name then
 		if obj then
 			if obj.Recycle then

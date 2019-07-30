@@ -3,6 +3,7 @@ local MainUITaskView = BaseClass(UINode)
 function MainUITaskView:Constructor( parentTrans )
 	self.viewCfg = {
 		prefabPath = "Assets/AssetBundleRes/ui/mainui/MainUITaskView.prefab",
+		parentTrans = parentTrans,
 	}
 	self.model = TaskModel:GetInstance()
 

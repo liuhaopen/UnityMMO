@@ -8,6 +8,7 @@ UILooksNode.ShowType = {
 function UILooksNode:Constructor( parentTrans )
 	self.viewCfg = {
 		prefabPath = "Assets/AssetBundleRes/ui/common/UILooksNode.prefab",
+		parentTrans = parentTrans,
 	}
 	self.cacheRole = {}
 	self.cacheNPC = {}

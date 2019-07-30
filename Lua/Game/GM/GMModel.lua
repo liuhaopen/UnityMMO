@@ -1,6 +1,11 @@
 local GMModel = BaseClass(EventDispatcher)
 local GMModel = GMModel
 
+local clientGMList = {
+	{gmName="角色id", defaultGMStr="roleID"},
+	{gmName="场景信息", defaultGMStr="sceneInfo"},
+}
+
 function GMModel:__init()
 	GMModel.Instance = self
 	self:Reset()
@@ -22,6 +27,9 @@ end
 
 function GMModel:SetGmList( value )
 	self.gmList = value
+	for i,v in ipairs(clientGMList) do
+		table.insert(self.gmList, v)
+	end
 end
 
 

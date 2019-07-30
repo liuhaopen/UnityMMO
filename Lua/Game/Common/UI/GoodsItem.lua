@@ -4,7 +4,6 @@ function GoodsItem:Constructor(  )
 	self.viewCfg = {
 		prefabPoolName = "GoodsItem",
 	}
-	self:Load()
 end
 
 function GoodsItem.Create()
@@ -22,7 +21,7 @@ end
 
 function GoodsItem:Recycle(  )
 	self:Reset()
-	PrefabPool:Recycle(self.viewCfg.prefabPoolObj)
+	self:Hide()
 end
 
 function GoodsItem:OnLoad(  )
@@ -35,9 +34,7 @@ end
 
 function GoodsItem:AddEvents(  )
 	local on_click = function ( click_obj )
-		print('Cat:GoodsItem.lua[38] click_obj', click_obj, self.click_obj)
 		if self.click_obj == click_obj then
-			print('Cat:GoodsItem.lua[40] self.clickFunc', self.clickFunc)
 			if self.clickFunc then
 				self.clickFunc(self.clickArge)
 			end
@@ -72,10 +69,15 @@ function GoodsItem:SetClickFunc( clickFunc, arge )
 	self.clickArge = arge
 end
 
-
-function GoodsItem:SetSize( x, y )
-	
+local scaleMap = {
+	["Big"] = 1,
+	["Medium"] = 0.7,
+	["Small"] = 0.5,
+}
+function GoodsItem:SetSizeType( sizeType )
+	local scale = sizeType and scaleMap[sizeType]
+	if not scale then return end
+	self.transform.localScale = Vector2(scale, scale)
 end
-
 
 return GoodsItem

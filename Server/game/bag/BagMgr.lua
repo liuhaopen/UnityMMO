@@ -27,15 +27,17 @@ local function initBagList( pos )
 	return bagInfo
 end
 
-local findEmptyCellIndex = function ( bagInfo )
+local findEmptyCellIndex = function ( goodsList )
 	local cell = 1
-	if bagInfo and bagInfo.goodsList then
-		cell = #bagInfo.goodsList + 1
-		for i,v in ipairs(bagInfo.goodsList) do
+	if goodsList then
+		cell = #goodsList + 1
+		for i,v in ipairs(goodsList) do
 			if v.cell > i then
 				return i
 			end
 		end
+	else
+		cell = BagConst.MaxCell+9999
 	end
 	return cell
 end
@@ -118,7 +120,7 @@ changeGoodsNum = function( goodsTypeID, diffNum, pos, notify )
 			newGoods = goodsInfo
 		else
 			--已达到该道具的最大重叠数，所以在占另外的背包格子
-			local emptyCell = findEmptyCellIndex(bagInfo)
+			local emptyCell = findEmptyCellIndex(bagInfo and bagInfo.goodsList)
 			if emptyCell > BagConst.MaxCell then
 				--Cat_Todo : handle full cell
 				return
@@ -144,7 +146,7 @@ changeGoodsNum = function( goodsTypeID, diffNum, pos, notify )
 		end
 		addNewGoodsToNotifyCache(newGoods, notify)
 	else
-		--Cat_Todo : uninit?
+		--uninit?
 		skynet.error("bag:add goods uninit bag info")
 	end
 end

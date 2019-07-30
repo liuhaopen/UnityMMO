@@ -49,9 +49,6 @@ function GMView:OnUpdate(  )
 	if not self.isLoaded then return end
 
 	local gmList = self.model:GetGmList()
-	print("Cat:GMView [start:52] gmList: ", gmList)
-	PrintTable(gmList)
-	print("Cat:GMView [end]")
 	if not gmList then return end
 	
 	self.item_list_com = self.item_list_com or self:AddUIComponent(UI.ItemListCreator)
@@ -64,7 +61,7 @@ function GMView:OnUpdate(  )
 		item_height = 56,
 		space_x = 5,
 		space_y = 3,
-		start_x = 76,
+		start_x = 106,
 		start_y = -28,
 		child_names = {"label:txt"},
 		on_update_item = function(item, i, v)

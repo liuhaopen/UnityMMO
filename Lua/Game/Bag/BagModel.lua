@@ -48,7 +48,7 @@ end
 
 function BagModel:RemoveGoods( uid, pos )
 	local goodsInfo, index = self:FindGoods(uid, pos)
-	pos = goodsInfo.pos--可以不传pos的，不传pos则查所有的背包
+	pos = goodsInfo and goodsInfo.pos--可以不传pos的，不传pos则查所有的背包
 	if goodsInfo then
 		local fullGoodsList = self.fullGoodsList and self.fullGoodsList[pos] 
 		if fullGoodsList then
@@ -95,16 +95,23 @@ function BagModel:FindEmptyCell(  )
 	return cell
 end
 
-local findEmptyCell = function ( bagInfo )
-	
-end
-
 function BagModel:AddGoods( newGoodsInfo )
 	if not newGoodsInfo then return end
 	
 	local pos = newGoodsInfo.pos
 	local goodsList = self.bagInfo and self.bagInfo[pos] and self.bagInfo[pos].goodsList 
-	
+	if goodsList then
+		for i,v in ipairs(goodsList) do
+			if v.cell > newGoodsInfo.cell then
+				table.insert(goodsList, i, newGoodsInfo)
+				break
+			end
+		end	
+	end
+	local fullGoodsList = self.fullGoodsList and self.fullGoodsList[pos] 
+	if fullGoodsList then
+		fullGoodsList[newGoodsInfo.cell] = newGoodsInfo
+	end
 end
 
 function BagModel:UpdateBagInfos( bagInfos )
@@ -123,9 +130,10 @@ function BagModel:UpdateBagInfos( bagInfos )
 					goodsInfo[key] = value
 				end
 			end
+			print('Cat:BagModel.lua[132] isInBag', isInBag)
 			if not isInBag then
 				--新加入的道具
-
+				self:AddGoods(changeGoodsInfo)
 			end
 		end
 	end

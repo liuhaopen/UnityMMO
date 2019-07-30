@@ -34,7 +34,6 @@ function BagMainView:OnLoad(  )
 	self.window:Load(winData)
 	self.window:SetParent(self.container)
 	self:AutoDestroy(self.window)
-
 	self:AddEvents()
 	self:OnUpdate()
 
@@ -53,6 +52,7 @@ function BagMainView:OnSwitchTab( tabID )
 			self:AutoDestroy(self.bagView)
 		end
 		self:JustShowMe(self.bagView)
+		self.window:SetTitle("Assets/AssetBundleRes/ui/bag/bag_txt_title_1.png")
 	elseif tabID == BagConst.TabID.Warehouse then
 		if not self.warehouseView then
 			self.warehouseView = require("Game.Bag.WarehouseView").New(self.container)
@@ -60,6 +60,7 @@ function BagMainView:OnSwitchTab( tabID )
 			self:AutoDestroy(self.warehouseView)
 		end
 		self:JustShowMe(self.warehouseView)
+		self.window:SetTitle("Assets/AssetBundleRes/ui/bag/bag_txt_title_2.png")
 	end
 	self.curTabID = tabID
 end

@@ -1,6 +1,6 @@
 local TestGoodsItem = BaseClass(UINode)
 
-function TestGoodsItem:Constructor( parentTrans )
+function TestGoodsItem:Constructor( )
 	self.viewCfg = {
 		prefabPath = "Assets/AssetBundleRes/ui/test/TestGoodsItem.prefab",
 		canvasName = "Dynamic",
@@ -24,6 +24,7 @@ end
 
 function TestGoodsItem:OnUpdate(  )
 	-- local item = GoodsItem.New(self.item_con)
+	-- item:Load()
 	-- print('Cat:TestGoodsItem.lua[25] item, self.item_con', item, self.item_con)
 	-- item:SetIcon(100000, 456)
 
