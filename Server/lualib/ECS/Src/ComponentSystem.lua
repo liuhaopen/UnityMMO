@@ -50,7 +50,6 @@ function ComponentSystemBase:OnBeforeCreateManagerInternal( world, capacity )
     self.m_AlwaysUpdateSystem = self.AlwaysUpdateSystem
 
     self.m_ComponentGroups = ECS.ComponentGroup.New()
-    -- self.m_CachedComponentGroupArrays = new ComponentGroupArrayStaticCache[0]
 
     ECS.ComponentSystemInjection.Inject(self, world, self.m_EntityManager, self.m_InjectedComponentGroups, self.m_InjectFromEntityData)
 
@@ -61,11 +60,9 @@ function ComponentSystemBase:BeforeUpdateVersioning(  )
 end
 
 function ComponentSystemBase:AfterUpdateVersioning(  )
-	
 end
 
 function ComponentSystemBase:OnStartRunning(  )
-    
 end
 
 function ComponentSystemBase:GetArchetypeChunkComponentType( com_type_name, isReadOnly )
@@ -103,7 +100,6 @@ end
 local ComponentSystem = ECS.BaseClass(ECS.ComponentSystemBase)
 function ComponentSystem:OnCreateManager( )
 	self.PostUpdateCommands = nil
-	--提取需要组件的类型信息
 end
 
 function ComponentSystem:BeforeOnUpdate(  )
@@ -130,8 +126,6 @@ end
 
 function ComponentSystem:AfterOnUpdate(  )
 	self:AfterUpdateVersioning()
-	-- self.m_DeferredEntities:Playback(self.m_EntityManager)
-	-- self.m_DeferredEntities:Delete()
 end
 
 return ComponentSystem

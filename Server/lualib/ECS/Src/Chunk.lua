@@ -15,18 +15,15 @@ function Chunk:Constructor(  )
 end
 
 function Chunk.GetChunkBufferSize( numComponents, numSharedComponents )
-	-- local bufferSize = ECS.Chunk.kChunkSize - (numSharedComponents * sizeof(int) + numComponents * sizeof(uint))
 	local bufferSize = ECS.Chunk.kChunkSize - (numSharedComponents * 4 + numComponents * 4)
     return bufferSize
 end
 
 function Chunk.GetSharedComponentOffset( numSharedComponents )
-    -- return ECS.Chunk.kChunkSize - numSharedComponents * ECS.CoreHelper.GetIntegerSize()
     return 0
 end
 
 function Chunk.GetChangedComponentOffset( numComponents, numSharedComponents )
-    -- return Chunk.GetSharedComponentOffset(numSharedComponents) - numComponents * ECS.CoreHelper.GetIntegerSize()
     return 0
 end
 

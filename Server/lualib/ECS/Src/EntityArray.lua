@@ -31,13 +31,9 @@ local set_fun = function ( t, index, value )
 	print("EntityArray setter is useless : ", debug.traceback())
 end
 
--- local get_len = function ( t )
--- 	return t.Length
--- end
 local meta_tbl = {
 	__index = get_fun,
 	__newindex = set_fun,
-	-- __len = get_len
 }
 function EntityArray.InitMetaTable( array )
 	setmetatable(array, meta_tbl)

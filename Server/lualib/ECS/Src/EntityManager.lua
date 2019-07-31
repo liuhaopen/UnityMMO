@@ -106,29 +106,20 @@ function EntityManager:AddComponentData( entity, componentTypeName, componentDat
 end
 
 function EntityManager:SetComponentData( entity, componentTypeName, componentData )
-    -- self.Entities:AssertEntityHasComponent(entity, componentTypeName)--做检查需要消耗多一倍时间
+    self.Entities:AssertEntityHasComponent(entity, componentTypeName)--做检查需要消耗多一倍时间
     self.Entities:SetComponentDataWithTypeNameRW(entity, componentTypeName, componentData)
 end
 
---因为unity的ECS的此接口返回的是一个拷贝，所以这里也这么用吧，一般建议使用GetComponentDataRef提高效率，就是要小心别修改到就可以了
--- function EntityManager:GetComponentData( entity, componentTypeName )
---     -- self.Entities:AssertEntityHasComponent(entity, componentTypeName)
---     local data = self.Entities:GetComponentDataWithTypeNameRO(entity, componentTypeName)
---     data = ECS.ChunkDataUtility.DeepCopy(data)
---     return data
--- end
---还是直接默认返回引用吧
 function EntityManager:GetComponentData( entity, componentTypeName )
-    -- self.Entities:AssertEntityHasComponent(entity, componentTypeName)
+    self.Entities:AssertEntityHasComponent(entity, componentTypeName)
     return self.Entities:GetComponentDataWithTypeNameRO(entity, componentTypeName)
 end
 
 function EntityManager:GetAllEntities(  )
-	
 end
 
 function EntityManager:GetComponentTypes( entity )
-	-- self.Entities.AssertEntitiesExist(&entity, 1)
+    self.Entities:Exists(entity)
     local archetype = self.Entities:GetArchetype(entity)
     local components = {}
     for i=2, archetype.TypesCount do
@@ -138,7 +129,7 @@ function EntityManager:GetComponentTypes( entity )
 end
 
 function EntityManager:GetComponentCount( entity )
-	-- Entities.AssertEntitiesExist(&entity, 1)
+    self.Entities:Exists(entity)
     local archetype = self.Entities:GetArchetype(entity)
     return archetype.TypesCount - 1
 end
@@ -148,9 +139,8 @@ function EntityManager:CreateComponentGroup( requiredComponents )
 end
 
 function EntityManager:DestroyEntity( entity )
-    -- self.Entities:AssertEntitiesExist(entities, count)
+    self.Entities:Exists(entity)
     -- self.Entities:AssertChunksUnlocked(entities, count)
-    -- self.EntityDataManager.TryRemoveEntityId(entities, count, self.Entities, self.ArchetypeManager, self.m_SharedComponentManager)
     self.Entities:TryRemoveEntityId(entity, self.ArchetypeManager)
 end
 

@@ -186,7 +186,6 @@ function TestComponentSystem:TestComponentDataArray(  )
     lu.assertEquals(entities[2].b, compData.b)
 end
 
-
 local TestEntityArraySystem = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr("TestEntityArraySystem", TestEntityArraySystem)
 
@@ -215,4 +214,94 @@ function TestComponentSystem:TestEntityArray(  )
     lu.assertNotNil(entities)
     lu.assertEquals(entities.Length, 1)
     lu.assertEquals(entities[1], entity)
+end
+
+local TestRemoveEntitySystem = ECS.BaseClass(ECS.ComponentSystem)
+ECS.TypeManager.RegisterScriptMgr("TestRemoveEntitySystem", TestRemoveEntitySystem)
+
+function TestRemoveEntitySystem:OnCreateManager(  )
+    ECS.ComponentSystem.OnCreateManager(self)
+    self.group = self:GetComponentGroup({"DataForTestRemoveEntity3", "DataForTestRemoveEntity2"})
+end
+function TestRemoveEntitySystem:OnUpdate(  )
+end
+function TestComponentSystem:TestRemoveEntity(  )
+    ECS.TypeManager.RegisterType("DataForTestRemoveEntity1", {x=0, y=false, z=0})
+    ECS.TypeManager.RegisterType("DataForTestRemoveEntity2", {x=false, b=false})
+    ECS.TypeManager.RegisterType("DataForTestRemoveEntity3", {value=0})
+    
+    local sys = ECS.World.Active:GetOrCreateManager("TestRemoveEntitySystem")
+    sys:Update()
+    lu.assertNotNil(sys.group)
+    local entities = sys.group:ToComponentDataArray("DataForTestRemoveEntity3")
+    lu.assertNotNil(entities)
+    lu.assertEquals(#entities, 0)
+
+    local archetype = self.m_Manager:CreateArchetype({"DataForTestRemoveEntity1", "DataForTestRemoveEntity2", "DataForTestRemoveEntity3"})
+    local archetype2 = self.m_Manager:CreateArchetype({"DataForTestRemoveEntity2", "DataForTestRemoveEntity3"})
+    local entity = self.m_Manager:CreateEntityByArcheType(archetype)
+    self.m_Manager:SetComponentData(entity, "DataForTestRemoveEntity3", {value=123546})
+    self.m_Manager:SetComponentData(entity, "DataForTestRemoveEntity2", {x=false, b=true})
+    sys:Update()
+    local entities = sys.group:ToComponentDataArray("DataForTestRemoveEntity3")
+    lu.assertNotNil(entities)
+    lu.assertEquals(entities.Length, 1)
+    local compData = self.m_Manager:GetComponentData(entity, "DataForTestRemoveEntity3")
+    lu.assertEquals(entities[1], compData)
+    lu.assertEquals(entities[1].value, compData.value)
+    --delete entity
+    self.m_Manager:DestroyEntity(entity)
+    local entities = sys.group:ToComponentDataArray("DataForTestRemoveEntity3")
+    lu.assertNotNil(entities)
+    lu.assertEquals(entities.Length, 0)
+    local entities = sys.group:ToComponentDataArray("DataForTestRemoveEntity2")
+    lu.assertNotNil(entities)
+    lu.assertEquals(entities.Length, 0)
+
+    local entity = self.m_Manager:CreateEntityByArcheType(archetype)
+    self.m_Manager:SetComponentData(entity, "DataForTestRemoveEntity2", {x=true, b=false})
+    self.m_Manager:SetComponentData(entity, "DataForTestRemoveEntity3", {value=53212})
+    sys:Update()
+    local entities = sys.group:ToComponentDataArray("DataForTestRemoveEntity3")
+    lu.assertNotNil(entities)
+    lu.assertEquals(entities.Length, 1)
+    local compData = self.m_Manager:GetComponentData(entity, "DataForTestRemoveEntity3")
+    lu.assertEquals(entities[1], compData)
+    lu.assertEquals(entities[1].value, compData.value)
+
+    local entity2 = self.m_Manager:CreateEntityByArcheType(archetype2)
+    self.m_Manager:SetComponentData(entity2, "DataForTestRemoveEntity2", {x=false, b=true})
+    self.m_Manager:SetComponentData(entity2, "DataForTestRemoveEntity3", {value=123})
+    sys:Update()
+    local entities = sys.group:ToComponentDataArray("DataForTestRemoveEntity3")
+    lu.assertNotNil(entities)
+    lu.assertEquals(entities.Length, 2)
+    local compData = self.m_Manager:GetComponentData(entity2, "DataForTestRemoveEntity3")
+    local correctMap = {}
+    for i=1,entities.Length do
+        correctMap[entities[i].value] = true
+    end
+    lu.assertTrue(correctMap[123])
+    lu.assertTrue(correctMap[53212])
+    
+    -- delete entity
+    self.m_Manager:DestroyEntity(entity)
+    local entities = sys.group:ToComponentDataArray("DataForTestRemoveEntity3")
+    lu.assertNotNil(entities)
+    lu.assertEquals(entities.Length, 1)
+    lu.assertEquals(entities[1].value, 123)
+
+    --create and delete many
+    local count = 1234
+    local array = self.m_Manager:CreateEntitiesByArcheType(archetype, count)
+    local entities = sys.group:ToComponentDataArray("DataForTestRemoveEntity3")
+    lu.assertNotNil(entities)
+    lu.assertEquals(entities.Length, count+1)
+    local cutNum = 500
+    for i=1,cutNum do
+        self.m_Manager:DestroyEntity(array[i])
+    end
+    local entities = sys.group:ToComponentDataArray("DataForTestRemoveEntity3")
+    lu.assertNotNil(entities)
+    lu.assertEquals(entities.Length, count+1-cutNum)
 end

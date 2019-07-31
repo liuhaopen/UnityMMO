@@ -59,14 +59,7 @@ function ComponentChunkIterator:UpdateCacheToCurrentChunk( cache, isWriting, ind
     local indexInArchetype = self.m_CurrentMatchingArchetype.IndexInArchetype[indexInComponentGroup]
     cache.CachedBeginIndex = self.m_CurrentChunkEntityIndex + self.m_CurrentArchetypeEntityIndex - 2
     cache.CachedEndIndex = cache.CachedBeginIndex + self.m_CurrentChunk.Count
-    -- cache.CachedSizeOf = archetype.SizeOfs[indexInArchetype]
-    -- cache.CachedPtr = self.m_CurrentChunk.Buffer + (archetype.Offsets[indexInArchetype] -
-                      -- cache.CachedBeginIndex * cache.CachedSizeOf)
     cache.CurChunk = self.m_CurrentChunk
-    -- cache.IsWriting = isWriting
-    -- if isWriting then
-    --     self.m_CurrentChunk.ChangeVersion[indexInArchetype] = self.m_GlobalSystemVersion
-    -- end
 end        
 
 function ComponentChunkIterator:MoveToEntityIndexAndUpdateCache( index, cache, isWriting )

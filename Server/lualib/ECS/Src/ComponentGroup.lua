@@ -65,7 +65,6 @@ function ComponentGroup:ResetFilter(  )
 end
 
 function ComponentGroup:SetFilter(  )
-	
 end
 
 function ComponentGroup:CompareComponents( componentTypes )

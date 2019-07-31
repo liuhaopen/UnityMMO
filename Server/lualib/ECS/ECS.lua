@@ -34,7 +34,6 @@ ECS.Chunk = importer.require("ECS.Src.Chunk", ECSEnv)
 ECS.UnsafeLinkedListNode = importer.require("ECS.Common.UnsafeLinkedListNode", ECSEnv)
 ECS.ChunkDataUtility = importer.require("ECS.Src.ChunkDataUtility", ECSEnv)
 ECS.ComponentSystemInjection = importer.require("ECS.Src.ComponentSystemInjection", ECSEnv)
-ECS.InjectFromEntityData = importer.require("ECS.Src.InjectFromEntityData", ECSEnv)
 ECS.InjectComponentGroupData = importer.require("ECS.Src.InjectComponentGroupData", ECSEnv)
 ECS.ComponentChunkIterator = importer.require("ECS.Src.ComponentChunkIterator", ECSEnv)
 ECS.ComponentDataArray = importer.require("ECS.Src.ComponentDataArray", ECSEnv)
@@ -46,11 +45,6 @@ local function InitWorld( worldName )
 
 	world:GetOrCreateManager(ECS.EntityManager.Name)
 
-	--register all systems
-	-- local systems = ECS.TypeManager.GetScriptMgrMap()
-	-- for k,v in pairs(systems) do
-	-- 	world:GetOrCreateManager(k)
-	-- end
 	return world
 end
 

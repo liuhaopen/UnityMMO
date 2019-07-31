@@ -35,22 +35,8 @@ function ComponentSystemInjection.Inject( componentSystem, world, entityManager,
 		local inject_field_name = v[1]
 		local inject_info = v[2]
 		
-		-- for component_name,inject_component_info in pairs(inject_info) do
-			-- local info_parts = Split(inject_component_info, ":")
-			-- if #info_parts > 0 then
-			-- 	if IsFindInStrList(info_parts, "ScriptMgr") then
-			-- 		self:InjectConstructorDependencies(componentSystem, world, info_parts, inject_field_name)
-			-- 	else
-			-- 		if ECS.InjectFromEntityData.SupportsInjections(info_parts) then
-			-- 			ECS.InjectFromEntityData.CreateInjection(info_parts, entityManager, injectFromEntity,
-   --                          injectFromFixedArray)
-			-- 		else
-						local group = ECS.InjectComponentGroupData.CreateInjection(inject_field_name, inject_info, componentSystem)
-						table.insert(outInjectGroups, group)
-					-- end
-				-- end
-			-- end
-		-- end
+		local group = ECS.InjectComponentGroupData.CreateInjection(inject_field_name, inject_info, componentSystem)
+		table.insert(outInjectGroups, group)
 	end
 end
 

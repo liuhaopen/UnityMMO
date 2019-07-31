@@ -10,7 +10,6 @@ ComponentType.AccessMode = {
 function ComponentType:Constructor(  )
 	self.TypeIndex = 0
 	self.AccessModeType = ComponentType.AccessMode.ReadWrite
-
 end
 
 function ComponentType.Create( type_name )
