@@ -25,3 +25,4 @@ server only for Linux;
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/auto_talk_and_fight.gif)     
 19.07.10：增加一个副本场景：    
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/change_scene.gif)     
+19.07.31：初步完成背包和GM系统      
