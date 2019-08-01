@@ -1,17 +1,20 @@
 using System;
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
-using UnityMMO;
 
+namespace UnityMMO
+{
 public class SkillManager
 {
     static SkillManager instance;
     int curComboIndex;
     int career;
     int[] skillIDs = new int[4];//主界面里的四个技能id，因为人物有多于4技能可以选择，所以需要后端记录下来哪四个常用的放在主界面
+    Dictionary<int,long> skillCDEndTime = new Dictionary<int,long>();
     public static SkillManager GetInstance()
     {
         if (instance != null)
@@ -57,6 +60,23 @@ public class SkillManager
             return skillIDs[skillIndex];
     }
 
+    public void SetSkillCD(int skillID, long endTime)
+    {
+        // Debug.Log("set cd : "+skillID+" endTime:"+endTime);
+        if (skillCDEndTime.ContainsKey(skillID))
+            skillCDEndTime[skillID] = endTime;
+        else
+            skillCDEndTime.Add(skillID, endTime);
+        XLuaFramework.CSLuaBridge.GetInstance().CallLuaFunc2Num(GlobalEvents.SkillCDChanged, skillID, endTime);
+    }
+
+    public long GetSkillCD(int skillID)
+    {
+        long endTime;
+        skillCDEndTime.TryGetValue(skillID, out endTime);
+        return endTime;
+    }
+
     public string GetSkillResPath(int skillID)
     {
         string assetPath;
@@ -89,16 +109,58 @@ public class SkillManager
         return 100000+career*10000+comboIndex;
     }
 
-    public void CastSkill(int skillIndex=-1)
+    public bool IsSkillInCD(int skillID)
     {
+        long endTime = GetSkillCD(skillID);
+        return endTime >= TimeEx.ServerTime;
+    }
+
+    public bool IsNormalAttack(int skillID)
+    {
+        var combatID = ((skillID%100000)%10000);
+        // Debug.Log("combatID : "+combatID);
+        //普攻的技能id都是个位数没有十位数的
+        return combatID<10;
+    }
+
+    public void CastSkillByIndex(int skillIndex=-1)
+    {
+        var skillID = GetSkillIDByIndex(skillIndex);
+        CastSkill(skillID);
+    }
+
+    public void CastRandomSkill()
+    {
+        for (int i = 0; i < skillIDs.Length; i++)
+        {
+            var skillID = skillIDs[i];
+            var isInCD = IsSkillInCD(skillID);
+            if (!isInCD)
+            {
+                CastSkill(skillID);
+                break;
+            }
+        }
+        CastSkillByIndex(-1);
+    }
+
+    public void CastSkill(int skillID)
+    {
+        // var skillID = GetSkillIDByIndex(skillIndex);
+        var isInCD = IsSkillInCD(skillID);
+        if (isInCD)
+        {
+            XLuaFramework.CSLuaBridge.GetInstance().CallLuaFuncStr(GlobalEvents.MessageShow, "技能冷却中...");
+            return;
+        }
         var roleGameOE = RoleMgr.GetInstance().GetMainRole();
         var roleInfo = roleGameOE.GetComponent<RoleInfo>();
-        var skillID = SkillManager.GetInstance().GetSkillIDByIndex(skillIndex);
         
         string assetPath = ResPath.GetRoleSkillResPath(skillID);
-        bool isNormalAttack = skillIndex == -1;//普通攻击
+        bool isNormalAttack = IsNormalAttack(skillID);//普通攻击
+        // Debug.Log("isNormalAttack : "+isNormalAttack);
         if (!isNormalAttack)
-            SkillManager.GetInstance().ResetCombo();//使用非普攻技能时就重置连击索引
+            ResetCombo();//使用非普攻技能时就重置连击索引
         var uid = SceneMgr.Instance.EntityManager.GetComponentData<UID>(roleGameOE.Entity);
         Action<TimelineInfo.Event> afterAdd = null;
         if (isNormalAttack)
@@ -107,7 +169,7 @@ public class SkillManager
             afterAdd = (TimelineInfo.Event e)=>
             {
                 if (e == TimelineInfo.Event.AfterAdd)
-                    SkillManager.GetInstance().IncreaseCombo();
+                    IncreaseCombo();
             };
         }
         var timelineInfo = new TimelineInfo{ResPath=assetPath, Owner=roleGameOE.Entity,  StateChange=afterAdd};
@@ -177,4 +239,5 @@ public class SkillSpawnSystem : BaseComponentSystem
         requestEntityArray.Dispose();
         requestArray.Dispose();
     }
+}
 }

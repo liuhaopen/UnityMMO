@@ -80,7 +80,7 @@ public class AutoFight : MonoBehaviour
         if (dis <= 1.2)
         {
             lastAttackTime = Time.time;
-            SkillManager.GetInstance().CastSkill(-1);
+            SkillManager.GetInstance().CastRandomSkill();
         }
         else
         {

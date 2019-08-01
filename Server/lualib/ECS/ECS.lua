@@ -43,7 +43,7 @@ local function InitWorld( worldName )
 	local world = ECS.World.New(worldName)
 	ECS.World.Active = world
 
-	world:GetOrCreateManager(ECS.EntityManager.Name)
+	world.EntityManager = world:GetOrCreateManager(ECS.EntityManager.Name)
 
 	return world
 end

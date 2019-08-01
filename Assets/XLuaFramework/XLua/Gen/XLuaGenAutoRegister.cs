@@ -224,6 +224,9 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(UnityEngine.Input), UnityEngineInputWrap.__Register);
         
         
+            translator.DelayWrapLoader(typeof(UnityEngine.UI.Button), UnityEngineUIButtonWrap.__Register);
+        
+        
             translator.DelayWrapLoader(typeof(UnityEngine.KeyCode), UnityEngineKeyCodeWrap.__Register);
         
         
@@ -263,6 +266,45 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(TMPro.TMP_Text), TMProTMP_TextWrap.__Register);
         
         
+            translator.DelayWrapLoader(typeof(XLuaFramework.LogHandler), XLuaFrameworkLogHandlerWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(XLuaFramework.LogManager), XLuaFrameworkLogManagerWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(XLuaFramework.Main), XLuaFrameworkMainWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(XLuaFramework.AssetsHotFixManager), XLuaFrameworkAssetsHotFixManagerWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(XLuaFramework.DisType), XLuaFrameworkDisTypeWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(XLuaFramework.AssetBundleInfo), XLuaFrameworkAssetBundleInfoWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(XLuaFramework.ThreadManager), XLuaFrameworkThreadManagerWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(XLuaFramework.ByteBuffer), XLuaFrameworkByteBufferWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(XLuaFramework.ClickTriggerListener), XLuaFrameworkClickTriggerListenerWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(XLuaFramework.CSLuaBridge), XLuaFrameworkCSLuaBridgeWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(XLuaFramework.DragTriggerListener), XLuaFrameworkDragTriggerListenerWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(XLuaFramework.EventTriggerListener), XLuaFrameworkEventTriggerListenerWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(XLuaFramework.Pathtool), XLuaFrameworkPathtoolWrap.__Register);
+        
+        
             translator.DelayWrapLoader(typeof(UnityMMO.UID), UnityMMOUIDWrap.__Register);
         
         
@@ -270,6 +312,9 @@ namespace XLua.CSObjectWrap
         
         
             translator.DelayWrapLoader(typeof(UnityMMO.GameConst), UnityMMOGameConstWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(UnityMMO.GlobalEvents), UnityMMOGlobalEventsWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(UnityMMO.ResPath), UnityMMOResPathWrap.__Register);
@@ -282,6 +327,19 @@ namespace XLua.CSObjectWrap
         
         
             translator.DelayWrapLoader(typeof(UnityMMO.MainWorld), UnityMMOMainWorldWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(UnityMMO.SkillManager), UnityMMOSkillManagerWrap.__Register);
+        
+        }
+        
+        static void wrapInit2(LuaEnv luaenv, ObjectTranslator translator)
+        {
+        
+            translator.DelayWrapLoader(typeof(UnityMMO.SkillSpawnRequest), UnityMMOSkillSpawnRequestWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(UnityMMO.SkillSpawnSystem), UnityMMOSkillSpawnSystemWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(UnityMMO.AutoFight), UnityMMOAutoFightWrap.__Register);
@@ -331,10 +389,6 @@ namespace XLua.CSObjectWrap
         
             translator.DelayWrapLoader(typeof(UnityMMO.SceneMgr), UnityMMOSceneMgrWrap.__Register);
         
-        }
-        
-        static void wrapInit2(LuaEnv luaenv, ObjectTranslator translator)
-        {
         
             translator.DelayWrapLoader(typeof(UnityMMO.FindWayInfo), UnityMMOFindWayInfoWrap.__Register);
         
@@ -376,6 +430,12 @@ namespace XLua.CSObjectWrap
         
         
             translator.DelayWrapLoader(typeof(UnityMMO.TimerExtensions), UnityMMOTimerExtensionsWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(XLuaFramework.Main.State), XLuaFrameworkMainStateWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(XLuaFramework.Main.SubState), XLuaFrameworkMainSubStateWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(UnityMMO.TimelineInfo.Event), UnityMMOTimelineInfoEventWrap.__Register);

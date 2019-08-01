@@ -7,5 +7,7 @@ MainUIConst = MainUIConst or {
 	TaskTeamTabID = {
 		Task = 1, Team = 2,
 	},
+	--MainUIConst.MaxSkillBtnNum
+	MaxSkillBtnNum = 4,
 }
 return MainUIConst

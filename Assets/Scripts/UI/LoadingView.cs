@@ -49,6 +49,8 @@ public class LoadingView : MonoBehaviour
         if (delayTime <= 0)
         {
             gameObject.SetActive(isShow);
+            if (isShow)
+                transform.SetAsLastSibling();
         }
         else
         {

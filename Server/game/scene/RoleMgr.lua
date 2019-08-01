@@ -121,6 +121,9 @@ function RoleMgr:RoleLeave( roleID )
 		role_info.ack_scene_listen_fight_event(true, {})
 		role_info.ack_scene_listen_fight_event = nil
 	end
+	local entity = self.sceneMgr:GetEntity(role_info.scene_uid)
+	self.entityMgr:DestroyEntity(entity)
+	self.sceneMgr:SetEntity(role_info.scene_uid, nil)
 	self.roleList[roleID] = nil
 end
 

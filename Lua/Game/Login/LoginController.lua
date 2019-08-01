@@ -9,7 +9,8 @@ function LoginController:Init(  )
 	self:InitEvents()
 
     self.loginView = require("Game/Login/LoginView").New()
-    UIMgr:Show(self.loginView)
+    self.loginView:Load()
+    -- UIMgr:Show(self.loginView)
 end
 
 function LoginController:InitEvents(  )
@@ -29,7 +30,8 @@ function LoginController:InitEvents(  )
             LoginModel:GetInstance():SetRoleList(role_list)
             
             if self.loginView then
-                UIMgr:Close(self.loginView)
+                -- UIMgr:Close(self.loginView)
+                self.loginView:Unload()
                 self.loginView = nil
             end
             if role_list and #role_list > 0 then
@@ -231,7 +233,8 @@ function LoginController:Disconnect()
                 self.reconnectView = nil
             else
                 self.loginView = require("Game/Login/LoginView").New()
-                UIMgr:Show(self.loginView)
+                self.loginView:Load()
+                -- UIMgr:Show(self.loginView)
             end
         end,
     }

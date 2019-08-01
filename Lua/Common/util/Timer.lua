@@ -38,6 +38,10 @@ function Timer:Reset(func, duration, loop, scale)
 	self.time		= duration		
 end
 
+function Timer:SetDuration( duration )
+	self.duration = duration
+end
+
 function Timer:Stop()
 	self.running = false
 

@@ -2800,6 +2800,60 @@ namespace XLua.CSObjectWrap
 		}
 	}
     
+    public class XLuaFrameworkDisTypeWrap
+    {
+		public static void __Register(RealStatePtr L)
+        {
+		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+		    Utils.BeginObjectRegister(typeof(XLuaFramework.DisType), L, translator, 0, 0, 0, 0);
+			Utils.EndObjectRegister(typeof(XLuaFramework.DisType), L, translator, null, null, null, null, null);
+			
+			Utils.BeginClassRegister(typeof(XLuaFramework.DisType), L, null, 3, 0, 0);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Exception", XLuaFramework.DisType.Exception);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Disconnect", XLuaFramework.DisType.Disconnect);
+            
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
+            
+            Utils.EndClassRegister(typeof(XLuaFramework.DisType), L, translator);
+        }
+		
+		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int __CastFrom(RealStatePtr L)
+		{
+			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
+            if (lua_type == LuaTypes.LUA_TNUMBER)
+            {
+                translator.PushXLuaFrameworkDisType(L, (XLuaFramework.DisType)LuaAPI.xlua_tointeger(L, 1));
+            }
+			
+            else if(lua_type == LuaTypes.LUA_TSTRING)
+            {
+			    if (LuaAPI.xlua_is_eq_str(L, 1, "Exception"))
+                {
+                    translator.PushXLuaFrameworkDisType(L, XLuaFramework.DisType.Exception);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Disconnect"))
+                {
+                    translator.PushXLuaFrameworkDisType(L, XLuaFramework.DisType.Disconnect);
+                }
+				else
+                {
+                    return LuaAPI.luaL_error(L, "invalid string for XLuaFramework.DisType!");
+                }
+            }
+			
+            else
+            {
+                return LuaAPI.luaL_error(L, "invalid lua type for XLuaFramework.DisType! Expect number or string, got + " + lua_type);
+            }
+
+            return 1;
+		}
+	}
+    
     public class UnityMMOSceneInfoKeyWrap
     {
 		public static void __Register(RealStatePtr L)
@@ -2974,6 +3028,144 @@ namespace XLua.CSObjectWrap
             else
             {
                 return LuaAPI.luaL_error(L, "invalid lua type for UnityMMO.SceneObjectType! Expect number or string, got + " + lua_type);
+            }
+
+            return 1;
+		}
+	}
+    
+    public class XLuaFrameworkMainStateWrap
+    {
+		public static void __Register(RealStatePtr L)
+        {
+		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+		    Utils.BeginObjectRegister(typeof(XLuaFramework.Main.State), L, translator, 0, 0, 0, 0);
+			Utils.EndObjectRegister(typeof(XLuaFramework.Main.State), L, translator, null, null, null, null, null);
+			
+			Utils.BeginClassRegister(typeof(XLuaFramework.Main.State), L, null, 8, 0, 0);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "CheckExtractResource", XLuaFramework.Main.State.CheckExtractResource);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "UpdateResourceFromNet", XLuaFramework.Main.State.UpdateResourceFromNet);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "InitAssetBundle", XLuaFramework.Main.State.InitAssetBundle);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "StartLogin", XLuaFramework.Main.State.StartLogin);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "StartGame", XLuaFramework.Main.State.StartGame);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Playing", XLuaFramework.Main.State.Playing);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "None", XLuaFramework.Main.State.None);
+            
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
+            
+            Utils.EndClassRegister(typeof(XLuaFramework.Main.State), L, translator);
+        }
+		
+		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int __CastFrom(RealStatePtr L)
+		{
+			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
+            if (lua_type == LuaTypes.LUA_TNUMBER)
+            {
+                translator.PushXLuaFrameworkMainState(L, (XLuaFramework.Main.State)LuaAPI.xlua_tointeger(L, 1));
+            }
+			
+            else if(lua_type == LuaTypes.LUA_TSTRING)
+            {
+			    if (LuaAPI.xlua_is_eq_str(L, 1, "CheckExtractResource"))
+                {
+                    translator.PushXLuaFrameworkMainState(L, XLuaFramework.Main.State.CheckExtractResource);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "UpdateResourceFromNet"))
+                {
+                    translator.PushXLuaFrameworkMainState(L, XLuaFramework.Main.State.UpdateResourceFromNet);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "InitAssetBundle"))
+                {
+                    translator.PushXLuaFrameworkMainState(L, XLuaFramework.Main.State.InitAssetBundle);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "StartLogin"))
+                {
+                    translator.PushXLuaFrameworkMainState(L, XLuaFramework.Main.State.StartLogin);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "StartGame"))
+                {
+                    translator.PushXLuaFrameworkMainState(L, XLuaFramework.Main.State.StartGame);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Playing"))
+                {
+                    translator.PushXLuaFrameworkMainState(L, XLuaFramework.Main.State.Playing);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "None"))
+                {
+                    translator.PushXLuaFrameworkMainState(L, XLuaFramework.Main.State.None);
+                }
+				else
+                {
+                    return LuaAPI.luaL_error(L, "invalid string for XLuaFramework.Main.State!");
+                }
+            }
+			
+            else
+            {
+                return LuaAPI.luaL_error(L, "invalid lua type for XLuaFramework.Main.State! Expect number or string, got + " + lua_type);
+            }
+
+            return 1;
+		}
+	}
+    
+    public class XLuaFrameworkMainSubStateWrap
+    {
+		public static void __Register(RealStatePtr L)
+        {
+		    ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+		    Utils.BeginObjectRegister(typeof(XLuaFramework.Main.SubState), L, translator, 0, 0, 0, 0);
+			Utils.EndObjectRegister(typeof(XLuaFramework.Main.SubState), L, translator, null, null, null, null, null);
+			
+			Utils.BeginClassRegister(typeof(XLuaFramework.Main.SubState), L, null, 3, 0, 0);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Enter", XLuaFramework.Main.SubState.Enter);
+            
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "Update", XLuaFramework.Main.SubState.Update);
+            
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFrom);
+            
+            Utils.EndClassRegister(typeof(XLuaFramework.Main.SubState), L, translator);
+        }
+		
+		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int __CastFrom(RealStatePtr L)
+		{
+			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
+            if (lua_type == LuaTypes.LUA_TNUMBER)
+            {
+                translator.PushXLuaFrameworkMainSubState(L, (XLuaFramework.Main.SubState)LuaAPI.xlua_tointeger(L, 1));
+            }
+			
+            else if(lua_type == LuaTypes.LUA_TSTRING)
+            {
+			    if (LuaAPI.xlua_is_eq_str(L, 1, "Enter"))
+                {
+                    translator.PushXLuaFrameworkMainSubState(L, XLuaFramework.Main.SubState.Enter);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Update"))
+                {
+                    translator.PushXLuaFrameworkMainSubState(L, XLuaFramework.Main.SubState.Update);
+                }
+				else
+                {
+                    return LuaAPI.luaL_error(L, "invalid string for XLuaFramework.Main.SubState!");
+                }
+            }
+			
+            else
+            {
+                return LuaAPI.luaL_error(L, "invalid lua type for XLuaFramework.Main.SubState! Expect number or string, got + " + lua_type);
             }
 
             return 1;

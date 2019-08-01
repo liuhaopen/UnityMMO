@@ -1,11 +1,9 @@
-local LoginView = BaseClass()
+local LoginView = BaseClass(UINode)
 
-function LoginView:DefaultVar( )
-	return {
-	UIConfig = {
-			prefab_path = "Assets/AssetBundleRes/ui/login/LoginView.prefab",
-			canvas_name = "Normal",
-		},
+function LoginView:Constructor( )
+	self.viewCfg = {
+		prefabPath = "Assets/AssetBundleRes/ui/login/LoginView.prefab",
+		canvasName = "Normal",
 	}
 end
 

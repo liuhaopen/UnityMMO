@@ -1,5 +1,5 @@
 local skill_cfg = require "game.config.scene.config_skill"
-
+local FightHelper = require("game.scene.FightHelper")
 local FightMgr = BaseClass()
 
 function FightMgr:Init( scene )
@@ -17,8 +17,10 @@ function FightMgr:CastSkill( uid, req_data )
 	if not entity then return end
 	
 	local aoi_handle = self.entityMgr:GetComponentData(entity, "UMO.AOIHandle")
-	-- local cdData = self.entityMgr:GetComponentData(entity, "UMO.CD")
-	local is_can_cast = true--cdData[req_data.skill_id]
+	local isSkillInCD = FightHelper.IsSkillInCD(entity, req_data.skill_id)
+	print('Cat:FightMgr.lua[21] isSkillInCD', isSkillInCD)
+	local is_can_cast = not isSkillInCD
+	local cdEndTime = 0
 	local fight_event = nil
 	if is_can_cast then
 		fight_event = {
@@ -35,13 +37,15 @@ function FightMgr:CastSkill( uid, req_data )
 			time = Time.timeMS,
 			defenders = nil,
 		}
+		cdEndTime = FightHelper.ApplySkillCD(entity, req_data.skill_id, fight_event.skill_lv)
 		local uid_defenders_map = req_data.uid_defenders_map or self:CalDefenderList(fight_event, aoi_handle)
 
 		self:AddDamageEventForDefenders(fight_event, uid_defenders_map)
 
 		self.sceneMgr.eventMgr:AddFightEvent(uid, fight_event)
 	end
-	return is_can_cast and 0 or 1, fight_event
+	print('Cat:FightMgr.lua[47] cdEndTime', cdEndTime)
+	return is_can_cast and 0 or 1, cdEndTime, fight_event
 end
 
 --计算受击者列表

@@ -57,6 +57,13 @@ public class CastSkillBehaviour : PlayableBehaviour
                     // Debug.Log("ack : "+(ack!=null).ToString());
                     if (ack==null)
                         return;
+                    Debug.Log("scene_cast_skill ack.result : "+ack.result);
+                    if (ack.result == 1)
+                    {
+                        XLuaFramework.CSLuaBridge.GetInstance().CallLuaFuncStr(GlobalEvents.MessageShow, "技能冷却中...");
+                        return;
+                    }
+                    SkillManager.GetInstance().SetSkillCD((int)ack.fight_event.skill_id, ack.cd_end_time);
                     // Debug.Log("playable : "+(Playable.Equals(playable, Playable.Null)).ToString());
                     var graph = PlayableExtensions.GetGraph(playable);
                     // Debug.Log("graph.IsDone() : "+graph.IsDone().ToString());

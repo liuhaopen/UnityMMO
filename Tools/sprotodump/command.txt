@@ -1,1 +1,1 @@
-lua sprotodump.lua -cs ../../Lua/Proto/proto_100_199_scene.lua ../../Lua/Proto/proto_1_99_account.lua -o ../../Assets/Scripts/Net/Proto.cs
+lua sprotodump.lua -cs ../../Lua/Proto/proto_100_scene.lua ../../Lua/Proto/proto_1_account.lua -o ../../Assets/Scripts/Net/Proto.cs

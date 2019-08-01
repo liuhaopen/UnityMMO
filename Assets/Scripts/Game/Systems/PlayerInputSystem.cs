@@ -74,15 +74,15 @@ namespace UnityMMO
             command.sprint = (command.sprint!=0 || Input.GetKey(KeyCode.LeftShift))?1:0;
 
             if (GameInput.GetInstance().GetKeyUp(KeyCode.J))
-                CastSkill(-1);
+                SkillManager.GetInstance().CastSkillByIndex(-1);
             else if (GameInput.GetInstance().GetKeyUp(KeyCode.I))
-                CastSkill(0);
+                SkillManager.GetInstance().CastSkillByIndex(0);
             else if (GameInput.GetInstance().GetKeyUp(KeyCode.O))
-                CastSkill(1);
+                SkillManager.GetInstance().CastSkillByIndex(1);
             else if (GameInput.GetInstance().GetKeyUp(KeyCode.K))
-                CastSkill(2);
+                SkillManager.GetInstance().CastSkillByIndex(2);
             else if (GameInput.GetInstance().GetKeyUp(KeyCode.L))
-                CastSkill(3);
+                SkillManager.GetInstance().CastSkillByIndex(3);
             else if (GameInput.GetInstance().GetKeyUp(KeyCode.Space))
                 DoJump();
         }
@@ -106,31 +106,6 @@ namespace UnityMMO
             var assetPath = ResPath.GetRoleJumpResPath(roleInfo.Career, newJumpCount);
             var timelineInfo = new TimelineInfo{ResPath=assetPath, Owner=roleGameOE.Entity, StateChange=null};
             var uid = EntityManager.GetComponentData<UID>(roleGameOE.Entity);
-            TimelineManager.GetInstance().AddTimeline(uid.Value, timelineInfo, EntityManager);
-        }
-
-        void CastSkill(int skillIndex=-1)
-        {
-            var roleGameOE = RoleMgr.GetInstance().GetMainRole();
-            var roleInfo = roleGameOE.GetComponent<RoleInfo>();
-            var skillID = SkillManager.GetInstance().GetSkillIDByIndex(skillIndex);
-          
-            string assetPath = ResPath.GetRoleSkillResPath(skillID);
-            bool isNormalAttack = skillIndex == -1;//普通攻击
-            if (!isNormalAttack)
-                SkillManager.GetInstance().ResetCombo();//使用非普攻技能时就重置连击索引
-            var uid = EntityManager.GetComponentData<UID>(roleGameOE.Entity);
-            Action<TimelineInfo.Event> afterAdd = null;
-            if (isNormalAttack)
-            {
-                //普攻的话增加连击索引
-                afterAdd = (TimelineInfo.Event e)=>
-                {
-                    if (e == TimelineInfo.Event.AfterAdd)
-                        SkillManager.GetInstance().IncreaseCombo();
-                };
-            }
-            var timelineInfo = new TimelineInfo{ResPath=assetPath, Owner=roleGameOE.Entity,  StateChange=afterAdd};
             TimelineManager.GetInstance().AddTimeline(uid.Value, timelineInfo, EntityManager);
         }
 

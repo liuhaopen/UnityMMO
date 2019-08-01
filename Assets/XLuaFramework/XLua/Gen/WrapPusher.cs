@@ -47,8 +47,11 @@ namespace XLua
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.UI.Image.Origin180>(translator.PushUnityEngineUIImageOrigin180, translator.Get, translator.UpdateUnityEngineUIImageOrigin180);
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.UI.Image.Origin360>(translator.PushUnityEngineUIImageOrigin360, translator.Get, translator.UpdateUnityEngineUIImageOrigin360);
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.KeyCode>(translator.PushUnityEngineKeyCode, translator.Get, translator.UpdateUnityEngineKeyCode);
+				translator.RegisterPushAndGetAndUpdate<XLuaFramework.DisType>(translator.PushXLuaFrameworkDisType, translator.Get, translator.UpdateXLuaFrameworkDisType);
 				translator.RegisterPushAndGetAndUpdate<UnityMMO.SceneInfoKey>(translator.PushUnityMMOSceneInfoKey, translator.Get, translator.UpdateUnityMMOSceneInfoKey);
 				translator.RegisterPushAndGetAndUpdate<UnityMMO.SceneObjectType>(translator.PushUnityMMOSceneObjectType, translator.Get, translator.UpdateUnityMMOSceneObjectType);
+				translator.RegisterPushAndGetAndUpdate<XLuaFramework.Main.State>(translator.PushXLuaFrameworkMainState, translator.Get, translator.UpdateXLuaFrameworkMainState);
+				translator.RegisterPushAndGetAndUpdate<XLuaFramework.Main.SubState>(translator.PushXLuaFrameworkMainSubState, translator.Get, translator.UpdateXLuaFrameworkMainSubState);
 				translator.RegisterPushAndGetAndUpdate<UnityMMO.TimelineInfo.Event>(translator.PushUnityMMOTimelineInfoEvent, translator.Get, translator.UpdateUnityMMOTimelineInfoEvent);
 				translator.RegisterPushAndGetAndUpdate<UnityMMO.Nameboard.ColorStyle>(translator.PushUnityMMONameboardColorStyle, translator.Get, translator.UpdateUnityMMONameboardColorStyle);
 			
@@ -1679,6 +1682,90 @@ namespace XLua
             }
         }
         
+        int XLuaFrameworkDisType_TypeID = -1;
+		int XLuaFrameworkDisType_EnumRef = -1;
+        
+        public void PushXLuaFrameworkDisType(RealStatePtr L, XLuaFramework.DisType val)
+        {
+            if (XLuaFrameworkDisType_TypeID == -1)
+            {
+			    bool is_first;
+                XLuaFrameworkDisType_TypeID = getTypeId(L, typeof(XLuaFramework.DisType), out is_first);
+				
+				if (XLuaFrameworkDisType_EnumRef == -1)
+				{
+				    Utils.LoadCSTable(L, typeof(XLuaFramework.DisType));
+				    XLuaFrameworkDisType_EnumRef = LuaAPI.luaL_ref(L, LuaIndexes.LUA_REGISTRYINDEX);
+				}
+				
+            }
+			
+			if (LuaAPI.xlua_tryget_cachedud(L, (int)val, XLuaFrameworkDisType_EnumRef) == 1)
+            {
+			    return;
+			}
+			
+            IntPtr buff = LuaAPI.xlua_pushstruct(L, 4, XLuaFrameworkDisType_TypeID);
+            if (!CopyByValue.Pack(buff, 0, (int)val))
+            {
+                throw new Exception("pack fail fail for XLuaFramework.DisType ,value="+val);
+            }
+			
+			LuaAPI.lua_getref(L, XLuaFrameworkDisType_EnumRef);
+			LuaAPI.lua_pushvalue(L, -2);
+			LuaAPI.xlua_rawseti(L, -2, (int)val);
+			LuaAPI.lua_pop(L, 1);
+			
+        }
+		
+        public void Get(RealStatePtr L, int index, out XLuaFramework.DisType val)
+        {
+		    LuaTypes type = LuaAPI.lua_type(L, index);
+            if (type == LuaTypes.LUA_TUSERDATA )
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != XLuaFrameworkDisType_TypeID)
+				{
+				    throw new Exception("invalid userdata for XLuaFramework.DisType");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+				int e;
+                if (!CopyByValue.UnPack(buff, 0, out e))
+                {
+                    throw new Exception("unpack fail for XLuaFramework.DisType");
+                }
+				val = (XLuaFramework.DisType)e;
+                
+            }
+            else
+            {
+                val = (XLuaFramework.DisType)objectCasters.GetCaster(typeof(XLuaFramework.DisType))(L, index, null);
+            }
+        }
+		
+        public void UpdateXLuaFrameworkDisType(RealStatePtr L, int index, XLuaFramework.DisType val)
+        {
+		    
+            if (LuaAPI.lua_type(L, index) == LuaTypes.LUA_TUSERDATA)
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != XLuaFrameworkDisType_TypeID)
+				{
+				    throw new Exception("invalid userdata for XLuaFramework.DisType");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+                if (!CopyByValue.Pack(buff, 0,  (int)val))
+                {
+                    throw new Exception("pack fail for XLuaFramework.DisType ,value="+val);
+                }
+            }
+			
+            else
+            {
+                throw new Exception("try to update a data with lua type:" + LuaAPI.lua_type(L, index));
+            }
+        }
+        
         int UnityMMOSceneInfoKey_TypeID = -1;
 		int UnityMMOSceneInfoKey_EnumRef = -1;
         
@@ -1838,6 +1925,174 @@ namespace XLua
                 if (!CopyByValue.Pack(buff, 0,  (int)val))
                 {
                     throw new Exception("pack fail for UnityMMO.SceneObjectType ,value="+val);
+                }
+            }
+			
+            else
+            {
+                throw new Exception("try to update a data with lua type:" + LuaAPI.lua_type(L, index));
+            }
+        }
+        
+        int XLuaFrameworkMainState_TypeID = -1;
+		int XLuaFrameworkMainState_EnumRef = -1;
+        
+        public void PushXLuaFrameworkMainState(RealStatePtr L, XLuaFramework.Main.State val)
+        {
+            if (XLuaFrameworkMainState_TypeID == -1)
+            {
+			    bool is_first;
+                XLuaFrameworkMainState_TypeID = getTypeId(L, typeof(XLuaFramework.Main.State), out is_first);
+				
+				if (XLuaFrameworkMainState_EnumRef == -1)
+				{
+				    Utils.LoadCSTable(L, typeof(XLuaFramework.Main.State));
+				    XLuaFrameworkMainState_EnumRef = LuaAPI.luaL_ref(L, LuaIndexes.LUA_REGISTRYINDEX);
+				}
+				
+            }
+			
+			if (LuaAPI.xlua_tryget_cachedud(L, (int)val, XLuaFrameworkMainState_EnumRef) == 1)
+            {
+			    return;
+			}
+			
+            IntPtr buff = LuaAPI.xlua_pushstruct(L, 4, XLuaFrameworkMainState_TypeID);
+            if (!CopyByValue.Pack(buff, 0, (int)val))
+            {
+                throw new Exception("pack fail fail for XLuaFramework.Main.State ,value="+val);
+            }
+			
+			LuaAPI.lua_getref(L, XLuaFrameworkMainState_EnumRef);
+			LuaAPI.lua_pushvalue(L, -2);
+			LuaAPI.xlua_rawseti(L, -2, (int)val);
+			LuaAPI.lua_pop(L, 1);
+			
+        }
+		
+        public void Get(RealStatePtr L, int index, out XLuaFramework.Main.State val)
+        {
+		    LuaTypes type = LuaAPI.lua_type(L, index);
+            if (type == LuaTypes.LUA_TUSERDATA )
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != XLuaFrameworkMainState_TypeID)
+				{
+				    throw new Exception("invalid userdata for XLuaFramework.Main.State");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+				int e;
+                if (!CopyByValue.UnPack(buff, 0, out e))
+                {
+                    throw new Exception("unpack fail for XLuaFramework.Main.State");
+                }
+				val = (XLuaFramework.Main.State)e;
+                
+            }
+            else
+            {
+                val = (XLuaFramework.Main.State)objectCasters.GetCaster(typeof(XLuaFramework.Main.State))(L, index, null);
+            }
+        }
+		
+        public void UpdateXLuaFrameworkMainState(RealStatePtr L, int index, XLuaFramework.Main.State val)
+        {
+		    
+            if (LuaAPI.lua_type(L, index) == LuaTypes.LUA_TUSERDATA)
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != XLuaFrameworkMainState_TypeID)
+				{
+				    throw new Exception("invalid userdata for XLuaFramework.Main.State");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+                if (!CopyByValue.Pack(buff, 0,  (int)val))
+                {
+                    throw new Exception("pack fail for XLuaFramework.Main.State ,value="+val);
+                }
+            }
+			
+            else
+            {
+                throw new Exception("try to update a data with lua type:" + LuaAPI.lua_type(L, index));
+            }
+        }
+        
+        int XLuaFrameworkMainSubState_TypeID = -1;
+		int XLuaFrameworkMainSubState_EnumRef = -1;
+        
+        public void PushXLuaFrameworkMainSubState(RealStatePtr L, XLuaFramework.Main.SubState val)
+        {
+            if (XLuaFrameworkMainSubState_TypeID == -1)
+            {
+			    bool is_first;
+                XLuaFrameworkMainSubState_TypeID = getTypeId(L, typeof(XLuaFramework.Main.SubState), out is_first);
+				
+				if (XLuaFrameworkMainSubState_EnumRef == -1)
+				{
+				    Utils.LoadCSTable(L, typeof(XLuaFramework.Main.SubState));
+				    XLuaFrameworkMainSubState_EnumRef = LuaAPI.luaL_ref(L, LuaIndexes.LUA_REGISTRYINDEX);
+				}
+				
+            }
+			
+			if (LuaAPI.xlua_tryget_cachedud(L, (int)val, XLuaFrameworkMainSubState_EnumRef) == 1)
+            {
+			    return;
+			}
+			
+            IntPtr buff = LuaAPI.xlua_pushstruct(L, 4, XLuaFrameworkMainSubState_TypeID);
+            if (!CopyByValue.Pack(buff, 0, (int)val))
+            {
+                throw new Exception("pack fail fail for XLuaFramework.Main.SubState ,value="+val);
+            }
+			
+			LuaAPI.lua_getref(L, XLuaFrameworkMainSubState_EnumRef);
+			LuaAPI.lua_pushvalue(L, -2);
+			LuaAPI.xlua_rawseti(L, -2, (int)val);
+			LuaAPI.lua_pop(L, 1);
+			
+        }
+		
+        public void Get(RealStatePtr L, int index, out XLuaFramework.Main.SubState val)
+        {
+		    LuaTypes type = LuaAPI.lua_type(L, index);
+            if (type == LuaTypes.LUA_TUSERDATA )
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != XLuaFrameworkMainSubState_TypeID)
+				{
+				    throw new Exception("invalid userdata for XLuaFramework.Main.SubState");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+				int e;
+                if (!CopyByValue.UnPack(buff, 0, out e))
+                {
+                    throw new Exception("unpack fail for XLuaFramework.Main.SubState");
+                }
+				val = (XLuaFramework.Main.SubState)e;
+                
+            }
+            else
+            {
+                val = (XLuaFramework.Main.SubState)objectCasters.GetCaster(typeof(XLuaFramework.Main.SubState))(L, index, null);
+            }
+        }
+		
+        public void UpdateXLuaFrameworkMainSubState(RealStatePtr L, int index, XLuaFramework.Main.SubState val)
+        {
+		    
+            if (LuaAPI.lua_type(L, index) == LuaTypes.LUA_TUSERDATA)
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != XLuaFrameworkMainSubState_TypeID)
+				{
+				    throw new Exception("invalid userdata for XLuaFramework.Main.SubState");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+                if (!CopyByValue.Pack(buff, 0,  (int)val))
+                {
+                    throw new Exception("pack fail for XLuaFramework.Main.SubState ,value="+val);
                 }
             }
 			
@@ -2152,6 +2407,12 @@ namespace XLua
 				translator.PushUnityEngineKeyCode(L, array[index]);
 				return true;
 			}
+			else if (type == typeof(XLuaFramework.DisType[]))
+			{
+			    XLuaFramework.DisType[] array = obj as XLuaFramework.DisType[];
+				translator.PushXLuaFrameworkDisType(L, array[index]);
+				return true;
+			}
 			else if (type == typeof(UnityMMO.SceneInfoKey[]))
 			{
 			    UnityMMO.SceneInfoKey[] array = obj as UnityMMO.SceneInfoKey[];
@@ -2162,6 +2423,18 @@ namespace XLua
 			{
 			    UnityMMO.SceneObjectType[] array = obj as UnityMMO.SceneObjectType[];
 				translator.PushUnityMMOSceneObjectType(L, array[index]);
+				return true;
+			}
+			else if (type == typeof(XLuaFramework.Main.State[]))
+			{
+			    XLuaFramework.Main.State[] array = obj as XLuaFramework.Main.State[];
+				translator.PushXLuaFrameworkMainState(L, array[index]);
+				return true;
+			}
+			else if (type == typeof(XLuaFramework.Main.SubState[]))
+			{
+			    XLuaFramework.Main.SubState[] array = obj as XLuaFramework.Main.SubState[];
+				translator.PushXLuaFrameworkMainSubState(L, array[index]);
 				return true;
 			}
 			else if (type == typeof(UnityMMO.TimelineInfo.Event[]))
@@ -2308,6 +2581,12 @@ namespace XLua
 				translator.Get(L, obj_idx, out array[array_idx]);
 				return true;
 			}
+			else if (type == typeof(XLuaFramework.DisType[]))
+			{
+			    XLuaFramework.DisType[] array = obj as XLuaFramework.DisType[];
+				translator.Get(L, obj_idx, out array[array_idx]);
+				return true;
+			}
 			else if (type == typeof(UnityMMO.SceneInfoKey[]))
 			{
 			    UnityMMO.SceneInfoKey[] array = obj as UnityMMO.SceneInfoKey[];
@@ -2317,6 +2596,18 @@ namespace XLua
 			else if (type == typeof(UnityMMO.SceneObjectType[]))
 			{
 			    UnityMMO.SceneObjectType[] array = obj as UnityMMO.SceneObjectType[];
+				translator.Get(L, obj_idx, out array[array_idx]);
+				return true;
+			}
+			else if (type == typeof(XLuaFramework.Main.State[]))
+			{
+			    XLuaFramework.Main.State[] array = obj as XLuaFramework.Main.State[];
+				translator.Get(L, obj_idx, out array[array_idx]);
+				return true;
+			}
+			else if (type == typeof(XLuaFramework.Main.SubState[]))
+			{
+			    XLuaFramework.Main.SubState[] array = obj as XLuaFramework.Main.SubState[];
 				translator.Get(L, obj_idx, out array[array_idx]);
 				return true;
 			}

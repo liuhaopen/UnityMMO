@@ -4,6 +4,7 @@ ResMgr = CS.XLuaFramework.ResourceManager.GetInstance()
 NetMgr = CS.XLuaFramework.NetworkManager.GetInstance()
 UIHelper = CS.XLuaFramework.UIHelper
 cookiesManager = CS.XLuaFramework.CookiesManager.GetInstance()
+CSLuaBridge = CS.XLuaFramework.CSLuaBridge
 GameObject = CS.UnityEngine.GameObject
 GameConst = CS.UnityMMO.GameConst
 GameVariable = CS.UnityMMO.GameVariable
@@ -16,6 +17,8 @@ MonsterMgr = CS.UnityMMO.MonsterMgr
 NPCMgr = CS.UnityMMO.NPCMgr
 LogError = CS.UnityEngine.Debug.LogError
 Entity = CS.Unity.Entities.Entity
+SkillManager = CS.UnityMMO.SkillManager
+print('Cat:UIGlobal.lua[21] SkillManager', SkillManager)
 
 LRoleMgr = require("Game.Scene.LRoleMgr")
 ErrorCode = require("Game.Error.ErrorCode")

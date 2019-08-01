@@ -8,41 +8,41 @@ using UnityEngine.Profiling;
 using Unity.Collections;
 
 
-#if UNITY_EDITOR
-[InitializeOnLoad]
-// Class makes sure we have world when starting game in editor (GameObjectEntities in scene needs world in OnEnable)   
-class EditorWorldCreator
-{
-    static EditorWorldCreator()
-    {
-        EditorApplication.playModeStateChanged -= EditorApplicationOnPlayModeStateChanged;
-        EditorApplication.playModeStateChanged += EditorApplicationOnPlayModeStateChanged;
+// #if UNITY_EDITOR
+// [InitializeOnLoad]
+// // Class makes sure we have world when starting game in editor (GameObjectEntities in scene needs world in OnEnable)   
+// class EditorWorldCreator
+// {
+//     static EditorWorldCreator()
+//     {
+//         EditorApplication.playModeStateChanged -= EditorApplicationOnPlayModeStateChanged;
+//         EditorApplication.playModeStateChanged += EditorApplicationOnPlayModeStateChanged;
 
-        CreateWorld();
-    }
+//         CreateWorld();
+//     }
 
-    private static void EditorApplicationOnPlayModeStateChanged(PlayModeStateChange change)
-    {
-        if (change == PlayModeStateChange.ExitingEditMode) 
-            ShutdownWorld();
-    }
+//     private static void EditorApplicationOnPlayModeStateChanged(PlayModeStateChange change)
+//     {
+//         if (change == PlayModeStateChange.ExitingEditMode) 
+//             ShutdownWorld();
+//     }
 
-    static void CreateWorld()
-    {
-        if(World.Active == null)
-            World.Active = new World("EditorWorld"); 
-    }
+//     static void CreateWorld()
+//     {
+//         if(World.Active == null)
+//             World.Active = new World("EditorWorld"); 
+//     }
 
-    static void ShutdownWorld()
-    {
-        if (World.Active != null)
-        {
-            World.Active.Dispose();
-            World.Active = null;
-        }
-    }
-}
-#endif        
+//     static void ShutdownWorld()
+//     {
+//         if (World.Active != null)
+//         {
+//             World.Active.Dispose();
+//             World.Active = null;
+//         }
+//     }
+// }
+// #endif        
 
 
 

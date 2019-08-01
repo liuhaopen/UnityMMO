@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,6 +8,8 @@ public class ResMgr
 {
 	static ResMgr Instance;
     Dictionary<string, GameObject> prefabDic = new Dictionary<string, GameObject>();
+    List<GameObject> scenePrefabList;
+    Dictionary<int, List<GameObject>> sceneObjectPool;
 
     public static ResMgr GetInstance()
     {
@@ -53,12 +56,76 @@ public class ResMgr
         return GameObject.Instantiate(this.prefabDic[prefabName], position, rotation);
     }
 
+    public void LoadSceneRes(List<string> list, Action<bool> callBack)
+    {
+        scenePrefabList = new List<GameObject>(list.Count);
+        sceneObjectPool = new Dictionary<int, List<GameObject>>();
+        for (int i = 0; i < list.Count; i++)
+        {
+            scenePrefabList.Add(null);
+        }
+        int count = 0;
+        for (int i = 0; i < list.Count; i++)
+        {
+            XLuaFramework.ResourceManager.GetInstance().LoadAsset<GameObject>(list[i], delegate(UnityEngine.Object[] objs) 
+            {
+                if (objs.Length > 0 && (objs[0] as GameObject)!=null)
+                {
+                    GameObject prefab = objs[0] as GameObject;
+                    if (prefab != null) 
+                    {
+                        scenePrefabList[i] = prefab;
+                        count++;
+                        return;
+                    }
+                }
+                Debug.LogError("cannot find scene prefab in "+list[i]);
+            });
+        }
+        if (callBack != null)
+        {
+            callBack(count==list.Count);
+        }
+    }
+
+    public GameObject GetSceneRes(int resID)
+    {
+        GameObject obj = null;
+        if (sceneObjectPool.ContainsKey(resID))
+        {
+            var pool = sceneObjectPool[resID];
+            if (pool.Count > 0)
+            {
+                obj = pool[pool.Count-1];
+                obj.SetActive(true);
+                pool.RemoveAt(pool.Count-1);
+                return obj;
+            }
+        }
+        if (resID >= 0 && resID < scenePrefabList.Count)
+            return GameObject.Instantiate(scenePrefabList[resID]);
+        return null;
+    }
+
+    public void UnuseSceneObject(int resID, GameObject obj)
+    {
+        obj.SetActive(false);
+        if (sceneObjectPool.ContainsKey(resID))
+        {
+            sceneObjectPool[resID].Add(obj);
+        }
+        else
+        {
+            var pool = new List<GameObject>();
+            pool.Add(obj);
+            sceneObjectPool.Add(resID, pool);
+        }
+    }
+
     public void OnDestroy()
 	{
 		Instance = null;
 	}
-
    
 }
-
 }

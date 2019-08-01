@@ -106,8 +106,8 @@ function LoginSelectRoleView:UpdateRoleHeadItems( item, index, v )
 	if not item.UpdateSelect and item.data then
 		item.UpdateSelect = function (item)
 			local is_cur_select = self.select_role_id == item.data.role_id
-			UIHelper.SetImage(item.name_bg_img, is_cur_select and "login/login_role_name_bg_sel.png" or "login/login_role_name_bg_nor.png", true)
-			UIHelper.SetImage(item.head_bg_img, is_cur_select and "login/login_role_item_bg_sel.png" or "login/login_role_item_bg_nor.png", true)
+			UI.SetImage(item.name_bg_img, is_cur_select and "login/login_role_name_bg_sel.png" or "login/login_role_name_bg_nor.png", true)
+			UI.SetImage(item.head_bg_img, is_cur_select and "login/login_role_item_bg_sel.png" or "login/login_role_item_bg_nor.png", true)
 			-- self.outline_color_sel = self.outline_color_sel or Color(143/255, 40/255, 75/255, 1)
 			-- self.outline_color_nor = self.outline_color_nor or Color(84/255, 31/255, 49/255, 1)
 			-- item.role_name_outline.effectColor = is_cur_select and self.outline_color_sel or self.outline_color_nor

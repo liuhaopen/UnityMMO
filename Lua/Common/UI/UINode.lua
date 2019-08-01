@@ -1,7 +1,19 @@
 local UINode = BaseClass()
 
-function UINode:Constructor( parentTrans )
-	self.parentTrans = parentTrans
+function UINode:Constructor( )
+end
+
+function UINode.Create( prefabPath, parentTransOrCanvasName, canvasName )
+	local node = UINode.New()
+	node.viewCfg = {
+		prefabPath = prefabPath,
+	}
+	if type(parentTransOrCanvasName)=="string" then
+		node.viewCfg.canvasName = parentTransOrCanvasName
+	else
+		node.viewCfg.parentTrans = parentTransOrCanvasName
+	end
+	return node
 end
 
 function UINode:Load(  )

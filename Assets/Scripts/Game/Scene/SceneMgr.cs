@@ -124,26 +124,29 @@ public class SceneMgr : MonoBehaviour
             SceneInfo scene_info = JsonUtility.FromJson<SceneInfo>(scene_json);
             curSceneInfo = scene_info;
             // ApplyLightInfo(scene_info);//TODO:bake light
-            
-            m_Controller = gameObject.GetComponent<SceneObjectLoadController>();
-            if (m_Controller == null)
-                m_Controller = gameObject.AddComponent<SceneObjectLoadController>();
-            int max_create_num = 19;
-            int min_create_num = 0;
-            m_Controller.Init(scene_info.Bounds.center, scene_info.Bounds.size, true, max_create_num, min_create_num, SceneSeparateTreeType.QuadTree);
-
-            Debug.Log("scene_info.ObjectInfoList.Count : "+scene_info.ObjectInfoList.Count.ToString());
-            for (int i = 0; i < scene_info.ObjectInfoList.Count; i++)
+            ResMgr.GetInstance().LoadSceneRes(scene_info.ResPathList, delegate(bool isOk)
             {
-                m_Controller.AddSceneBlockObject(scene_info.ObjectInfoList[i]);
-            }
+                LoadingView.Instance.SetData(0.6f, "读取场景信息文件...");
+                m_Controller = gameObject.GetComponent<SceneObjectLoadController>();
+                if (m_Controller == null)
+                    m_Controller = gameObject.AddComponent<SceneObjectLoadController>();
+                int max_create_num = 19;
+                int min_create_num = 0;
+                m_Controller.Init(scene_info.Bounds.center, scene_info.Bounds.size, true, max_create_num, min_create_num, SceneSeparateTreeType.QuadTree);
 
-            GameObjectEntity mainRoleGOE = RoleMgr.GetInstance().GetMainRole();
-            if (mainRoleGOE != null)
-            {
-                detector = mainRoleGOE.GetComponent<SceneDetectorBase>();
-            }
-            on_ok(1);
+                Debug.Log("scene_info.ObjectInfoList.Count : "+scene_info.ObjectInfoList.Count.ToString());
+                for (int i = 0; i < scene_info.ObjectInfoList.Count; i++)
+                {
+                    m_Controller.AddSceneBlockObject(scene_info.ObjectInfoList[i]);
+                }
+
+                GameObjectEntity mainRoleGOE = RoleMgr.GetInstance().GetMainRole();
+                if (mainRoleGOE != null)
+                {
+                    detector = mainRoleGOE.GetComponent<SceneDetectorBase>();
+                }
+                on_ok(1);
+            });
         });
     }
 
@@ -171,7 +174,7 @@ public class SceneMgr : MonoBehaviour
                 navmeshPath = "base_world_"+scene_id;
                 XLuaFramework.ResourceManager.GetInstance().LoadNavMesh(navmeshPath);
             }
-            LoadingView.Instance.SetData(0.6f, "加载基础场景...");
+            LoadingView.Instance.SetData(0.8f, "加载基础场景...");
             AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(navmeshPath, UnityEngine.SceneManagement.LoadSceneMode.Additive);
             asy.completed += delegate(AsyncOperation asyOp){
                 Debug.Log("load base world:"+asyOp.isDone.ToString());
@@ -189,6 +192,7 @@ public class SceneMgr : MonoBehaviour
                 }
                 CorrectSceneObjectsPos();
                 CorrectMainRolePos();
+                XLuaFramework.CSLuaBridge.GetInstance().CallLuaFunc(GlobalEvents.SceneChanged);
             };
         });
     }

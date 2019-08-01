@@ -13,13 +13,30 @@
 		<type fullname="XLuaFramework.Util" preserve="all"/>
 		<type fullname="UnityMMO.GameVariable" preserve="all"/>
 		<type fullname="CircleRawImage" preserve="all"/>
+		<type fullname="XLuaFramework.LogHandler" preserve="all"/>
+		<type fullname="XLuaFramework.LogManager" preserve="all"/>
+		<type fullname="XLuaFramework.Main" preserve="all"/>
+		<type fullname="XLuaFramework.AssetsHotFixManager" preserve="all"/>
+		<type fullname="XLuaFramework.DisType" preserve="all"/>
+		<type fullname="XLuaFramework.AssetBundleInfo" preserve="all"/>
+		<type fullname="XLuaFramework.ThreadManager" preserve="all"/>
+		<type fullname="XLuaFramework.ByteBuffer" preserve="all"/>
+		<type fullname="XLuaFramework.ClickTriggerListener" preserve="all"/>
+		<type fullname="XLuaFramework.CSLuaBridge" preserve="all"/>
+		<type fullname="XLuaFramework.DragTriggerListener" preserve="all"/>
+		<type fullname="XLuaFramework.EventTriggerListener" preserve="all"/>
+		<type fullname="XLuaFramework.Pathtool" preserve="all"/>
 		<type fullname="UnityMMO.UID" preserve="all"/>
 		<type fullname="UnityMMO.UIDProxy" preserve="all"/>
 		<type fullname="UnityMMO.GameConst" preserve="all"/>
+		<type fullname="UnityMMO.GlobalEvents" preserve="all"/>
 		<type fullname="UnityMMO.ResPath" preserve="all"/>
 		<type fullname="UnityMMO.ECSHelper" preserve="all"/>
 		<type fullname="UnityMMO.GameInput" preserve="all"/>
 		<type fullname="UnityMMO.MainWorld" preserve="all"/>
+		<type fullname="UnityMMO.SkillManager" preserve="all"/>
+		<type fullname="UnityMMO.SkillSpawnRequest" preserve="all"/>
+		<type fullname="UnityMMO.SkillSpawnSystem" preserve="all"/>
 		<type fullname="UnityMMO.AutoFight" preserve="all"/>
 		<type fullname="UnityMMO.MonsterMgr" preserve="all"/>
 		<type fullname="UnityMMO.NPCMgr" preserve="all"/>
@@ -50,6 +67,8 @@
 		<type fullname="UnityMMO.Nameboard" preserve="all"/>
 		<type fullname="UnityMMO.Timer" preserve="all"/>
 		<type fullname="UnityMMO.TimerExtensions" preserve="all"/>
+		<type fullname="XLuaFramework.Main+State" preserve="all"/>
+		<type fullname="XLuaFramework.Main+SubState" preserve="all"/>
 		<type fullname="UnityMMO.TimelineInfo+Event" preserve="all"/>
 		<type fullname="UnityMMO.Nameboard+ColorStyle" preserve="all"/>
 		
@@ -127,6 +146,7 @@
 		<type fullname="UnityEngine.UI.Image+Origin180" preserve="all"/>
 		<type fullname="UnityEngine.UI.Image+Origin360" preserve="all"/>
 		<type fullname="UnityEngine.UI.RawImage" preserve="all"/>
+		<type fullname="UnityEngine.UI.Button" preserve="all"/>
 		<type fullname="UnityEngine.UI.ScrollRect+ScrollRectEvent" preserve="all"/>
 		
 	</assembly>

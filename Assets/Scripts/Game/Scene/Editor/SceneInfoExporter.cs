@@ -12,10 +12,26 @@ namespace UnityMMO {
 public class SceneInfoExporter : Editor
 {
     const string SavePath = "Assets/AssetBundleRes/scene/";
+    static Dictionary<string, int> ResPathDic;
+    static List<string> ResPathList;
+    static int CurResID;
 
     [MenuItem("SceneEditor/Export Scene Info")]
     private static void Export()
     {
+        SceneInfoForServer scene_info = Selection.activeTransform.GetComponent<SceneInfoForServer>();
+        if (scene_info == null)
+        {
+            EditorUtility.DisplayDialog("Warning", "you must select a GameObject with SceneInfoForServer component", "Ok");
+            return;
+        }
+        string defaultFolder = SavePath+Selection.activeGameObject.name;
+        string save_path = EditorUtility.SaveFilePanel("Save Scene Info File", defaultFolder, "scene_info", "json");
+        if (save_path=="")
+            return;
+        ResPathDic = new Dictionary<string, int>();
+        ResPathList = new List<string>();
+        CurResID = 0;
         SceneInfo export_info = new SceneInfo();
         //先把所有选中的场景节点信息导出来
         export_info.ObjectInfoList = new List<SceneStaticObject>();
@@ -53,6 +69,8 @@ public class SceneInfoExporter : Editor
             export_info.BornList.Add(new BornInfoData(item.GetUnityPos(), item.born_id));
         }
         Debug.Log("born_list : "+born_list.Length+" "+export_info.BornList.Count);
+        export_info.ResPathList = ResPathList;
+        Debug.Log("ResPathList Count : "+ResPathList.Count);
         // DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(SceneInfo));
         // MemoryStream msObj = new MemoryStream();
         //将序列化之后的Json格式数据写入流中
@@ -63,9 +81,8 @@ public class SceneInfoExporter : Editor
         // sr.Close();
         // msObj.Close();
         string json = JsonUtility.ToJson(export_info, true);
-        string savePath = SavePath+Selection.activeGameObject.name+"/scene_info.json";
-        File.WriteAllText(savePath, json);
-        Debug.Log("export succeed : "+savePath+" content : "+json);
+        File.WriteAllText(save_path, json);
+        Debug.Log("export succeed : "+save_path+" content : "+json);
     }
 
     private static void SaveLightInfo(SceneInfo export_info)
@@ -109,8 +126,24 @@ public class SceneInfoExporter : Editor
         }
     }
 
+    private static int GetResID(string resPath)
+    {
+        int resID = -1;
+        bool isOk = ResPathDic.TryGetValue(resPath, out resID);
+        if (!isOk)
+        {
+            resID = CurResID;
+            CurResID++;
+            ResPathDic.Add(resPath, resID);
+            ResPathList.Add(resPath);
+        }
+        return resID;
+    }
+
     private static SceneStaticObject GetChildInfo(Transform transform, string resPath)
     {
+        int resID = GetResID(resPath);
+        Debug.Log("resID : "+resID+" path:"+resPath);
         if (string.IsNullOrEmpty(resPath))
             return null;
         Renderer[] renderers = transform.gameObject.GetComponentsInChildren<MeshRenderer>();
@@ -134,7 +167,7 @@ public class SceneInfoExporter : Editor
         bounds.size = size;
         int lightmapIndex = renderers[0].lightmapIndex;
         Vector4 lightmapScaleOffset = renderers[0].lightmapScaleOffset;
-        SceneStaticObject obj = new SceneStaticObject(bounds, transform.position, transform.eulerAngles, transform.localScale, resPath, lightmapIndex, lightmapScaleOffset);
+        SceneStaticObject obj = new SceneStaticObject(bounds, transform.position, transform.eulerAngles, transform.localScale, resID, lightmapIndex, lightmapScaleOffset);
         return obj;
         
     }

@@ -8,7 +8,6 @@ function M.path_basename(string_)
   return basename
 end
 
-
 function M.file_basename(path)
   local file = string.gsub(path, "^.*[/\\](.+)$", "%1")
   local name = string.gsub(file, "^(.+)%..+$", "%1")

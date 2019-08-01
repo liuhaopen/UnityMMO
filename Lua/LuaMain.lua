@@ -1,6 +1,7 @@
 require "Game.Common.UIManager"
 PrefabPool = require "Game.Common.PrefabPool"
 require "Common.UI.UIComponent"
+require "Common.UI.Countdown"
 require("Common.UI.ItemListCreator")
 require("Game.Common.Message")
 
@@ -17,6 +18,7 @@ end
 --初始化完成
 function Game:OnInitOK()
     print('Cat:Game.lua[Game.OnInitOK()]')
+    GlobalEventSystem.Init()
     Game:InitLuaPool()
     Game:InitUI()
     Game:InitControllers()

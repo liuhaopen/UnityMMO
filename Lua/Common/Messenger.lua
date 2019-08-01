@@ -57,23 +57,12 @@ end
 
 function Messenger:Fire(e_type, ...)
 	local event = self.events[e_type]
-	if self == GlobalEventSystem then
-		print('Cat:Messenger.lua[60] event, e_type', event, e_type)
-	end
 	if event == nil then
 		return
-	end
-	if self == GlobalEventSystem then
-		print("Cat:Messenger [start:66] event:", event)
-		PrintTable(event)
-		print("Cat:Messenger [end]")
 	end
 	for k, v in pairs(event) do
 		assert(k ~= nil)
 		local args = ConcatSafePack(v, SafePack(...))
-		if self == GlobalEventSystem then
-			print('Cat:Messenger.lua[68] k, args', k, args)
-		end
 		k(SafeUnpack(args))
 	end
 end

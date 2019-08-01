@@ -21,7 +21,7 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(UnityEngine.UI.Graphic);
-			Utils.BeginObjectRegister(type, L, translator, 0, 21, 10, 3);
+			Utils.BeginObjectRegister(type, L, translator, 0, 20, 10, 3);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "SetAllDirty", _m_SetAllDirty);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "SetLayoutDirty", _m_SetLayoutDirty);
@@ -31,7 +31,6 @@ namespace XLua.CSObjectWrap
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Rebuild", _m_Rebuild);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "LayoutComplete", _m_LayoutComplete);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GraphicUpdateComplete", _m_GraphicUpdateComplete);
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "OnRebuildRequested", _m_OnRebuildRequested);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "SetNativeSize", _m_SetNativeSize);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Raycast", _m_Raycast);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "PixelAdjustPoint", _m_PixelAdjustPoint);
@@ -294,33 +293,6 @@ namespace XLua.CSObjectWrap
                 {
                     
                     gen_to_be_invoked.GraphicUpdateComplete(  );
-                    
-                    
-                    
-                    return 0;
-                }
-                
-            } catch(System.Exception gen_e) {
-                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
-            }
-            
-        }
-        
-        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_OnRebuildRequested(RealStatePtr L)
-        {
-		    try {
-            
-                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-            
-            
-                UnityEngine.UI.Graphic gen_to_be_invoked = (UnityEngine.UI.Graphic)translator.FastGetCSObj(L, 1);
-            
-            
-                
-                {
-                    
-                    gen_to_be_invoked.OnRebuildRequested(  );
                     
                     
                     

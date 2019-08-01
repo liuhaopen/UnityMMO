@@ -31,15 +31,15 @@ namespace XLua.CSObjectWrap
 			Utils.EndObjectRegister(type, L, translator, null, null,
 			    null, null, null);
 
-		    Utils.BeginClassRegister(type, L, __CreateInstance, 1, 2, 1);
-			
+		    Utils.BeginClassRegister(type, L, __CreateInstance, 2, 2, 0);
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "UpdateServerTime", _m_UpdateServerTime_xlua_st_);
+            
 			
             
 			Utils.RegisterFunc(L, Utils.CLS_GETTER_IDX, "ServerTimeSec", _g_get_ServerTimeSec);
             Utils.RegisterFunc(L, Utils.CLS_GETTER_IDX, "ServerTime", _g_get_ServerTime);
             
-			Utils.RegisterFunc(L, Utils.CLS_SETTER_IDX, "ServerTime", _s_set_ServerTime);
-            
+			
 			
 			Utils.EndClassRegister(type, L, translator);
         }
@@ -56,6 +56,30 @@ namespace XLua.CSObjectWrap
         
         
         
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_UpdateServerTime_xlua_st_(RealStatePtr L)
+        {
+		    try {
+            
+            
+            
+                
+                {
+                    double _value = LuaAPI.lua_tonumber(L, 1);
+                    
+                    UnityMMO.TimeEx.UpdateServerTime( _value );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
         
         
         
@@ -85,19 +109,6 @@ namespace XLua.CSObjectWrap
         }
         
         
-        
-        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _s_set_ServerTime(RealStatePtr L)
-        {
-		    try {
-                
-			    UnityMMO.TimeEx.ServerTime = LuaAPI.lua_toint64(L, 1);
-            
-            } catch(System.Exception gen_e) {
-                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
-            }
-            return 0;
-        }
         
 		
 		

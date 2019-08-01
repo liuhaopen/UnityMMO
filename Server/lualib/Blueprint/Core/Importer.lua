@@ -29,24 +29,6 @@ end
 
 local function import(modname, env)
     return require(modname)(env)
-    -- if modname then
-    --     local prefix = modname:match "(.*%.).*$" or (modname .. ".")
-    --     return function(name, env)
-    --         local fullname = prefix .. name
-    --         print('Cat:BPImporter.lua[36] fullname', fullname)
-    --         local m = loaded[fullname] or loaded[name]
-    --         if m then
-    --             return m
-    --         end
-    --         if searchpath(fullname, package.path) then
-    --             return require(fullname)(env)
-    --         else
-    --             return require(name)(env)
-    --         end
-    --     end
-    -- else
-    --     return require
-    -- end
 end
 
 local function enable()

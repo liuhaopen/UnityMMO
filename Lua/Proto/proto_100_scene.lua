@@ -142,7 +142,8 @@ scene_cast_skill 105 {
 	}
 	response {
 		result 0 : integer
-		fight_event 1 : scene_fight_event_info
+		cd_end_time 1 : integer
+		fight_event 2 : scene_fight_event_info
 	}
 }
 

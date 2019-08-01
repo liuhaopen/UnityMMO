@@ -1,4 +1,11 @@
+local ECS = require "ECS"
+local skill_cfg = require "game.config.scene.config_skill"
+
 local FightHelper = {}
+local EntityMgr = nil
+function FightHelper.Init(  )
+	EntityMgr = ECS.World.Active.EntityManager
+end
 
 --获取可攻击的坐标	
 function FightHelper.GetAssailablePos( curPos, targetPos, minDistance, maxDistance )
@@ -14,6 +21,40 @@ function FightHelper.GetAssailablePos( curPos, targetPos, minDistance, maxDistan
 	-- local newPos = Vector3.Add(targetPos, dir*bestDistance)
 	-- print('Cat:FightHelper.lua[10] curPos.x, curPos.z, targetPos.x, targetPos.y, newPos.x, newPos.z', curPos.x, curPos.z, targetPos.x, targetPos.y, newPos.x, newPos.z)
 	return newPos
+end
+
+function FightHelper.IsSkillInCD( entity, skillID )
+	print('Cat:FightHelper.lua[24] entity, skillID', entity, skillID)
+	local hasCD = EntityMgr:HasComponent(entity, "UMO.CD")
+	if hasCD then
+		local cdData = EntityMgr:GetComponentData(entity, "UMO.CD")
+		local cdEndTime = cdData[skillID]
+		print('Cat:FightHelper.lua[31] cdEndTime, Time.timeMS', cdEndTime, Time.timeMS)
+		return cdEndTime and Time.timeMS <= cdEndTime
+	end
+	return false
+end
+
+function FightHelper.GetSkillCD( skillID, lv )
+	lv = lv or 1
+	local cfg = skill_cfg[skillID]
+	if cfg and cfg.detail[lv] then
+		return cfg.detail[lv].cd
+	end
+	return 0
+end
+
+function FightHelper.ApplySkillCD( entity, skillID, lv )
+	local hasCD = EntityMgr:HasComponent(entity, "UMO.CD")
+	local endTime = 0
+	if hasCD then
+		local cdData = EntityMgr:GetComponentData(entity, "UMO.CD")
+		local cd = FightHelper.GetSkillCD(skillID, lv)
+		endTime = Time.timeMS + cd
+		print('Cat:FightHelper.lua[ApplySkillCD] endTime', endTime, cd)
+		cdData[skillID] = endTime
+	end
+	return endTime
 end
 
 return FightHelper

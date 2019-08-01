@@ -97,11 +97,11 @@ local collect_events = function ( sceneMgr )
 	sceneMgr.eventMgr:ClearAllSceneEvents()
 end
 
+--synch info at fixed time
 local fork_loop_scene_info_change = function ( sceneMgr )
 	skynet.fork(function()
 		while true do
 			collect_events(sceneMgr)
-			--synch info at fixed time
 			for _,role_info in pairs(sceneMgr.roleMgr.roleList) do
 				if role_info.change_obj_infos and role_info.ack_scene_get_objs_info_change then
 					role_info.ack_scene_get_objs_info_change(true, role_info.change_obj_infos)
@@ -117,7 +117,6 @@ end
 local collect_fight_events = function ( sceneMgr )
 	for _,role_info in pairs(sceneMgr.roleMgr.roleList) do
 		for _,interest_uid in pairs(role_info.around_objs) do
-			-- local event_list = sceneMgr.fight_events[interest_uid]
 			local event_list = sceneMgr.eventMgr:GetFightEvent(interest_uid)
 			if event_list then
 				for i,event_info in ipairs(event_list) do
@@ -129,7 +128,7 @@ local collect_fight_events = function ( sceneMgr )
 	sceneMgr.eventMgr:ClearAllFightEvents()
 end
 
---定时合批发送战斗事件
+--Notify combat events at fixed times
 local fork_loop_fight_event = function ( sceneMgr )
 	skynet.fork(function()
 		while true do 
@@ -193,6 +192,8 @@ function SceneMgr:Init( scene_id )
 	self.fightMgr:Init(self)
 	self.ecsSystemMgr:Init(self.ecs_world, self)
 	self.eventMgr:Init(self)
+	local FightHelper = require("game.scene.FightHelper")
+	FightHelper.Init()
 	--开始游戏循环
 	fork_loop_ecs(self)
 	fork_loop_scene_info_change(self)

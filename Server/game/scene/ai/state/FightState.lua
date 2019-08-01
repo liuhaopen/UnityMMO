@@ -56,6 +56,7 @@ function FightState:OnUpdate( )
 			end
 		else
 			--没有攻击目标了，回去耕田吧
+			self.targetEnemyEntity = nil
 			-- self:SetSubState(SubState.GoBack)
 			self.fsm:TriggerState("PatrolState")
 		end
