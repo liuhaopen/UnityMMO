@@ -40,7 +40,17 @@ public class Nameboard : MonoBehaviour
             if (curColorStyle != value)
             {
                 string resPath = ResPath.GetBloodResPath(value);
-                UIHelper.SetImage(bloodImg, resPath);
+                // UIHelper.SetImage(bloodImg, resPath);
+                resPath = UIHelper.FillUIResPath(resPath);
+                ResourceManager.GetInstance().LoadAsset<Sprite>(resPath, delegate(UnityEngine.Object[] objs){
+                    // Debug.Log("set image : "+resPath+" obj:"+(objs.Length)+" bloodImg:"+(bloodImg!=null));
+                    if (bloodImg != null && objs != null && objs.Length>=1)
+                    {
+                        bloodImg.sprite = objs[0] as Sprite;
+                        // if (is_auto_size)
+                        //     bloodImg.SetNativeSize();
+                    }
+                });
             }
             curColorStyle = value; 
         }

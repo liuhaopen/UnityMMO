@@ -32,7 +32,7 @@ function UIMgr:GetViewStack(  )
 end
 
 function UIMgr:AddUIComponent( view, component, arge )
-	print('Cat:UIManager.lua[35] view, component, arge', view, component, tostring(arge))
+	-- print('Cat:UIManager.lua[35] view, component, arge', view, component, tostring(arge))
 	assert(view~=nil, "cannot add component for a nil view")
 	assert(component~=nil, "cannot add nil component for view")
 	local new_comp = component.New()
@@ -42,7 +42,7 @@ function UIMgr:AddUIComponent( view, component, arge )
 	end
 	view._components_for_uimgr_ = view._components_for_uimgr_ or {}
 	table.insert(view._components_for_uimgr_, new_comp)
-	print("Cat:UIManager [start:45] new_comp:", new_comp, new_comp.OnLoad)
+	-- print("Cat:UIManager [start:45] new_comp:", new_comp, new_comp.OnLoad)
 	return new_comp
 end
 

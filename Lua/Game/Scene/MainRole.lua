@@ -12,9 +12,6 @@ function MainRole:GetInstance(  )
 end
 
 function MainRole:SetBaseInfo( baseInfo )
-	print("Cat:MainRole [start:15] baseInfo:", baseInfo)
-	PrintTable(baseInfo)
-	print("Cat:MainRole [end]")
 	self.baseInfo = baseInfo
 end
 

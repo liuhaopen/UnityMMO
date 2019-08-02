@@ -9,7 +9,6 @@ function PrefabPool:Init( hide_container )
 end
 
 function PrefabPool:Register( names )
-	print('Cat:PrefabPool.lua[16] AppConfig.DebugMode', AppConfig.DebugMode, names)
 	for i,v in ipairs(names) do
 		local on_load = function ( objs )
 			assert(objs and objs[0], "PrefabPool:Register load prefab failed in debug mode!")
@@ -19,7 +18,6 @@ function PrefabPool:Register( names )
 			local start_index = string.find(key, "%.")
 			assert(start_index, "PrefabPool:Register failed! load a wrong file : "..v)
 			key = string.sub(key, 1, start_index-1)
-			print('Cat:PrefabPool.lua[23] key', key)
 			self.prefab_map[key] = prefab
 		end
 		ResMgr:LoadPrefab(v, on_load)

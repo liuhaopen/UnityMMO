@@ -21,18 +21,20 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(UnityMMO.SceneInfo);
-			Utils.BeginObjectRegister(type, L, translator, 0, 0, 6, 6);
+			Utils.BeginObjectRegister(type, L, translator, 0, 0, 7, 7);
 			
 			
 			
-			Utils.RegisterFunc(L, Utils.GETTER_IDX, "LightmapMode", _g_get_LightmapMode);
+			Utils.RegisterFunc(L, Utils.GETTER_IDX, "ResPathList", _g_get_ResPathList);
+            Utils.RegisterFunc(L, Utils.GETTER_IDX, "LightmapMode", _g_get_LightmapMode);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "LightColorResPath", _g_get_LightColorResPath);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "LightDirResPath", _g_get_LightDirResPath);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "Bounds", _g_get_Bounds);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "ObjectInfoList", _g_get_ObjectInfoList);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "BornList", _g_get_BornList);
             
-			Utils.RegisterFunc(L, Utils.SETTER_IDX, "LightmapMode", _s_set_LightmapMode);
+			Utils.RegisterFunc(L, Utils.SETTER_IDX, "ResPathList", _s_set_ResPathList);
+            Utils.RegisterFunc(L, Utils.SETTER_IDX, "LightmapMode", _s_set_LightmapMode);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "LightColorResPath", _s_set_LightColorResPath);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "LightDirResPath", _s_set_LightDirResPath);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "Bounds", _s_set_Bounds);
@@ -85,6 +87,20 @@ namespace XLua.CSObjectWrap
         
         
         
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_ResPathList(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.SceneInfo gen_to_be_invoked = (UnityMMO.SceneInfo)translator.FastGetCSObj(L, 1);
+                translator.Push(L, gen_to_be_invoked.ResPathList);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         static int _g_get_LightmapMode(RealStatePtr L)
@@ -171,6 +187,21 @@ namespace XLua.CSObjectWrap
         }
         
         
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _s_set_ResPathList(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.SceneInfo gen_to_be_invoked = (UnityMMO.SceneInfo)translator.FastGetCSObj(L, 1);
+                gen_to_be_invoked.ResPathList = (System.Collections.Generic.List<string>)translator.GetObject(L, 2, typeof(System.Collections.Generic.List<string>));
+            
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 0;
+        }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         static int _s_set_LightmapMode(RealStatePtr L)

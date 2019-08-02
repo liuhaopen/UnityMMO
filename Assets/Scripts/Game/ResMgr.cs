@@ -67,6 +67,7 @@ public class ResMgr
         int count = 0;
         for (int i = 0; i < list.Count; i++)
         {
+            int resID = i;
             XLuaFramework.ResourceManager.GetInstance().LoadAsset<GameObject>(list[i], delegate(UnityEngine.Object[] objs) 
             {
                 if (objs.Length > 0 && (objs[0] as GameObject)!=null)
@@ -74,18 +75,22 @@ public class ResMgr
                     GameObject prefab = objs[0] as GameObject;
                     if (prefab != null) 
                     {
-                        scenePrefabList[i] = prefab;
+                        scenePrefabList[resID] = prefab;
                         count++;
+                        var fileName = System.IO.Path.GetFileName(list[resID]);
+                        LoadingView.Instance.SetData((float)(0.4+(0.2*count/list.Count)), "加载场景资源文件："+fileName);
+                        if (callBack != null && count==list.Count)
+                        {
+                            callBack(true);
+                        }
                         return;
                     }
                 }
-                Debug.LogError("cannot find scene prefab in "+list[i]);
+                Debug.LogError("cannot find scene prefab in "+list[resID]);
+                callBack(false);
             });
         }
-        if (callBack != null)
-        {
-            callBack(count==list.Count);
-        }
+        
     }
 
     public GameObject GetSceneRes(int resID)

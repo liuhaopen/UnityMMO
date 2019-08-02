@@ -44,19 +44,21 @@ function LoginCreateRoleView:InitView(  )
 		scroll_view = self.item_con,
 		child_names = {"sex:txt","role_head:raw","bg:img:obj",},
 		on_update_item = function(item, i, v)
+			print('Cat:LoginCreateRoleView.lua[47] item, i, v', item, i, v)
 			item.sex_txt.text = v==1 and "男" or "女"
 			item.sex_value = v
 			if not item.UpdateSelect then
 				item.UpdateSelect = function(item)
 					local cur_is_select = self.select_sex==v
-					UIHelper.SetImage(item.bg_img, cur_is_select and "login/login_role_item_bg_sel.png" or "login/login_role_item_bg_nor.png", true)
+					print('Cat:LoginCreateRoleView.lua[53] cur_is_select, item, item.bg_img', cur_is_select, item, item.bg_img)
+					UI.SetImage(item, item.bg_img, cur_is_select and "login/login_role_item_bg_sel.png" or "login/login_role_item_bg_nor.png", true)
 				end
 			end
 			item:UpdateSelect()
 			if not item.UpdateHead then
 				item.UpdateHead = function(item)
 					local headRes = ResPath.GetRoleHeadRes(v, 0)
-					UIHelper.SetRawImage(item.role_head_raw, headRes)
+					UI.SetRawImage(item, item.role_head_raw, headRes)
 				end
 			end
 			item:UpdateHead()
@@ -86,7 +88,7 @@ function LoginCreateRoleView:SetCurSelectSex( sex )
 		end
 	end)
 	-- self:UpdateRoleHead()
-	UIHelper.SetImage(self.role_tip_img, "login/login_role_tip_"..sex..".png", true)
+	UI.SetImage(self, self.role_tip_img, "login/login_role_tip_"..sex..".png", true)
 	self:OnClickRandomName()
 	self:UpdateRoleMesh(sex)
 	-- self:PlayRoleSound(sex)

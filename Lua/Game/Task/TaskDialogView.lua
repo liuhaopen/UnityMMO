@@ -72,7 +72,7 @@ function TaskDialogView:ReqDoTask(  )
 end
 
 function TaskDialogView:ClickOk(  )
-	self:Close()
+	self:Unload()
 end
 
 function TaskDialogView:ProcessBtnNameAndCallBack( flag )

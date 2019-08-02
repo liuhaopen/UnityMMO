@@ -107,12 +107,12 @@ public class Packager {
 
     [MenuItem("LuaFramework/Build Windows Resource", false, 103)]
     public static void BuildWindowsResource() {
-        BuildAssetResource(BuildTarget.StandaloneWindows);
+        BuildAssetResource(BuildTarget.StandaloneWindows64);
     }
 
     public static RuntimePlatform BuildTargetToPlatform(BuildTarget target)
     {
-        if (target == BuildTarget.StandaloneWindows)
+        if (target == BuildTarget.StandaloneWindows64 || target == BuildTarget.StandaloneWindows)
             return RuntimePlatform.WindowsEditor;
         else if (target == BuildTarget.Android)
             return RuntimePlatform.Android;

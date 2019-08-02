@@ -352,17 +352,61 @@ function UI.GetSizeDeltaY(transform)
 end
 
 function UI.SetBg( self, rawImg, bg_res, is_auto_size, loaded_call_back )
+	print('Cat:UIHelper.lua[355] self, rawImg, bg_res, is_auto_size, loaded_call_back', self, rawImg, bg_res, is_auto_size, loaded_call_back)
 	if not rawImg then return end
 	rawImg.gameObject:SetActive(false)
 	local on_loaded = function (  )
+		print('Cat:UIHelper.lua[358] self.destroyed', self.destroyed)
 		if self.destroyed then return end
 		rawImg.gameObject:SetActive(true)
 		if loaded_call_back then
 			loaded_call_back()
 		end
 	end
-	if not is_auto_size then
-		is_auto_size = false
+	UI.SetRawImage(self, rawImg, bg_res, is_auto_size, on_loaded)
+end
+
+function UI.SetImage( self, img, resPath, isAutoSize, loadedCallBack )
+	if not self or not img then 
+		LogError("UI.SetImage failed "..tostring(self).." img:"..tostring(img).." resPath:"..resPath)
+		return 
 	end
-	UIHelper.SetRawImage(rawImg, bg_res, is_auto_size, on_loaded)
+	resPath = UI.FillUIResPath(resPath)
+	self.__img_cur_res__ = self.__img_cur_res__ or {}
+	self.__img_cur_res__[img] = resPath
+	local onLoadedImg = function ( objs )
+		if not objs or not objs[0] or self.destroyed or not img or img:IsDestroyed() or self.__img_cur_res__[img] ~= resPath then return end
+		img.sprite = objs[0]
+		if isAutoSize then
+			img:SetNativeSize()
+		end
+		if loadedCallBack then
+			loadedCallBack()
+		end
+	end
+	ResMgr:LoadSprite(resPath, onLoadedImg)
+end
+
+function UI.SetRawImage( self, img, resPath, isAutoSize, loadedCallBack )
+	-- print('Cat:UIHelper.lua[SetRawImage] self, img, resPath, isAutoSize', self, img, resPath, isAutoSize)
+	if not self or not img then 
+		LogError("UI.SetRawImage failed "..tostring(self).." img:"..tostring(img).." resPath:"..resPath)
+		return 
+	end
+	if not self or not img then return end
+	resPath = UI.FillUIResPath(resPath)
+	self.__img_cur_res__ = self.__img_cur_res__ or {}
+	self.__img_cur_res__[img] = resPath
+	local onLoadedImg = function ( objs )
+		-- print('Cat:UIHelper.lua[SetRawImage] self.__img_cur_res__[img], ', self.__img_cur_res__[img], resPath)
+		if not objs or not objs[0] or self.destroyed or not img or img:IsDestroyed() or self.__img_cur_res__[img] ~= resPath then return end
+		img.texture = objs[0]
+		if isAutoSize then
+			img:SetNativeSize()
+		end
+		if loadedCallBack then
+			loadedCallBack()
+		end
+	end
+	ResMgr:LoadTexture(resPath, onLoadedImg)
 end

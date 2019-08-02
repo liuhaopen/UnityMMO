@@ -58,12 +58,24 @@ public class LuaUtility
             {
                 foreach (MemberInfo p in members)
                 {
-                    FieldInfo field = p as FieldInfo;
                     object[] objAttrs = p.GetCustomAttributes(typeof(DataMemberAttribute), true);
                     // UnityEngine.Debug.Log("objAttrs.Length : "+objAttrs.Length.ToString()+ " field!=null:"+(field!=null).ToString());
-                    if (objAttrs != null && objAttrs.Length > 0 && field!=null)
+                    if (objAttrs != null && objAttrs.Length > 0)
                     {
-                        content += tab_str + p.Name + " = " + ToLua(field.GetValue(obj), level+1) + ",\n";
+                        object obj_value = null;
+                        FieldInfo field = p as FieldInfo;
+                        if(field!=null)
+                        {
+                            obj_value = field.GetValue(obj);
+                        }
+                        else
+                        {
+                            PropertyInfo pro = p as PropertyInfo;
+                            if (pro != null)
+                                obj_value = pro.GetValue(obj);
+                        }
+                        if (obj_value != null)
+                            content += tab_str + p.Name + " = " + ToLua(obj_value, level+1) + ",\n";
                     }
                 };
             }

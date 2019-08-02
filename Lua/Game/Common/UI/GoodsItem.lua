@@ -46,13 +46,13 @@ end
 
 function GoodsItem:SetIcon( goodsTypeID, num )
 	local cfg = ConfigMgr:GetGoodsCfg(goodsTypeID)
-	UI.SetImage(self.bg_img, "Assets/AssetBundleRes/ui/common/com_icon_bg_"..cfg.color..".png", false)
-	UI.SetImage(self.icon_img, "Assets/AssetBundleRes/ui/goods/"..cfg.icon..".png", false)
+	UI.SetImage(self, self.bg_img, "Assets/AssetBundleRes/ui/common/com_icon_bg_"..cfg.color..".png", false)
+	UI.SetImage(self, self.icon_img, "Assets/AssetBundleRes/ui/goods/"..cfg.icon..".png", false)
 	self:SetNum(num)
 end
 
 function GoodsItem:SetBg( res )
-	UIHelper.SetImage(self.bg_img, res)
+	UI.SetImage(self, self.bg_img, res)
 end
 
 function GoodsItem:SetIconVisible( isShow )

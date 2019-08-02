@@ -117,7 +117,7 @@ namespace XLuaFramework {
                         cur_sub_state = SubState.Update;
                         loadingView.SetData(1, "初始化游戏资源完毕");
                         XLuaManager.Instance.InitLuaEnv();
-                        loadingView.SetActive(false, 0.5f);
+                        // loadingView.SetActive(false, 0.5f);
                         XLuaManager.Instance.StartLogin(delegate() {
                             Debug.Log("Main.cs XLuaManager StartLogin OK!!!");
                             JumpToState(State.StartGame);

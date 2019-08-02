@@ -51,12 +51,18 @@ public static class XLuaGenConfig
         typeof(ParticleSystem),
         typeof(SkinnedMeshRenderer),
         typeof(Renderer),
-        typeof(WWW),
+        // typeof(WWW),
         typeof(Light),
         typeof(Mathf),
         typeof(System.Collections.Generic.List<int>),
         typeof(Action<string>),
-        typeof(UnityEngine.UI.InputField),
+        typeof(InputField),
+        typeof(InputField.ContentType),
+        typeof(InputField.InputType),
+        typeof(InputField.CharacterValidation),
+        typeof(InputField.LineType),
+        typeof(InputField.SubmitEvent),
+        typeof(InputField.OnChangeEvent),
         typeof(TextAnchor),
         typeof(RaycastHit),
         typeof(Touch),
@@ -64,6 +70,8 @@ public static class XLuaGenConfig
         typeof(LayerMask),
         typeof(Plane),
         typeof(RectTransform),
+        typeof(RectTransform.Axis),
+        typeof(RectTransform.Edge),
         typeof(TextMesh),
         typeof(Graphic),
         typeof(UIBehaviour),
@@ -84,8 +92,19 @@ public static class XLuaGenConfig
         typeof(CircleRawImage),
         typeof(RawImage),
         typeof(Camera),
+        typeof(Camera.CameraCallback),
+        typeof(Camera.FieldOfViewAxis),
+        typeof(Camera.GateFitParameters),
+        typeof(Camera.MonoOrStereoscopicEye),
+        typeof(Camera.StereoscopicEye),
+        typeof(Camera.GateFitMode),
         typeof(Physics),
+        // typeof(System.RuntimeType),
         typeof(Input),
+        typeof(Sprite),
+        typeof(Texture),
+        typeof(Texture2D),
+        typeof(Texture2D.EXRFlags),
         typeof(Button),
         typeof(KeyCode),
         typeof(RenderTexture),
@@ -100,7 +119,8 @@ public static class XLuaGenConfig
         typeof(Unity.Entities.Entity),
         typeof(Unity.Entities.GameObjectEntity),
         typeof(Unity.Entities.EntityManagerExtensions),
-        typeof(Unity.Entities.EntityManager)
+        typeof(Unity.Entities.EntityManager),
+        typeof(Unity.Entities.EntityManager.EntityManagerDebug),
     };
 
     [LuaCallCSharp]
@@ -126,6 +146,7 @@ public static class XLuaGenConfig
 
     //C#静态调用Lua的配置（包括事件的原型），仅可以配delegate，interface
     [CSharpCallLua]
+    [LuaCallCSharp]
     public static List<Type> CSharpCallLua = new List<Type>() {
         typeof(Action),
         typeof(Func<double, double, double>),
@@ -152,6 +173,7 @@ public static class XLuaGenConfig
         new List<string>(){"UnityEngine.WWW", "threadPriority"},
 #endif
         new List<string>(){"UnityEngine.Texture2D", "alphaIsTransparency"},
+        new List<string>(){"UnityEngine.Texture", "imageContentsHash"},
         new List<string>(){"UnityEngine.Security", "GetChainOfTrustValue"},
         new List<string>(){"UnityEngine.CanvasRenderer", "onRequestRebuild"},
         new List<string>(){"UnityEngine.Light", "areaSize"},

@@ -394,9 +394,9 @@ GetItemCreator = function ( self )
 			if not item then
 				local on_load_ok = function ( item )
 					UI.GetChildren(item, item.transform, info.child_names)
-					if item.cache_data and item.OnUpdate then
-						item:OnUpdate(item.cache_data.index, item.cache_data.data)
-						item.cache_data = nil
+					if item.___data_for_itmector___ then
+						item.___data_for_itmector___ = nil
+						update_item_for_creator(self, item)
 					end
 				end
 				item = UINode.New()
@@ -412,20 +412,19 @@ GetItemCreator = function ( self )
 				item.viewCfg.parentTrans = info.item_con
 				item.SetData = function(item, i, v)
 					if item.isLoaded and item.OnUpdate then
-						item:OnUpdate(i, v)
+						update_item_for_creator(self, item)
 					else
-						item.cacheData = {index=i, data=v}
+						item.___data_for_itmector___ = {index=i, data=v}
 					end
 				end
 				item.OnLoad = on_load_ok
-				item:Load()
 				self.item_list[i] = item
 				self.item_list[i]._real_index_for_item_creator_ = i
-				item.OnUpdate = on_update_prefab_item
+				item:Load()
 			end
 			item:SetActive(true)
 			item:SetLocalPositionXYZ(self.get_item_pos_xy_func(item._real_index_for_item_creator_))
-			item:SetData(nil, self)
+			item:SetData(i, v)
 		end
 	elseif info.lua_pool_name then
 		creator = function(i, v)

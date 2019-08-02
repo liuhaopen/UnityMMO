@@ -123,10 +123,11 @@ public class SceneMgr : MonoBehaviour
             scene_json = Repalce(scene_json);
             SceneInfo scene_info = JsonUtility.FromJson<SceneInfo>(scene_json);
             curSceneInfo = scene_info;
+            Debug.Log("LoadSceneInfo start LoadSceneRes count:"+scene_info.ResPathList.Count);
             // ApplyLightInfo(scene_info);//TODO:bake light
             ResMgr.GetInstance().LoadSceneRes(scene_info.ResPathList, delegate(bool isOk)
             {
-                LoadingView.Instance.SetData(0.6f, "读取场景信息文件...");
+                LoadingView.Instance.SetData(0.6f, "初始化场景节点信息...");
                 m_Controller = gameObject.GetComponent<SceneObjectLoadController>();
                 if (m_Controller == null)
                     m_Controller = gameObject.AddComponent<SceneObjectLoadController>();

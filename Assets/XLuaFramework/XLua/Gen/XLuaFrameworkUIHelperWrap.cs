@@ -31,7 +31,7 @@ namespace XLua.CSObjectWrap
 			Utils.EndObjectRegister(type, L, translator, null, null,
 			    null, null, null);
 
-		    Utils.BeginClassRegister(type, L, __CreateInstance, 40, 0, 0);
+		    Utils.BeginClassRegister(type, L, __CreateInstance, 38, 0, 0);
 			Utils.RegisterFunc(L, Utils.CLS_IDX, "SetPosition", _m_SetPosition_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "SetPositionX", _m_SetPositionX_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "SetPositionY", _m_SetPositionY_xlua_st_);
@@ -69,8 +69,6 @@ namespace XLua.CSObjectWrap
             Utils.RegisterFunc(L, Utils.CLS_IDX, "BindDragBeginEvent", _m_BindDragBeginEvent_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "BindDragEndEvent", _m_BindDragEndEvent_xlua_st_);
             Utils.RegisterFunc(L, Utils.CLS_IDX, "FillUIResPath", _m_FillUIResPath_xlua_st_);
-            Utils.RegisterFunc(L, Utils.CLS_IDX, "SetImage", _m_SetImage_xlua_st_);
-            Utils.RegisterFunc(L, Utils.CLS_IDX, "SetRawImage", _m_SetRawImage_xlua_st_);
             
 			
             
@@ -1133,118 +1131,6 @@ namespace XLua.CSObjectWrap
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }
-            
-        }
-        
-        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_SetImage_xlua_st_(RealStatePtr L)
-        {
-		    try {
-            
-                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-            
-            
-            
-			    int gen_param_count = LuaAPI.lua_gettop(L);
-            
-                if(gen_param_count == 4&& translator.Assignable<UnityEngine.UI.Image>(L, 1)&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)&& LuaTypes.LUA_TBOOLEAN == LuaAPI.lua_type(L, 3)&& (LuaAPI.lua_isnil(L, 4) || LuaAPI.lua_type(L, 4) == LuaTypes.LUA_TFUNCTION)) 
-                {
-                    UnityEngine.UI.Image _img = (UnityEngine.UI.Image)translator.GetObject(L, 1, typeof(UnityEngine.UI.Image));
-                    string _file_path = LuaAPI.lua_tostring(L, 2);
-                    bool _is_auto_size = LuaAPI.lua_toboolean(L, 3);
-                    XLua.LuaFunction _func = (XLua.LuaFunction)translator.GetObject(L, 4, typeof(XLua.LuaFunction));
-                    
-                    XLuaFramework.UIHelper.SetImage( _img, _file_path, _is_auto_size, _func );
-                    
-                    
-                    
-                    return 0;
-                }
-                if(gen_param_count == 3&& translator.Assignable<UnityEngine.UI.Image>(L, 1)&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)&& LuaTypes.LUA_TBOOLEAN == LuaAPI.lua_type(L, 3)) 
-                {
-                    UnityEngine.UI.Image _img = (UnityEngine.UI.Image)translator.GetObject(L, 1, typeof(UnityEngine.UI.Image));
-                    string _file_path = LuaAPI.lua_tostring(L, 2);
-                    bool _is_auto_size = LuaAPI.lua_toboolean(L, 3);
-                    
-                    XLuaFramework.UIHelper.SetImage( _img, _file_path, _is_auto_size );
-                    
-                    
-                    
-                    return 0;
-                }
-                if(gen_param_count == 2&& translator.Assignable<UnityEngine.UI.Image>(L, 1)&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)) 
-                {
-                    UnityEngine.UI.Image _img = (UnityEngine.UI.Image)translator.GetObject(L, 1, typeof(UnityEngine.UI.Image));
-                    string _file_path = LuaAPI.lua_tostring(L, 2);
-                    
-                    XLuaFramework.UIHelper.SetImage( _img, _file_path );
-                    
-                    
-                    
-                    return 0;
-                }
-                
-            } catch(System.Exception gen_e) {
-                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
-            }
-            
-            return LuaAPI.luaL_error(L, "invalid arguments to XLuaFramework.UIHelper.SetImage!");
-            
-        }
-        
-        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_SetRawImage_xlua_st_(RealStatePtr L)
-        {
-		    try {
-            
-                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
-            
-            
-            
-			    int gen_param_count = LuaAPI.lua_gettop(L);
-            
-                if(gen_param_count == 4&& translator.Assignable<UnityEngine.UI.RawImage>(L, 1)&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)&& LuaTypes.LUA_TBOOLEAN == LuaAPI.lua_type(L, 3)&& (LuaAPI.lua_isnil(L, 4) || LuaAPI.lua_type(L, 4) == LuaTypes.LUA_TFUNCTION)) 
-                {
-                    UnityEngine.UI.RawImage _img = (UnityEngine.UI.RawImage)translator.GetObject(L, 1, typeof(UnityEngine.UI.RawImage));
-                    string _file_path = LuaAPI.lua_tostring(L, 2);
-                    bool _is_auto_size = LuaAPI.lua_toboolean(L, 3);
-                    XLua.LuaFunction _func = (XLua.LuaFunction)translator.GetObject(L, 4, typeof(XLua.LuaFunction));
-                    
-                    XLuaFramework.UIHelper.SetRawImage( _img, _file_path, _is_auto_size, _func );
-                    
-                    
-                    
-                    return 0;
-                }
-                if(gen_param_count == 3&& translator.Assignable<UnityEngine.UI.RawImage>(L, 1)&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)&& LuaTypes.LUA_TBOOLEAN == LuaAPI.lua_type(L, 3)) 
-                {
-                    UnityEngine.UI.RawImage _img = (UnityEngine.UI.RawImage)translator.GetObject(L, 1, typeof(UnityEngine.UI.RawImage));
-                    string _file_path = LuaAPI.lua_tostring(L, 2);
-                    bool _is_auto_size = LuaAPI.lua_toboolean(L, 3);
-                    
-                    XLuaFramework.UIHelper.SetRawImage( _img, _file_path, _is_auto_size );
-                    
-                    
-                    
-                    return 0;
-                }
-                if(gen_param_count == 2&& translator.Assignable<UnityEngine.UI.RawImage>(L, 1)&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)) 
-                {
-                    UnityEngine.UI.RawImage _img = (UnityEngine.UI.RawImage)translator.GetObject(L, 1, typeof(UnityEngine.UI.RawImage));
-                    string _file_path = LuaAPI.lua_tostring(L, 2);
-                    
-                    XLuaFramework.UIHelper.SetRawImage( _img, _file_path );
-                    
-                    
-                    
-                    return 0;
-                }
-                
-            } catch(System.Exception gen_e) {
-                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
-            }
-            
-            return LuaAPI.luaL_error(L, "invalid arguments to XLuaFramework.UIHelper.SetRawImage!");
             
         }
         

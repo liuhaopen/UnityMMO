@@ -67,7 +67,7 @@ function Window:SetBG( bg )
 		if bg ~= "default" then
 			UI.SetBg(self, self.bg_raw, ResPath.GetBgPath(bg))
 		else
-			UI.SetRawImage(self.bg_raw, "Assets/AssetBundleRes/ui/common/com_default_win_bg.png")
+			UI.SetRawImage(self, self.bg_raw, "Assets/AssetBundleRes/ui/common/com_default_win_bg.png")
 			self.bg_raw.gameObject:SetActive(true)
 		end
 	end
@@ -75,7 +75,7 @@ end
 
 function Window:SetTitle( title )
 	if self.isLoaded then
-		UI.SetRawImage(self.title_raw, title, true)
+		UI.SetRawImage(self, self.title_raw, title, true)
 	end
 end
 

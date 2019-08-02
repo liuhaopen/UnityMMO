@@ -1023,31 +1023,6 @@ namespace XLua
 #endif
 		}
         
-		public void __Gen_Delegate_Imp44(object p0, object p1, bool p2, object p3)
-		{
-#if THREAD_SAFE || HOTFIX_ENABLE
-            lock (luaEnv.luaEnvLock)
-            {
-#endif
-                RealStatePtr L = luaEnv.rawL;
-                int errFunc = LuaAPI.pcall_prepare(L, errorFuncRef, luaReference);
-                ObjectTranslator translator = luaEnv.translator;
-                translator.PushAny(L, p0);
-                translator.PushAny(L, p1);
-                LuaAPI.lua_pushboolean(L, p2);
-                translator.PushAny(L, p3);
-                
-                PCall(L, 4, 0, errFunc);
-                
-                
-                
-                LuaAPI.lua_settop(L, errFunc - 1);
-                
-#if THREAD_SAFE || HOTFIX_ENABLE
-            }
-#endif
-		}
-        
         
 		static DelegateBridge()
 		{

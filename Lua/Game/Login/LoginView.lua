@@ -17,6 +17,7 @@ function LoginView:OnLoad(  )
     self.transform.sizeDelta = Vector2.New(0, 0)
 	self:AddEvents()
 	self:UpdateView()
+	CS.UnityMMO.LoadingView.Instance:SetActive(false)
 end
 
 function LoginView:AddEvents(  )

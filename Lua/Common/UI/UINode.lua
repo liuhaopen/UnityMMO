@@ -26,11 +26,6 @@ function UINode:Load(  )
 		return 
 	end
 	assert(self.viewCfg, "has no assign viewCfg before load")
-	-- local isEmptyContainer = self.viewCfg.prefabPath and string.find(self.viewCfg.prefabPath, "common/EmptyContainer.prefab")
-	-- if isEmptyContainer then
-	-- 	self.viewCfg.prefabPoolName = "EmptyContainer"
-	-- 	self.viewCfg.prefabPath = nil
-	-- end
 	assert(self.viewCfg.prefabPath or self.viewCfg.prefabPoolName, "has no assign prefabPath or prefabPoolName field")
 	if self.viewCfg.prefabPath then
 		local on_load_succeed = function ( gameObject )
@@ -169,7 +164,7 @@ function UINode:SetLocalPositionXYZ( x, y, z )
 	if self.isLoaded then
 		UI.SetLocalPositionXYZ(self.transform, x, y, z)
 	else
-		self.__cacheLocalPos = {x,y,z}
+		self.__cacheLocalPos = {x=x,y=y,z=z}
 	end
 end
 

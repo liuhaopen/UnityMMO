@@ -1,9 +1,9 @@
 local BagView = BaseClass(UINode)
 
-function BagView:Constructor( )
+function BagView:Constructor( parent )
 	self.viewCfg = {
 		prefabPath = "Assets/AssetBundleRes/ui/bag/BagView.prefab",
-		canvasName = "Normal",
+		parentTrans = parent,
 	}
 	self.model = BagModel:GetInstance()
 end

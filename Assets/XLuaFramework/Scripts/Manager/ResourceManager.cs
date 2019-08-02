@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using UObject = UnityEngine.Object;
 using XLua;
+using UnityEngine.Networking;
 
 namespace XLuaFramework
 {
@@ -73,6 +74,11 @@ public class AssetBundleInfo {
             LoadAsset<Sprite>(file_path, null, func);
         }
 
+        public void LoadTexture(string file_path, LuaFunction func = null)
+        {
+            LoadAsset<Texture>(file_path, null, func);
+        }
+
         public void LoadPrefab(string file_path, LuaFunction func = null)
         {
             LoadAsset<UnityEngine.GameObject>(file_path, null, func);
@@ -94,7 +100,7 @@ public class AssetBundleInfo {
 
         public void LoadPrefabGameObject(string file_path, LuaFunction func = null) {
             this.LoadAsset<GameObject>(file_path, delegate(UnityEngine.Object[] objs) {
-                if (objs.Length == 0) return;
+                if (objs==null || objs.Length == 0) return;
                 GameObject prefab = objs[0] as GameObject;
                 if (prefab == null) return;
 
@@ -220,7 +226,7 @@ public class AssetBundleInfo {
                 yield return StartCoroutine(OnLoadAssetBundle(abName, typeof(T)));
 
                 bundleInfo = GetLoadedAssetBundle(abName);
-                Debug.Log("abName : "+abName);
+                // Debug.Log("OnLoadAsset abName : "+abName+" bundleInfo:"+(bundleInfo!=null));
                 if (bundleInfo == null) {
                     m_LoadRequests.Remove(abName);
                     Debug.LogError("OnLoadAsset failed!--->>>" + abName);
@@ -262,10 +268,12 @@ public class AssetBundleInfo {
 
         IEnumerator OnLoadAssetBundle(string abName, Type type) {
             string url = m_BaseDownloadingURL + abName;
-
-            WWW download = null;
+            // Debug.Log("OnLoadAssetBundle : url:"+url+" m_AssetBundleManifest:"+(m_AssetBundleManifest!=null) + new System.Diagnostics.StackTrace().ToString());
+            UnityWebRequest webRequest = null;
             if (type == typeof(AssetBundleManifest))
-                download = new WWW(url);
+            {
+                webRequest = UnityWebRequestAssetBundle.GetAssetBundle(url);   
+            }
             else 
             {
                 Hash128 hash = new Hash128();
@@ -277,40 +285,74 @@ public class AssetBundleInfo {
                         for (int i = 0; i < dependencies.Length; i++) {
                             string depName = dependencies[i];
                             AssetBundleInfo bundleInfo = null;
-                            if (m_LoadedAssetBundles.TryGetValue(depName, out bundleInfo)) {
+                            if (m_LoadedAssetBundles.TryGetValue(depName, out bundleInfo)) 
+                            {
                                 bundleInfo.m_ReferencedCount++;
-                            } else if (!m_LoadRequests.ContainsKey(depName)) {
+                            } 
+                            else if (m_LoadRequests.ContainsKey(depName)) 
+                            {
+                                yield return WaitForAssetBundleLoaded(depName);
+                            }
+                            else
+                            {
+                                m_LoadRequests.Add(depName, null);
                                 yield return StartCoroutine(OnLoadAssetBundle(depName, type));
+                                m_LoadRequests.Remove(depName);
                             }
                         }
                     }
                     hash = m_AssetBundleManifest.GetAssetBundleHash(abName);
                 }
-                download = WWW.LoadFromCacheOrDownload(url, hash, 0);
+                webRequest = UnityWebRequestAssetBundle.GetAssetBundle(url, hash, 0);
             }
-            yield return download;
+            yield return webRequest.SendWebRequest();
 
-            AssetBundle assetObj = download.assetBundle;
+            AssetBundle assetObj = DownloadHandlerAssetBundle.GetContent(webRequest);
+            // Debug.Log("assetObj : "+(assetObj!=null)+" abName:"+abName+" isDone:"+webRequest.isDone);
             if (assetObj != null) {
                 m_LoadedAssetBundles.Add(abName, new AssetBundleInfo(assetObj));
             }
         }
 
+        IEnumerator WaitForAssetBundleLoaded(string abName)
+        {
+            float tryTime = 30.0f;
+            float tryDuration = 0.03f;
+            while (true)
+            {
+                yield return new WaitForSeconds(tryDuration);
+                if (!m_LoadRequests.ContainsKey(abName))
+                    break;
+                tryTime -= tryDuration;
+                if (tryTime <= 0)
+                    break;
+            }
+        }
+
         AssetBundleInfo GetLoadedAssetBundle(string abName) {
-            AssetBundleInfo bundle = null;
+            AssetBundleInfo bundle;
             m_LoadedAssetBundles.TryGetValue(abName, out bundle);
-            if (bundle == null) return null;
+            // Debug.Log("GetLoadedAssetBundle abName:"+abName+" isNotNil:"+(bundle==null)+" isContain:"+(m_LoadedAssetBundles.ContainsKey(abName)));
+            if (bundle == null)
+            {
+                return null;
+            }
 
             // No dependencies are recorded, only the bundle itself is required.
             string[] dependencies = null;
             if (!m_Dependencies.TryGetValue(abName, out dependencies))
+            {
                 return bundle;
+            }
 
             // Make sure all dependencies are loaded
             foreach (var dependency in dependencies) {
                 AssetBundleInfo dependentBundle;
                 m_LoadedAssetBundles.TryGetValue(dependency, out dependentBundle);
-                if (dependentBundle == null) return null;
+                if (dependentBundle == null) 
+                {
+                    return null;
+                }
             }
             return bundle;
         }

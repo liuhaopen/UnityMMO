@@ -18,7 +18,6 @@ NPCMgr = CS.UnityMMO.NPCMgr
 LogError = CS.UnityEngine.Debug.LogError
 Entity = CS.Unity.Entities.Entity
 SkillManager = CS.UnityMMO.SkillManager
-print('Cat:UIGlobal.lua[21] SkillManager', SkillManager)
 
 LRoleMgr = require("Game.Scene.LRoleMgr")
 ErrorCode = require("Game.Error.ErrorCode")
@@ -40,4 +39,3 @@ ConfigMgr = require("Tools.ConfigMgr")
 NoError = 0
 
 UI.Window = require("Game.Common.UI.Window")
-print('Cat:UIGlobal.lua[44] UI.Window', UI.Window)

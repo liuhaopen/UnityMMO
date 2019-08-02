@@ -85,7 +85,7 @@ function MainUISkillBtnView:UpdateView(  )
 				item.OnUpdate = function(item)
 					if not item.data then return end
 					local skillIconPath = string.format("Assets/AssetBundleRes/ui/mainui/skill_icon_%s.png", item.data.skillID)
-					UI.SetImage(item.icon_img, skillIconPath)
+					UI.SetImage(item, item.icon_img, skillIconPath)
 					item:SetCDEndTime(SkillManager.GetInstance():GetSkillCD(item.data.skillID))
 				end
 				item.SetCDEndTime = function(item, cdEndTime)

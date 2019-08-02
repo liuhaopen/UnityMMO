@@ -109,8 +109,17 @@
 		<type fullname="UnityEngine.LayerMask" preserve="all"/>
 		<type fullname="UnityEngine.Plane" preserve="all"/>
 		<type fullname="UnityEngine.RectTransform" preserve="all"/>
+		<type fullname="UnityEngine.RectTransform+Axis" preserve="all"/>
+		<type fullname="UnityEngine.RectTransform+Edge" preserve="all"/>
 		<type fullname="UnityEngine.Camera" preserve="all"/>
+		<type fullname="UnityEngine.Camera+FieldOfViewAxis" preserve="all"/>
+		<type fullname="UnityEngine.Camera+GateFitParameters" preserve="all"/>
+		<type fullname="UnityEngine.Camera+MonoOrStereoscopicEye" preserve="all"/>
+		<type fullname="UnityEngine.Camera+StereoscopicEye" preserve="all"/>
+		<type fullname="UnityEngine.Camera+GateFitMode" preserve="all"/>
 		<type fullname="UnityEngine.Input" preserve="all"/>
+		<type fullname="UnityEngine.Sprite" preserve="all"/>
+		<type fullname="UnityEngine.Texture" preserve="all"/>
 		<type fullname="UnityEngine.KeyCode" preserve="all"/>
 		<type fullname="UnityEngine.RenderTexture" preserve="all"/>
 		<type fullname="UnityEngine.Debug" preserve="all"/>
@@ -130,6 +139,12 @@
 
 	<assembly fullname="UnityEngine.UI">
 	    <type fullname="UnityEngine.UI.InputField" preserve="all"/>
+		<type fullname="UnityEngine.UI.InputField+ContentType" preserve="all"/>
+		<type fullname="UnityEngine.UI.InputField+InputType" preserve="all"/>
+		<type fullname="UnityEngine.UI.InputField+CharacterValidation" preserve="all"/>
+		<type fullname="UnityEngine.UI.InputField+LineType" preserve="all"/>
+		<type fullname="UnityEngine.UI.InputField+SubmitEvent" preserve="all"/>
+		<type fullname="UnityEngine.UI.InputField+OnChangeEvent" preserve="all"/>
 		<type fullname="UnityEngine.UI.Graphic" preserve="all"/>
 		<type fullname="UnityEngine.EventSystems.UIBehaviour" preserve="all"/>
 		<type fullname="UnityEngine.UI.MaskableGraphic" preserve="all"/>
@@ -172,6 +187,7 @@
 	    <type fullname="Unity.Entities.World" preserve="all"/>
 		<type fullname="Unity.Entities.Entity" preserve="all"/>
 		<type fullname="Unity.Entities.EntityManager" preserve="all"/>
+		<type fullname="Unity.Entities.EntityManager+EntityManagerDebug" preserve="all"/>
 		
 	</assembly>
 
