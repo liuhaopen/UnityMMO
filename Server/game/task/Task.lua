@@ -2,6 +2,7 @@ local skynet = require "skynet"
 require "Common.Util.TableUtil"
 local TaskConst = require "game.task.TaskConst"
 
+local user_info
 local Task = {
 	cfg = require "Config.ConfigTask",
 	taskInfos = {},
@@ -219,6 +220,17 @@ function SprotoHandlers.Task_ProgressChanged( userInfo, reqData )
 end
 
 local PublicFuncs = {}
+
+function PublicFuncs.Init( userInfo )
+	user_info = userInfo
+end
+
+function PublicFuncs.Logout( )
+	print('Cat:Task.lua[229]')
+	local taskInfos = Task.taskInfos[user_info.cur_role_id]
+
+end
+
 function PublicFuncs.NPCHasTask( roleID, npcID )
 	--Cat_Todo : cache npc status
 	local taskIDs = getTaskListInNPC(roleID, npcID)

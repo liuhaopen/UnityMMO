@@ -4,6 +4,10 @@ local ErrorCode = {
 	Unknow = 1,
 	FullCreateRoleNum = 2,
 	WrongRoleIDForEnterGame = 3,
+	SkillCastFail = 200000,
+	SkillCfgNotFind = 200001,
+	SkillInCD = 200002,
+	UIDErrorOnCastSkill = 200003,
 	CannotFindGoods = 300000,
 }
 

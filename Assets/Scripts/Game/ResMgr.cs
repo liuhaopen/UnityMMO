@@ -78,7 +78,7 @@ public class ResMgr
                         scenePrefabList[resID] = prefab;
                         count++;
                         var fileName = System.IO.Path.GetFileName(list[resID]);
-                        LoadingView.Instance.SetData((float)(0.4+(0.2*count/list.Count)), "加载场景资源文件："+fileName);
+                        LoadingView.Instance.SetData((float)(0.4+(0.2*count/list.Count)), "加载场景资源文件:"+fileName);
                         if (callBack != null && count==list.Count)
                         {
                             callBack(true);

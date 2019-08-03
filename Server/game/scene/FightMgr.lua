@@ -7,22 +7,55 @@ function FightMgr:Init( scene )
 	self.entityMgr = scene.entityMgr
 	self.aoi = scene.aoi
 	-- self.damage_events = {}
+	self:InitArchetype()
+end
+
+function FightMgr:InitArchetype(  )
+	self.skillArchetype = self.entityMgr:CreateArchetype({
+		"UMO.Skill"
+	})
 end
 
 function FightMgr:CastSkill( uid, req_data )
 	--检查施法者状态（技能CD,是否麻痹、中毒、加班等）
 	-- local role_info = self.sceneMgr.roleMgr.roleList[user_info.cur_role_id]
 	-- local sceneObj = self.sceneMgr:GetSceneObjByUID(uid)
+	local cfg = skill_cfg[req_data.skill_id]
+	local skillLv = 1--Cat_Todo : get role skill level
+	local skillCfg = cfg and cfg.detail[skillLv]
+	if not cfg or not skillCfg then 
+		return ErrorCode.SkillCfgNotFind
+	end
+
 	local entity = self.sceneMgr:GetEntity(uid)
-	if not entity then return end
+	if not entity then 
+		return ErrorCode.UIDErrorOnCastSkill
+	end
 	
 	local aoi_handle = self.entityMgr:GetComponentData(entity, "UMO.AOIHandle")
 	local isSkillInCD = FightHelper.IsSkillInCD(entity, req_data.skill_id)
-	print('Cat:FightMgr.lua[21] isSkillInCD', isSkillInCD)
+	-- print('Cat:FightMgr.lua[21] isSkillInCD', isSkillInCD)
 	local is_can_cast = not isSkillInCD
 	local cdEndTime = 0
 	local fight_event = nil
+	local errorCode = ErrorCode.SkillCastFail
 	if is_can_cast then
+		local skillEntity = self.entityMgr:CreateEntityByArcheType(self.skillArchetype)
+		local skillInfo = TablePool:Get("SkillComData") or {}
+		skillInfo.caster_uid = uid
+		skillInfo.caster_entity = entity
+		skillInfo.cast_time = Time.timeMS
+		skillInfo.skill_id = req_data.skill_id
+		skillInfo.skill_lv = skillLv
+		skillInfo.target_pos_x = req_data.target_pos_x
+		skillInfo.target_pos_y = req_data.target_pos_y
+		skillInfo.target_pos_z = req_data.target_pos_z
+		skillInfo.direction = req_data.direction
+		skillInfo.targets = nil
+		-- skillInfo.max_target_num = skillCfg.attack_max_num --每次选目标时再取配置，加了相关的buff后再改此字段
+		self.entityMgr:SetComponentData(skillEntity, "UMO.Skill", skillInfo)
+		errorCode = ErrorCode.Succeed
+
 		fight_event = {
 			attacker_uid = uid,
 			skill_id = req_data.skill_id,
@@ -37,15 +70,17 @@ function FightMgr:CastSkill( uid, req_data )
 			time = Time.timeMS,
 			defenders = nil,
 		}
-		cdEndTime = FightHelper.ApplySkillCD(entity, req_data.skill_id, fight_event.skill_lv)
 		local uid_defenders_map = req_data.uid_defenders_map or self:CalDefenderList(fight_event, aoi_handle)
+		cdEndTime = FightHelper.ApplySkillCD(entity, req_data.skill_id, fight_event.skill_lv)
 
 		self:AddDamageEventForDefenders(fight_event, uid_defenders_map)
 
 		self.sceneMgr.eventMgr:AddFightEvent(uid, fight_event)
+	elseif isSkillInCD then
+		errorCode = ErrorCode.SkillInCD
 	end
-	print('Cat:FightMgr.lua[47] cdEndTime', cdEndTime)
-	return is_can_cast and 0 or 1, cdEndTime, fight_event
+	-- print('Cat:FightMgr.lua[cast skill] errorCode', errorCode)
+	return errorCode, cdEndTime, fight_event
 end
 
 --计算受击者列表

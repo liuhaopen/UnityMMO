@@ -1,5 +1,7 @@
+ErrorCode = require "game.config.ErrorCode"
 require "Common.Util.util"
 require "common.BaseClass"
 Time = require "game.scene.Time"
 Vector3 = require "game.util.Vector3"
+TablePool = require "game.util.TablePool"
 require "common.helper"

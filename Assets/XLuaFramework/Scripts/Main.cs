@@ -104,7 +104,7 @@ namespace XLuaFramework {
                         cur_sub_state = SubState.Update;
                         loadingView.SetData(0.8f, "初始化游戏资源...");
                         ResourceManager.GetInstance().Initialize(AppConfig.AssetDir, delegate(float percent){
-                            loadingView.SetData(0.8f+0.2f*percent, "初始化游戏资源...");
+                            loadingView.SetData(0.8f+0.2f*percent, "初始化游戏资源......");
                         }, delegate() {
                             Debug.Log("Main.cs ResourceManager Initialize OK!!!");
                             JumpToState(State.StartLogin);

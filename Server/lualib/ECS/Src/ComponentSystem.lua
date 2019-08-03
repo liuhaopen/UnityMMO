@@ -47,6 +47,7 @@ end
 function ComponentSystemBase:OnBeforeCreateManagerInternal( world, capacity )
 	self.m_World = world
     self.m_EntityManager = world:GetOrCreateManager(ECS.EntityManager.Name)
+    self.EntityManager = self.m_EntityManager
     self.m_AlwaysUpdateSystem = self.AlwaysUpdateSystem
 
     self.m_ComponentGroups = ECS.ComponentGroup.New()

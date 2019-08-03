@@ -44,9 +44,6 @@ public class MoveQuery : MonoBehaviour
     public void Initialize(bool isNeedNavAgent=false)
     {
         ownerGOE = GetComponent<GameObjectEntity>();
-        //GameDebug.Log("MoveQuery.Initialize");
-        // this.settings = settings;
-        // var go = new GameObject("MoveColl_" + name,typeof(CharacterController), typeof(HitCollision));
         GameObject go = null;
         if (isNeedNavAgent)
             go = new GameObject("MoveColl_" + name, typeof(CharacterController), typeof(UIDProxy), typeof(NavMeshAgent));
@@ -57,7 +54,6 @@ public class MoveQuery : MonoBehaviour
         charController.transform.position = transform.position;
         moveQueryStart = transform.position;
         moveQueryEnd = transform.position;
-        // charController.transform.SetParent(transform.parent);
         charController.transform.SetParent(UnityMMO.SceneMgr.Instance.MoveQueryContainer);
         charController.slopeLimit = this.slopeLimit;
         charController.stepOffset = this.stepOffset;
@@ -76,7 +72,6 @@ public class MoveQuery : MonoBehaviour
             navAgent = go.GetComponent<NavMeshAgent>();
             navAgent.radius = this.radius;
             navAgent.height = this.height;
-            // navAgent.Warp(this.transform.position);
         }
     }
 
@@ -87,7 +82,6 @@ public class MoveQuery : MonoBehaviour
         if (NavMesh.SamplePosition(transform.position, out closestHit, 100f, NavMesh.AllAreas)) {
             transform.position = closestHit.position;
             charController.transform.position = closestHit.position;
-            // Debug.Log("transform.position2 : "+transform.position.x+" "+transform.position.y+" "+transform.position.z);
             //after load new scene, it will 
             if (navAgent != null)
                 GameObject.DestroyImmediate(navAgent);
@@ -109,7 +103,6 @@ public class MoveQuery : MonoBehaviour
             Debug.Log("nav agent is not on navmesh!");
             return;
         }
-        // navAgent.Warp(this.transform.position);
         navAgent.isStopped = false;
         navAgent.acceleration = 1000;
         navAgent.angularSpeed = 1000;
@@ -144,7 +137,6 @@ public class MoveQuery : MonoBehaviour
 
     public void Shutdown()
     {
-        //GameDebug.Log("MoveQuery.Shutdown");
         GameObject.Destroy(charController.gameObject);
     }
 }

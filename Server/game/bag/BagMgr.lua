@@ -214,7 +214,6 @@ end
 local PublicFuncs = {}
 function PublicFuncs.Init( user_info )
 	this.user_info = user_info
-	
 end
 function PublicFuncs.ChangeBagGoods( goodsTypeID, diffNum )
 	print('Cat:BagMgr.lua[137] goodsTypeID, diffNum', goodsTypeID, diffNum)

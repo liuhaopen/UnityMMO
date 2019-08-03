@@ -10,6 +10,11 @@ function ECSSystemMgr:Init( world, sceneMgr )
 		"UMO.DamageSystem",
 		"UMO.AISystem",
 		"UMO.MovementUpdateSystem",
+
+		--skill sys
+		-- "SkillMaxTargetNumBuffSys",
+		-- "SkillSys",
+		-- "SkillTargetSys",
 	}
 
 	for i,v in ipairs(systems) do

@@ -84,7 +84,10 @@ namespace XLuaFramework {
             {
                 if (relative_Path == null)
                 {
-                    relative_Path = "file://" + System.Environment.CurrentDirectory.Replace("\\", "/") + "/" + AppConfig.AssetDir + "/";
+                    if (Application.platform ==   RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WebGLPlayer)
+                        relative_Path = DataPath;
+                    else
+                        relative_Path = "jar:file://" + System.Environment.CurrentDirectory.Replace("\\", "/") + "/" + AppConfig.AssetDir + "/";
                 }
                 return relative_Path;
             }

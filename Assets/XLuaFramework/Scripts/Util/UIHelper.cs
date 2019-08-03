@@ -330,36 +330,5 @@ namespace XLuaFramework
             return ResPath.UIResPath+"/"+fileName;
         }
 
-        // public static void SetImage(Image img, string file_path, bool is_auto_size=false, LuaFunction func = null)
-        // {
-        //     file_path = FillUIResPath(file_path);
-        //     ResourceManager.GetInstance().LoadAsset<Sprite>(file_path, delegate(UnityEngine.Object[] objs){
-        //         Debug.Log("set image : "+file_path+" obj:"+(objs.Length)+" img:"+(img!=null));
-        //         if (img != null && objs != null && objs.Length>=1)
-        //         {
-        //             img.sprite = objs[0] as Sprite;
-        //             if (is_auto_size)
-        //                 img.SetNativeSize();
-        //             if (func!=null)
-        //                 func.Call();
-        //         }
-        //     });
-        // }
-
-        // public static void SetRawImage(RawImage img, string file_path, bool is_auto_size=false, LuaFunction func = null)
-        // {
-        //     file_path = FillUIResPath(file_path);
-        //     ResourceManager.GetInstance().LoadAsset<Texture>(file_path, delegate(UnityEngine.Object[] objs){
-        //         if (img != null && objs != null && objs.Length>=1)
-        //         {
-        //             img.texture = objs[0] as Texture;
-        //             if (is_auto_size)
-        //                 img.SetNativeSize();
-        //             if (func!=null)
-        //                 func.Call();
-        //         }
-        //     });
-            
-        // }
     }
 }

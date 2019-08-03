@@ -62,6 +62,7 @@ function CMD.login(source, uid, sid, secret, platform, server_id)
 end
 
 local function logout()
+	Dispatcher:CallAllPublicFunc("Logout")
 	if gate then
 		skynet.call(gate, "lua", "logout", userid, subid)
 	end
