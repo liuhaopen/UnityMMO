@@ -9,14 +9,15 @@ detail.cd：冷却时间（毫秒）
 detail.attack_max_num：攻击最大数量
 detail.damage_rate：伤害比率
 detail.area：攻击范围--shape为圆形时即半径，直线时即为距离
-detail.buff：buff效果，类型为数组，元素结构：{BuffType(详见后端的SceneConst),触发概率(万份之几),作用方(1自己2已方3敌方),数值,持续时间,作用次数}
+detail.arge：具体的技能参数，针对不同技能有不同参数，见SkillActions.lua说明
+暂不用detail.buff：buff效果，类型为数组，元素结构：{BuffType(详见后端的SceneConst),触发概率(万份之几),作用方(1自己2已方3敌方),数值,持续时间,作用次数}
 ]]--
 local config = {
 	--男角色技能
 	[110000] = {
 		skill_id = 110000, target_type = 1, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 600, buff = {},
+				condition = {{lv, 1}}, cd = 100, attack_max_num = 2, damage_rate = 10000, area = 600, arge = {},
 			},
 		},	
 	},

@@ -1,5 +1,6 @@
 local skill_cfg = require "game.config.scene.config_skill"
 local FightHelper = require("game.scene.FightHelper")
+local SkillActions = require("game.scene.fight.SkillActions")
 local FightMgr = BaseClass()
 
 function FightMgr:Init( scene )
@@ -8,6 +9,7 @@ function FightMgr:Init( scene )
 	self.aoi = scene.aoi
 	-- self.damage_events = {}
 	self:InitArchetype()
+	self:SkillActions()
 end
 
 function FightMgr:InitArchetype(  )
@@ -54,6 +56,10 @@ function FightMgr:CastSkill( uid, req_data )
 		skillInfo.targets = nil
 		-- skillInfo.max_target_num = skillCfg.attack_max_num --每次选目标时再取配置，加了相关的buff后再改此字段
 		self.entityMgr:SetComponentData(skillEntity, "UMO.Skill", skillInfo)
+		local skillActionCreator = SkillActions:GetActionCreator(req_data.skill_id)
+		local skillAction = skillActionCreator(skillInfo)
+		-- skillAction
+
 		errorCode = ErrorCode.Succeed
 
 		fight_event = {

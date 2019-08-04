@@ -21,7 +21,9 @@ function SkillSys:OnUpdate(  )
 end
 
 function SkillSys:HandleSkill( skillData, entity )
-	print('Cat:SkillSys.lua[23] entity, skillData', entity, skillData)
+	print('Cat:SkillSys.lua[23] entity, skillData', entity, skillData, Time.deltaTime)
+
+	skillData.actionRunner:Update(Time.deltaTime)
 	--选定目标
 	local uid_defenders_map = self:CalTargetList(skillData)
 	--产生效果：生成buff和（一次性或定时扣血）
