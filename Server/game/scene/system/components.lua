@@ -12,6 +12,7 @@ ECS.TypeManager.RegisterType("UMO.AOIHandle", {value=0})
 --CD数组，元素结构为{[skill_id]=end_time}
 ECS.TypeManager.RegisterType("UMO.CD", {})
 ECS.TypeManager.RegisterType("UMO.Skill", {caster_uid=0, cast_time=0, skill_id=0, skill_lv=0, targets={}, max_target_num=0})
+ECS.TypeManager.RegisterType("UMO.Buff", {})
 
 --里面是个数组，元素结构：attacker攻击者，damage伤害值，direction攻击方向，impulse推力
 ECS.TypeManager.RegisterType("UMO.DamageEvents", {})

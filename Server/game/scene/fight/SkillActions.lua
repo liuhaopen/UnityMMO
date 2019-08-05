@@ -1,6 +1,11 @@
-local AC = require "Action"
+local Ac = require "Action"
 
 local SkillActions = {}
+local If = Ac.If
+local Delay = Ac.Delay
+local Random = Ac.Random
+local Sequence = Ac.Sequence
+local CallFunc = Ac.CallFunc
 
 function SkillActions:Init(  )
 	self.actions = {}		

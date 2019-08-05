@@ -23,9 +23,13 @@ end
 function SkillSys:HandleSkill( skillData, entity )
 	print('Cat:SkillSys.lua[23] entity, skillData', entity, skillData, Time.deltaTime)
 
-	skillData.actionRunner:Update(Time.deltaTime)
+	skillData.action:Update(Time.deltaTime)
+	local isDone = skillData.action:IsDone()
+	if isDone then
+		--Cat_Todo : 加载移除队列
+	end
 	--选定目标
-	local uid_defenders_map = self:CalTargetList(skillData)
+	-- local uid_defenders_map = self:CalTargetList(skillData)
 	--产生效果：生成buff和（一次性或定时扣血）
 
 	-- HP低于X%时，N秒内持续恢复Y%的HP，冷却M秒

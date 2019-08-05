@@ -23,7 +23,7 @@ end
 
 function MonsterMgr:InitArchetype(  )
 	self.monster_archetype = self.entityMgr:CreateArchetype({
-		"UMO.Position", "UMO.TargetPos", "UMO.UID", "UMO.TypeID", "UMO.HP", "UMO.SceneObjType", "UMO.MonsterAI", "UMO.PatrolInfo", "UMO.MoveSpeed", "UMO.AOIHandle", "UMO.Beatable", "UMO.DamageEvents"
+		"UMO.Position", "UMO.TargetPos", "UMO.UID", "UMO.TypeID", "UMO.HP", "UMO.SceneObjType", "UMO.MonsterAI", "UMO.PatrolInfo", "UMO.MoveSpeed", "UMO.AOIHandle", "UMO.Beatable", "UMO.DamageEvents", "UMO.Buff"
 	})
 end
 

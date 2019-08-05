@@ -14,6 +14,13 @@ local SceneConst = {
         NPCState=7,
         SceneChange=8,
 	},
+	Attr = {
+		HP = 1,
+		MaxHP = 2,
+		Attack = 3,
+		Def = 4,
+		Dodge = 5,
+	},
 	--SceneConst.BuffType.Attr
 	BuffID = {
 		Attr = 1,--属性buff，改变某属性值，比如血量，暴击，防御等

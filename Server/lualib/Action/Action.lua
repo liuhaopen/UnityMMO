@@ -16,7 +16,14 @@ setmetatable(AcEnv, {
 })
 
 Ac.OO = importer.require("Action.Common.LuaOO", AcEnv)
-Ac.ActionInterval = importer.require("Action.Src.ActionInterval", AcEnv)
+Ac.Sequence = importer.require("Action.Src.Sequence", AcEnv)
+Ac.CallFunc = importer.require("Action.Src.CallFunc", AcEnv)
+Ac.Delay = importer.require("Action.Src.Delay", AcEnv)
+Ac.Random = importer.require("Action.Src.Random", AcEnv)
+Ac.If = importer.require("Action.Src.If", AcEnv)
+Ac.And = importer.require("Action.Src.And", AcEnv)
+Ac.Or = importer.require("Action.Src.Or", AcEnv)
+Ac.Repeat = importer.require("Action.Src.Repeat", AcEnv)
 
 --为了不影响全局，这里要还原一下package.searchers
 importer.disable()

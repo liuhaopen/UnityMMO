@@ -9,7 +9,7 @@ function TestLuaOO:tearDown(  )
 end
 
 function TestLuaOO:TestLuaOOClassKV(  )
-	local Object = AC.OO.Class {
+	local Object = Ac.OO.Class {
 		type = "Object",
 		__tostring = function (o) return "("..o.x..","..o.y..","..o.z..")" end,
 		__index    = {
@@ -33,6 +33,18 @@ function TestLuaOO:TestLuaOOClassKV(  )
 	lu.assertEquals(obj2.other, 22)
 	lu.assertNil(obj2.nothing)
 	lu.assertEquals(tostring(obj2), "(11,2,3)")
+
+	local obj3 = Object {x=1111, other=444}
+    lu.assertNotNil(obj3)
+	lu.assertEquals(obj3.x, 1111)
+	lu.assertEquals(obj.x, 1)
+	lu.assertEquals(obj2.x, 11)
+	lu.assertEquals(obj3.y, 2)
+	lu.assertEquals(obj3.z, 3)
+	lu.assertEquals(obj3.other, 444)
+	lu.assertEquals(obj2.other, 22)
+	lu.assertEquals(tostring(obj3), "(1111,2,3)")
+
 end
 
 function TestLuaOO:TestLuaOOClassIV(  )
@@ -61,27 +73,18 @@ function TestLuaOO:TestLuaOOClassIV(  )
     lu.assertNil(obj2[4])
 	lu.assertEquals(obj2[5], -1)
 	lu.assertEquals(tostring(obj2), "(11 2 333)")
+
+	local obj3 = Object {nil, 22222, nil, 44444}
+    lu.assertNotNil(obj3)
+	lu.assertEquals(obj3[1], 11)
+	lu.assertEquals(obj3[2], 22222)
+	lu.assertEquals(obj3[3], 33)
+	lu.assertEquals(obj3[4], 44444)
+	lu.assertEquals(tostring(obj3), "(11 22222 33)")
 end
 
 function TestLuaOO:TestLuaOOType(  )
-	 
 end
 
 function TestLuaOO:TestLuaOOClassOver(  )
-	local Parent = Ac.OO.Class {
-		type 	= "Parent",
-		__index = {
-			valueA = 1, valueB = "b",
-		},
-	}
-	local Child = Ac.OO.ClassOver(Parent) {
-		type 	= "child",
-		__index = {
-			valueA = 2, valueC = "c"
-		},
-	}
-
-	local child = Child {}
-    lu.assertNotNil(child)
-	lu.assertEquals(child.valueA, 2)
 end

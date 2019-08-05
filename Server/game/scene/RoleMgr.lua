@@ -18,7 +18,7 @@ end
 
 function RoleMgr:InitArchetype(  )
 	self.role_archetype = self.entityMgr:CreateArchetype({
-		"UMO.Position", "UMO.TargetPos", "UMO.UID", "UMO.TypeID", "UMO.HP", "UMO.SceneObjType", "UMO.MoveSpeed", "UMO.AOIHandle", "UMO.Beatable", "UMO.DamageEvents", "UMO.MsgAgent", "UMO.CD"
+		"UMO.Position", "UMO.TargetPos", "UMO.UID", "UMO.TypeID", "UMO.HP", "UMO.SceneObjType", "UMO.MoveSpeed", "UMO.AOIHandle", "UMO.Beatable", "UMO.DamageEvents", "UMO.MsgAgent", "UMO.CD", "UMO.Buff"
 	})
 end
 

@@ -43,22 +43,24 @@ function FightMgr:CastSkill( uid, req_data )
 	local errorCode = ErrorCode.SkillCastFail
 	if is_can_cast then
 		local skillEntity = self.entityMgr:CreateEntityByArcheType(self.skillArchetype)
-		local skillInfo = TablePool:Get("SkillComData") or {}
-		skillInfo.caster_uid = uid
-		skillInfo.caster_entity = entity
-		skillInfo.cast_time = Time.timeMS
-		skillInfo.skill_id = req_data.skill_id
-		skillInfo.skill_lv = skillLv
-		skillInfo.target_pos_x = req_data.target_pos_x
-		skillInfo.target_pos_y = req_data.target_pos_y
-		skillInfo.target_pos_z = req_data.target_pos_z
-		skillInfo.direction = req_data.direction
-		skillInfo.targets = nil
-		-- skillInfo.max_target_num = skillCfg.attack_max_num --每次选目标时再取配置，加了相关的buff后再改此字段
-		self.entityMgr:SetComponentData(skillEntity, "UMO.Skill", skillInfo)
+		local skillData = TablePool:Get("SkillComData") or {}
+		skillData.caster_uid = uid
+		skillData.caster_entity = entity
+		skillData.cast_time = Time.timeMS
+		skillData.skill_id = req_data.skill_id
+		skillData.skill_lv = skillLv
+		skillData.target_pos_x = req_data.target_pos_x
+		skillData.target_pos_y = req_data.target_pos_y
+		skillData.target_pos_z = req_data.target_pos_z
+		skillData.direction = req_data.direction
+		skillData.targets = nil
+		skillData.sceneMgr = self.sceneMgr
+		-- skillData.max_target_num = skillCfg.attack_max_num --每次选目标时再取配置，加了相关的buff后再改此字段
 		local skillActionCreator = SkillActions:GetActionCreator(req_data.skill_id)
-		local skillAction = skillActionCreator(skillInfo)
-		-- skillAction
+		local skillAction = skillActionCreator(skillData)
+		skillAction:Start(skillData)
+		skillData.action = skillAction
+		self.entityMgr:SetComponentData(skillEntity, "UMO.Skill", skillData)
 
 		errorCode = ErrorCode.Succeed
 

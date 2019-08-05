@@ -1,6 +1,4 @@
 package.path = package.path ..'?/?.lua;../?.lua;../../?.lua;Tests/?.lua';
-local AC = require "Action"
-print('Cat:Test.lua[3] AC', AC)
 lu = require('Common.luaunit')
 
 --在上级目录运行本文件即可：lua Tests/Test.lua

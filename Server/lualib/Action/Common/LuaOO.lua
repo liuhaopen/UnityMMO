@@ -12,6 +12,13 @@ OO.Type = function (o)
 	return mt and mt.type or type(o)
 end
 
+OO.Over = function (uppertable)
+	return function (lowertable)
+	    setmetatable(uppertable, {__index=lowertable})
+	    return uppertable
+  	end
+end
+
 OO.ClassOver = function (upperclassmt)
 	return function (lowerclass)
 	    setmetatable(upperclassmt.__index, {__index=lowerclass.__index})
