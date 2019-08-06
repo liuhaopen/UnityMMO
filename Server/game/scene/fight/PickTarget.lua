@@ -49,6 +49,9 @@ local PickTarget = Ac.OO.Class {
 			self.aoi = skillData.sceneMgr.aoi
 			print('Cat:PickTarget.lua[50] self.EntityManager', self.aoi, self.EntityManager)
 		end,
+		IsDone = function(self)
+			return true
+		end,
 		Update = Update,
 	},
 }

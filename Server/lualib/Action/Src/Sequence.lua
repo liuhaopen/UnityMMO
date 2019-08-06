@@ -1,5 +1,6 @@
 local Update = function(self, deltaTime)
 	local actionNum = #self
+	local hasTimeAct = nil
 	if self.curActionIndex >= actionNum then
 		self.isDone = true
 		return
@@ -16,6 +17,14 @@ local Update = function(self, deltaTime)
 		if isDone then
 			if i == actionNum then
 				self.isDone = true
+			end
+			if isTimeAction then
+				--一次Update里不让连着完成两次时间相关的action
+				if hasTimeAct then
+					break
+				else
+					hasTimeAct = true
+				end
 			end
 		else
 			break

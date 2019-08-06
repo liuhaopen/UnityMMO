@@ -1,16 +1,55 @@
 local Ac = require "Action"
-
-local SkillActions = {}
+local Hurt = require "game.scene.fight.Hurt"
+local PickTarget = require "game.scene.fight.PickTarget"
 local If = Ac.If
 local Delay = Ac.Delay
 local Random = Ac.Random
 local Sequence = Ac.Sequence
 local CallFunc = Ac.CallFunc
+local And = Ac.And
+local Or = Ac.Or
+local Repeat = Ac.Repeat
 
+local SkillActions = {}
 function SkillActions:Init(  )
 	self.actions = {}		
-	do return end
 
+	self.actions[110000] = function( cfg )
+		return Sequence { PickTarget{}, Hurt{} }
+	end
+
+	self.actions[110001] = function( cfg )
+		return Sequence { PickTarget{}, Hurt{} }
+	end
+
+	self.actions[110002] = function( cfg )
+		return Sequence { PickTarget{}, Hurt{} }
+	end
+
+	self.actions[110003] = function( cfg )
+		return Sequence { PickTarget{}, Hurt{} }
+	end
+
+	self.actions[110010] = function( cfg )
+		return Sequence { PickTarget{}, Hurt{} }
+	end
+
+	self.actions[110011] = function( cfg )
+		return Sequence { PickTarget{}, Hurt{} }
+	end
+
+	self.actions[110012] = function( cfg )
+		return Sequence { PickTarget{}, Hurt{} }
+	end
+
+	self.actions[110013] = function( cfg )
+		return Repeat{5, Sequence { PickTarget{}, Hurt{}, Delay{1000} }}
+	end
+	local skill2 = Repeat { 5, If { Random{2000}, 
+			Sequence{ PickTarget{}, Hurt{500}, Buff{1}, Delay{1000} } ,
+			Sequence{ PickTarget{}, Hurt{100}, Delay{1000} } ,
+		}
+	}
 	--[[
 	Sequence:队列，后面可带不定数量的Action
 	Delay:延迟，参数为延迟的毫秒
@@ -21,7 +60,6 @@ function SkillActions:Init(  )
 	条件Action：可以是个function或者重写了__call的table
 	Random:条件Action,参数为概率万分比
 	CheckAttr:条件Action,判断某属性和某个数值的关系
-	--]]
 
 	--110000技能：100毫秒后造成直接伤害(伤害系数是根据不同等级配置不同的值，所以cfg是根据施法者当前的技能等级传入的值：config_skill.lua里的detail[skill_lv].arge)
 	self.actions[110000] = function( cfg )
@@ -49,19 +87,11 @@ function SkillActions:Init(  )
 			}
 		}
 	end
+	--]]
 end
 
 function SkillActions:GetActionCreator( skillID )
 	return self.actions[skillID]
 end
-
-local Hurt = AC.OO.Class{
-	type 	= "Hurt",
-	__index = {
-		Execute = function(self)
-
-		end,
-	},
-}
 
 return SkillActions

@@ -3,28 +3,35 @@ local If = Ac.OO.Class {
 	__index = {
 		Start = function(self, data)
 			self.data = data
-			self.isTrue = nil
+			self.action = nil
 		end,
 		IsDone = function(self)
-			return self.isTrue and self[2]:IsDone() or self[3]:IsDone()
+			local isDone, isTimeAction
+			if self.action then
+				isDone, isTimeAction = self.action:IsDone()
+			else
+				isDone = true
+			end
+			return isDone, isTimeAction
 		end,
 		Update = function(self, deltaTime)
-			if self.isTrue == nil then
+			if self.action == nil then
 				local conditionFunctor = self[1] 
 				if type(conditionFunctor)=="table" and conditionFunctor.Start then
 					conditionFunctor:Start(self.data)
 				end
-				self.isTrue = conditionFunctor(self.data)
-				if self.isTrue then
-					self[2]:Start(self.data) 
+				local isTrue = conditionFunctor(self.data)
+				if isTrue then
+					self.action  = self[2]
 				else
-					self[3]:Start(self.data)
+					self.action  = self[3]
+				end
+				if self.action then
+					self.action:Start(self.data)
 				end
 			end
-			if self.isTrue then
-				self[2]:Update(deltaTime)
-			else
-				self[3]:Update(deltaTime)
+			if self.action then
+				self.action:Update(deltaTime)
 			end
 		end
 	},

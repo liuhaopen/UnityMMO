@@ -56,6 +56,12 @@ function TestActions:TestIf(  )
 	lu.assertTrue(action:IsDone())
 	lu.assertEquals(testTbl.value, 333333)
 
+	local action = Ac.If {check, trueAction}
+	local testTbl = { value = 1 }
+	action:Start(testTbl)
+	action:Update()
+	lu.assertTrue(action:IsDone())
+	lu.assertEquals(testTbl.value, 1)
 end
 
 function TestActions:TestSequence(  )
@@ -78,6 +84,23 @@ function TestActions:TestSequence(  )
 	--在Sequence里的Delay,就算是时间到了，也要下次Update才会运行Delay后面的Action
 	action:Update(500)
 	lu.assertTrue(action:IsDone())
+	lu.assertEquals(testTbl.value, "c")
+
+	local action = Ac.Sequence{ actionA, Ac.Delay{1000}, actionB, Ac.Delay{1000}, actionC }
+	local testTbl = {value = "0"}
+	action:Start(testTbl)
+	action:Update(1000)
+	lu.assertEquals(testTbl.value, "b")
+	action:Update(1000)
+	lu.assertEquals(testTbl.value, "c")
+
+	--测试Delay被If包裹后会不会被漏掉
+	local action = Ac.Sequence{ actionA, Ac.If{ Ac.Random{10000}, Ac.Delay{1000}, Ac.Delay{1000}}, actionB, Ac.Delay{1000}, actionC }
+	local testTbl = {value = "0"}
+	action:Start(testTbl)
+	action:Update(1000)
+	lu.assertEquals(testTbl.value, "b")
+	action:Update(1000)
 	lu.assertEquals(testTbl.value, "c")
 end
 

@@ -9,7 +9,7 @@ function FightMgr:Init( scene )
 	self.aoi = scene.aoi
 	-- self.damage_events = {}
 	self:InitArchetype()
-	self:SkillActions()
+	SkillActions:Init()
 end
 
 function FightMgr:InitArchetype(  )
