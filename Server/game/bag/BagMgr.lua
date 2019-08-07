@@ -1,7 +1,6 @@
 local skynet = require "skynet"
 local BagConst = require "game.bag.BagConst"
 local GoodsCfg = require "Config.ConfigGoods"
-print('Cat:BagMgr.lua[4] GoodsCfg', GoodsCfg)
 local this = {
 	bagLists = {},
 	user_info = nil,
@@ -13,7 +12,6 @@ local function initBagList( pos )
 	this.gameDBServer = this.gameDBServer or skynet.localname(".GameDBServer")
 	local condition = string.format("roleID=%s and pos=%s", this.user_info.cur_role_id, pos)
 	local hasBagList, goodsList = skynet.call(this.gameDBServer, "lua", "select_by_condition", "Bag", condition)
-	print('Cat:this.lua[15] hasBagList', hasBagList, pos)
 	local bagInfo = {cellNum=200, pos=pos}
 	if hasBagList then
 		local sort_func = function ( a, b )

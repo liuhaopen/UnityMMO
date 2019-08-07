@@ -63,20 +63,20 @@ public class CastSkillBehaviour : PlayableBehaviour
                         XLuaFramework.CSLuaBridge.GetInstance().CallLuaFuncStr(GlobalEvents.MessageShow, "技能冷却中...");
                         return;
                     }
-                    SkillManager.GetInstance().SetSkillCD((int)ack.fight_event.skill_id, ack.cd_end_time);
-                    // Debug.Log("playable : "+(Playable.Equals(playable, Playable.Null)).ToString());
-                    var graph = PlayableExtensions.GetGraph(playable);
-                    // Debug.Log("graph.IsDone() : "+graph.IsDone().ToString());
-                    if (!graph.IsDone())
-                    {
-                        var playableNum = graph.GetRootPlayableCount();
-                        // Debug.Log("playableNum : "+playableNum);
-                        for (int i = 0; i < playableNum; i++)
-                        {
-                            var rootPlayable = graph.GetRootPlayable(i);
-                            FindFlyWord(rootPlayable, ack.fight_event.defenders, 0);
-                        }
-                    }
+                    SkillManager.GetInstance().SetSkillCD((int)ack.skill_id, ack.cd_end_time);
+                    // // Debug.Log("playable : "+(Playable.Equals(playable, Playable.Null)).ToString());
+                    // var graph = PlayableExtensions.GetGraph(playable);
+                    // // Debug.Log("graph.IsDone() : "+graph.IsDone().ToString());
+                    // if (!graph.IsDone())
+                    // {
+                    //     var playableNum = graph.GetRootPlayableCount();
+                    //     // Debug.Log("playableNum : "+playableNum);
+                    //     for (int i = 0; i < playableNum; i++)
+                    //     {
+                    //         var rootPlayable = graph.GetRootPlayable(i);
+                    //         FindFlyWord(rootPlayable, ack.fight_event.defenders, 0);
+                    //     }
+                    // }
                 });
             }
         }
@@ -84,21 +84,21 @@ public class CastSkillBehaviour : PlayableBehaviour
 
     void FindFlyWord(Playable playable, object obj, int level=0)
     {
-        var inputCount = playable.GetInputCount();
-        for (int i = 0; i < inputCount; i++)
-        {
-            Type playableType = playable.GetInput(i).GetPlayableType();
-            var isFlyWord = playableType == typeof(ApplyDamageBehaviour);
-            if (isFlyWord)
-            {
-                var flyWordPlayable = (ScriptPlayable<ApplyDamageBehaviour>)(playable.GetInput(i));
-                var behaviour = flyWordPlayable.GetBehaviour();
-                if (behaviour != null)
-                    behaviour.Defenders = obj as List<SprotoType.scene_fight_defender_info>;
-                // Debug.Log("isFlyWord : "+isFlyWord.ToString()+" flyWordPlayable:"+flyWordPlayable.ToString()+" behaviour:"+(behaviour!=null).ToString()+" level:"+level+" i:"+i+" inputCount:"+inputCount+" playableType:"+playableType.FullName);
-            }
-            FindFlyWord(playable.GetInput(i), obj, level+1);
-        }
+        // var inputCount = playable.GetInputCount();
+        // for (int i = 0; i < inputCount; i++)
+        // {
+        //     Type playableType = playable.GetInput(i).GetPlayableType();
+        //     var isFlyWord = playableType == typeof(ApplyDamageBehaviour);
+        //     if (isFlyWord)
+        //     {
+        //         var flyWordPlayable = (ScriptPlayable<ApplyDamageBehaviour>)(playable.GetInput(i));
+        //         var behaviour = flyWordPlayable.GetBehaviour();
+        //         if (behaviour != null)
+        //             behaviour.Defenders = obj as List<SprotoType.scene_fight_defender_info>;
+        //         // Debug.Log("isFlyWord : "+isFlyWord.ToString()+" flyWordPlayable:"+flyWordPlayable.ToString()+" behaviour:"+(behaviour!=null).ToString()+" level:"+level+" i:"+i+" inputCount:"+inputCount+" playableType:"+playableType.FullName);
+        //     }
+        //     FindFlyWord(playable.GetInput(i), obj, level+1);
+        // }
     }
 
     // Called when the state of the playable is set to Paused

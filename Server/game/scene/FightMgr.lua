@@ -61,29 +61,28 @@ function FightMgr:CastSkill( uid, req_data )
 		skillAction:Start(skillData)
 		skillData.action = skillAction
 		self.entityMgr:SetComponentData(skillEntity, "UMO.Skill", skillData)
+		cdEndTime = FightHelper.ApplySkillCD(entity, req_data.skill_id, skillLv)
+		self.sceneMgr.eventMgr:AddSkillEvent(uid, fight_event)
 
 		errorCode = ErrorCode.Succeed
 
-		fight_event = {
-			attacker_uid = uid,
-			skill_id = req_data.skill_id,
-			skill_lv = 1,
-			attacker_pos_x = req_data.cur_pos_x,--Cat_Todo : 记得做校验
-			attacker_pos_y = req_data.cur_pos_y,
-			attacker_pos_z = req_data.cur_pos_z,
-			target_pos_x = req_data.target_pos_x,
-			target_pos_y = req_data.target_pos_y,
-			target_pos_z = req_data.target_pos_z,
-			direction = req_data.direction,
-			time = Time.timeMS,
-			defenders = nil,
-		}
-		local uid_defenders_map = req_data.uid_defenders_map or self:CalDefenderList(fight_event, aoi_handle)
-		cdEndTime = FightHelper.ApplySkillCD(entity, req_data.skill_id, fight_event.skill_lv)
+		-- fight_event = {
+		-- 	attacker_uid = uid,
+		-- 	skill_id = req_data.skill_id,
+		-- 	skill_lv = 1,
+		-- 	attacker_pos_x = req_data.cur_pos_x,--Cat_Todo : 记得做校验
+		-- 	attacker_pos_y = req_data.cur_pos_y,
+		-- 	attacker_pos_z = req_data.cur_pos_z,
+		-- 	target_pos_x = req_data.target_pos_x,
+		-- 	target_pos_y = req_data.target_pos_y,
+		-- 	target_pos_z = req_data.target_pos_z,
+		-- 	direction = req_data.direction,
+		-- 	time = Time.timeMS,
+		-- 	defenders = nil,
+		-- }
+		-- local uid_defenders_map = req_data.uid_defenders_map or self:CalDefenderList(fight_event, aoi_handle)
+		-- self:AddDamageEventForDefenders(fight_event, uid_defenders_map)
 
-		self:AddDamageEventForDefenders(fight_event, uid_defenders_map)
-
-		self.sceneMgr.eventMgr:AddFightEvent(uid, fight_event)
 	elseif isSkillInCD then
 		errorCode = ErrorCode.SkillInCD
 	end

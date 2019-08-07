@@ -25,7 +25,7 @@ end
 local fork_loop_ecs = function ( sceneMgr )
 	skynet.fork(function()
 		while true do
-			sceneMgr.ecsSystemMgr:update()
+			sceneMgr.ecsSystemMgr:Update()
 			skynet.sleep(3)
 		end
 	end)
@@ -117,15 +117,23 @@ end
 local collect_fight_events = function ( sceneMgr )
 	for _,role_info in pairs(sceneMgr.roleMgr.roleList) do
 		for _,interest_uid in pairs(role_info.around_objs) do
-			local event_list = sceneMgr.eventMgr:GetFightEvent(interest_uid)
-			if event_list then
+			local event_list = sceneMgr.eventMgr:GetSkillEvent(interest_uid)
+			if event_list and #event_list > 0 then
 				for i,event_info in ipairs(event_list) do
-					table.insert(role_info.fight_events_in_around, event_info)
+					table.insert(role_info.skill_events_in_around, event_info)
+				end
+			end
+			--Cat_Todo : 受击者是关注对象时也要发，因为有可能施法者离自己较远，不在关注列表
+			local event_list = sceneMgr.eventMgr:GetHurtEvent(interest_uid)
+			if event_list and #event_list > 0 then
+				for i,event_info in ipairs(event_list) do
+					table.insert(role_info.hurt_events_in_around, event_info)
 				end
 			end
 		end
 	end
-	sceneMgr.eventMgr:ClearAllFightEvents()
+	sceneMgr.eventMgr:ClearAllSkillEvents()
+	sceneMgr.eventMgr:ClearAllHurtEvents()
 end
 
 --Notify combat events at fixed times
@@ -134,13 +142,23 @@ local fork_loop_fight_event = function ( sceneMgr )
 		while true do 
 			collect_fight_events(sceneMgr)
 			for k,role_info in pairs(sceneMgr.roleMgr.roleList) do
-				if role_info.fight_events_in_around and #role_info.fight_events_in_around>0 and role_info.ack_scene_listen_fight_event then
-					-- print("Cat:scene [start:138] role_info.fight_events_in_around:", role_info.fight_events_in_around)
-					-- PrintTable(role_info.fight_events_in_around)
-					-- print("Cat:scene [end]")
-					role_info.ack_scene_listen_fight_event(true, {fight_events=role_info.fight_events_in_around})
-					role_info.fight_events_in_around = {}
-					role_info.ack_scene_listen_fight_event = nil
+				-- print('Cat:SceneMgr.lua[144] role_info.skill_events_in_around, ', role_info.skill_events_in_around, #role_info.skill_events_in_around>0)
+				if role_info.skill_events_in_around and #role_info.skill_events_in_around>0 and role_info.ack_scene_listen_skill_event then
+					print("Cat:scene [start:138] role_info.skill_events_in_around:", role_info.skill_events_in_around)
+					PrintTable(role_info.skill_events_in_around)
+					print("Cat:scene [end]")
+					role_info.ack_scene_listen_skill_event(true, {events=role_info.skill_events_in_around})
+					role_info.skill_events_in_around = {}
+					role_info.ack_scene_listen_skill_event = nil
+				end
+				-- print('Cat:SceneMgr.lua[153] role_info.hurt_events_in_around, ', role_info.hurt_events_in_around, #role_info.hurt_events_in_around)
+				if role_info.hurt_events_in_around and #role_info.hurt_events_in_around>0 and role_info.ack_scene_listen_hurt_event then
+					print("Cat:scene [start:138] role_info.hurt_events_in_around:", role_info.hurt_events_in_around)
+					PrintTable(role_info.hurt_events_in_around)
+					print("Cat:scene [end]")
+					role_info.ack_scene_listen_hurt_event(true, {events=role_info.hurt_events_in_around})
+					role_info.hurt_events_in_around = {}
+					role_info.ack_scene_listen_hurt_event = nil
 				end
 			end
 			skynet.sleep(5)

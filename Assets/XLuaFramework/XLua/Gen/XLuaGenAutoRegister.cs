@@ -269,6 +269,12 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(UnityEngine.Texture), UnityEngineTextureWrap.__Register);
         
         
+            translator.DelayWrapLoader(typeof(UnityEngine.Texture2D), UnityEngineTexture2DWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(UnityEngine.Texture2D.EXRFlags), UnityEngineTexture2DEXRFlagsWrap.__Register);
+        
+        
             translator.DelayWrapLoader(typeof(UnityEngine.UI.Button), UnityEngineUIButtonWrap.__Register);
         
         
@@ -314,11 +320,21 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(TMPro.TMP_Text), TMProTMP_TextWrap.__Register);
         
         
+            translator.DelayWrapLoader(typeof(UnityEngine.Events.UnityEvent<UnityEngine.Vector2>), UnityEngineEventsUnityEvent_1_UnityEngineVector2_Wrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(System.Collections.IEnumerator), SystemCollectionsIEnumeratorWrap.__Register);
+        
+        
             translator.DelayWrapLoader(typeof(XLuaFramework.LogHandler), XLuaFrameworkLogHandlerWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(XLuaFramework.LogManager), XLuaFrameworkLogManagerWrap.__Register);
         
+        }
+        
+        static void wrapInit2(LuaEnv luaenv, ObjectTranslator translator)
+        {
         
             translator.DelayWrapLoader(typeof(XLuaFramework.Main), XLuaFrameworkMainWrap.__Register);
         
@@ -331,10 +347,6 @@ namespace XLua.CSObjectWrap
         
             translator.DelayWrapLoader(typeof(XLuaFramework.AssetBundleInfo), XLuaFrameworkAssetBundleInfoWrap.__Register);
         
-        }
-        
-        static void wrapInit2(LuaEnv luaenv, ObjectTranslator translator)
-        {
         
             translator.DelayWrapLoader(typeof(XLuaFramework.ThreadManager), XLuaFrameworkThreadManagerWrap.__Register);
         
@@ -476,6 +488,10 @@ namespace XLua.CSObjectWrap
         
             translator.DelayWrapLoader(typeof(UnityMMO.Timer), UnityMMOTimerWrap.__Register);
         
+        }
+        
+        static void wrapInit3(LuaEnv luaenv, ObjectTranslator translator)
+        {
         
             translator.DelayWrapLoader(typeof(UnityMMO.TimerExtensions), UnityMMOTimerExtensionsWrap.__Register);
         
@@ -488,10 +504,6 @@ namespace XLua.CSObjectWrap
         
             translator.DelayWrapLoader(typeof(UnityMMO.TimelineInfo.Event), UnityMMOTimelineInfoEventWrap.__Register);
         
-        }
-        
-        static void wrapInit3(LuaEnv luaenv, ObjectTranslator translator)
-        {
         
             translator.DelayWrapLoader(typeof(UnityMMO.Nameboard.ColorStyle), UnityMMONameboardColorStyleWrap.__Register);
         

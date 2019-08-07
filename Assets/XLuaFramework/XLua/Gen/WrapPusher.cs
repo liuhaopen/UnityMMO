@@ -56,6 +56,7 @@ namespace XLua
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.Camera.MonoOrStereoscopicEye>(translator.PushUnityEngineCameraMonoOrStereoscopicEye, translator.Get, translator.UpdateUnityEngineCameraMonoOrStereoscopicEye);
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.Camera.StereoscopicEye>(translator.PushUnityEngineCameraStereoscopicEye, translator.Get, translator.UpdateUnityEngineCameraStereoscopicEye);
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.Camera.GateFitMode>(translator.PushUnityEngineCameraGateFitMode, translator.Get, translator.UpdateUnityEngineCameraGateFitMode);
+				translator.RegisterPushAndGetAndUpdate<UnityEngine.Texture2D.EXRFlags>(translator.PushUnityEngineTexture2DEXRFlags, translator.Get, translator.UpdateUnityEngineTexture2DEXRFlags);
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.KeyCode>(translator.PushUnityEngineKeyCode, translator.Get, translator.UpdateUnityEngineKeyCode);
 				translator.RegisterPushAndGetAndUpdate<XLuaFramework.DisType>(translator.PushXLuaFrameworkDisType, translator.Get, translator.UpdateXLuaFrameworkDisType);
 				translator.RegisterPushAndGetAndUpdate<UnityMMO.SceneInfoKey>(translator.PushUnityMMOSceneInfoKey, translator.Get, translator.UpdateUnityMMOSceneInfoKey);
@@ -2448,6 +2449,90 @@ namespace XLua
             }
         }
         
+        int UnityEngineTexture2DEXRFlags_TypeID = -1;
+		int UnityEngineTexture2DEXRFlags_EnumRef = -1;
+        
+        public void PushUnityEngineTexture2DEXRFlags(RealStatePtr L, UnityEngine.Texture2D.EXRFlags val)
+        {
+            if (UnityEngineTexture2DEXRFlags_TypeID == -1)
+            {
+			    bool is_first;
+                UnityEngineTexture2DEXRFlags_TypeID = getTypeId(L, typeof(UnityEngine.Texture2D.EXRFlags), out is_first);
+				
+				if (UnityEngineTexture2DEXRFlags_EnumRef == -1)
+				{
+				    Utils.LoadCSTable(L, typeof(UnityEngine.Texture2D.EXRFlags));
+				    UnityEngineTexture2DEXRFlags_EnumRef = LuaAPI.luaL_ref(L, LuaIndexes.LUA_REGISTRYINDEX);
+				}
+				
+            }
+			
+			if (LuaAPI.xlua_tryget_cachedud(L, (int)val, UnityEngineTexture2DEXRFlags_EnumRef) == 1)
+            {
+			    return;
+			}
+			
+            IntPtr buff = LuaAPI.xlua_pushstruct(L, 4, UnityEngineTexture2DEXRFlags_TypeID);
+            if (!CopyByValue.Pack(buff, 0, (int)val))
+            {
+                throw new Exception("pack fail fail for UnityEngine.Texture2D.EXRFlags ,value="+val);
+            }
+			
+			LuaAPI.lua_getref(L, UnityEngineTexture2DEXRFlags_EnumRef);
+			LuaAPI.lua_pushvalue(L, -2);
+			LuaAPI.xlua_rawseti(L, -2, (int)val);
+			LuaAPI.lua_pop(L, 1);
+			
+        }
+		
+        public void Get(RealStatePtr L, int index, out UnityEngine.Texture2D.EXRFlags val)
+        {
+		    LuaTypes type = LuaAPI.lua_type(L, index);
+            if (type == LuaTypes.LUA_TUSERDATA )
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != UnityEngineTexture2DEXRFlags_TypeID)
+				{
+				    throw new Exception("invalid userdata for UnityEngine.Texture2D.EXRFlags");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+				int e;
+                if (!CopyByValue.UnPack(buff, 0, out e))
+                {
+                    throw new Exception("unpack fail for UnityEngine.Texture2D.EXRFlags");
+                }
+				val = (UnityEngine.Texture2D.EXRFlags)e;
+                
+            }
+            else
+            {
+                val = (UnityEngine.Texture2D.EXRFlags)objectCasters.GetCaster(typeof(UnityEngine.Texture2D.EXRFlags))(L, index, null);
+            }
+        }
+		
+        public void UpdateUnityEngineTexture2DEXRFlags(RealStatePtr L, int index, UnityEngine.Texture2D.EXRFlags val)
+        {
+		    
+            if (LuaAPI.lua_type(L, index) == LuaTypes.LUA_TUSERDATA)
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != UnityEngineTexture2DEXRFlags_TypeID)
+				{
+				    throw new Exception("invalid userdata for UnityEngine.Texture2D.EXRFlags");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+                if (!CopyByValue.Pack(buff, 0,  (int)val))
+                {
+                    throw new Exception("pack fail for UnityEngine.Texture2D.EXRFlags ,value="+val);
+                }
+            }
+			
+            else
+            {
+                throw new Exception("try to update a data with lua type:" + LuaAPI.lua_type(L, index));
+            }
+        }
+        
         int UnityEngineKeyCode_TypeID = -1;
 		int UnityEngineKeyCode_EnumRef = -1;
         
@@ -3311,6 +3396,12 @@ namespace XLua
 				translator.PushUnityEngineCameraGateFitMode(L, array[index]);
 				return true;
 			}
+			else if (type == typeof(UnityEngine.Texture2D.EXRFlags[]))
+			{
+			    UnityEngine.Texture2D.EXRFlags[] array = obj as UnityEngine.Texture2D.EXRFlags[];
+				translator.PushUnityEngineTexture2DEXRFlags(L, array[index]);
+				return true;
+			}
 			else if (type == typeof(UnityEngine.KeyCode[]))
 			{
 			    UnityEngine.KeyCode[] array = obj as UnityEngine.KeyCode[];
@@ -3542,6 +3633,12 @@ namespace XLua
 			else if (type == typeof(UnityEngine.Camera.GateFitMode[]))
 			{
 			    UnityEngine.Camera.GateFitMode[] array = obj as UnityEngine.Camera.GateFitMode[];
+				translator.Get(L, obj_idx, out array[array_idx]);
+				return true;
+			}
+			else if (type == typeof(UnityEngine.Texture2D.EXRFlags[]))
+			{
+			    UnityEngine.Texture2D.EXRFlags[] array = obj as UnityEngine.Texture2D.EXRFlags[];
 				translator.Get(L, obj_idx, out array[array_idx]);
 				return true;
 			}

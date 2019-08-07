@@ -5,17 +5,17 @@ local SceneConst = require "game.scene.SceneConst"
 
 --计算受击者列表
 local Update = function ( self )
-	local attacker_aoi_handle = self.EntityManager:GetComponentData(skillData.caster_entity, "UMO.AOIHandle")
-	local cfg = SkillCfg[skillData.skill_id]
+	local attacker_aoi_handle = self.EntityManager:GetComponentData(self.skillData.caster_entity, "UMO.AOIHandle")
+	local cfg = SkillCfg[self.skillData.skill_id]
 	if not cfg or not attacker_aoi_handle then return end
 	
 	local target_type = self[1] or cfg.target_type
 	self.skillData.targets = nil
 	if cfg.target_type == SceneConst.SkillTargetType.Enemy or cfg.target_type == SceneConst.SkillTargetType.Our then
 		local skill_bomb = self.aoi:add()
-		self.aoi:set_pos(skill_bomb, skillData.target_pos_x, skillData.target_pos_y, skillData.target_pos_z)
+		self.aoi:set_pos(skill_bomb, self.skillData.target_pos_x, self.skillData.target_pos_y, self.skillData.target_pos_z)
 
-		local area = cfg.detail[skillData.skill_lv].area
+		local area = cfg.detail[self.skillData.skill_lv].area
 		local around = self.aoi:get_around_offset(skill_bomb, area, area)
 		if around then
 			self.skillData.targets = {}
@@ -35,7 +35,7 @@ local Update = function ( self )
 		end
 		self.aoi:remove(skill_bomb)
 	elseif cfg.target_type == SceneConst.SkillTargetType.Me then
-		self.skillData.targets[skillData.caster_uid] = true
+		self.skillData.targets[self.skillData.caster_uid] = true
 	end
 	--Cat_Todo : 控制最大受击数量
 end
@@ -45,9 +45,9 @@ local PickTarget = Ac.OO.Class {
 	__index = {
 		Start = function(self, skillData)
 			self.skillData = skillData
-			self.EntityManager = skillData.sceneMgr.entityMgr
-			self.aoi = skillData.sceneMgr.aoi
-			print('Cat:PickTarget.lua[50] self.EntityManager', self.aoi, self.EntityManager)
+			self.sceneMgr = skillData.sceneMgr
+			self.EntityManager = self.sceneMgr.entityMgr
+			self.aoi = self.sceneMgr.aoi
 		end,
 		IsDone = function(self)
 			return true

@@ -21,12 +21,13 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(UnityMMO.SynchFromNet);
-			Utils.BeginObjectRegister(type, L, translator, 0, 6, 0, 0);
+			Utils.BeginObjectRegister(type, L, translator, 0, 7, 0, 0);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Init", _m_Init);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "StartSynchFromNet", _m_StartSynchFromNet);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "ReqNewFightEvens", _m_ReqNewFightEvens);
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "OnAckFightEvents", _m_OnAckFightEvents);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "OnAckHurtEvents", _m_OnAckHurtEvents);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "OnAckSkillEvents", _m_OnAckSkillEvents);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "ReqSceneObjInfoChange", _m_ReqSceneObjInfoChange);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "OnAckSceneObjInfoChange", _m_OnAckSceneObjInfoChange);
 			
@@ -160,7 +161,7 @@ namespace XLua.CSObjectWrap
         }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_OnAckFightEvents(RealStatePtr L)
+        static int _m_OnAckHurtEvents(RealStatePtr L)
         {
 		    try {
             
@@ -174,7 +175,35 @@ namespace XLua.CSObjectWrap
                 {
                     Sproto.SprotoTypeBase _result = (Sproto.SprotoTypeBase)translator.GetObject(L, 2, typeof(Sproto.SprotoTypeBase));
                     
-                    gen_to_be_invoked.OnAckFightEvents( _result );
+                    gen_to_be_invoked.OnAckHurtEvents( _result );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_OnAckSkillEvents(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                UnityMMO.SynchFromNet gen_to_be_invoked = (UnityMMO.SynchFromNet)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    Sproto.SprotoTypeBase _result = (Sproto.SprotoTypeBase)translator.GetObject(L, 2, typeof(Sproto.SprotoTypeBase));
+                    
+                    gen_to_be_invoked.OnAckSkillEvents( _result );
                     
                     
                     

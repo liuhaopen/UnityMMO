@@ -28,7 +28,7 @@ public class SynchFromNet {
         changeFuncDic[SceneInfoKey.PosChange] = ApplyChangeInfoPos;
         changeFuncDic[SceneInfoKey.TargetPos] = ApplyChangeInfoTargetPos;
         changeFuncDic[SceneInfoKey.JumpState] = ApplyChangeInfoJumpState;
-        changeFuncDic[SceneInfoKey.HPChange] = ApplyChangeInfoHPChange;
+        // changeFuncDic[SceneInfoKey.HPChange] = ApplyChangeInfoHPChange;
         //The main role may not exist until the scene change event is received
         changeFuncDic[SceneInfoKey.SceneChange] = ApplyChangeInfoSceneChange;
     }
@@ -44,8 +44,10 @@ public class SynchFromNet {
         // Debug.Log("GameVariable.IsNeedSynchSceneInfo : "+GameVariable.IsNeedSynchSceneInfo.ToString());
         if (GameVariable.IsNeedSynchSceneInfo)
         {
-            SprotoType.scene_listen_fight_event.request req = new SprotoType.scene_listen_fight_event.request();
-            NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_listen_fight_event>(req, OnAckFightEvents);
+            SprotoType.scene_listen_skill_event.request req = new SprotoType.scene_listen_skill_event.request();
+            NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_listen_skill_event>(req, OnAckSkillEvents);
+            SprotoType.scene_listen_hurt_event.request req2 = new SprotoType.scene_listen_hurt_event.request();
+            NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_listen_hurt_event>(req2, OnAckHurtEvents);
         }
         else
         {
@@ -53,47 +55,94 @@ public class SynchFromNet {
         }
     }
 
-    public void OnAckFightEvents(SprotoTypeBase result)
+    public void OnAckHurtEvents(SprotoTypeBase result)
     {
-        SprotoType.scene_listen_fight_event.request req = new SprotoType.scene_listen_fight_event.request();
-        NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_listen_fight_event>(req, OnAckFightEvents);
-        SprotoType.scene_listen_fight_event.response ack = result as SprotoType.scene_listen_fight_event.response;
-        // Debug.Log("ack : "+(ack!=null).ToString()+" fightevents:"+(ack.fight_events!=null).ToString());
-        if (ack==null || ack.fight_events==null)
+        SprotoType.scene_listen_hurt_event.request req = new SprotoType.scene_listen_hurt_event.request();
+        NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_listen_hurt_event>(req, OnAckHurtEvents);
+        SprotoType.scene_listen_hurt_event.response ack = result as SprotoType.scene_listen_hurt_event.response;
+        // Debug.Log("ack : "+(ack!=null).ToString()+" fightevents:"+(ack.events!=null).ToString());
+        if (ack==null || ack.events==null)
             return;
-        var len = ack.fight_events.Count;
-        // Debug.Log("lisend fight event : "+len);
+        var len = ack.events.Count;
+        Debug.Log("lisend hurt event : "+len);
         for (int i = 0; i < len; i++)
         {
-            HandleCastSkill(ack.fight_events[i]);
+            HandleHurtEvent(ack.events[i]);
         }
     }
 
-    private void HandleCastSkill(SprotoType.scene_fight_event_info fight_event)
+    private void HandleHurtEvent(SprotoType.scene_hurt_event_info hurtEvent)
     {
-        long uid = fight_event.attacker_uid;
+        long uid = hurtEvent.attacker_uid;
+        var entityMgr = SceneMgr.Instance.EntityManager;
+        if (hurtEvent.defenders==null || hurtEvent.defenders.Count<=0)
+            return;
+        for (int i=0; i<hurtEvent.defenders.Count; i++)
+        {
+            var defender = hurtEvent.defenders[i];
+            // Debug.Log("defender uid : "+defender.uid+" count:"+hurtEvent.defenders.Count+" damage:"+defender.damage+" hp:"+defender.cur_hp+" damagetype:"+defender.flag);
+            var defenderEntity = SceneMgr.Instance.GetSceneObject(defender.uid);
+            // Debug.Log("has health : "+entityMgr.HasComponent<HealthStateData>(defenderEntity));
+            if (defenderEntity.Equals(Entity.Null) || ECSHelper.IsDead(defenderEntity, entityMgr))
+                continue;
+            if (entityMgr.HasComponent<LocomotionState>(defenderEntity))
+            {
+                //进入受击状态
+                var locomotionState = entityMgr.GetComponentData<LocomotionState>(defenderEntity);
+                locomotionState.LocoState = LocomotionState.State.BeHit;
+                locomotionState.StartTime = Time.time;
+                entityMgr.SetComponentData<LocomotionState>(defenderEntity, locomotionState);
+                //显示战斗飘字
+                var defenderTrans = entityMgr.GetComponentObject<Transform>(defenderEntity);
+                var flyWordObj = ResMgr.GetInstance().SpawnGameObject("FightFlyWord");
+                FightFlyWord flyWord = flyWordObj.GetComponent<FightFlyWord>();
+                flyWord.SetData(defender.change_num, defender.flag);
+                var pos = defenderTrans.position;
+                pos += Vector3.up * 1;
+                flyWord.transform.SetParent(UnityMMO.SceneMgr.Instance.FlyWordContainer);
+                flyWord.transform.position = pos;
+                flyWord.StartFly();
+            }
+            ChangeHP(defenderEntity, defender.cur_hp, defender.flag);
+        }
+    }
+
+    public void OnAckSkillEvents(SprotoTypeBase result)
+    {
+        SprotoType.scene_listen_skill_event.request req = new SprotoType.scene_listen_skill_event.request();
+        NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_listen_skill_event>(req, OnAckSkillEvents);
+        SprotoType.scene_listen_skill_event.response ack = result as SprotoType.scene_listen_skill_event.response;
+        // Debug.Log("ack : "+(ack!=null).ToString()+" skillevents:"+(ack.skill_events!=null).ToString());
+        if (ack==null || ack.events==null)
+            return;
+        var len = ack.events.Count;
+        Debug.Log("lisend skill event : "+len);
+        for (int i = 0; i < len; i++)
+        {
+            HandleCastSkill(ack.events[i]);
+        }
+    }
+
+    private void HandleCastSkill(SprotoType.scene_skill_event_info skillEvent)
+    {
+        long uid = skillEvent.attacker_uid;
         Entity scene_entity = SceneMgr.Instance.GetSceneObject(uid);
         var isMainRole = RoleMgr.GetInstance().IsMainRoleEntity(scene_entity);
         // isMainRole = false;//test
         if (scene_entity==Entity.Null || isMainRole)
             return;
 
-        //TODO:预先判断是否能使用技能
-        bool is_can_cast = true;
-        if (!is_can_cast)
-            return;
-
         //更新朝向
         Transform trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(scene_entity);
-        // trans.rotation = Quaternion.Euler(trans.eulerAngles.x, fight_event.direction/100, trans.eulerAngles.z);
-        trans.LookAt(new Vector3(fight_event.target_pos_x/GameConst.RealToLogic, trans.localPosition.y, fight_event.target_pos_z/GameConst.RealToLogic));
+        // trans.rotation = Quaternion.Euler(trans.eulerAngles.x, skillEvent.direction/100, trans.eulerAngles.z);
+        trans.LookAt(new Vector3(skillEvent.target_pos_x/GameConst.RealToLogic, trans.localPosition.y, skillEvent.target_pos_z/GameConst.RealToLogic));
         
         //播放攻击动作
-        string assetPath = SkillManager.GetInstance().GetSkillResPath((int)fight_event.skill_id);
+        string assetPath = SkillManager.GetInstance().GetSkillResPath((int)skillEvent.skill_id);
         // Debug.Log("OnAckFightEvents assetPath : "+assetPath);
-        var param = new Dictionary<string, object>();
-        param["FlyHurtWord"] = fight_event.defenders;
-        var timelineInfo = new TimelineInfo{ResPath=assetPath, Owner=scene_entity, Param=param};
+        // var param = new Dictionary<string, object>();
+        // param["FlyHurtWord"] = event.defenders;
+        var timelineInfo = new TimelineInfo{ResPath=assetPath, Owner=scene_entity, Param=null};
         TimelineManager.GetInstance().AddTimeline(uid, timelineInfo, SceneMgr.Instance.EntityManager);  
     }
 
@@ -226,16 +275,16 @@ public class SynchFromNet {
             SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = trans.localPosition});
         }
     }
-    
-    private void ApplyChangeInfoHPChange(Entity entity, SprotoType.info_item change_info)
+
+    private void ChangeHP(Entity entity, long hp, long flag)
     {
-        // Debug.Log("hp change : "+change_info.value);
-        string[] strs = change_info.value.Split(',');
-        float curHp = (float)Int64.Parse(strs[0])/GameConst.RealToLogic;
+        float curHp = (float)hp/GameConst.RealToLogic;
         var healthData = SceneMgr.Instance.EntityManager.GetComponentData<HealthStateData>(entity);
         healthData.CurHp = curHp;
         SceneMgr.Instance.EntityManager.SetComponentData(entity, healthData);
         bool hasNameboardData = SceneMgr.Instance.EntityManager.HasComponent<NameboardData>(entity);
+        var isRelive = flag==5;//复活
+        var isDead = flag==4;//死亡
         if (hasNameboardData)
         {
             var nameboardData = SceneMgr.Instance.EntityManager.GetComponentData<NameboardData>(entity);
@@ -246,7 +295,6 @@ public class SynchFromNet {
                 {
                     nameboardNode.CurHp = curHp;
                     //remove nameboard when dead
-                    var isDead = strs.Length == 2 && strs[1]=="dead";
                     if (isDead)
                     {
                         SceneMgr.Instance.World.RequestDespawn(nameboardNode.gameObject);
@@ -258,7 +306,7 @@ public class SynchFromNet {
             }
             else if (nameboardData.UIResState==NameboardData.ResState.DontLoad)
             {
-                var isRelive = strs.Length == 2 && strs[1]=="relive";
+                // var isRelive = flag==5;
                 Debug.Log("isRelive : "+isRelive);
                 if (isRelive)
                 {
@@ -267,15 +315,75 @@ public class SynchFromNet {
                 }
             }
         }
-        if (strs.Length == 2)
+        if (isDead || isRelive)
         {
-            var isRelive = strs[1]=="relive";
+            // var isRelive = strs[1]=="relive";
             var locoState = SceneMgr.Instance.EntityManager.GetComponentData<LocomotionState>(entity);
             locoState.LocoState = isRelive?LocomotionState.State.Idle:LocomotionState.State.Dead;
             // Debug.Log("Time : "+TimeEx.ServerTime.ToString()+" time:"+change_info.time+" isRelive:"+isRelive+" state:"+locoState.LocoState.ToString());
-            locoState.StartTime = Time.time - (TimeEx.ServerTime-change_info.time)/1000.0f;
+            // locoState.StartTime = Time.time - (TimeEx.ServerTime-change_info.time)/1000.0f;//CAT_TODO:dead time
             SceneMgr.Instance.EntityManager.SetComponentData(entity, locoState);
         }
+    }
+    
+    private void ApplyChangeInfoHPChange(Entity entity, SprotoType.info_item change_info)
+    {
+        // Debug.Log("hp change : "+change_info.value);
+        string[] strs = change_info.value.Split(',');
+        float curHp = (float)Int64.Parse(strs[0])/GameConst.RealToLogic;
+        long flag = 0;
+        if (strs.Length == 2)
+        {
+            if (strs[1]=="dead")
+                flag = 4;
+            else if (strs[1]=="relive")
+                flag = 5;
+        }
+        ChangeHP(entity, Int64.Parse(strs[0]), flag);
+        // var healthData = SceneMgr.Instance.EntityManager.GetComponentData<HealthStateData>(entity);
+        // healthData.CurHp = curHp;
+        // SceneMgr.Instance.EntityManager.SetComponentData(entity, healthData);
+        // bool hasNameboardData = SceneMgr.Instance.EntityManager.HasComponent<NameboardData>(entity);
+        // if (hasNameboardData)
+        // {
+        //     var nameboardData = SceneMgr.Instance.EntityManager.GetComponentData<NameboardData>(entity);
+        //     if (nameboardData.UIResState==NameboardData.ResState.Loaded)
+        //     {
+        //         var nameboardNode = SceneMgr.Instance.EntityManager.GetComponentObject<Nameboard>(nameboardData.UIEntity);
+        //         if (nameboardNode != null)
+        //         {
+        //             nameboardNode.CurHp = curHp;
+        //             //remove nameboard when dead
+        //             var isDead = strs.Length == 2 && strs[1]=="dead";
+        //             if (isDead)
+        //             {
+        //                 SceneMgr.Instance.World.RequestDespawn(nameboardNode.gameObject);
+        //                 nameboardData.UIResState = NameboardData.ResState.DontLoad;
+        //                 nameboardData.UIEntity = Entity.Null;
+        //                 SceneMgr.Instance.EntityManager.SetComponentData(entity, nameboardData);
+        //             }
+        //         }
+        //     }
+        //     else if (nameboardData.UIResState==NameboardData.ResState.DontLoad)
+        //     {
+        //         var isRelive = strs.Length == 2 && strs[1]=="relive";
+        //         Debug.Log("isRelive : "+isRelive);
+        //         if (isRelive)
+        //         {
+        //             nameboardData.UIResState = NameboardData.ResState.WaitLoad;
+        //             SceneMgr.Instance.EntityManager.SetComponentData(entity, nameboardData);
+        //         }
+        //     }
+        // }
+        // if (strs.Length == 2)
+        // {
+        //     var isRelive = strs[1]=="relive";
+        //     var locoState = SceneMgr.Instance.EntityManager.GetComponentData<LocomotionState>(entity);
+        //     locoState.LocoState = isRelive?LocomotionState.State.Idle:LocomotionState.State.Dead;
+        //     // Debug.Log("Time : "+TimeEx.ServerTime.ToString()+" time:"+change_info.time+" isRelive:"+isRelive+" state:"+locoState.LocoState.ToString());
+        //     locoState.StartTime = Time.time - (TimeEx.ServerTime-change_info.time)/1000.0f;
+        //     SceneMgr.Instance.EntityManager.SetComponentData(entity, locoState);
+        // }
     }
     
 }

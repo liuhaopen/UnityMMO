@@ -77,6 +77,7 @@
 	<assembly fullname="mscorlib">
 	    <type fullname="System.Object" preserve="all"/>
 		<type fullname="System.Collections.Generic.List`1[System.Int32]" preserve="all"/>
+		<type fullname="System.Collections.IEnumerator" preserve="all"/>
 		
 	</assembly>
 
@@ -120,9 +121,12 @@
 		<type fullname="UnityEngine.Input" preserve="all"/>
 		<type fullname="UnityEngine.Sprite" preserve="all"/>
 		<type fullname="UnityEngine.Texture" preserve="all"/>
+		<type fullname="UnityEngine.Texture2D" preserve="all"/>
+		<type fullname="UnityEngine.Texture2D+EXRFlags" preserve="all"/>
 		<type fullname="UnityEngine.KeyCode" preserve="all"/>
 		<type fullname="UnityEngine.RenderTexture" preserve="all"/>
 		<type fullname="UnityEngine.Debug" preserve="all"/>
+		<type fullname="UnityEngine.Events.UnityEvent`1[UnityEngine.Vector2]" preserve="all"/>
 		
 	</assembly>
 

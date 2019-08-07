@@ -55,15 +55,8 @@ return [[
 	maxhp 3 : integer
 }
 
-#flag: 0普通扣血 1暴击 2Miss 3穿刺
-.scene_fight_defender_info {
-	uid 0 : integer
-	cur_hp 1 : integer
-	damage 2 : integer
-	flag 3 : integer 
-}
-
-.scene_fight_event_info {
+#flag：1时技能被打断
+.scene_skill_event_info {
 	attacker_uid 0 : integer
 	skill_id 1 : integer
 	skill_lv 2 : integer
@@ -75,7 +68,20 @@ return [[
 	target_pos_z 8 : integer
 	direction 9 : integer
 	time 10 : integer
-	defenders 11 : *scene_fight_defender_info
+	flag 11 : integer
+}
+
+#flag: 0普通扣血 1暴击 2Miss 3穿刺 4死亡
+.scene_hurt_defender_info {
+	uid 0 : integer
+	change_num 1 : integer
+	cur_hp 2 : integer
+	flag 3 : integer 
+}
+
+.scene_hurt_event_info {
+	attacker_uid 0 : integer
+	defenders 1 : *scene_hurt_defender_info
 }
 
 .scene_npc_info {
@@ -142,25 +148,26 @@ scene_cast_skill 105 {
 	}
 	response {
 		result 0 : integer
-		cd_end_time 1 : integer
-		fight_event 2 : scene_fight_event_info
+		skill_id 1 : integer
+		cd_end_time 2 : integer
 	}
 }
 
-scene_listen_fight_event 106 {
+#一有别的玩家或怪物出招，自己就会收到此事件
+scene_listen_skill_event 106 {
 	request {
 	}
 	response {
-		fight_events 0 : *scene_fight_event_info
+		events 0 : *scene_skill_event_info
 	}
 }
 
-scene_get_monster_detail 107 {
+#监听扣血伤害相关的事件
+scene_listen_hurt_event 107 {
 	request {
-		uid 0 : integer
 	}
 	response {
-		monster_info 0 : scene_monster_info
+		events 0 : *scene_hurt_event_info
 	}
 }
 

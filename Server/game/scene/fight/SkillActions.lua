@@ -45,11 +45,16 @@ function SkillActions:Init(  )
 	self.actions[110013] = function( cfg )
 		return Repeat{5, Sequence { PickTarget{}, Hurt{}, Delay{1000} }}
 	end
-	local skill2 = Repeat { 5, If { Random{2000}, 
-			Sequence{ PickTarget{}, Hurt{500}, Buff{1}, Delay{1000} } ,
-			Sequence{ PickTarget{}, Hurt{100}, Delay{1000} } ,
-		}
+	
+	local normal_skill_list = {
+		120000, 120001, 120002, 120003, 120010, 120011, 120012, 120013,
+		200000, 200001, 200100, 200101, 200200, 200201, 200300, 200301, 200400, 200401, 200500, 200501,
 	}
+	for i,v in ipairs(normal_skill_list) do
+		self.actions[v] = function( cfg )
+			return Sequence { PickTarget{}, Hurt{} }
+		end
+	end
 	--[[
 	Sequence:队列，后面可带不定数量的Action
 	Delay:延迟，参数为延迟的毫秒

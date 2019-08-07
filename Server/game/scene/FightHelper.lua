@@ -24,12 +24,10 @@ function FightHelper.GetAssailablePos( curPos, targetPos, minDistance, maxDistan
 end
 
 function FightHelper.IsSkillInCD( entity, skillID )
-	print('Cat:FightHelper.lua[24] entity, skillID', entity, skillID)
 	local hasCD = EntityMgr:HasComponent(entity, "UMO.CD")
 	if hasCD then
 		local cdData = EntityMgr:GetComponentData(entity, "UMO.CD")
 		local cdEndTime = cdData[skillID]
-		print('Cat:FightHelper.lua[31] cdEndTime, Time.timeMS', cdEndTime, Time.timeMS)
 		return cdEndTime and Time.timeMS <= cdEndTime
 	end
 	return false
@@ -51,7 +49,6 @@ function FightHelper.ApplySkillCD( entity, skillID, lv )
 		local cdData = EntityMgr:GetComponentData(entity, "UMO.CD")
 		local cd = FightHelper.GetSkillCD(skillID, lv)
 		endTime = Time.timeMS + cd
-		print('Cat:FightHelper.lua[ApplySkillCD] endTime', endTime, cd)
 		cdData[skillID] = endTime
 	end
 	return endTime

@@ -4,7 +4,8 @@ local table_insert = table.insert
 function SceneEventMgr:Init( sceneMgr )
 	self.sceneMgr = sceneMgr
 	self.event_list = {}
-	self.fight_event_list = {}
+	self.skill_event_list = {}
+	self.hurt_event_list = {}
 end
 
 function SceneEventMgr:AddSceneEvent( uid, eventInfo )
@@ -20,17 +21,32 @@ function SceneEventMgr:ClearAllSceneEvents(  )
 	self.event_list = {}
 end
 
-function SceneEventMgr:AddFightEvent( uid, eventInfo )
-	self.fight_event_list[uid] = self.fight_event_list[uid] or {}
-	table_insert(self.fight_event_list[uid], eventInfo)
+function SceneEventMgr:AddSkillEvent( uid, eventInfo )
+	print('Cat:EventMgr.lua[25] uid, eventInfo', uid, eventInfo)
+	self.skill_event_list[uid] = self.skill_event_list[uid] or {}
+	table_insert(self.skill_event_list[uid], eventInfo)
 end
 
-function SceneEventMgr:GetFightEvent( uid )
-	return self.fight_event_list[uid]
+function SceneEventMgr:GetSkillEvent( uid )
+	return self.skill_event_list[uid]
 end
 
-function SceneEventMgr:ClearAllFightEvents(  )
-	self.fight_event_list = {}
+function SceneEventMgr:ClearAllSkillEvents(  )
+	self.skill_event_list = {}
+end
+
+function SceneEventMgr:AddHurtEvent( uid, eventInfo )
+	print('Cat:EventMgr.lua[38] uid, eventInfo', uid, eventInfo)
+	self.hurt_event_list[uid] = self.hurt_event_list[uid] or {}
+	table_insert(self.hurt_event_list[uid], eventInfo)
+end
+
+function SceneEventMgr:GetHurtEvent( uid )
+	return self.hurt_event_list[uid]
+end
+
+function SceneEventMgr:ClearAllHurtEvents(  )
+	self.hurt_event_list = {}
 end
 
 return SceneEventMgr

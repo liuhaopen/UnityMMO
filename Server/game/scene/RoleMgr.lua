@@ -84,7 +84,7 @@ function RoleMgr:RoleEnter( roleID, agent )
 
 		local handle = self.sceneMgr.aoi:add()
 		self.sceneMgr.aoi:set_user_data(handle, "uid", scene_uid)
-		self.roleList[roleID] = {scene_uid=scene_uid, base_info=base_info, looks_info=looks_info, aoi_handle=handle, around_objs={}, radius_short=5000, radius_long=6000, fight_events_in_around={}}
+		self.roleList[roleID] = {scene_uid=scene_uid, base_info=base_info, looks_info=looks_info, aoi_handle=handle, around_objs={}, radius_short=5000, radius_long=6000, skill_events_in_around={}, hurt_events_in_around={}}
 		-- self.sceneMgr:SetSceneObj(scene_uid, self.roleList[roleID])
 		-- self.aoi_handle_uid_map[handle] = scene_uid
 		self.sceneMgr.aoi:set_pos(handle, base_info.pos_x, base_info.pos_y, base_info.pos_z)
