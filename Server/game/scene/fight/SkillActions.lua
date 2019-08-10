@@ -48,11 +48,19 @@ function SkillActions:Init(  )
 	
 	local normal_skill_list = {
 		120000, 120001, 120002, 120003, 120010, 120011, 120012, 120013,
-		200000, 200001, 200100, 200101, 200200, 200201, 200300, 200301, 200400, 200401, 200500, 200501,
 	}
 	for i,v in ipairs(normal_skill_list) do
 		self.actions[v] = function( cfg )
 			return Sequence { PickTarget{}, Hurt{} }
+		end
+	end
+
+	local simple_skill_list = {
+		200000, 200001, 200100, 200101, 200200, 200201, 200300, 200301, 200400, 200401, 200500, 200501,
+	}
+	for i,v in ipairs(simple_skill_list) do
+		self.actions[v] = function( cfg )
+			return Hurt{} 
 		end
 	end
 	--[[

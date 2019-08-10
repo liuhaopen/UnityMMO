@@ -103,7 +103,7 @@ function FightState:Attack(  )
 		target_pos_y = math.floor(enemyPos.y),
 		target_pos_z = math.floor(enemyPos.z),
 		-- direction = math.floor(angle*100),
-		uid_defenders_map = {[defender_uid]=true},	
+		targets = {[defender_uid]=true},	
 	})
 	
 end

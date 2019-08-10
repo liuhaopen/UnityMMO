@@ -96,6 +96,16 @@ function TestEntityManager:TestEntityRemoveComponent(  )
     lu.assertFalse(has)
 end
 
+
+local TestDestroyEntitySystem = ECS.BaseClass(ECS.ComponentSystem)
+ECS.TypeManager.RegisterScriptMgr("TestDestroyEntitySystem", TestDestroyEntitySystem)
+
+function TestDestroyEntitySystem:OnCreateManager(  )
+    ECS.ComponentSystem.OnCreateManager(self)
+    self.group = self:GetComponentGroup({"DataForTestRemoveEntity"})
+end
+function TestDestroyEntitySystem:OnUpdate(  )
+end
 function TestEntityManager:TestRemoveEntity(  )
     local EcsTestData = {value=0}
     ECS.TypeManager.RegisterType("DataForTestRemoveEntity", EcsTestData)
@@ -104,8 +114,19 @@ function TestEntityManager:TestRemoveEntity(  )
     local entity = self.m_Manager:CreateEntityByArcheType(archetype)
     lu.assertNotNil(entity)
     lu.assertTrue(self.m_Manager:Exists(entity))
+
+    local sys = ECS.World.Active:GetOrCreateManager("TestDestroyEntitySystem")
+    sys:Update()
+    lu.assertNotNil(sys.group)
+    local entities = sys.group:ToComponentDataArray("DataForTestRemoveEntity")
+    lu.assertNotNil(entities)
+    lu.assertEquals(entities.Length, 1)
+
     self.m_Manager:DestroyEntity(entity)
     lu.assertFalse(self.m_Manager:Exists(entity))
+    sys:Update()
+    local entities = sys.group:ToComponentDataArray("DataForTestRemoveEntity")
+    lu.assertEquals(entities.Length, 0)
     
     local count = 1024
     local array = self.m_Manager:CreateEntitiesByArcheType(archetype, count)

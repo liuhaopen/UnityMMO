@@ -53,7 +53,7 @@ function FightMgr:CastSkill( uid, req_data )
 		skillData.target_pos_y = req_data.target_pos_y
 		skillData.target_pos_z = req_data.target_pos_z
 		skillData.direction = req_data.direction
-		skillData.targets = nil
+		skillData.targets = req_data.targets
 		skillData.sceneMgr = self.sceneMgr
 		-- skillData.max_target_num = skillCfg.attack_max_num --每次选目标时再取配置，加了相关的buff后再改此字段
 		local skillActionCreator = SkillActions:GetActionCreator(req_data.skill_id)
@@ -61,11 +61,11 @@ function FightMgr:CastSkill( uid, req_data )
 		skillAction:Start(skillData)
 		skillData.action = skillAction
 		self.entityMgr:SetComponentData(skillEntity, "UMO.Skill", skillData)
+		print('Cat:FightMgr.lua[64] skillEntity', skillEntity)
 		cdEndTime = FightHelper.ApplySkillCD(entity, req_data.skill_id, skillLv)
 		self.sceneMgr.eventMgr:AddSkillEvent(uid, fight_event)
 
 		errorCode = ErrorCode.Succeed
-
 		-- fight_event = {
 		-- 	attacker_uid = uid,
 		-- 	skill_id = req_data.skill_id,
