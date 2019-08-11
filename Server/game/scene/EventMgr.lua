@@ -22,7 +22,6 @@ function SceneEventMgr:ClearAllSceneEvents(  )
 end
 
 function SceneEventMgr:AddSkillEvent( uid, eventInfo )
-	print('Cat:EventMgr.lua[25] uid, eventInfo', uid, eventInfo)
 	self.skill_event_list[uid] = self.skill_event_list[uid] or {}
 	table_insert(self.skill_event_list[uid], eventInfo)
 end
@@ -36,7 +35,6 @@ function SceneEventMgr:ClearAllSkillEvents(  )
 end
 
 function SceneEventMgr:AddHurtEvent( uid, eventInfo )
-	print('Cat:EventMgr.lua[38] uid, eventInfo', uid, eventInfo)
 	self.hurt_event_list[uid] = self.hurt_event_list[uid] or {}
 	table_insert(self.hurt_event_list[uid], eventInfo)
 end

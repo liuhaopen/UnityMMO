@@ -380,7 +380,7 @@ public class SceneMgr : MonoBehaviour
         {
             long curHP = Int64.Parse(info_strs[8]);
             long maxHP = Int64.Parse(info_strs[9]);
-            Entity role = RoleMgr.GetInstance().AddRole(uid, typeID, pos, targetPos, curHP/GameConst.RealToLogic, maxHP/GameConst.RealToLogic);
+            Entity role = RoleMgr.GetInstance().AddRole(uid, typeID, pos, targetPos, curHP, maxHP);
             entitiesDic[SceneObjectType.Role].Add(uid, role);
             return role;
         }
@@ -388,7 +388,7 @@ public class SceneMgr : MonoBehaviour
         {
             long curHP = Int64.Parse(info_strs[8]);
             long maxHP = Int64.Parse(info_strs[9]);
-            Entity monster = MonsterMgr.GetInstance().AddMonster(uid, typeID, pos, targetPos, curHP/GameConst.RealToLogic, maxHP/GameConst.RealToLogic);
+            Entity monster = MonsterMgr.GetInstance().AddMonster(uid, typeID, pos, targetPos, curHP, maxHP);
             entitiesDic[SceneObjectType.Monster].Add(uid, monster);
             return monster;
         }

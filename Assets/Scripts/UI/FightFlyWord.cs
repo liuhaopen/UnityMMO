@@ -20,7 +20,7 @@ public class FightFlyWord : MonoBehaviour {
 
     public void StartFly()
     {
-        var moveAction = Cocos.MoveBy.CreateAbs(0.7f, new Vector3(0, 1, 0));
+        var moveAction = Cocos.MoveBy.CreateAbs(0.9f, new Vector3(0, 2, 0));
         var fadeOutAction = Cocos.FadeOut.Create(0.3f, Cocos.ColorAttrCatcherTextMeshPro.Ins);
         var delayFadeoutAction = Cocos.Sequence.Create(Cocos.DelayTime.Create(0.4f), fadeOutAction);
         var spawnAction = Cocos.Spawn.Create(moveAction, delayFadeoutAction);

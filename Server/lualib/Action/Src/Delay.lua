@@ -10,6 +10,7 @@ local Delay = Ac.OO.Class {
 		end,
 		Update = function(self, deltaTime)
 			self.elapsed = self.elapsed + deltaTime
+			print('Cat:Delay.lua[13] self.elapsed, deltaTime, self[1]', self.elapsed, deltaTime, self[1])
 			-- self.updateNum = self.updateNum + 1
 		end
 	},

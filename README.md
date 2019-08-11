@@ -26,3 +26,4 @@ server only for Linux;
 19.07.10：增加一个副本场景：    
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/change_scene.gif)     
 19.07.31：初步完成背包和 GM 系统      
+19.08.11：初步完成基于action组件的技能系统,见Server/lualib/Action及FightMgr,Hurt和PickTarget.lua          

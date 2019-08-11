@@ -8,11 +8,11 @@ function ECSSystemMgr:Init( world, sceneMgr )
 		sceneMgr=sceneMgr
 	}
 	local systems = {
-		"UMO.DamageSystem",
+		-- "UMO.DamageSystem",
 		"UMO.AISystem",
 		"UMO.MovementUpdateSystem",
 		--skill sys
-		"UMO.SkillSys",
+		-- "UMO.SkillSys",
 	}
 
 	for i,v in ipairs(systems) do
@@ -26,14 +26,14 @@ function ECSSystemMgr:Update( delta_time )
 		v:Update()
 	end
 	for i,v in ipairs(self.delayDestroyList) do
-		print('Cat:ECSSystemMgr.lua[29] v', v)
+		-- print('Cat:ECSSystemMgr.lua[29]destroy v', v)
 		self.entityMgr:DestroyEntity(v)
 	end
 	self.delayDestroyList = {}
 end
 
 function ECSSystemMgr:AddDestroyEntity( entity )
-	print('Cat:ECSSystemMgr.lua[36] entity', entity)
+	-- print('Cat:ECSSystemMgr.lua[36]AddDestroyEntity entity', entity)
 	table.insert(self.delayDestroyList, entity)
 end
 

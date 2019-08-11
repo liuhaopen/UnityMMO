@@ -28,7 +28,6 @@ function RoleMgr:CreateRole( uid, roleID, pos_x, pos_y, pos_z, aoi_handle, agent
 	self.entityMgr:SetComponentData(role, "UMO.TargetPos", {x=pos_x, y=pos_y, z=pos_z})
 	self.entityMgr:SetComponentData(role, "UMO.UID", uid)
 	self.entityMgr:SetComponentData(role, "UMO.TypeID", roleID)
-	self.entityMgr:SetComponentData(role, "UMO.HP", {cur=1000, max=1000})
 	self.entityMgr:SetComponentData(role, "UMO.SceneObjType", {value=SceneConst.ObjectType.Role})
 	self.entityMgr:SetComponentData(role, "UMO.MoveSpeed", {value=100})
 	self.entityMgr:SetComponentData(role, "UMO.AOIHandle", {value=aoi_handle})
@@ -39,9 +38,13 @@ end
 
 function RoleMgr:GetBaseInfoByRoleID( roleID )
 	local gameDBServer = skynet.localname(".GameDBServer")
-	local is_ok, role_info = skynet.call(gameDBServer, "lua", "select_by_key", "RoleBaseInfo", "role_id", roleID)
-	if is_ok and role_info and role_info[1] then
-		return role_info[1]
+	local is_ok, role_info = skynet.call(gameDBServer, "lua", "select_one_by_key", "RoleBaseInfo", "role_id", roleID)
+	if is_ok then
+		local is_ok, attr_info = skynet.call(gameDBServer, "lua", "select_one_by_key", "AttrInfo", "role_id", roleID)
+		if is_ok then
+			role_info.attr_info = attr_info
+		end
+		return role_info
 	end
 	return nil
 end
@@ -58,8 +61,12 @@ end
 function RoleMgr:InitPosInfo( baseInfo, targetDoor )
 	if not baseInfo then return end
 	local is_need_reset_pos = false
-	if not baseInfo.scene_id or self.sceneMgr.curSceneID ~= baseInfo.scene_id or not baseInfo.pos_x then
+	if not baseInfo.scene_id or self.sceneMgr.curSceneID ~= baseInfo.scene_id or not baseInfo.pos_x or baseInfo.hp<=0 then
 		is_need_reset_pos = true
+		--relive
+		if baseInfo.hp <= 0 then
+			baseInfo.hp = baseInfo.attr_info and baseInfo.attr_info.hp or 0
+		end
 	end
 	if is_need_reset_pos then
 		local born_list = self.sceneMgr.scene_cfg.born_list
@@ -91,6 +98,7 @@ function RoleMgr:RoleEnter( roleID, agent )
 
 		local entity = self:CreateRole(scene_uid, roleID, base_info.pos_x, base_info.pos_y, base_info.pos_z, handle, agent)
 		self.sceneMgr:SetEntity(scene_uid, entity)
+		self.entityMgr:SetComponentData(entity, "UMO.HP", {cur=base_info.hp, max=base_info.attr_info and base_info.attr_info.hp or 10000})
 		-- self.sceneMgr.aoi:set_user_data(handle, "entity", entity)
 		local changeSceneStr = self.sceneMgr.curSceneID..","..base_info.pos_x..","..base_info.pos_y..","..base_info.pos_z
 		local change_scene_event_info = {key=SceneConst.InfoKey.SceneChange, value=changeSceneStr}

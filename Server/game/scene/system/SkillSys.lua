@@ -20,7 +20,7 @@ function SkillSys:OnUpdate(  )
 end
 
 function SkillSys:HandleSkill( skillData, entity )
-	skillData.action:Update(Time.deltaTime)
+	skillData.action:Update(Time.deltaTimeMS)
 	local isDone = skillData.action:IsDone()
 	if isDone then
 		print('Cat:SkillSys.lua[29] isDone', isDone, entity)

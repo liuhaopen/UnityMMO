@@ -5,8 +5,8 @@ local MonsterFSM = require "game.scene.ai.MonsterFSM"
 local BP = require("Blueprint")
 local MonsterMgr = BaseClass()
 local test_info = {
-	create_num = 1,--只创建1只怪物，方便调试
-	create_mon_types = {2000}
+	-- create_num = 1,--只创建1只怪物，方便调试
+	-- create_mon_types = {2000}
 }
 
 function MonsterMgr:Init( sceneMgr, cfg )
@@ -41,10 +41,9 @@ function MonsterMgr:InitMonster(  )
 					break
 				end
 			end
-		elseif create_num >= test_info.create_num then
+		elseif test_info.create_num and create_num >= test_info.create_num then
 			break
 		end
-		print('Cat:MonsterMgr.lua[45] mons_type_ok, v.monster_type_id', mons_type_ok, v.monster_type_id, create_num)
 		if mons_type_ok then
 			local patrolInfo = {x=v.pos_x, y=v.pos_y, z=v.pos_z, radius=v.radius}
 			for ii=1,v.monster_num do

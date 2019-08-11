@@ -24,6 +24,7 @@ Ac.If = importer.require("Action.Src.If", AcEnv)
 Ac.And = importer.require("Action.Src.And", AcEnv)
 Ac.Or = importer.require("Action.Src.Or", AcEnv)
 Ac.Repeat = importer.require("Action.Src.Repeat", AcEnv)
+Ac.ActionMgr = importer.require("Action.Src.ActionMgr", AcEnv)
 
 --为了不影响全局，这里要还原一下package.searchers
 importer.disable()

@@ -1,5 +1,6 @@
 require "game.scene.Global"
 local skynet = require "skynet"
+local Ac = require "Action"
 local ECS = require "ECS"
 local BP = require "Blueprint"
 local SceneConst = require "game.scene.SceneConst"
@@ -22,21 +23,14 @@ function SceneMgr:SetEntity( uid, entity )
 	self.uid_entity_map[uid] = entity
 end
 
-local fork_loop_ecs = function ( sceneMgr )
-	skynet.fork(function()
-		while true do
-			sceneMgr.ecsSystemMgr:Update()
-			skynet.sleep(3)
-		end
-	end)
-end
-
-local fork_loop_time = function (  )
+local fork_loop_logic = function ( sceneMgr )
 	Time:update()
 	skynet.fork(function()
 		while true do
 			Time:update()
 			BP.Time:Update(Time.time)
+			sceneMgr.ecsSystemMgr:Update()
+			Ac.ActionMgr:Update(Time.deltaTimeMS)
 			skynet.sleep(1)
 		end
 	end)
@@ -131,6 +125,17 @@ local collect_fight_events = function ( sceneMgr )
 				end
 			end
 		end
+		--自己发的技能伤害事件列表也要告诉自己
+		local event_list = sceneMgr.eventMgr:GetHurtEvent(role_info.scene_uid)
+		if event_list and #event_list > 0 then
+			for i,event_info in ipairs(event_list) do
+				table.insert(role_info.hurt_events_in_around, event_info)
+			end
+		end
+		local sort_func = function ( a, b )
+			return a.time < b.time
+		end
+		table.sort(role_info.hurt_events_in_around, sort_func)
 	end
 	sceneMgr.eventMgr:ClearAllSkillEvents()
 	sceneMgr.eventMgr:ClearAllHurtEvents()
@@ -142,20 +147,12 @@ local fork_loop_fight_event = function ( sceneMgr )
 		while true do 
 			collect_fight_events(sceneMgr)
 			for k,role_info in pairs(sceneMgr.roleMgr.roleList) do
-				-- print('Cat:SceneMgr.lua[144] role_info.skill_events_in_around, ', role_info.skill_events_in_around, #role_info.skill_events_in_around>0)
 				if role_info.skill_events_in_around and #role_info.skill_events_in_around>0 and role_info.ack_scene_listen_skill_event then
-					print("Cat:scene [start:138] role_info.skill_events_in_around:", role_info.skill_events_in_around)
-					PrintTable(role_info.skill_events_in_around)
-					print("Cat:scene [end]")
 					role_info.ack_scene_listen_skill_event(true, {events=role_info.skill_events_in_around})
 					role_info.skill_events_in_around = {}
 					role_info.ack_scene_listen_skill_event = nil
 				end
-				-- print('Cat:SceneMgr.lua[153] role_info.hurt_events_in_around, ', role_info.hurt_events_in_around, #role_info.hurt_events_in_around)
 				if role_info.hurt_events_in_around and #role_info.hurt_events_in_around>0 and role_info.ack_scene_listen_hurt_event then
-					print("Cat:scene [start:138] role_info.hurt_events_in_around:", role_info.hurt_events_in_around)
-					PrintTable(role_info.hurt_events_in_around)
-					print("Cat:scene [end]")
 					role_info.ack_scene_listen_hurt_event(true, {events=role_info.hurt_events_in_around})
 					role_info.hurt_events_in_around = {}
 					role_info.ack_scene_listen_hurt_event = nil
@@ -179,7 +176,7 @@ local fork_loop_update_around = function ( sceneMgr )
 end
 
 function SceneMgr:Init( scene_id )
-	fork_loop_time()
+	-- fork_loop_time()
 
 	self.roleMgr = require("game.scene.RoleMgr").New()
 	self.monsterMgr = require("game.scene.MonsterMgr").New()
@@ -213,7 +210,7 @@ function SceneMgr:Init( scene_id )
 	local FightHelper = require("game.scene.FightHelper")
 	FightHelper.Init()
 	--开始游戏循环
-	fork_loop_ecs(self)
+	fork_loop_logic(self)
 	fork_loop_scene_info_change(self)
 	fork_loop_fight_event(self)
 	fork_loop_update_around(self)

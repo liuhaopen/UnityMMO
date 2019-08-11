@@ -91,8 +91,20 @@ function TestActions:TestSequence(  )
 	action:Start(testTbl)
 	action:Update(1000)
 	lu.assertEquals(testTbl.value, "b")
+	lu.assertFalse(action:IsDone())
 	action:Update(1000)
 	lu.assertEquals(testTbl.value, "c")
+	lu.assertTrue(action:IsDone())
+
+	--最后一个是Delay
+	local action = Ac.Sequence{ actionA, Ac.Delay{1000} }
+	local testTbl = {value = "0"}
+	action:Start(testTbl)
+	action:Update(500)
+	lu.assertEquals(testTbl.value, "a")
+	lu.assertFalse(action:IsDone())
+	action:Update(500)
+	lu.assertTrue(action:IsDone())
 
 	--测试Delay被If包裹后会不会被漏掉
 	local action = Ac.Sequence{ actionA, Ac.If{ Ac.Random{10000}, Ac.Delay{1000}, Ac.Delay{1000}}, actionB, Ac.Delay{1000}, actionC }
@@ -233,7 +245,9 @@ function TestActions:TestRepeat(  )
 	action:Update(55)
 	lu.assertEquals(testTbl.loop, 2)
 	lu.assertFalse(action:IsDone())
-
+	action:Update(2)
+	lu.assertEquals(testTbl.loop, 2)
+	lu.assertFalse(action:IsDone())
 	action:Update(155)
 	lu.assertEquals(testTbl.loop, 2)
 	lu.assertFalse(action:IsDone())

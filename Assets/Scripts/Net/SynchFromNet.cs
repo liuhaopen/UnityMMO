@@ -28,7 +28,7 @@ public class SynchFromNet {
         changeFuncDic[SceneInfoKey.PosChange] = ApplyChangeInfoPos;
         changeFuncDic[SceneInfoKey.TargetPos] = ApplyChangeInfoTargetPos;
         changeFuncDic[SceneInfoKey.JumpState] = ApplyChangeInfoJumpState;
-        // changeFuncDic[SceneInfoKey.HPChange] = ApplyChangeInfoHPChange;
+        changeFuncDic[SceneInfoKey.HPChange] = ApplyChangeInfoHPChange;
         //The main role may not exist until the scene change event is received
         changeFuncDic[SceneInfoKey.SceneChange] = ApplyChangeInfoSceneChange;
     }
@@ -65,6 +65,8 @@ public class SynchFromNet {
             return;
         var len = ack.events.Count;
         Debug.Log("lisend hurt event : "+len);
+
+        // ack.events.Sort((SprotoType.scene_hurt_event_info a, SprotoType.scene_hurt_event_info b)=>DisallowRefReturnCrossingThisAttribute a.time)
         for (int i = 0; i < len; i++)
         {
             HandleHurtEvent(ack.events[i]);
@@ -278,13 +280,13 @@ public class SynchFromNet {
 
     private void ChangeHP(Entity entity, long hp, long flag)
     {
-        float curHp = (float)hp/GameConst.RealToLogic;
+        float curHp = (float)hp;
         var healthData = SceneMgr.Instance.EntityManager.GetComponentData<HealthStateData>(entity);
         healthData.CurHp = curHp;
         SceneMgr.Instance.EntityManager.SetComponentData(entity, healthData);
         bool hasNameboardData = SceneMgr.Instance.EntityManager.HasComponent<NameboardData>(entity);
         var isRelive = flag==5;//复活
-        var isDead = flag==4;//死亡
+        var isDead = hp==0;//死亡
         if (hasNameboardData)
         {
             var nameboardData = SceneMgr.Instance.EntityManager.GetComponentData<NameboardData>(entity);
@@ -340,50 +342,6 @@ public class SynchFromNet {
                 flag = 5;
         }
         ChangeHP(entity, Int64.Parse(strs[0]), flag);
-        // var healthData = SceneMgr.Instance.EntityManager.GetComponentData<HealthStateData>(entity);
-        // healthData.CurHp = curHp;
-        // SceneMgr.Instance.EntityManager.SetComponentData(entity, healthData);
-        // bool hasNameboardData = SceneMgr.Instance.EntityManager.HasComponent<NameboardData>(entity);
-        // if (hasNameboardData)
-        // {
-        //     var nameboardData = SceneMgr.Instance.EntityManager.GetComponentData<NameboardData>(entity);
-        //     if (nameboardData.UIResState==NameboardData.ResState.Loaded)
-        //     {
-        //         var nameboardNode = SceneMgr.Instance.EntityManager.GetComponentObject<Nameboard>(nameboardData.UIEntity);
-        //         if (nameboardNode != null)
-        //         {
-        //             nameboardNode.CurHp = curHp;
-        //             //remove nameboard when dead
-        //             var isDead = strs.Length == 2 && strs[1]=="dead";
-        //             if (isDead)
-        //             {
-        //                 SceneMgr.Instance.World.RequestDespawn(nameboardNode.gameObject);
-        //                 nameboardData.UIResState = NameboardData.ResState.DontLoad;
-        //                 nameboardData.UIEntity = Entity.Null;
-        //                 SceneMgr.Instance.EntityManager.SetComponentData(entity, nameboardData);
-        //             }
-        //         }
-        //     }
-        //     else if (nameboardData.UIResState==NameboardData.ResState.DontLoad)
-        //     {
-        //         var isRelive = strs.Length == 2 && strs[1]=="relive";
-        //         Debug.Log("isRelive : "+isRelive);
-        //         if (isRelive)
-        //         {
-        //             nameboardData.UIResState = NameboardData.ResState.WaitLoad;
-        //             SceneMgr.Instance.EntityManager.SetComponentData(entity, nameboardData);
-        //         }
-        //     }
-        // }
-        // if (strs.Length == 2)
-        // {
-        //     var isRelive = strs[1]=="relive";
-        //     var locoState = SceneMgr.Instance.EntityManager.GetComponentData<LocomotionState>(entity);
-        //     locoState.LocoState = isRelive?LocomotionState.State.Idle:LocomotionState.State.Dead;
-        //     // Debug.Log("Time : "+TimeEx.ServerTime.ToString()+" time:"+change_info.time+" isRelive:"+isRelive+" state:"+locoState.LocoState.ToString());
-        //     locoState.StartTime = Time.time - (TimeEx.ServerTime-change_info.time)/1000.0f;
-        //     SceneMgr.Instance.EntityManager.SetComponentData(entity, locoState);
-        // }
     }
     
 }

@@ -1343,7 +1343,7 @@ namespace SprotoType {
 
 
 	public class scene_hurt_event_info : SprotoTypeBase {
-		private static int max_field_count = 2;
+		private static int max_field_count = 3;
 		
 		
 		private Int64 _attacker_uid; // tag 0
@@ -1355,13 +1355,22 @@ namespace SprotoType {
 			get { return base.has_field.has_field (0); }
 		}
 
-		private List<scene_hurt_defender_info> _defenders; // tag 1
+		private Int64 _time; // tag 1
+		public Int64 time {
+			get { return _time; }
+			set { base.has_field.set_field (1, true); _time = value; }
+		}
+		public bool HasTime {
+			get { return base.has_field.has_field (1); }
+		}
+
+		private List<scene_hurt_defender_info> _defenders; // tag 2
 		public List<scene_hurt_defender_info> defenders {
 			get { return _defenders; }
-			set { base.has_field.set_field (1, true); _defenders = value; }
+			set { base.has_field.set_field (2, true); _defenders = value; }
 		}
 		public bool HasDefenders {
-			get { return base.has_field.has_field (1); }
+			get { return base.has_field.has_field (2); }
 		}
 
 		public scene_hurt_event_info () : base(max_field_count) {}
@@ -1378,6 +1387,9 @@ namespace SprotoType {
 					this.attacker_uid = base.deserialize.read_integer ();
 					break;
 				case 1:
+					this.time = base.deserialize.read_integer ();
+					break;
+				case 2:
 					this.defenders = base.deserialize.read_obj_list<scene_hurt_defender_info> ();
 					break;
 				default:
@@ -1395,7 +1407,11 @@ namespace SprotoType {
 			}
 
 			if (base.has_field.has_field (1)) {
-				base.serialize.write_obj (this.defenders, 1);
+				base.serialize.write_integer (this.time, 1);
+			}
+
+			if (base.has_field.has_field (2)) {
+				base.serialize.write_obj (this.defenders, 2);
 			}
 
 			return base.serialize.close ();

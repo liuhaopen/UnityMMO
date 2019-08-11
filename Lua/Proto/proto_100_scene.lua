@@ -81,7 +81,8 @@ return [[
 
 .scene_hurt_event_info {
 	attacker_uid 0 : integer
-	defenders 1 : *scene_hurt_defender_info
+	time 1 : integer
+	defenders 2 : *scene_hurt_defender_info
 }
 
 .scene_npc_info {

@@ -43,6 +43,10 @@ local gen_random_role_looks = function ( role_id )
 	return {role_id=role_id, body=math.random(0,1), hair=math.random(0,1)}
 end
 
+local gen_role_base_attr = function ( role_id )
+	return {role_id=role_id, att=100, hp=10000, def=100, hit=100, dodge=120}
+end
+
 function account.account_create_role( user_info, req_data )
 	local create_role = function (  )
 		gameDBServer = gameDBServer or skynet.localname(".GameDBServer")
@@ -58,8 +62,10 @@ function account.account_create_role( user_info, req_data )
 		if new_role_id then
 			is_succeed = skynet.call(gameDBServer, "lua", "insert", "RoleList", {account_id=user_info.user_id, role_id=new_role_id, create_time=math.floor(skynet.time()*1000+0.5)})
 			if is_succeed then
-				is_succeed = skynet.call(gameDBServer, "lua", "insert", "RoleBaseInfo", {role_id=new_role_id, name=req_data.name, career=req_data.career, level=1})
+				local attr_info = gen_role_base_attr(new_role_id)
+				is_succeed = skynet.call(gameDBServer, "lua", "insert", "RoleBaseInfo", {role_id=new_role_id, name=req_data.name, career=req_data.career, level=1, hp=attr_info.hp})
 				is_succeed = is_succeed and skynet.call(gameDBServer, "lua", "insert", "RoleLooksInfo", gen_random_role_looks(new_role_id))
+				is_succeed = is_succeed and skynet.call(gameDBServer, "lua", "insert", "AttrInfo", attr_info)
 			end
 			if is_succeed then
 				is_create_succeed = true
