@@ -24,6 +24,7 @@ function SkillActions:Init(  )
 	Random:条件Action,参数为概率万分比
 	CheckAttr:条件Action,判断某属性和某个数值的关系
 	BreakSkill:打断目标的技能
+
 	--110000技能：100毫秒后造成直接伤害(伤害系数是根据不同等级配置不同的值，所以cfg是根据施法者当前的技能等级传入的值：config_skill.lua里的detail[skill_lv].arge)
 	self.actions[110000] = function( cfg )
 		return Sequence { Delay{100}, PickTarget{1,1,cfg.MaxTarget}, Hurt{cfg.HurtRate} }
@@ -70,10 +71,20 @@ function SkillActions:Init(  )
 
 	--300毫秒后，重复5次攻击，每次间隔200毫秒
 	self.actions[110013] = function( cfg )
-		return Sequence { Delay{300}, Repeat{5, Sequence { PickTarget{}, Hurt{}, Delay{700} }}}
+		return Sequence { 
+			Delay {300}, 
+			Repeat {5, 
+				Sequence { PickTarget{}, Hurt{}, Delay{700} }
+			}
+		}
 	end
 	self.actions[120013] = function( cfg )
-		return Sequence { Delay{300}, Repeat{5, Sequence { PickTarget{}, Hurt{}, Delay{700} }}}
+		return Sequence { 
+			Delay {300}, 
+			Repeat {5, 
+				Sequence { PickTarget{}, Hurt{}, Delay{700} }
+			}
+		}
 	end
 end
 

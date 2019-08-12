@@ -30,7 +30,7 @@ local fork_loop_logic = function ( sceneMgr )
 			Time:update()
 			BP.Time:Update(Time.time)
 			sceneMgr.ecsSystemMgr:Update()
-			Ac.ActionMgr:Update(Time.deltaTimeMS)
+			self.actionMgr:Update(Time.deltaTimeMS)
 			skynet.sleep(1)
 		end
 	end)
@@ -182,7 +182,7 @@ function SceneMgr:Init( scene_id )
 	self.monsterMgr = require("game.scene.MonsterMgr").New()
 	self.npcMgr = require("game.scene.NPCMgr").New()
 	self.fightMgr = require("game.scene.FightMgr").New()
-
+	self.actionMgr = Ac.ActionMgr{}
 	--管理所有的ECS System
 	self.ecsSystemMgr = require("game.scene.ECSSystemMgr").New()
 
@@ -201,6 +201,7 @@ function SceneMgr:Init( scene_id )
 	self.entityMgr = ECS.World.Active:GetOrCreateManager(ECS.EntityManager.Name)
 	self.scene_cfg = require("config.scene.config_scene_"..scene_id)
 	self.curSceneID = scene_id
+	self.actionMgr:Init()
 	self.roleMgr:Init(self)
 	self.monsterMgr:Init(self, self.scene_cfg.monster_list)
 	self.npcMgr:Init(self, self.scene_cfg.npc_list)

@@ -1,10 +1,6 @@
 local Update = function(self, deltaTime)
 	local actionNum = #self
 	local hasTimeAct = nil
-	-- if self.curActionIndex >= actionNum then
-		-- self.isDone = true
-		-- return
-	-- end
 	for i=self.curActionIndex,actionNum do
 		self.curActionIndex = i
 		local action = self[i]

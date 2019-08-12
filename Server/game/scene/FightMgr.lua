@@ -60,7 +60,7 @@ function FightMgr:CastSkill( uid, req_data )
 		local skillActionCreator = SkillActions:GetActionCreator(req_data.skill_id)
 		local skillAction = skillActionCreator(skillData)
 		skillAction:Start(skillData)
-		Ac.ActionMgr:AutoUpdate(skillAction)
+		self.sceneMgr.actionMgr:AutoUpdate(skillAction)
 		-- skillData.action = skillAction
 		-- self.entityMgr:SetComponentData(skillEntity, "UMO.Skill", skillData)
 		-- print('Cat:FightMgr.lua[64] skillEntity', skillEntity, req_data.skill_id)
