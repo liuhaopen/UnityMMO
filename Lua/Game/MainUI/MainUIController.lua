@@ -1,5 +1,5 @@
-require("Game/MainUI/MainUIConst")
-require("Game/MainUI/MainUIModel")
+require("Game.MainUI.MainUIConst")
+require("Game.MainUI.MainUIModel")
 
 MainUIController = {}
 
@@ -10,22 +10,22 @@ end
 
 function MainUIController:InitMainUIViews(  )
     print('Cat:MainUIController.lua[InitMainUIViews]')
-    local view = require("Game/MainUI/MainUIJoystickView").New()
+    local view = require("Game.MainUI.MainUIJoystickView").New()
     UIMgr:Show(view)
 
-    local view = require("Game/MainUI/MainUISkillBtnView").New()
+    local view = require("Game.MainUI.MainUISkillBtnView").New()
     view:Load()
 
-    local view = require("Game/MainUI/MainUIRoleHeadView").New()
+    local view = require("Game.MainUI.MainUIRoleHeadView").New()
     UIMgr:Show(view)
     
-    local view = require("Game/MainUI/MainUITaskTeamBaseView").New()
+    local view = require("Game.MainUI.MainUITaskTeamBaseView").New()
     view:Load()
 
-    local view = require("Game/MainUI/MainUIActIconView").New()
+    local view = require("Game.MainUI.MainUIActIconView").New()
     view:Load()
     
-    local view = require("Game/MainUI/MainUIMenuView").New()
+    local view = require("Game.MainUI.MainUIMenuView").New()
     view:Load()
 end
 

@@ -31,12 +31,13 @@ namespace XLua.CSObjectWrap
 			Utils.EndObjectRegister(type, L, translator, null, null,
 			    null, null, null);
 
-		    Utils.BeginClassRegister(type, L, __CreateInstance, 4, 0, 0);
+		    Utils.BeginClassRegister(type, L, __CreateInstance, 5, 0, 0);
 			
 			
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "SceneChanged", UnityMMO.GlobalEvents.SceneChanged);
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "MessageShow", UnityMMO.GlobalEvents.MessageShow);
             Utils.RegisterObject(L, translator, Utils.CLS_IDX, "SkillCDChanged", UnityMMO.GlobalEvents.SkillCDChanged);
+            Utils.RegisterObject(L, translator, Utils.CLS_IDX, "MainRoleDie", UnityMMO.GlobalEvents.MainRoleDie);
             
 			
 			

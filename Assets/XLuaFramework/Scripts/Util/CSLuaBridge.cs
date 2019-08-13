@@ -9,6 +9,7 @@ public class CSLuaBridge
 {
     private static CSLuaBridge Instance = null;
     Dictionary<int, UnityAction> funcs;
+    Dictionary<int, UnityAction<long>> funcsNum;
     Dictionary<int, UnityAction<long, long>> funcs2Num;
     Dictionary<int, UnityAction<string>> funcsStr;
     public static CSLuaBridge GetInstance()
@@ -59,6 +60,25 @@ public class CSLuaBridge
         Debug.LogError("has no bind lua func2num : "+funcID);
     }
 
+    public void SetLuaFuncNum(int funcID, UnityAction<long> func)
+    {
+        if (funcsNum.ContainsKey(funcID))
+        {
+            throw new Exception("already bind funcnum for funcID :"+funcID);
+        }
+        funcsNum.Add(funcID, func);
+    }
+
+    public void CallLuaFuncNum(int funcID, long arge1)
+    {
+        if (funcsNum.ContainsKey(funcID))
+        {
+            funcsNum[funcID](arge1);
+            return;
+        }
+        Debug.LogError("has no bind lua funcnum : "+funcID);
+    }
+    
     public void SetLuaFuncStr(int funcID, UnityAction<string> func)
     {
         // Debug.Log("SetLuaFuncStr funcID : "+funcID+" func:"+(func!=null));
@@ -84,6 +104,7 @@ public class CSLuaBridge
     {
         funcs = new Dictionary<int, UnityAction>();
         funcs2Num = new Dictionary<int, UnityAction<long, long>>();
+        funcsNum = new Dictionary<int, UnityAction<long>>();
         funcsStr = new Dictionary<int, UnityAction<string>>();
     }
 }

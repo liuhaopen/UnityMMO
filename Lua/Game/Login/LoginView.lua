@@ -8,7 +8,9 @@ function LoginView:Constructor( )
 end
 
 function LoginView:OnLoad(  )
-	local names = {"login", "account", "server_ip", "port", "game_server_ip:input","game_port:input",}
+	local names = {
+		"login", "account", "server_ip", "port", "game_server_ip:input","game_port:input",
+	}
 	UI.GetChildren(self, self.transform, names)
 	self.login_btn_obj = self.login.gameObject
     self.account_txt = self.account:GetComponent("InputField")

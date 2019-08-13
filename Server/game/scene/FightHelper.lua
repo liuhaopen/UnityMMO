@@ -54,4 +54,12 @@ function FightHelper.ApplySkillCD( entity, skillID, lv )
 	return endTime
 end
 
+function FightHelper.IsLive( entity )
+	if entity and EntityMgr:Exists(entity) and EntityMgr:HasComponent(entity, "UMO.HP") then
+		local hpData = EntityMgr:GetComponentData(entity, "UMO.HP")
+		return hpData.cur > 0
+	end
+	return false
+end
+
 return FightHelper

@@ -182,5 +182,15 @@ scene_enter_to 108 {
 	}
 }
 
+scene_relive 109 {
+	request {
+		relive_type 0 : integer
+	}
+	response {
+		result 0 : integer
+		relive_type 1 : integer
+	}
+}
+
 ]]
 

@@ -14,12 +14,27 @@ local SceneConst = {
         NPCState=7,
         SceneChange=8,
 	},
+	--有些类型的事件，就算是自己的也要发给前端
+	InterestSelfEvent = {
+		[3] = true, [6] = true,
+	},
+	--SceneConst.Attr.Att
 	Attr = {
-		HP = 1,
-		MaxHP = 2,
-		Attack = 3,
-		Def = 4,
-		Dodge = 5,
+		Att = 1,--攻击
+		HP = 2,--血量
+		Def = 3,--防御
+		Crit = 4,--暴击
+		Hit = 5,--命中
+		Dodge = 6,--闪避
+	},
+	--SceneConst.AttrStrMap["att"]
+	AttrStrMap = {
+		["att"] = 1,
+		["hp"] = 2,
+		["def"] = 3,
+		["crit"] = 4,
+		["hit"] = 5,
+		["dodge"] = 6,
 	},
 	--SceneConst.BuffType.Attr
 	BuffID = {
@@ -53,6 +68,11 @@ local SceneConst = {
 		Enemy = 1,--敌方
 		Me = 2,--自己
 		Our = 3,--我方
+	},
+	--SceneConst.ReliveType.SafeArea
+	ReliveType = {
+		SafeArea = 1,
+		Inplace = 2,
 	},
 }
 

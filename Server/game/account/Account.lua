@@ -44,7 +44,7 @@ local gen_random_role_looks = function ( role_id )
 end
 
 local gen_role_base_attr = function ( role_id )
-	return {role_id=role_id, att=100, hp=10000, def=100, hit=100, dodge=120}
+	return {role_id=role_id, att=100, hp=10000, def=100, hit=100, dodge=120, crit=100}
 end
 
 function account.account_create_role( user_info, req_data )

@@ -64,8 +64,7 @@ public class SynchFromNet {
         if (ack==null || ack.events==null)
             return;
         var len = ack.events.Count;
-        Debug.Log("lisend hurt event : "+len);
-
+        // Debug.Log("lisend hurt event : "+len);
         // ack.events.Sort((SprotoType.scene_hurt_event_info a, SprotoType.scene_hurt_event_info b)=>DisallowRefReturnCrossingThisAttribute a.time)
         for (int i = 0; i < len; i++)
         {
@@ -75,7 +74,7 @@ public class SynchFromNet {
 
     private void HandleHurtEvent(SprotoType.scene_hurt_event_info hurtEvent)
     {
-        long uid = hurtEvent.attacker_uid;
+        // long uid = hurtEvent.attacker_uid;
         var entityMgr = SceneMgr.Instance.EntityManager;
         if (hurtEvent.defenders==null || hurtEvent.defenders.Count<=0)
             return;
@@ -105,7 +104,7 @@ public class SynchFromNet {
                 flyWord.transform.position = pos;
                 flyWord.StartFly();
             }
-            ChangeHP(defenderEntity, defender.cur_hp, defender.flag);
+            ChangeHP(defenderEntity, defender.cur_hp, defender.flag, hurtEvent.attacker_uid);
         }
     }
 
@@ -118,7 +117,7 @@ public class SynchFromNet {
         if (ack==null || ack.events==null)
             return;
         var len = ack.events.Count;
-        Debug.Log("lisend skill event : "+len);
+        // Debug.Log("lisend skill event : "+len);
         for (int i = 0; i < len; i++)
         {
             HandleCastSkill(ack.events[i]);
@@ -278,7 +277,7 @@ public class SynchFromNet {
         }
     }
 
-    private void ChangeHP(Entity entity, long hp, long flag)
+    private void ChangeHP(Entity entity, long hp, long flag, long attackerUID)
     {
         float curHp = (float)hp;
         var healthData = SceneMgr.Instance.EntityManager.GetComponentData<HealthStateData>(entity);
@@ -322,26 +321,32 @@ public class SynchFromNet {
             // var isRelive = strs[1]=="relive";
             var locoState = SceneMgr.Instance.EntityManager.GetComponentData<LocomotionState>(entity);
             locoState.LocoState = isRelive?LocomotionState.State.Idle:LocomotionState.State.Dead;
-            // Debug.Log("Time : "+TimeEx.ServerTime.ToString()+" time:"+change_info.time+" isRelive:"+isRelive+" state:"+locoState.LocoState.ToString());
+            Debug.Log("Time : "+TimeEx.ServerTime.ToString()+" isRelive:"+isRelive+" state:"+locoState.LocoState.ToString());
             // locoState.StartTime = Time.time - (TimeEx.ServerTime-change_info.time)/1000.0f;//CAT_TODO:dead time
             SceneMgr.Instance.EntityManager.SetComponentData(entity, locoState);
+            if (isDead && RoleMgr.GetInstance().IsMainRoleEntity(entity))
+            {
+                // var attackerName = SceneMgr.Instance.GetNameByUID(attackerUID);
+                XLuaFramework.CSLuaBridge.GetInstance().CallLuaFuncNum(GlobalEvents.MainRoleDie, attackerUID);
+            }
         }
     }
     
     private void ApplyChangeInfoHPChange(Entity entity, SprotoType.info_item change_info)
     {
-        // Debug.Log("hp change : "+change_info.value);
+        Debug.Log("hp change : "+change_info.value);
         string[] strs = change_info.value.Split(',');
         float curHp = (float)Int64.Parse(strs[0])/GameConst.RealToLogic;
         long flag = 0;
         if (strs.Length == 2)
         {
-            if (strs[1]=="dead")
-                flag = 4;
-            else if (strs[1]=="relive")
+            // if (strs[1]=="dead")
+            //     flag = 4;
+            // else 
+            if (strs[1]=="relive")
                 flag = 5;
         }
-        ChangeHP(entity, Int64.Parse(strs[0]), flag);
+        ChangeHP(entity, Int64.Parse(strs[0]), flag, 0);
     }
     
 }

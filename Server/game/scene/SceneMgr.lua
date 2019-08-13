@@ -30,7 +30,7 @@ local fork_loop_logic = function ( sceneMgr )
 			Time:update()
 			BP.Time:Update(Time.time)
 			sceneMgr.ecsSystemMgr:Update()
-			self.actionMgr:Update(Time.deltaTimeMS)
+			sceneMgr.actionMgr:Update(Time.deltaTimeMS)
 			skynet.sleep(1)
 		end
 	end)
@@ -81,9 +81,15 @@ local collect_events = function ( sceneMgr )
 					if not event_info.is_private then
 						role_info.change_obj_infos = SceneHelper.AddInfoItem(role_info.change_obj_infos, interest_uid, event_info)
 					end
-					if event_info.is_private then
-						print('Cat:SceneMgr.lua[91] private event ')
-					end
+				end
+			end
+		end
+		--有些就算是自己的事件也要发给前端，比如自己复活
+		local event_list = sceneMgr.eventMgr:GetSceneEvent(role_info.scene_uid)
+		if event_list then
+			for i,event_info in ipairs(event_list) do
+				if SceneConst.InterestSelfEvent[event_info.key] then
+					role_info.change_obj_infos = SceneHelper.AddInfoItem(role_info.change_obj_infos, role_info.scene_uid, event_info)
 				end
 			end
 		end

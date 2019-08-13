@@ -45,7 +45,7 @@ local config = {
 	[110010] = {
 		skill_id = 110010, target_type = 1, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 5000, attack_max_num = 2, damage_rate = 10000, area = 600, buff = {
+				condition = {{lv, 1}}, cd = 5000, attack_max_num = 2, damage_rate = 15000, area = 600, buff = {
 					{1,}, desc = [[男角技能1，造成50点伤害]], 
 				},
 			},
@@ -54,21 +54,21 @@ local config = {
 	[110011] = {
 		skill_id = 110011, target_type = 1, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 6000, attack_max_num = 2, damage_rate = 10000, area = 600, desc = [[男角技能2，造成100点伤害同时有20%的概率让对方防御减少100点]]
+				condition = {{lv, 1}}, cd = 6000, attack_max_num = 2, damage_rate = 20000, area = 600, desc = [[男角技能2，造成100点伤害同时有20%的概率让对方防御减少100点]]
 			},
 		},	
 	},
 	[110012] = {
 		skill_id = 120012, target_type = 1, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 7000, attack_max_num = 2, damage_rate = 10000, area = 600, desc = [[男角技能3，造成150点伤害同时提升100%自己的技能伤害]]
+				condition = {{lv, 1}}, cd = 7000, attack_max_num = 2, damage_rate = 25000, area = 600, desc = [[男角技能3，造成150点伤害同时提升100%自己的技能伤害]]
 			},
 		},	
 	},
 	[110013] = {
 		skill_id = 110013, target_type = 1, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 1000, attack_max_num = 2, damage_rate = 10000, area = 600, desc = [[男角技能4，5秒内造成500点伤害同时有50%的概率让对方晕眩]]
+				condition = {{lv, 1}}, cd = 1000, attack_max_num = 2, damage_rate = 30000, area = 600, desc = [[男角技能4，5秒内造成500点伤害同时有50%的概率让对方晕眩]]
 			},
 		},	
 	},

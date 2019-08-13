@@ -24,7 +24,8 @@ end
 
 function MonsterMgr:InitArchetype(  )
 	self.monster_archetype = self.entityMgr:CreateArchetype({
-		"UMO.Position", "UMO.TargetPos", "UMO.UID", "UMO.TypeID", "UMO.HP", "UMO.SceneObjType", "UMO.MonsterAI", "UMO.PatrolInfo", "UMO.MoveSpeed", "UMO.AOIHandle", "UMO.Beatable", "UMO.DamageEvents", "UMO.Buff"
+		"UMO.Position", "UMO.TargetPos", "UMO.UID", "UMO.TypeID", "UMO.HP", "UMO.SceneObjType", "UMO.MonsterAI", "UMO.PatrolInfo", "UMO.MoveSpeed", "UMO.AOIHandle", "UMO.Beatable", "UMO.DamageEvents", "UMO.Buff", 
+		"UMO.BaseAttr", "UMO.FightAttr"
 	})
 end
 
@@ -72,11 +73,17 @@ function MonsterMgr:CreateMonster( type_id, patrolInfo )
 	local scene_uid = SceneHelper:NewSceneUID(SceneConst.ObjectType.Monster)
 	self.entityMgr:SetComponentData(monster, "UMO.UID", scene_uid)
 	self.entityMgr:SetComponentData(monster, "UMO.TypeID", type_id)
-	self.entityMgr:SetComponentData(monster, "UMO.HP", {cur=cfg.max_hp, max=cfg.max_hp})
 	self.entityMgr:SetComponentData(monster, "UMO.SceneObjType", {value=SceneConst.ObjectType.Monster})
 	self.entityMgr:SetComponentData(monster, "UMO.MonsterAI", scene_uid)
 	self.entityMgr:SetComponentData(monster, "UMO.PatrolInfo", patrolInfo)
 	self.entityMgr:SetComponentData(monster, "UMO.MoveSpeed", {value=cfg.move_speed})
+	self.entityMgr:SetComponentData(monster, "UMO.BaseAttr", cfg.attr_list)
+	self.entityMgr:SetComponentData(monster, "UMO.FightAttr", table.deep_copy(cfg.attr_list))
+	local maxHp = cfg.attr_list[SceneConst.Attr.HP] or 0
+	if maxHp <= 0 then
+		skynet.error("monster max hp is 0, please check the configh_monster.lua.mon id : "..cfg.type_id)
+	end
+	self.entityMgr:SetComponentData(monster, "UMO.HP", {cur=maxHp, max=maxHp})
 
 	local handle = self.aoi:add()
 	self.aoi:set_user_data(handle, "uid", scene_uid)

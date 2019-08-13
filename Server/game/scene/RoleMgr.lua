@@ -18,7 +18,8 @@ end
 
 function RoleMgr:InitArchetype(  )
 	self.role_archetype = self.entityMgr:CreateArchetype({
-		"UMO.Position", "UMO.TargetPos", "UMO.UID", "UMO.TypeID", "UMO.HP", "UMO.SceneObjType", "UMO.MoveSpeed", "UMO.AOIHandle", "UMO.Beatable", "UMO.DamageEvents", "UMO.MsgAgent", "UMO.CD", "UMO.Buff"
+		"UMO.Position", "UMO.TargetPos", "UMO.UID", "UMO.TypeID", "UMO.HP", "UMO.SceneObjType", "UMO.MoveSpeed", "UMO.AOIHandle", "UMO.Beatable", "UMO.DamageEvents", "UMO.MsgAgent", "UMO.CD", "UMO.Buff", "UMO.BaseAttr",
+		"UMO.FightAttr"
 	})
 end
 
@@ -58,6 +59,17 @@ function RoleMgr:GetLooksInfoByRoleID( roleID )
 	return nil
 end
 
+function RoleMgr:GetBirthPos(  )
+	local born_list = self.sceneMgr.scene_cfg.born_list
+	local door_num = born_list and #born_list or 0
+	if door_num > 0 then
+		local random_index = math.random(1, door_num)
+		local born_info = born_list[random_index]
+		return born_info
+	end
+	return {pos_x=0, pos_y=0, pos_z=0}
+end
+
 function RoleMgr:InitPosInfo( baseInfo, targetDoor )
 	if not baseInfo then return end
 	local is_need_reset_pos = false
@@ -69,15 +81,16 @@ function RoleMgr:InitPosInfo( baseInfo, targetDoor )
 		end
 	end
 	if is_need_reset_pos then
-		local born_list = self.sceneMgr.scene_cfg.born_list
-		local door_num = born_list and #born_list or 0
-		if door_num > 0 then
-			local random_index = math.random(1, door_num)
-			local born_info = born_list[random_index]
-			baseInfo.pos_x = born_info.pos_x
-			baseInfo.pos_y = born_info.pos_y
-			baseInfo.pos_z = born_info.pos_z
-		end
+		-- local born_list = self.sceneMgr.scene_cfg.born_list
+		-- local door_num = born_list and #born_list or 0
+		-- if door_num > 0 then
+		-- 	local random_index = math.random(1, door_num)
+		-- 	local born_info = born_list[random_index]
+		local born_info = self:GetBirthPos()
+		baseInfo.pos_x = born_info.pos_x
+		baseInfo.pos_y = born_info.pos_y
+		baseInfo.pos_z = born_info.pos_z
+		-- end
 	end
 end
 
@@ -99,6 +112,15 @@ function RoleMgr:RoleEnter( roleID, agent )
 		local entity = self:CreateRole(scene_uid, roleID, base_info.pos_x, base_info.pos_y, base_info.pos_z, handle, agent)
 		self.sceneMgr:SetEntity(scene_uid, entity)
 		self.entityMgr:SetComponentData(entity, "UMO.HP", {cur=base_info.hp, max=base_info.attr_info and base_info.attr_info.hp or 10000})
+		local baseAttr = {}
+		for k,v in pairs(base_info.attr_info) do
+			local attrIndex = SceneConst.AttrStrMap[k]
+			if attrIndex then
+				baseAttr[attrIndex] = v
+			end
+		end
+		self.entityMgr:SetComponentData(entity, "UMO.BaseAttr", baseAttr)
+		self.entityMgr:SetComponentData(entity, "UMO.FightAttr", table.deep_copy(baseAttr))
 		-- self.sceneMgr.aoi:set_user_data(handle, "entity", entity)
 		local changeSceneStr = self.sceneMgr.curSceneID..","..base_info.pos_x..","..base_info.pos_y..","..base_info.pos_z
 		local change_scene_event_info = {key=SceneConst.InfoKey.SceneChange, value=changeSceneStr}
@@ -235,4 +257,45 @@ function RoleMgr:RoleWalk( roldID, req_data )
 	end
 	return {}
 end
+
+function RoleMgr:Relive( roleID, reliveType )
+	local role_info = self.roleList[roleID]
+	local baseInfo = role_info and role_info.base_info or nil
+	local ret = ErrorCode.Unknow
+	if baseInfo then
+		local entity = self.sceneMgr:GetEntity(role_info.scene_uid)
+		local hpData = self.sceneMgr.entityMgr:GetComponentData(entity, "UMO.HP")
+		if hpData.cur > 0 then
+			skynet.error("try to relive when hp greater than 0, role id : "..roleID.." hp:"..hpData.cur)
+		end
+		if baseInfo.attr_info and baseInfo.attr_info.hp then
+			hpData.cur = baseInfo.attr_info.hp
+			local change_target_pos_event_info = {key=SceneConst.InfoKey.HPChange, value=math.floor(baseInfo.attr_info.hp)..",relive", time=Time.timeMS}
+			self.sceneMgr.eventMgr:AddSceneEvent(role_info.scene_uid, change_target_pos_event_info)
+			ret = ErrorCode.Succeed
+		else
+			skynet.error("cannot find attr info when relive, role id : "..roleID)
+		end
+		if reliveType == SceneConst.ReliveType.SafeArea then
+			local safePos = self:GetBirthPos()
+			baseInfo.pos_x = safePos.pos_x
+			baseInfo.pos_y = safePos.pos_y
+			baseInfo.pos_z = safePos.pos_z
+			if entity then
+				self.sceneMgr.entityMgr:SetComponentData(entity, "UMO.Position", {x=baseInfo.pos_x, y=baseInfo.pos_y, z=baseInfo.pos_z})
+				self.sceneMgr.entityMgr:SetComponentData(entity, "UMO.TargetPos", {x=baseInfo.pos_x, y=baseInfo.pos_y, z=baseInfo.pos_z})
+			end
+			self.sceneMgr.aoi:set_pos(role_info.aoi_handle, baseInfo.pos_x, baseInfo.pos_y, baseInfo.pos_z)
+			local pos_info = baseInfo.pos_x..","..baseInfo.pos_y..","..baseInfo.pos_z
+			local cur_time = Time.timeMS
+			local change_pos_event_info = {key=SceneConst.InfoKey.PosChange, value=pos_info, time=cur_time}
+			self.sceneMgr.eventMgr:AddSceneEvent(role_info.scene_uid, change_pos_event_info)
+			ret = ErrorCode.Succeed
+		end
+	else
+		skynet.error("cannot find role info when relive, role id : "..roleID)
+	end
+	return ret
+end
+
 return RoleMgr

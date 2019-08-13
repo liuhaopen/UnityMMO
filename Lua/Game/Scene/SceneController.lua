@@ -1,3 +1,5 @@
+SceneConst = require("Game.Scene.SceneConst")
+
 local SceneController = {}
 
 function SceneController:Init(  )
@@ -54,6 +56,20 @@ function SceneController:InitEvents(  )
     end
 	UIHelper.BindClickEvent(self.sceneNode, on_up)
 
+    local MainRoleDie = function ( killerUID )
+        print('Cat:SceneController.lua[58] self.reliveView', self.reliveView, killerUID)
+        if not self.reliveView then
+            self.reliveView = require("Game.Scene.ReliveView").New()
+            self.reliveView:Load()
+            self.reliveView:SetUnloadCallBack(function()
+                self.reliveView = nil
+            end)
+        end
+        self.reliveView:SetData(killerUID)
+    end
+    print('Cat:SceneController.lua[66] GlobalEvents.MainRoleDie', GlobalEvents.MainRoleDie, CSLuaBridge.GetInstance())
+    print('Cat:SceneController.lua[67] CSLuaBridge.GetInstance:SetLuaFuncNum', CSLuaBridge.GetInstance().SetLuaFuncNum)
+    CSLuaBridge.GetInstance():SetLuaFuncNum(GlobalEvents.MainRoleDie, MainRoleDie)
 end
 
 return SceneController

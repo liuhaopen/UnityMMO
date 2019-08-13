@@ -21,12 +21,14 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(XLuaFramework.CSLuaBridge);
-			Utils.BeginObjectRegister(type, L, translator, 0, 6, 0, 0);
+			Utils.BeginObjectRegister(type, L, translator, 0, 8, 0, 0);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "SetLuaFunc", _m_SetLuaFunc);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "CallLuaFunc", _m_CallLuaFunc);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "SetLuaFunc2Num", _m_SetLuaFunc2Num);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "CallLuaFunc2Num", _m_CallLuaFunc2Num);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "SetLuaFuncNum", _m_SetLuaFuncNum);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "CallLuaFuncNum", _m_CallLuaFuncNum);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "SetLuaFuncStr", _m_SetLuaFuncStr);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "CallLuaFuncStr", _m_CallLuaFuncStr);
 			
@@ -191,6 +193,64 @@ namespace XLua.CSObjectWrap
                     long _arge2 = LuaAPI.lua_toint64(L, 4);
                     
                     gen_to_be_invoked.CallLuaFunc2Num( _funcID, _arge1, _arge2 );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_SetLuaFuncNum(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                XLuaFramework.CSLuaBridge gen_to_be_invoked = (XLuaFramework.CSLuaBridge)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    int _funcID = LuaAPI.xlua_tointeger(L, 2);
+                    UnityEngine.Events.UnityAction<long> _func = translator.GetDelegate<UnityEngine.Events.UnityAction<long>>(L, 3);
+                    
+                    gen_to_be_invoked.SetLuaFuncNum( _funcID, _func );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_CallLuaFuncNum(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                XLuaFramework.CSLuaBridge gen_to_be_invoked = (XLuaFramework.CSLuaBridge)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    int _funcID = LuaAPI.xlua_tointeger(L, 2);
+                    long _arge1 = LuaAPI.lua_toint64(L, 3);
+                    
+                    gen_to_be_invoked.CallLuaFuncNum( _funcID, _arge1 );
                     
                     
                     

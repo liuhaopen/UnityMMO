@@ -13,16 +13,16 @@ local CheckAttr = Ac.OO.Class {
 		--检查属性的目标有两种，在Buff时用target_uid，在Skill时就是检查施法者caster_uid
 		local target_uid = data.target_uid or data.caster_uid
 		local targetEntity = sceneMgr:GetEntity(target_uid)
-		local curAttrList = entityMgr:GetComponentData(targetEntity, "UMO.Attr")
+		local curAttrList = entityMgr:GetComponentData(targetEntity, "UMO.BaseAttr")
 		local curAttrValue = curAttrList[self[1]]
 		local operator = self[2]
 		local compareValue = self[3]
 		local isPercent = self[4] and self[4]=="%"
 		if isPercent then
-			if self[1] == SceneConst.Attr.HP then
-				local maxAttrValue = curAttrList[SceneConst.Attr.MaxHP]
-				curAttrValue = (curAttrValue/maxAttrValue)*10000
-			end
+			-- if self[1] == SceneConst.Attr.HP then
+			-- 	local maxAttrValue = curAttrList[SceneConst.Attr.MaxHP]
+			-- 	curAttrValue = (curAttrValue/maxAttrValue)*10000
+			-- end
 		end
 		local compareFunc = OperatorMap[operator]
 		return compareFunc(curAttrValue, compareValue)

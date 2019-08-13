@@ -82,6 +82,11 @@ function CMD.scene_listen_hurt_event( user_info, req_data )
 	return {}
 end
 
+function CMD.scene_relive( user_info, req_data )
+	local ret = sceneMgr.roleMgr:Relive(user_info.cur_role_id, req_data.relive_type)
+	return {result=ret, relive_type=req_data.relive_type}
+end
+
 skynet.start(function()
 	skynet.dispatch("lua", function(session, source, command, ...)
 		local f = assert(CMD[command])
