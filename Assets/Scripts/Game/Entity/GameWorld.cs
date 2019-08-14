@@ -190,6 +190,27 @@ public class GameWorld
         return m_ECSWorld;
     }
 
+    public T SpawnByGameObject<T>(GameObject gameObject) where T : Component
+    {
+        return SpawnByGameObject<T>(gameObject, Vector3.zero, Quaternion.identity);
+    }
+
+    public T SpawnByGameObject<T>(GameObject gameObject, Vector3 position, Quaternion rotation) where T : Component
+    {
+        Entity entity = RegisterInternal(gameObject, true);
+        if (gameObject == null)
+            return null;
+
+        var result = gameObject.GetComponent<T>();
+        if (result == null)
+        {
+            GameDebug.Log(string.Format("Spawned entity '{0}' didn't have component '{1}'", gameObject, typeof(T).FullName));
+            return null;
+        }
+
+        return result;
+    }
+
     public T Spawn<T>(GameObject prefab) where T : Component
     {
         return Spawn<T>(prefab, Vector3.zero, Quaternion.identity);

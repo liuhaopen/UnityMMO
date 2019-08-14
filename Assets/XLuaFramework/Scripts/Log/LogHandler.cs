@@ -22,8 +22,8 @@ namespace XLuaFramework
     {
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
 
-       ConsoleWindows.ConsoleWindow console = new ConsoleWindows.ConsoleWindow();
-       ConsoleWindows.ConsoleInput input = new ConsoleWindows.ConsoleInput();
+    //    ConsoleWindows.ConsoleWindow console = new ConsoleWindows.ConsoleWindow();
+    //    ConsoleWindows.ConsoleInput input = new ConsoleWindows.ConsoleInput();
 #endif
         private Thread thread;
         static readonly object m_lockObject = new object();
@@ -59,8 +59,8 @@ namespace XLuaFramework
             //     File.Create(output_path);
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            console.Initialize();
-            console.SetTitle("game log");
+            // console.Initialize();
+            // console.SetTitle("game log");
 #endif
 
             thread = new Thread(OnUpdateThread);
@@ -98,7 +98,7 @@ namespace XLuaFramework
         void Update()
         {
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            input.Update();
+            // input.Update();
 #endif
         }
 
@@ -122,8 +122,8 @@ namespace XLuaFramework
                         else
                             System.Console.ForegroundColor = System.ConsoleColor.White;
 
-                        if (System.Console.CursorLeft != 0)
-                            input.ClearLine();
+                        // if (System.Console.CursorLeft != 0)
+                        //     input.ClearLine();
 
                         System.Console.WriteLine(li.message);
 #endif
@@ -153,7 +153,7 @@ namespace XLuaFramework
         void OnDestroy()
         {
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            console.Shutdown();
+            // console.Shutdown();
 #endif
         }
     }

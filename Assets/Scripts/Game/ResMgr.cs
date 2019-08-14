@@ -10,6 +10,7 @@ public class ResMgr
     Dictionary<string, GameObject> prefabDic = new Dictionary<string, GameObject>();
     List<GameObject> scenePrefabList;
     Dictionary<int, List<GameObject>> sceneObjectPool;
+    Dictionary<string, List<GameObject>> gameObjectPool;
 
     public static ResMgr GetInstance()
     {
@@ -21,6 +22,7 @@ public class ResMgr
 
     public void Init()
 	{
+        gameObjectPool = new Dictionary<string, List<GameObject>>();
         LoadPrefab("Assets/AssetBundleRes/role/prefab/MainRole.prefab", "MainRole");    
         LoadPrefab("Assets/AssetBundleRes/role/prefab/Role.prefab", "Role");
         LoadPrefab("Assets/AssetBundleRes/monster/prefab/Monster.prefab", "Monster");
@@ -48,6 +50,41 @@ public class ResMgr
     public GameObject GetPrefab(string name)
     {
         return this.prefabDic[name];
+    }
+
+    public GameObject GetGameObject(string name)
+    {
+        GameObject obj = null;
+        if (gameObjectPool.ContainsKey(name))
+        {
+            var pool = gameObjectPool[name];
+            if (pool.Count > 0)
+            {
+                obj = pool[pool.Count-1];
+                obj.SetActive(true);
+                pool.RemoveAt(pool.Count-1);
+                return obj;
+            }
+        }
+        var prefab = this.prefabDic[name];
+        if (prefab != null)
+            return GameObject.Instantiate(prefab);
+        return null;
+    }
+
+    public void UnuseGameObject(string name, GameObject obj)
+    {
+        // obj.SetActive(false);//交给使用者控制显示隐藏
+        if (gameObjectPool.ContainsKey(name))
+        {
+            gameObjectPool[name].Add(obj);
+        }
+        else
+        {
+            var pool = new List<GameObject>();
+            pool.Add(obj);
+            gameObjectPool.Add(name, pool);
+        }
     }
 
     public GameObject SpawnGameObject(string prefabName, Vector3 position=default(Vector3), Quaternion rotation=default(Quaternion))

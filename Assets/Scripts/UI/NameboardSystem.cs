@@ -69,10 +69,10 @@ public class NameboardSystem : BaseComponentSystem
         }
         else if (nameboardData.UIResState == NameboardData.ResState.Loaded)
         {
-            //TODO: use object pool
             var transform = EntityManager.GetComponentObject<RectTransform>(nameboardData.UIEntity);
-            // transform.localScale = Vector3.zero;
-            m_world.RequestDespawn(transform.gameObject, PostUpdateCommands);
+            // m_world.RequestDespawn(transform.gameObject, PostUpdateCommands);
+            transform.gameObject.SetActive(false);
+            ResMgr.GetInstance().UnuseGameObject("Nameboard", transform.gameObject);
             nameboardData.UIResState = NameboardData.ResState.Deleting;
             nameboardData.UIEntity = Entity.Null;
             EntityManager.SetComponentData(entity, nameboardData);
@@ -134,7 +134,7 @@ public class NameboardSpawnRequestSystem : BaseComponentSystem
             var request = spawnRequests[i];
             if (!EntityManager.Exists(request.Owner))
                 continue;
-            GameObjectEntity nameboardGOE = m_world.Spawn<GameObjectEntity>(ResMgr.GetInstance().GetPrefab("Nameboard"));
+            GameObjectEntity nameboardGOE = m_world.SpawnByGameObject<GameObjectEntity>(ResMgr.GetInstance().GetGameObject("Nameboard"));
             nameboardGOE.transform.SetParent(nameboardCanvas);
             nameboardGOE.transform.localScale = new Vector3(-1, 1, 1);
             var nameboardBehav = nameboardGOE.GetComponent<Nameboard>();
