@@ -189,6 +189,9 @@ public class XLuaManager : MonoBehaviour
         NetworkManager.GetInstance().OnDisConnectCallBack = null;
         NetworkManager.GetInstance().OnReceiveLineCallBack = null;
         NetworkManager.GetInstance().OnReceiveMsgCallBack = null;
+        CSLuaBridge.GetInstance().ClearDelegate();
+        LoadScript("LuaMain");
+        SafeDoString("ExitGame()");
         if (luaEnv != null)
         {
             try

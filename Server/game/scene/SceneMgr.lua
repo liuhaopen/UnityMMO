@@ -45,7 +45,7 @@ local update_around_objs = function ( sceneMgr, role_info )
 		local scene_uid = sceneMgr.aoi:get_user_data(aoi_handle, "uid")
 		local is_enter = flag==1
 		-- print('Cat:scene.lua[67] flag, ', flag, aoi_handle, role_info.aoi_handle, scene_uid)
-		if is_enter then
+		if is_enter and scene_uid then
 			role_info.around_objs[scene_uid] = scene_uid
 			local entity = sceneMgr.uid_entity_map[scene_uid]
 			if entity then
@@ -63,10 +63,8 @@ local update_around_objs = function ( sceneMgr, role_info )
 				end
 				role_info.change_obj_infos = SceneHelper.AddInfoItem(role_info.change_obj_infos, scene_uid, {key=SceneConst.InfoKey.EnterView, value=eventStr, time=cur_time})
 			end
-		else
-			if scene_uid then
-				role_info.around_objs[scene_uid] = nil
-			end
+		elseif scene_uid then
+			role_info.around_objs[scene_uid] = nil
 			role_info.change_obj_infos = SceneHelper.AddInfoItem(role_info.change_obj_infos, scene_uid, {key=SceneConst.InfoKey.LeaveView, value="", time=cur_time})
 		end
 	end

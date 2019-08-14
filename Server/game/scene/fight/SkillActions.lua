@@ -56,7 +56,10 @@ function SkillActions:Init(  )
 	}
 	for i,v in ipairs(normal_skill_list) do
 		self.actions[v] = function( cfg )
-			return Sequence { PickTarget{}, Hurt{} }
+			return Sequence { 
+					PickTarget {}, 
+					Hurt {} 
+				}
 		end
 	end
 
@@ -65,16 +68,29 @@ function SkillActions:Init(  )
 	}
 	for i,v in ipairs(simple_skill_list) do
 		self.actions[v] = function( cfg )
-			return Hurt{} 
+			return Hurt {} 
 		end
 	end
 
-	--300毫秒后，重复5次攻击，每次间隔200毫秒
+	--扣血后有万份之x概率触发400000buff
+	self.actions[110012] = function( cfg )
+		return Sequence {
+			PickTarget {}, 
+			Hurt {}, 
+			If { Random{10000}, Buff{400000} } 
+		}
+	end
+
+	--300毫秒后，重复5次攻击，每次间隔700毫秒
 	self.actions[110013] = function( cfg )
 		return Sequence { 
 			Delay {300}, 
 			Repeat {5, 
-				Sequence { PickTarget{}, Hurt{}, Delay{700} }
+				Sequence { 
+					PickTarget {}, 
+					Hurt {}, 
+					Delay {700} 
+				}
 			}
 		}
 	end
@@ -82,7 +98,11 @@ function SkillActions:Init(  )
 		return Sequence { 
 			Delay {300}, 
 			Repeat {5, 
-				Sequence { PickTarget{}, Hurt{}, Delay{700} }
+				Sequence { 
+					PickTarget {}, 
+					Hurt {}, 
+					Delay {700} 
+				}
 			}
 		}
 	end

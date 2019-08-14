@@ -10,10 +10,14 @@ end
 
 function ReliveView:OnLoad(  )
 	local names = {
-		"safe_relive:obj","relive:obj","tip:txt",
+		"con/tip:txt","con/safe_relive:obj","con/relive:obj","con:obj",
 	}
 	UI.GetChildren(self, self.transform, names)
-
+	self.con_obj:SetActive(false)
+	local delayShowCom = self:AddUIComponent(UI.Countdown)
+	delayShowCom:DelayCallByLeftTime(1500, function()
+		self.con_obj:SetActive(true)
+	end)
 	self:AddEvents()
 end
 

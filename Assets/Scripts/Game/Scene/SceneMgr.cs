@@ -124,7 +124,7 @@ public class SceneMgr : MonoBehaviour
             SceneInfo scene_info = JsonUtility.FromJson<SceneInfo>(scene_json);
             curSceneInfo = scene_info;
             Debug.Log("LoadSceneInfo start LoadSceneRes count:"+scene_info.ResPathList.Count);
-            // ApplyLightInfo(scene_info);//TODO:bake light
+            // ApplyLightInfo(scene_info);
             ResMgr.GetInstance().LoadSceneRes(scene_info.ResPathList, delegate(bool isOk)
             {
                 LoadingView.Instance.SetData(0.6f, "初始化场景节点信息...");
@@ -233,6 +233,7 @@ public class SceneMgr : MonoBehaviour
         this.detector = detector;
     }
 
+    //光照信息放在base_world后此函数就没用了
     private void ApplyLightInfo(SceneInfo scene_info)
     {
         LightmapSettings.lightmapsMode = scene_info.LightmapMode;

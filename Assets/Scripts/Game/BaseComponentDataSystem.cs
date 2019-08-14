@@ -602,7 +602,7 @@ public abstract class DeinitializeComponentGroupSystem<T> : BaseComponentSystem
 	{
 		Profiler.BeginSample(name);
 
-		if (OutgoingGroup.CalculateLength() > 0)
+		if (OutgoingGroup.CalculateEntityCount() > 0)
 			Deinitialize(ref OutgoingGroup);
 		
 		Profiler.EndSample();

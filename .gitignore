@@ -55,14 +55,5 @@ Assets/UGUI-Editor/Res/Preview.meta
 .vscode/settings.json
 Assets/AssetBundleRes/*
 Assets/AssetBundleRes.meta
-Server/game/ECS/ucrtbased.dll
-Server/game/ECS/ECSCore.exp
-Server/game/ECS/ECSCore.iobj
-Server/game/ECS/ECSCore.ipdb
-Server/game/ECS/ECSCore.lib
-Server/lualib/ECS/ECSCore.exp
-Server/lualib/ECS/ECSCore.iobj
-Server/lualib/ECS/ECSCore.ipdb
-Server/lualib/ECS/ECSCore.lib
 Assets/LuaFramework/*
 Assets/LuaFramework.meta

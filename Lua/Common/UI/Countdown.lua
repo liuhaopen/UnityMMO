@@ -29,7 +29,7 @@ function UI.Countdown:CountdownByEndTime( end_time, step_call_back, duration )
 end
 
 function UI.Countdown:CountdownByLeftTime( left_time, step_call_back, duration )
-	local curTime = TimeUtil:getServerTime()
+	local curTime = Time:GetServerTime()
 	self:CountdownByEndTime(curTime+left_time, step_call_back, duration)
 end
 

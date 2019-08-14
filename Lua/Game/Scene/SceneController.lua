@@ -70,6 +70,7 @@ function SceneController:InitEvents(  )
     print('Cat:SceneController.lua[66] GlobalEvents.MainRoleDie', GlobalEvents.MainRoleDie, CSLuaBridge.GetInstance())
     print('Cat:SceneController.lua[67] CSLuaBridge.GetInstance:SetLuaFuncNum', CSLuaBridge.GetInstance().SetLuaFuncNum)
     CSLuaBridge.GetInstance():SetLuaFuncNum(GlobalEvents.MainRoleDie, MainRoleDie)
+
 end
 
 return SceneController

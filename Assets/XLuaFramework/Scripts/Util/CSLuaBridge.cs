@@ -107,6 +107,14 @@ public class CSLuaBridge
         funcsNum = new Dictionary<int, UnityAction<long>>();
         funcsStr = new Dictionary<int, UnityAction<string>>();
     }
+
+    public void ClearDelegate()
+    {
+        funcs = null;
+        funcs2Num = null;
+        funcsNum = null;
+        funcsStr = null;
+    }
 }
 
 }

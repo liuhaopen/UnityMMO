@@ -43,39 +43,38 @@ public class UpdateAnimatorSystem : BaseComponentSystem
     void UpdateAnimator(Animator animator, LocomotionState locoData)
     {
         LocomotionState.State locoState = locoData.LocoState;
-        // Debug.Log("locoState : "+locoState);
+        string aniName = "";
         if (locoState == LocomotionState.State.Idle && !animator.GetCurrentAnimatorStateInfo(0).IsName("idle"))
         {
-            // animator.CrossFade("idle", 0.2f, 0, Time.deltaTime);
-            animator.Play("idle");
+            aniName = "idle";
         }
         else if (locoState == LocomotionState.State.Run && !animator.GetCurrentAnimatorStateInfo(0).IsName("run"))
         {
-            // animator.CrossFade("run", 0.2f, 0, Time.deltaTime);
-            animator.Play("run");
+            aniName = "run";
         }
         else if (locoState == LocomotionState.State.BeHit && !animator.GetCurrentAnimatorStateInfo(0).IsName("behit"))
         {
-            animator.Play("behit");
+            aniName = "behit";
         }
         else if (locoState == LocomotionState.State.Jump && !animator.GetCurrentAnimatorStateInfo(0).IsName("jump"))
         {
-            animator.Play("jump");
+            aniName = "jump";
         }
         else if (locoState == LocomotionState.State.DoubleJump && !animator.GetCurrentAnimatorStateInfo(0).IsName("jump2"))
         {
-            animator.Play("jump2");
+            aniName = "jump2";
         }
         else if (locoState == LocomotionState.State.TrebleJump && !animator.GetCurrentAnimatorStateInfo(0).IsName("jump3"))
         {
-            animator.Play("jump3");
+            aniName = "jump3";
         }
         else if (locoState == LocomotionState.State.Dead && !animator.GetCurrentAnimatorStateInfo(0).IsName("death"))
         {
+            aniName = "death";
             // Debug.Log("TimeEx.ServerTime:"+TimeEx.ServerTime+" startTime:"+locoData.StartTime+" "+((Time.time - locoData.StartTime)));
             // if (Time.time - locoData.StartTime <= 1)
             // {
-                animator.Play("death");
+                // ------animator.Play("death");
             // }
             // else
             // {
@@ -83,6 +82,20 @@ public class UpdateAnimatorSystem : BaseComponentSystem
             //     animator.Play("death", 0, 1.0f);
             // }
         }
-        
+        if (aniName != "")
+        {
+            animator.Play(aniName);
+            if (aniName == "idle" || aniName == "run")
+            {
+                var headTrans = animator.transform.Find("head");
+                Animator headAnimator = null;
+                if (headTrans != null)
+                {
+                    headAnimator = headTrans.GetComponent<Animator>();
+                    animator.Play(aniName);
+                }
+                // Debug.Log("locoState : "+locoState+" headTrans:"+(headTrans!=null));
+            }
+        }
     }
 }

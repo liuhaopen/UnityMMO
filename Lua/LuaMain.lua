@@ -15,6 +15,12 @@ function LuaMain()
     Game:OnInitOK()
 end
 
+function ExitGame()
+    print('Cat:LuaMain.lua[ExitGame]')
+    local util = require 'Tools.print_delegate'
+    util.print_func_ref_by_csharp()
+end
+
 --初始化完成
 function Game:OnInitOK()
     print('Cat:Game.lua[Game.OnInitOK()]')
@@ -92,4 +98,5 @@ end
 
 --销毁--
 function Game:OnDestroy()
+
 end
