@@ -1,6 +1,7 @@
 local Ac = require "Action"
 local Hurt = require "game.scene.fight.Hurt"
 local PickTarget = require "game.scene.fight.PickTarget"
+local Buff = require "game.scene.fight.Buff"
 local If = Ac.If
 local Delay = Ac.Delay
 local Random = Ac.Random
@@ -24,7 +25,8 @@ function SkillActions:Init(  )
 	Random:条件Action,参数为概率万分比
 	CheckAttr:条件Action,判断某属性和某个数值的关系
 	BreakSkill:打断目标的技能
-
+	注：之所以每个技能都做成一个 function 的形式提供是因为一个技能可能有多个等级，不同等级会有不同效果，所以创建一个技能 action 时需要传入该技能的特定等级的配置即 cfg,其是从 config_skill.lua 里该技能的 detail 字段里当前等级的那条
+	例子：
 	--110000技能：100毫秒后造成直接伤害(伤害系数是根据不同等级配置不同的值，所以cfg是根据施法者当前的技能等级传入的值：config_skill.lua里的detail[skill_lv].arge)
 	self.actions[110000] = function( cfg )
 		return Sequence { Delay{100}, PickTarget{1,1,cfg.MaxTarget}, Hurt{cfg.HurtRate} }
@@ -54,6 +56,7 @@ function SkillActions:Init(  )
 		110000, 110001, 110002, 110003, 110010, 110011, 110012, 
 		120000, 120001, 120002, 120003, 120010, 120011, 120012, 
 	}
+	--普通的技能，选中攻击目标，然后直接扣血
 	for i,v in ipairs(normal_skill_list) do
 		self.actions[v] = function( cfg )
 			return Sequence { 
@@ -66,22 +69,23 @@ function SkillActions:Init(  )
 	local simple_skill_list = {
 		200000, 200001, 200100, 200101, 200200, 200201, 200300, 200301, 200400, 200401, 200500, 200501,
 	}
+	--怪物的普通技能，因为是单体攻击所以就从调用 FightMgr:CastSkill 时就已经传入攻击目标了，直接扣血
 	for i,v in ipairs(simple_skill_list) do
 		self.actions[v] = function( cfg )
 			return Hurt {} 
 		end
 	end
 
-	--扣血后有万份之x概率触发400000buff
-	self.actions[110012] = function( cfg )
+	--扣血后有万份之 x 概率触发400000buff(降低防御),具体降低的数值根据技能等级读取配置的
+	self.actions[110010] = function( cfg )
 		return Sequence {
 			PickTarget {}, 
 			Hurt {}, 
-			If { Random{10000}, Buff{400000} } 
+			If { Random{cfg.buff[1]}, Buff{400000, cfg.buff[2]} } 
 		}
 	end
 
-	--300毫秒后，重复5次攻击，每次间隔700毫秒
+	--男主大招，300毫秒后，重复5次攻击，每次间隔700毫秒，每次都有一定概率加晕眩 buff
 	self.actions[110013] = function( cfg )
 		return Sequence { 
 			Delay {300}, 
@@ -89,11 +93,14 @@ function SkillActions:Init(  )
 				Sequence { 
 					PickTarget {}, 
 					Hurt {}, 
+					If { Random{cfg.buff[1]}, Buff{400002, cfg.buff[2]} },
 					Delay {700} 
 				}
 			}
 		}
 	end
+
+	--女主大招，重复5次攻击，每次间隔700毫秒，每次都有一定概率加吸血 buff
 	self.actions[120013] = function( cfg )
 		return Sequence { 
 			Delay {300}, 
@@ -101,6 +108,7 @@ function SkillActions:Init(  )
 				Sequence { 
 					PickTarget {}, 
 					Hurt {}, 
+					If { Random{cfg.buff[1]}, Buff{400001, cfg.buff[2]} },
 					Delay {700} 
 				}
 			}

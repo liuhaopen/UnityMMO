@@ -1,29 +1,38 @@
+local Attr = require "game.scene.fight.Attr"
 local BuffActions = {}
 
 function BuffActions:Init(  )
 	self.actions = {}		
 
-	--400000Buff：20%的概率触发（为了不用浮点数，数值单位为万分比），如果
-	self.actions[400000] = function( skillCfgArge )
-		return Repeat {5, 
+	--属性 Buff：增加或减少万分之 x 属性 n 毫秒
+	self.actions[400000] = function( cfg )
+		return Attr { table.unpack(cfg) }
+	end
+
+	--吸血 buff
+	self.actions[400001] = function( cfg )
+		return SuckHP { cfg }
+	end
+
+	--晕眩 buff
+	self.actions[400002] = function( cfg )
+		return Dizzy { cfg }
+	end
+
+	--回血 buff
+	self.actions[400003] = function( cfg )
+		return Repeat {-1, 
 				Sequence { 
-					Hurt{skillCfgArge.HurtRate}, 
-					Delay{500} 
-				} ,
+					HP {100},
+					Delay {700} 
+				}
 			}
 	end
 
-	--400001Buff：如果hp小于等于万分之10时，伤害比率提升万分之skillCfgArge.BuffArge1，否则只提升skillCfgArge.BuffArge2
-	self.actions[400001] = function( skillCfgArge )
-		return If { CheckAttr{"hp","<=", 10, "%"}, 
-			PowerUp{skillCfgArge.BuffArge1}, 
-			PowerUp{skillCfgArge.BuffArge2}, 
-		}
-	end
 end
 
-function BuffActions:GetActionCreator( skillID )
-	return self.actions[skillID]
+function BuffActions:GetActionCreator( buffID )
+	return self.actions[buffID]
 end
 
 return BuffActions

@@ -8,7 +8,8 @@ local CalDamage = function( self, targetEntity )
 	local defenderDef = targetFightAttr[SceneConst.Attr.Def] or 0
 	local baseDamage = math.max(attackerAtt-defenderDef, 0)*self.damageRate/10000
 	local attackerCrit = self.attackerFightAttr[SceneConst.Attr.Crit] or 0
-	local critDamage = attackerCrit*math.random(1,100)/100
+	-- local critDamage = attackerCrit*math.random(1,100)/100
+	local critDamage = 0
 	return baseDamage+critDamage
 end
 
