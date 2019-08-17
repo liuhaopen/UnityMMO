@@ -6,12 +6,18 @@ function BuffActions:Init(  )
 
 	--属性 Buff：增加或减少万分之 x 属性 n 毫秒
 	self.actions[400000] = function( cfg )
-		return Attr { table.unpack(cfg) }
+		return Attr { duration=cfg.duration, attr_id=cfg.attr_id, value=cfg.value, is_percent=cfg.is_percent }
+		-- return Attr(cfg)--todo : readonly
 	end
 
 	--吸血 buff
 	self.actions[400001] = function( cfg )
-		return SuckHP { cfg }
+		return Repeat {-1, 
+				Sequence { 
+					HP {100},
+					Delay {700} 
+				}
+			}
 	end
 
 	--晕眩 buff

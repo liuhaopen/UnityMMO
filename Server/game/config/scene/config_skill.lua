@@ -46,8 +46,13 @@ local config = {
 		skill_id = 110010, target_type = 1, shape = 1, duration = 1000, detail = {
 			[1] = {
 				condition = {{lv, 1}}, cd = 500, attack_max_num = 2, damage_rate = 15000, area = 600, 
-				buff = {10000, {5000,3,-5000,true}}, 
-				desc = [[男角技能1，造成50点伤害]]
+				desc = [[男角技能1，造成50点伤害，并有10%概率减对方50%防御]], 
+				buff = {probability=10000,duration=5000,attr_id=3,value=-5000,is_percent=true}
+			},
+			[2] = {
+				condition = {{lv, 2}}, cd = 500, attack_max_num = 3, damage_rate = 15000, area = 600, 
+				desc = [[男角技能1，造成50点伤害，并有20%概率减对方60%防御]], 
+				buff = {probability=20000,duration=5000,attr_id=3,value=-6000,is_percent=true}
 			},
 		},	
 	},

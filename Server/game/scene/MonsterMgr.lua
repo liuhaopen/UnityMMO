@@ -5,8 +5,8 @@ local MonsterFSM = require "game.scene.ai.MonsterFSM"
 local BP = require("Blueprint")
 local MonsterMgr = BaseClass()
 local test_info = {
-	create_num = 1,--只创建1只怪物，方便调试
-	create_mon_types = {2000}
+	-- create_num = 1,--只创建1只怪物，方便调试
+	-- create_mon_types = {2000}
 }
 
 function MonsterMgr:Init( sceneMgr, cfg )
