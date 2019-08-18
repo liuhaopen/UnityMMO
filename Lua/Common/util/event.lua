@@ -15,7 +15,7 @@ local rawget = rawget
 local error = error
 local traceback = debug.traceback
 local ilist = ilist
-print("load event file!")
+
 event_err_handle = function(msg)
 	error(msg, 2)
 end

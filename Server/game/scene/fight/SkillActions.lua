@@ -81,7 +81,7 @@ function SkillActions:Init(  )
 		return Sequence {
 			PickTarget {}, 
 			Hurt {}, 
-			If { Random{cfg.buff.probability}, Buff{400000, cfg.buff} } 
+			If { Random{cfg.buff.probability}, Buff{400000} } 
 		}
 	end
 
@@ -93,7 +93,7 @@ function SkillActions:Init(  )
 				Sequence { 
 					PickTarget {}, 
 					Hurt {}, 
-					If { Random{cfg.buff.probability}, Buff{400002, cfg.buff} },
+					If { Random{cfg.buff.probability}, Buff{400002} },
 					Delay {700} 
 				}
 			}
@@ -108,7 +108,7 @@ function SkillActions:Init(  )
 				Sequence { 
 					PickTarget {}, 
 					Hurt {}, 
-					If { Random{cfg.buff.probability}, Buff{400001, cfg.buff} },
+					If { Random{cfg.buff.probability}, Buff{400001} },
 					Delay {700} 
 				}
 			}

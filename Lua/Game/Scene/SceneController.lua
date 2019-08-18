@@ -8,7 +8,6 @@ function SceneController:Init(  )
     self.sceneNode:SetActive(false)
 	self.mainCamera = Camera.main
 	self:InitEvents()
-
 end
 
 function SceneController:InitEvents(  )
@@ -23,7 +22,7 @@ function SceneController:InitEvents(  )
     	self.touch_begin_x = x
     	self.touch_begin_y = y
     end
-	UIHelper.BindClickEvent(self.sceneNode, on_down)
+	UI.BindClickEvent(self.sceneNode, on_down)
 
 	local on_up = function ( target, x, y )
     	-- print('Cat:SceneController.lua[up] x, y', target, x, y)
@@ -54,7 +53,33 @@ function SceneController:InitEvents(  )
             end
         end
     end
-	UIHelper.BindClickEvent(self.sceneNode, on_up)
+	UI.BindClickEvent(self.sceneNode, on_up)
+
+    local on_drag = function ( obj, x, y )
+        if not self.lastMousePos then
+            self.lastMousePos = {x=x, y=y}
+            self.freeLookCamera = SceneMgr.Instance.FreeLookCamera
+            self.cameraRotateSpeed = {x=1280/3, y=720/3}
+            self.screenSize = {x=CS.UnityEngine.Screen.width, y=CS.UnityEngine.Screen.height}
+            -- self.cameraCtrl = CS.UnityMMO.CameraCtrl.Instance
+            self.cameraCtrl = self.freeLookCamera:GetComponent("CameraCtrl")
+            -- print('Cat:SceneController.lua[65] self.cameraCtrl', self.cameraCtrl, self.cameraCtrl)
+        end
+        -- print('Cat:SceneController.lua[59] obj, x, y, ', self.freeLookCamera.m_XAxis.Value, self.freeLookCamera.m_YAxis.Value)
+        -- self.freeLookCamera.m_XAxis.Value = self.freeLookCamera.m_XAxis.Value+(x-self.lastMousePos.x)/self.screenSize.x*Time.deltaTime*self.cameraRotateSpeed.x
+        -- self.freeLookCamera.m_YAxis.Value = self.freeLookCamera.m_YAxis.Value+(y-self.lastMousePos.y)/self.screenSize.y*Time.deltaTime*self.cameraRotateSpeed.y
+        -- print('Cat:SceneController.lua[69] ', (x-self.lastMousePos.x)/self.screenSize.x, (x-self.lastMousePos.x)/self.screenSize.x*Time.deltaTime*self.cameraRotateSpeed.x, Time.deltaTime, self.cameraRotateSpeed.x)
+        self.cameraCtrl:ApplyMove((x-self.lastMousePos.x)/self.screenSize.x*self.cameraRotateSpeed.x, 
+            (y-self.lastMousePos.y)/self.screenSize.y*self.cameraRotateSpeed.y)
+        self.lastMousePos.x = x
+        self.lastMousePos.y = y
+
+        -- self.test = self.test or 0
+        -- self.test = self.test + 1
+        -- self.freeLookCamera.m_XAxis.Value = self.test
+        -- print('Cat:SceneController.lua[75] self.freeLookCamera.m_XAxis.Value', self.freeLookCamera.m_XAxis.Value)
+    end
+    UI.BindDragEvent(self.sceneNode, on_drag)
 
     local MainRoleDie = function ( killerUID )
         print('Cat:SceneController.lua[58] self.reliveView', self.reliveView, killerUID)

@@ -44,6 +44,7 @@
 		<type fullname="UnityMMO.RoleMgr" preserve="all"/>
 		<type fullname="UnityMMO.RoleLooksInfo" preserve="all"/>
 		<type fullname="UnityMMO.ResMgr" preserve="all"/>
+		<type fullname="UnityMMO.CameraCtrl" preserve="all"/>
 		<type fullname="UnityMMO.BornInfo" preserve="all"/>
 		<type fullname="UnityMMO.BornInfoData" preserve="all"/>
 		<type fullname="UnityMMO.RaycastSceneObjHit" preserve="all"/>
@@ -121,6 +122,7 @@
 		<type fullname="UnityEngine.Texture2D" preserve="all"/>
 		<type fullname="UnityEngine.Texture2D+EXRFlags" preserve="all"/>
 		<type fullname="UnityEngine.KeyCode" preserve="all"/>
+		<type fullname="UnityEngine.Screen" preserve="all"/>
 		<type fullname="UnityEngine.RenderTexture" preserve="all"/>
 		<type fullname="UnityEngine.Debug" preserve="all"/>
 		<type fullname="UnityEngine.Events.UnityEvent`1[UnityEngine.Vector2]" preserve="all"/>
@@ -188,6 +190,7 @@
 
 	<assembly fullname="Cinemachine">
 	    <type fullname="Cinemachine.CinemachineFreeLook" preserve="all"/>
+		<type fullname="Cinemachine.AxisState" preserve="all"/>
 		
 	</assembly>
 

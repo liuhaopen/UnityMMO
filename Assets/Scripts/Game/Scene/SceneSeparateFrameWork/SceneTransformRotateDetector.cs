@@ -10,9 +10,11 @@ public class SceneTransformRotateDetector : SceneDetectorBase
     public Vector3 detectorSize;
     public Vector3 posOffset;
     private Vector3[] vertexes = new Vector3[8];
+    private Transform cameraTrans;
     
     void Start()
     {
+        cameraTrans = Camera.main.transform;
     }
 
     void Update()
@@ -45,7 +47,7 @@ public class SceneTransformRotateDetector : SceneDetectorBase
         vertexes[7].y = centerPos.y + halfSize.y;
         vertexes[7].z = centerPos.z + halfSize.z;
         
-        var yAngle = transform.rotation.eulerAngles.y;
+        var yAngle = cameraTrans.rotation.eulerAngles.y;
         Quaternion q = Quaternion.AngleAxis(yAngle-90, Vector3.up);
         for (int i = 0; i < vertexes.Length; i++)
         {

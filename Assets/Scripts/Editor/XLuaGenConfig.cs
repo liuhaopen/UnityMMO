@@ -107,8 +107,10 @@ public static class XLuaGenConfig
         typeof(Texture2D.EXRFlags),
         typeof(Button),
         typeof(KeyCode),
+        typeof(Screen),
         typeof(RenderTexture),
         typeof(CinemachineFreeLook),
+        typeof(AxisState),
         typeof(UnityEngine.UI.ScrollRect.ScrollRectEvent),
         typeof(UnityEngine.Debug)
     };
@@ -155,6 +157,7 @@ public static class XLuaGenConfig
         typeof(Func<string, long>),
         typeof(Action<string>),
         typeof(Action<double>),
+        typeof(Action<float, float>),
         typeof(UnityEngine.Events.UnityAction),
         typeof(UnityEngine.Events.UnityAction<long>),
         typeof(UnityEngine.Events.UnityAction<long,long>),
