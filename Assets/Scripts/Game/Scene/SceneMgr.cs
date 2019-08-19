@@ -131,8 +131,8 @@ public class SceneMgr : MonoBehaviour
                 m_Controller = gameObject.GetComponent<SceneObjectLoadController>();
                 if (m_Controller == null)
                     m_Controller = gameObject.AddComponent<SceneObjectLoadController>();
-                int max_create_num = 30;
-                int min_create_num = 10;
+                int max_create_num = 25;
+                int min_create_num = 5;
                 m_Controller.Init(scene_info.Bounds.center, scene_info.Bounds.size, true, max_create_num, min_create_num, SceneSeparateTreeType.QuadTree);
 
                 Debug.Log("scene_info.ObjectInfoList.Count : "+scene_info.ObjectInfoList.Count.ToString());

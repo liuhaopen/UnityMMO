@@ -97,6 +97,7 @@ public class ResMgr
     {
         scenePrefabList = new List<GameObject>(list.Count);
         sceneObjectPool = new Dictionary<int, List<GameObject>>();
+        UnloadAllPooledSceneObjects();
         for (int i = 0; i < list.Count; i++)
         {
             scenePrefabList.Add(null);
@@ -161,6 +162,21 @@ public class ResMgr
             var pool = new List<GameObject>();
             pool.Add(obj);
             sceneObjectPool.Add(resID, pool);
+        }
+    }
+
+    private void UnloadAllPooledSceneObjects()
+    {
+        foreach (var prefab in scenePrefabList)
+        {
+            GameObject.Destroy(prefab);
+        }
+        foreach (var pool in sceneObjectPool)
+        {
+            foreach (var obj in pool.Value)
+            {
+                GameObject.Destroy(obj);
+            }
         }
     }
 

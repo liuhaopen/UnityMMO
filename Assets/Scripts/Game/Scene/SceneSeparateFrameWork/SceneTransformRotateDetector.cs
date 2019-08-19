@@ -2,7 +2,7 @@
 using System.Collections;
 
 /// <summary>
-/// 该触发器根据Transform的包围盒区域触发-且根据Transform运动趋势扩展包围盒
+/// 该触发器根据Transform的包围盒区域触发-且根据Transform面向角度旋转obb包围盒
 /// </summary>
 [ExecuteInEditMode]
 public class SceneTransformRotateDetector : SceneDetectorBase
@@ -19,6 +19,11 @@ public class SceneTransformRotateDetector : SceneDetectorBase
 
     void Update()
     {
+        if (cameraTrans == null)
+        {
+            Debug.LogWarning("SceneTransformRotateDetector had not find main camera!");
+            return;
+        }
         var centerPos = transform.position+posOffset;
         var halfSize = detectorSize/2;
         vertexes[0].x = centerPos.x - halfSize.x;

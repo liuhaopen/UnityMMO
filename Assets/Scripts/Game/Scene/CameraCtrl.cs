@@ -6,45 +6,43 @@ namespace UnityMMO
 [RequireComponent(typeof(CinemachineFreeLook))]
 public class CameraCtrl : MonoBehaviour {
     private CinemachineFreeLook freeLookCam;
-    private Vector2 additionMove;
-    public Vector2 speed = new Vector2(100, 5);
+    public Vector2 additionMove;
+    public Vector2 speed = new Vector2(10, 5);
     // Use this for initialization
     void Start () {
         freeLookCam = GetComponent<CinemachineFreeLook>();
         additionMove = Vector3.zero;
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-        // freeLookCam.m_XAxis.m_InputAxisName = "Mouse X";
-        // freeLookCam.m_YAxis.m_InputAxisName = "Mouse Y";
+        freeLookCam.m_XAxis.m_InputAxisName = "Mouse X";
+        freeLookCam.m_YAxis.m_InputAxisName = "Mouse Y";
 #endif
     }
 
     public void ApplyMove(float x, float y)
     {
-        Debug.Log("x y : "+x+" "+y);
+        // Debug.Log("x y : "+x+" "+y);
+        additionMove /= 1.2f;
         additionMove.x += x;
         additionMove.y += y;
     }
 
     // Update is called once per frame
     void Update () {
-// #if !UNITY_EDITOR_WIN && !UNITY_STANDALONE_WIN
-        // freeLookCam.m_XAxis.Value += speed.x*Time.deltaTime*Input.GetAxis("Mouse X");
-        // freeLookCam.m_YAxis.Value += speed.y*Time.deltaTime*Input.GetAxis("Mouse Y");
+#if !UNITY_EDITOR_WIN && !UNITY_STANDALONE_WIN
         if (additionMove.Equals(Vector2.zero))
             return;
         var newAdditionX = speed.x*Time.deltaTime*additionMove.x;
         if (Mathf.Abs(newAdditionX) > Mathf.Abs(additionMove.x))
             newAdditionX = additionMove.x;
+        freeLookCam.m_XAxis.Value += newAdditionX;
+        additionMove.x -= newAdditionX;
 
         var newAdditionY = speed.y*Time.deltaTime*additionMove.y;
         if (Mathf.Abs(newAdditionY) > Mathf.Abs(additionMove.y))
             newAdditionY = additionMove.y;
-        freeLookCam.m_XAxis.Value += newAdditionX;
         freeLookCam.m_YAxis.Value += newAdditionY;
-
-        additionMove.x -= newAdditionX;
         additionMove.y -= newAdditionY;
-// #endif
+#endif
         // Debug.Log("freeLookCam.m_XAxis.Value : "+freeLookCam.m_XAxis.Value+" "+freeLookCam.m_YAxis.Value);
     }
 }

@@ -48,7 +48,6 @@ public class SceneStaticObject : ISceneObject
     {
         if (m_LoadStaticObj == null)
         {
-            //TODO:obj pool
             // XLuaFramework.ResourceManager.GetInstance().LoadPrefabGameObjectWithAction(m_ResPath, delegate(UnityEngine.Object obj){
                 GameObject obj = ResMgr.GetInstance().GetSceneRes(m_ResID);
                 if (obj == null)

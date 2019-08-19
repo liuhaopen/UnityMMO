@@ -110,7 +110,7 @@ public class SceneObjectLoadController : MonoBehaviour
     /// <param name="minCreateCount">检查销毁时间间隔</param>
     public void Init(Vector3 center, Vector3 size, bool asyn, int maxCreateCount, int minCreateCount, SceneSeparateTreeType treeType)
     {
-        Init(center, size, asyn, maxCreateCount, minCreateCount, 0.1f, 5, treeType);
+        Init(center, size, asyn, maxCreateCount, minCreateCount, 0.1f, 2, treeType);
     }
 
     public void ResetAllData() {
@@ -169,36 +169,28 @@ public class SceneObjectLoadController : MonoBehaviour
     {
         if (!m_IsInitialized)
             return;
-        //只有坐标发生改变才调用
-        // if (m_OldRefreshPosition != detector.Position)
+        m_RefreshTime += Time.deltaTime;
+        //达到刷新时间才刷新，避免区域更新频繁
+        if (m_RefreshTime > m_MaxRefreshTime)
         {
-            m_RefreshTime += Time.deltaTime;
-            //达到刷新时间才刷新，避免区域更新频繁
-            if (m_RefreshTime > m_MaxRefreshTime)
-            {
-                m_OldRefreshPosition = detector.Position;
-                m_RefreshTime = 0;
-                m_CurrentDetector = detector;
-                //进行触发检测
-                m_QuadTree.Trigger(detector, m_TriggerHandle);
-                //标记超出区域的物体
-                MarkOutofBoundsObjs();
-                //m_IsInitLoadComplete = true;
-            }
+            m_OldRefreshPosition = detector.Position;
+            m_RefreshTime = 0;
+            m_CurrentDetector = detector;
+            //进行触发检测
+            m_QuadTree.Trigger(detector, m_TriggerHandle);
+            //标记超出区域的物体
+            MarkOutofBoundsObjs();
+            //m_IsInitLoadComplete = true;
         }
-        if (m_OldDestroyRefreshPosition != detector.Position)
+        if(m_PreDestroyObjectQueue != null && m_PreDestroyObjectQueue.Count > m_MinCreateCount)
         {
-            if(m_PreDestroyObjectQueue != null && m_PreDestroyObjectQueue.Count >= m_MaxCreateCount && m_PreDestroyObjectQueue.Count > m_MinCreateCount)
-            //if (m_PreDestroyObjectList != null && m_PreDestroyObjectList.Count >= m_MaxCreateCount)
+            m_DestroyRefreshTime += Time.deltaTime;
+            if (m_DestroyRefreshTime > m_MaxDestroyTime)
             {
-                m_DestroyRefreshTime += Time.deltaTime;
-                if (m_DestroyRefreshTime > m_MaxDestroyTime)
-                {
-                    m_OldDestroyRefreshPosition = detector.Position;
-                    m_DestroyRefreshTime = 0;
-                    //删除超出区域的物体
-                    DestroyOutOfBoundsObjs();
-                }
+                // m_OldDestroyRefreshPosition = detector.Position;
+                m_DestroyRefreshTime = 0;
+                //删除超出区域的物体
+                DestroyOutOfBoundsObjs();
             }
         }
     }
