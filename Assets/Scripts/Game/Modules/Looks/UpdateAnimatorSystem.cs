@@ -13,9 +13,9 @@ public class UpdateAnimatorSystem : BaseComponentSystem
 
     EntityQuery group;
 
-    protected override void OnCreateManager()
+    protected override void OnCreate()
     {
-        base.OnCreateManager();
+        base.OnCreate();
         group = GetEntityQuery(typeof(LooksInfo), typeof(LocomotionState), typeof(PlayableDirector));
     }
 

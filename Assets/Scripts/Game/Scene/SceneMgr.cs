@@ -123,10 +123,11 @@ public class SceneMgr : MonoBehaviour
             scene_json = Repalce(scene_json);
             SceneInfo scene_info = JsonUtility.FromJson<SceneInfo>(scene_json);
             curSceneInfo = scene_info;
-            Debug.Log("LoadSceneInfo start LoadSceneRes count:"+scene_info.ResPathList.Count);
+            Debug.Log("LoadSceneInfo start LoadSceneRes count:"+scene_info.ResPathList.Count+" "+scene_info.MonsterList.Count);
             // ApplyLightInfo(scene_info);
             ResMgr.GetInstance().LoadSceneRes(scene_info.ResPathList, delegate(bool isOk)
             {
+                ResMgr.GetInstance().LoadMonsterResList(scene_info.MonsterList, delegate(bool isOk2) {
                 LoadingView.Instance.SetData(0.6f, "初始化场景节点信息...");
                 m_Controller = gameObject.GetComponent<SceneObjectLoadController>();
                 if (m_Controller == null)
@@ -134,8 +135,7 @@ public class SceneMgr : MonoBehaviour
                 int max_create_num = 25;
                 int min_create_num = 5;
                 m_Controller.Init(scene_info.Bounds.center, scene_info.Bounds.size, true, max_create_num, min_create_num, SceneSeparateTreeType.QuadTree);
-
-                Debug.Log("scene_info.ObjectInfoList.Count : "+scene_info.ObjectInfoList.Count.ToString());
+                // Debug.Log("scene_info.ObjectInfoList.Count : "+scene_info.ObjectInfoList.Count.ToString());
                 for (int i = 0; i < scene_info.ObjectInfoList.Count; i++)
                 {
                     m_Controller.AddSceneBlockObject(scene_info.ObjectInfoList[i]);
@@ -147,7 +147,7 @@ public class SceneMgr : MonoBehaviour
                     detector = mainRoleGOE.GetComponent<SceneDetectorBase>();
                 }
                 on_ok(1);
-            });
+            });});
         });
     }
 

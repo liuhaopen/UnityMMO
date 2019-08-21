@@ -8,7 +8,7 @@ function EntityManager:Constructor(  )
 	self.entities_free_id = 0
 end
 
-function EntityManager:OnCreateManager( capacity )
+function EntityManager:OnCreate( capacity )
 	ECS.TypeManager.Initialize()
 	self.Entities = ECS.EntityDataManager.New(capacity)
 	self.m_SharedComponentManager = ECS.SharedComponentDataManager.New()

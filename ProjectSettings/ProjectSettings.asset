@@ -47,7 +47,7 @@ PlayerSettings:
   defaultScreenWidthWeb: 960
   defaultScreenHeightWeb: 600
   m_StereoRenderingPath: 0
-  m_ActiveColorSpace: 0
+  m_ActiveColorSpace: 1
   m_MTRendering: 1
   m_StackTraceTypes: 010000000100000001000000010000000100000001000000
   iosShowActivityIndicatorOnLoading: -1
@@ -382,7 +382,7 @@ PlayerSettings:
       m_SubKind: 
   m_BuildTargetBatching:
   - m_BuildTarget: Android
-    m_StaticBatching: 1
+    m_StaticBatching: 0
     m_DynamicBatching: 1
   - m_BuildTarget: Standalone
     m_StaticBatching: 1
@@ -392,7 +392,7 @@ PlayerSettings:
     m_APIs: 02000000
     m_Automatic: 1
   - m_BuildTarget: AndroidPlayer
-    m_APIs: 080000000b000000
+    m_APIs: 0b000000
     m_Automatic: 0
   m_BuildTargetVRSettings: []
   openGLRequireES31: 0
@@ -643,7 +643,7 @@ PlayerSettings:
   scriptingDefineSymbols:
     1: CROSS_PLATFORM_INPUT;NOT_GEN_WARNING;TLA_DEBUG_STACK_LEAK
     4: ASYNC_MODE;CROSS_PLATFORM_INPUT;MOBILE_INPUT
-    7: CROSS_PLATFORM_INPUT;MOBILE_INPUT
+    7: CROSS_PLATFORM_INPUT;MOBILE_INPUT;UNITY_CCU;ENABLE_UNITYMESHSIMPLIFIER
     14: MOBILE_INPUT
     17: MOBILE_INPUT
   platformArchitecture:

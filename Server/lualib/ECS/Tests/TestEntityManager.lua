@@ -100,8 +100,8 @@ end
 local TestDestroyEntitySystem = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr("TestDestroyEntitySystem", TestDestroyEntitySystem)
 
-function TestDestroyEntitySystem:OnCreateManager(  )
-    ECS.ComponentSystem.OnCreateManager(self)
+function TestDestroyEntitySystem:OnCreate(  )
+    ECS.ComponentSystem.OnCreate(self)
     self.group = self:GetComponentGroup({"DataForTestRemoveEntity"})
 end
 function TestDestroyEntitySystem:OnUpdate(  )

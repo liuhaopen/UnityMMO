@@ -8,26 +8,26 @@ namespace Cocos
 {
     public class ColorAttrCatcherTextMeshPro : IColorAttrCatcher
     {
-        public Func<Action, Color> GetColor { get => GetColorFunc; }
-        public System.Action<Action, Color> SetColor { get => SetColorFunc; }
+        public Func<Transform, Color> GetColor { get => GetColorFunc; }
+        public System.Action<Transform, Color> SetColor { get => SetColorFunc; }
         public static ColorAttrCatcherTextMeshPro Ins = new ColorAttrCatcherTextMeshPro();
 
-        public static Color GetColorFunc(Action action)
+        public static Color GetColorFunc(Transform target)
         {
-            if (action.Target != null)
+            if (target != null)
             {
-                var text = action.Target.GetComponent<TextMeshPro>();
+                var text = target.GetComponent<TextMeshPro>();
                 if (text != null)
                     return text.color;
                 Debug.LogError("action target has no TextMeshPro component, please don't use ColorAttrCatcherTextMeshPro!" + new System.Diagnostics.StackTrace().ToString());
             }
             return Color.white;
         }
-        public static void SetColorFunc(Action action, Color color)
+        public static void SetColorFunc(Transform target, Color color)
         {
-            if (action.Target != null)
+            if (target != null)
             {
-                var text = action.Target.GetComponent<TextMeshPro>();
+                var text = target.GetComponent<TextMeshPro>();
                 if (text != null)
                     text.color = color;
                 else
@@ -38,26 +38,26 @@ namespace Cocos
 
     public class ColorAttrCatcherTextMeshProUI : IColorAttrCatcher
     {
-        public Func<Action, Color> GetColor { get => GetColorFunc; }
-        public System.Action<Action, Color> SetColor { get => SetColorFunc; }
+        public Func<Transform, Color> GetColor { get => GetColorFunc; }
+        public System.Action<Transform, Color> SetColor { get => SetColorFunc; }
         public static ColorAttrCatcherTextMeshProUI Ins = new ColorAttrCatcherTextMeshProUI();
 
-        public static Color GetColorFunc(Action action)
+        public static Color GetColorFunc(Transform target)
         {
-            if (action.Target != null)
+            if (target != null)
             {
-                var text = action.Target.GetComponent<TextMeshProUGUI>();
+                var text = target.GetComponent<TextMeshProUGUI>();
                 if (text != null)
                     return text.color;
                 Debug.LogError("action target has no TextMeshProUGUI component, please don't use ColorAttrCatcherTextMeshProUI!" + new System.Diagnostics.StackTrace().ToString());
             }
             return Color.white;
         }
-        public static void SetColorFunc(Action action, Color color)
+        public static void SetColorFunc(Transform target, Color color)
         {
-            if (action.Target != null)
+            if (target != null)
             {
-                var text = action.Target.GetComponent<TextMeshProUGUI>();
+                var text = target.GetComponent<TextMeshProUGUI>();
                 if (text != null)
                     text.color = color;
                 else

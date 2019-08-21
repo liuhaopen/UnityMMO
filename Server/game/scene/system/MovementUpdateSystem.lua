@@ -6,8 +6,8 @@ ECS.TypeManager.RegisterScriptMgr("UMO.MovementUpdateSystem", MovementUpdateSyst
 function MovementUpdateSystem:Constructor( )
 end
 
-function MovementUpdateSystem:OnCreateManager(  )
-	ECS.ComponentSystem.OnCreateManager(self)
+function MovementUpdateSystem:OnCreate(  )
+	ECS.ComponentSystem.OnCreate(self)
 
 	self.group = self:GetComponentGroup({"UMO.Position", "UMO.TargetPos", "UMO.MoveSpeed", "UMO.AOIHandle"})
 end

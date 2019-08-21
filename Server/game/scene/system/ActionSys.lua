@@ -4,8 +4,8 @@ local skynet = require "skynet"
 local ActionSys = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr("UMO.ActionSys", ActionSys)
 
-function ActionSys:OnCreateManager(  )
-	ECS.ComponentSystem.OnCreateManager(self)
+function ActionSys:OnCreate(  )
+	ECS.ComponentSystem.OnCreate(self)
 	self.ecsSystemMgr = self.sceneMgr.ecsSystemMgr
 	self.group = self:GetComponentGroup({"UMO.Action"})
 end

@@ -13,9 +13,9 @@ public class MovementUpdateSystem : BaseComponentSystem
 
     EntityQuery group;
 
-    protected override void OnCreateManager()
+    protected override void OnCreate()
     {
-        base.OnCreateManager();
+        base.OnCreate();
         // group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(MoveQuery), typeof(LocomotionState), typeof(PosOffset), typeof(PosSynchInfo));
         group = GetEntityQuery(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(MoveQuery), typeof(LocomotionState), typeof(PosOffset));
     }
@@ -157,9 +157,9 @@ class MovementHandleGroundCollision : BaseComponentSystem
     }
 
     EntityQuery group;
-    protected override void OnCreateManager()
+    protected override void OnCreate()
     {
-        base.OnCreateManager();
+        base.OnCreate();
         group = GetEntityQuery(typeof(Transform), typeof(MoveQuery), typeof(LocomotionState), typeof(TargetPosition));
     }
 
@@ -220,9 +220,9 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
 
     EntityQuery group;
 
-    protected override void OnCreateManager()
+    protected override void OnCreate()
     {
-        base.OnCreateManager();
+        base.OnCreate();
         group = GetEntityQuery(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(PosSynchInfo), typeof(LocomotionState), typeof(MoveQuery));
     }
 

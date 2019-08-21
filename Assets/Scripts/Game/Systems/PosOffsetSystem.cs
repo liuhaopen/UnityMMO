@@ -13,9 +13,9 @@ public class ResetPosOffsetSystem : BaseComponentSystem
 
     EntityQuery group;
 
-    protected override void OnCreateManager()
+    protected override void OnCreate()
     {
-        base.OnCreateManager();
+        base.OnCreate();
         group = GetEntityQuery(typeof(PosOffset));
     }
 

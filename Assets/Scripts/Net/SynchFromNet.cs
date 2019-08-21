@@ -95,7 +95,7 @@ public class SynchFromNet {
                 entityMgr.SetComponentData<LocomotionState>(defenderEntity, locomotionState);
                 //显示战斗飘字
                 var defenderTrans = entityMgr.GetComponentObject<Transform>(defenderEntity);
-                var flyWordObj = ResMgr.GetInstance().SpawnGameObject("FightFlyWord");
+                var flyWordObj = ResMgr.GetInstance().GetGameObject("FightFlyWord");
                 FightFlyWord flyWord = flyWordObj.GetComponent<FightFlyWord>();
                 flyWord.SetData(defender.change_num, defender.flag);
                 var pos = defenderTrans.position;

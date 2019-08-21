@@ -5,8 +5,8 @@ function ScriptBehaviourManager:CreateInstance( world )
 		self:OnBeforeCreateManagerInternal(world)
 	end
 
-	if self.OnCreateManager then
-		self:OnCreateManager()
+	if self.OnCreate then
+		self:OnCreate()
 	end
 end
 

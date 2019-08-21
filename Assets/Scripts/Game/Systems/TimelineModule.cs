@@ -31,9 +31,9 @@ public class TimelineSpawnSystem : BaseComponentSystem
 {
     public TimelineSpawnSystem(GameWorld world) : base(world) {}
     // ComponentGroup RequestGroup;
-    protected override void OnCreateManager()
+    protected override void OnCreate()
     {
-        base.OnCreateManager();
+        base.OnCreate();
         // RequestGroup = GetComponentGroup(typeof(TimelineSpawnRequest));
     }
 

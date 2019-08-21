@@ -4,8 +4,8 @@ local skynet = require "skynet"
 local SkillTargetSys = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr("UMO.SkillTargetSys", SkillTargetSys)
 
-function SkillTargetSys:OnCreateManager(  )
-	ECS.ComponentSystem.OnCreateManager(self)
+function SkillTargetSys:OnCreate(  )
+	ECS.ComponentSystem.OnCreate(self)
 	self.fightMgr = self.sceneMgr.fightMgr
 
 	self.group = self:GetComponentGroup({"UMO.Skill"})

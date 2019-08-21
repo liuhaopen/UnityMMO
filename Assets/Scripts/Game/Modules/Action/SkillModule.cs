@@ -207,9 +207,9 @@ public class SkillSpawnSystem : BaseComponentSystem
 
     EntityQuery RequestGroup;
 
-    protected override void OnCreateManager()
+    protected override void OnCreate()
     {
-        base.OnCreateManager();
+        base.OnCreate();
         RequestGroup = GetEntityQuery(typeof(SkillSpawnRequest));
     }
 

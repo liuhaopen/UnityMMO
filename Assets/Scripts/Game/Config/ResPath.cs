@@ -19,6 +19,19 @@ namespace UnityMMO
             return MonsterResPath+"/monster_"+typeID;
         }
 
+        public static string GetMonsterBodyResPath(long typeID)
+        {
+            string resPath = MonsterResPath+"/monster_"+typeID;
+            int bodyResID = ConfigMonster.GetInstance().GetBodyResID(typeID);
+            if (bodyResID == 0)
+            {
+                Debug.LogWarning("ResPath:GetMonsterBodyResPath monster body res id 0, typeID:"+typeID);
+                return string.Empty;
+            }
+            string bodyPath = resPath+"/model_clothe_"+bodyResID+".prefab";
+            return bodyPath;
+        }
+
         public static string GetNPCLooksPath(long typeID)
         {
             var bodyResID = ConfigNPC.GetInstance().GetBodyResID(typeID);

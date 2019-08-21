@@ -26,9 +26,9 @@ public abstract class BaseComponentSystem : ComponentSystem
 
  	public BaseComponentSystem(GameWorld world) : base(world) {}
 
-    protected override void OnCreateManager()
+    protected override void OnCreate()
  	{
- 		base.OnCreateManager();
+ 		base.OnCreate();
 		name = GetType().Name;
  		var list = new List<ComponentType>(6);
 		if(ExtraComponentRequirements != null)		
@@ -68,9 +68,9 @@ public abstract class BaseComponentSystem<T1,T2> : BaseComponentSystem
 	
 	public BaseComponentSystem(GameWorld world) : base(world) {}
 	
-	protected override void OnCreateManager()
+	protected override void OnCreate()
 	{
-		base.OnCreateManager();
+		base.OnCreate();
 		name = GetType().Name;
 		var list = new List<ComponentType>(6);
 		if(ExtraComponentRequirements != null)		
@@ -112,9 +112,9 @@ public abstract class BaseComponentSystem<T1,T2,T3> : BaseComponentSystem
 	
 	public BaseComponentSystem(GameWorld world) : base(world) {}
 	
-	protected override void OnCreateManager()
+	protected override void OnCreate()
 	{
-		base.OnCreateManager();
+		base.OnCreate();
 		name = GetType().Name;
 		var list = new List<ComponentType>(6);
 		if(ExtraComponentRequirements != null)		
@@ -154,9 +154,9 @@ public abstract class BaseComponentDataSystem<T1> : BaseComponentSystem
 	
 	public BaseComponentDataSystem(GameWorld world) : base(world) {}
 	
-	protected override void OnCreateManager()
+	protected override void OnCreate()
 	{
-		base.OnCreateManager();
+		base.OnCreate();
 		name = GetType().Name;
 		var list = new List<ComponentType>(6);
 		if(ExtraComponentRequirements != null)		
@@ -196,10 +196,10 @@ public abstract class BaseComponentDataSystem<T1,T2> : BaseComponentSystem
 	
 	public BaseComponentDataSystem(GameWorld world) : base(world) {}
 	
-	protected override void OnCreateManager()
+	protected override void OnCreate()
 	{
 		name = GetType().Name;
-		base.OnCreateManager();
+		base.OnCreate();
 		var list = new List<ComponentType>(6);
 		if(ExtraComponentRequirements != null)		
 			list.AddRange(ExtraComponentRequirements);
@@ -242,9 +242,9 @@ public abstract class BaseComponentDataSystem<T1,T2,T3> : BaseComponentSystem
 	
 	public BaseComponentDataSystem(GameWorld world) : base(world) {}
 	
-	protected override void OnCreateManager()
+	protected override void OnCreate()
 	{
-		base.OnCreateManager();
+		base.OnCreate();
 		name = GetType().Name;
 		var list = new List<ComponentType>(6);
 		if(ExtraComponentRequirements != null)		
@@ -292,9 +292,9 @@ public abstract class BaseComponentDataSystem<T1,T2,T3,T4> : BaseComponentSystem
 	
 	public BaseComponentDataSystem(GameWorld world) : base(world) {}
 	
-	protected override void OnCreateManager()
+	protected override void OnCreate()
 	{
-		base.OnCreateManager();
+		base.OnCreate();
 		name = GetType().Name;
 		var list = new List<ComponentType>(6);
 		if(ExtraComponentRequirements != null)		
@@ -344,9 +344,9 @@ public abstract class BaseComponentDataSystem<T1,T2,T3,T4, T5> : BaseComponentSy
 	
 	public BaseComponentDataSystem(GameWorld world) : base(world) {}
 	
-	protected override void OnCreateManager()
+	protected override void OnCreate()
 	{
-		base.OnCreateManager();
+		base.OnCreate();
 		name = GetType().Name;
 		var list = new List<ComponentType>(6);
 		if(ExtraComponentRequirements != null)		
@@ -395,9 +395,9 @@ public abstract class InitializeComponentSystem<T> : BaseComponentSystem
 	
 	public InitializeComponentSystem(GameWorld world) : base(world) {}
 
-	protected override void OnCreateManager()
+	protected override void OnCreate()
 	{
-		base.OnCreateManager();
+		base.OnCreate();
 		name = GetType().Name;
 		IncomingGroup = GetEntityQuery(typeof(T),ComponentType.Exclude<SystemState>());
 	}
@@ -438,9 +438,9 @@ public abstract class InitializeComponentDataSystem<T,K> : BaseComponentSystem
 	
 	public InitializeComponentDataSystem(GameWorld world) : base(world) {}
 
-	protected override void OnCreateManager()
+	protected override void OnCreate()
 	{
-		base.OnCreateManager();
+		base.OnCreate();
 		name = GetType().Name;
 		IncomingGroup = GetEntityQuery(typeof(T),ComponentType.Exclude<K>());
 	}
@@ -481,9 +481,9 @@ public abstract class InitializeComponentDataSystem<T,K> : BaseComponentSystem
 
 // 	public DeinitializeComponentSystem(GameWorld world) : base(world) {}
 
-// 	protected override void OnCreateManager()
+// 	protected override void OnCreate()
 // 	{
-// 		base.OnCreateManager();
+// 		base.OnCreate();
 // 		name = GetType().Name;
 // 		// OutgoingGroup = GetComponentGroup(typeof(T), typeof(DespawningEntity));
 // 	}
@@ -516,9 +516,9 @@ public abstract class DeinitializeComponentDataSystem<T> : BaseComponentSystem
 
 	public DeinitializeComponentDataSystem(GameWorld world) : base(world) {}
 
-	protected override void OnCreateManager()
+	protected override void OnCreate()
 	{
-		base.OnCreateManager();
+		base.OnCreate();
 		name = GetType().Name;
 		OutgoingGroup = GetEntityQuery(typeof(T), typeof(DespawningEntity));
 	}
@@ -551,9 +551,9 @@ public abstract class InitializeComponentGroupSystem<T,S> : BaseComponentSystem
 
 	public InitializeComponentGroupSystem(GameWorld world) : base(world) {}
 
-	protected override void OnCreateManager()
+	protected override void OnCreate()
 	{
-		base.OnCreateManager();
+		base.OnCreate();
 		name = GetType().Name;
 		IncomingGroup = GetEntityQuery(typeof(T),ComponentType.Exclude<S>());
 	}
@@ -591,9 +591,9 @@ public abstract class DeinitializeComponentGroupSystem<T> : BaseComponentSystem
 
 	public DeinitializeComponentGroupSystem(GameWorld world) : base(world) {}
 
-	protected override void OnCreateManager()
+	protected override void OnCreate()
 	{
-		base.OnCreateManager();
+		base.OnCreate();
 		name = GetType().Name;
 		OutgoingGroup = GetEntityQuery(typeof(T), typeof(DespawningEntity));
 	}

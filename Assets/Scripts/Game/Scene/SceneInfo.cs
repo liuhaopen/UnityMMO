@@ -19,6 +19,8 @@ public class SceneInfo{
     public List<SceneStaticObject> ObjectInfoList;
     [DataMember]
     public List<BornInfoData> BornList;
+    [DataMember]
+    public List<int> MonsterList;
 }
 
 public class BaseSceneInfoData

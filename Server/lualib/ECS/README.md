@@ -19,8 +19,8 @@ local comp_data = entityMgr:GetComponentData(entity, "ECS.CustomCom")
 --ComponentSystem
 local TestInjectSystem = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr("TestInjectSystem", TestInjectSystem)
-function TestInjectSystem:OnCreateManager(  )
-	ECS.ComponentSystem.OnCreateManager(self)
+function TestInjectSystem:OnCreate(  )
+	ECS.ComponentSystem.OnCreate(self)
 	self.group = self:GetComponentGroup({"ECS.CustomCom"})
 end
 function TestInjectSystem:OnUpdate(  )

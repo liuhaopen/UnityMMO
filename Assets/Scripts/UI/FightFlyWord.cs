@@ -25,7 +25,10 @@ public class FightFlyWord : MonoBehaviour {
         var delayFadeoutAction = Cocos.Sequence.Create(Cocos.DelayTime.Create(0.5f), fadeOutAction);
         var spawnAction = Cocos.Spawn.Create(moveAction, delayFadeoutAction);
         var action = Cocos.Sequence.Create(spawnAction, Cocos.CallFunc.Create(()=>{
-            Object.Destroy(gameObject, 0.1f);
+            // Object.Destroy(gameObject, 0.1f);
+            gameObject.SetActive(false);
+            Cocos.Helper.SetOpacity(transform, 1, Cocos.ColorAttrCatcherTextMeshPro.Ins);
+            ResMgr.GetInstance().UnuseGameObject("FightFlyWord", gameObject);
         }));
         runner.PlayAction(action);
     }

@@ -14,9 +14,9 @@ public class UploadMainRolePosSystem : BaseComponentSystem
     EntityQuery group;
     public UploadMainRolePosSystem(GameWorld world) : base(world) {}
 
-    protected override void OnCreateManager()
+    protected override void OnCreate()
     {
-        base.OnCreateManager();
+        base.OnCreate();
         group = GetEntityQuery(typeof(Transform), typeof(TargetPosition), typeof(PosSynchInfo));
     }
 

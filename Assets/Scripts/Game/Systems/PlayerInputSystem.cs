@@ -19,9 +19,9 @@ namespace UnityMMO
         }
         EntityQuery group;
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
+            base.OnCreate();
             group = GetEntityQuery(typeof(UserCommand), typeof(TargetPosition), typeof(MoveSpeed));
         }
 

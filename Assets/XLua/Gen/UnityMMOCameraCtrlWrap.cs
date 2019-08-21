@@ -21,14 +21,16 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(UnityMMO.CameraCtrl);
-			Utils.BeginObjectRegister(type, L, translator, 0, 1, 1, 1);
+			Utils.BeginObjectRegister(type, L, translator, 0, 1, 2, 2);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "ApplyMove", _m_ApplyMove);
 			
 			
-			Utils.RegisterFunc(L, Utils.GETTER_IDX, "speed", _g_get_speed);
+			Utils.RegisterFunc(L, Utils.GETTER_IDX, "additionMove", _g_get_additionMove);
+            Utils.RegisterFunc(L, Utils.GETTER_IDX, "speed", _g_get_speed);
             
-			Utils.RegisterFunc(L, Utils.SETTER_IDX, "speed", _s_set_speed);
+			Utils.RegisterFunc(L, Utils.SETTER_IDX, "additionMove", _s_set_additionMove);
+            Utils.RegisterFunc(L, Utils.SETTER_IDX, "speed", _s_set_speed);
             
 			
 			Utils.EndObjectRegister(type, L, translator, null, null,
@@ -107,6 +109,20 @@ namespace XLua.CSObjectWrap
         
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_additionMove(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.CameraCtrl gen_to_be_invoked = (UnityMMO.CameraCtrl)translator.FastGetCSObj(L, 1);
+                translator.PushUnityEngineVector2(L, gen_to_be_invoked.additionMove);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         static int _g_get_speed(RealStatePtr L)
         {
 		    try {
@@ -121,6 +137,22 @@ namespace XLua.CSObjectWrap
         }
         
         
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _s_set_additionMove(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.CameraCtrl gen_to_be_invoked = (UnityMMO.CameraCtrl)translator.FastGetCSObj(L, 1);
+                UnityEngine.Vector2 gen_value;translator.Get(L, 2, out gen_value);
+				gen_to_be_invoked.additionMove = gen_value;
+            
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 0;
+        }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         static int _s_set_speed(RealStatePtr L)

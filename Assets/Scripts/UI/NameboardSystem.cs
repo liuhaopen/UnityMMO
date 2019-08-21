@@ -15,9 +15,9 @@ public class NameboardSystem : BaseComponentSystem
     {
     }
 
-    protected override void OnCreateManager()
+    protected override void OnCreate()
     {
-        base.OnCreateManager();
+        base.OnCreate();
         Group = GetEntityQuery(typeof(Transform), typeof(NameboardData));
     }
 
@@ -111,9 +111,9 @@ public class NameboardSpawnRequestSystem : BaseComponentSystem
     {
     }
 
-    protected override void OnCreateManager()
+    protected override void OnCreate()
     {
-        base.OnCreateManager();
+        base.OnCreate();
         Group = GetEntityQuery(typeof(NameboardSpawnRequest));
         nameboardCanvas = GameObject.Find("UICanvas/Nameboard").transform;
     }

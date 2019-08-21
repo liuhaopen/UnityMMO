@@ -146,41 +146,50 @@ public class AssetBundleInfo {
             return "";
         }
 
-        public void LoadAsset<T>(string file_path, Action<UObject[]> action = null, LuaFunction func = null) where T : UObject {
+        public void LoadAsset<T>(string file_path, Action<UObject[]> action = null, LuaFunction func = null) where T : UObject 
+        {
 #if UNITY_EDITOR
             if (AppConfig.DebugMode)
             {
-                T res = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(file_path);
-                if (res != null)
-                {
-                    if (func != null)
-                    {
-                        List<T> list = new List<T>();
-                        list.Add(res);
-                        object[] args = new object[] { list.ToArray() };
-                        func.Call(args);
-                        func.Dispose();
-                        func = null;
-                    }
-                    else if (action != null)
-                    {
-                        List<UObject> list = new List<UObject>();
-                        list.Add(res);
-                        UObject[] args = list.ToArray();
-                        action(args);
-                    }
-                    return;
-                }
-                else
-                {
-                    Debug.Log("ResourceManager:LoadAsset Error:cannot find file:" + file_path);
-                }
+                StartCoroutine(LoadAssetInLocal<T>(file_path, action, func));
+                return;
             }
 #endif
             // string assetName = System.IO.Path.GetFileNameWithoutExtension(file_path);
             string abName = PackRule.PathToAssetBundleName(file_path);
             string resName = file_path.ToLower();
             this.LoadAsset<T>(abName, new string[] {resName}, action, func);
+        }
+
+        IEnumerator LoadAssetInLocal<T>(string file_path, Action<UObject[]> action = null, LuaFunction func = null) where T : UObject
+        {
+            yield return new WaitForSeconds(0.05f);
+#if UNITY_EDITOR
+            T res = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(file_path);
+            if (res != null)
+            {
+                if (func != null)
+                {
+                    List<T> list = new List<T>();
+                    list.Add(res);
+                    object[] args = new object[] { list.ToArray() };
+                    func.Call(args);
+                    func.Dispose();
+                    func = null;
+                }
+                else if (action != null)
+                {
+                    List<UObject> list = new List<UObject>();
+                    list.Add(res);
+                    UObject[] args = list.ToArray();
+                    action(args);
+                }
+            }
+            else
+            {
+                Debug.Log("ResourceManager:LoadAsset Error:cannot find file:" + file_path);
+            }
+#endif
         }
 
         /// <summary>

@@ -48,21 +48,21 @@ public class SceneStaticObject : ISceneObject
     {
         if (m_LoadStaticObj == null)
         {
-            // XLuaFramework.ResourceManager.GetInstance().LoadPrefabGameObjectWithAction(m_ResPath, delegate(UnityEngine.Object obj){
-                GameObject obj = ResMgr.GetInstance().GetSceneRes(m_ResID);
-                if (obj == null)
-                    return false;
-                m_LoadStaticObj = obj as GameObject;
-                // Debug.Log("LoadScene obj "+(obj!=null).ToString() +" m_LoadStaticObj : "+(m_LoadStaticObj!=null).ToString());
-                m_LoadStaticObj.transform.SetParent(parent);
-                m_LoadStaticObj.transform.position = m_Position;
-                m_LoadStaticObj.transform.eulerAngles = m_Rotation;
-                m_LoadStaticObj.transform.localScale = m_Size;
-
+            GameObject obj = ResMgr.GetInstance().GetSceneRes(m_ResID);
+            if (obj == null)
+                return false;
+            m_LoadStaticObj = obj as GameObject;
+            // Debug.Log("LoadScene obj "+(obj!=null).ToString() +" m_LoadStaticObj : "+(m_LoadStaticObj!=null).ToString());
+            m_LoadStaticObj.transform.SetParent(parent);
+            m_LoadStaticObj.transform.position = m_Position;
+            m_LoadStaticObj.transform.eulerAngles = m_Rotation;
+            m_LoadStaticObj.transform.localScale = m_Size;
+            if (m_LightmapIndex != -1)
+            {
                 Renderer renderer = m_LoadStaticObj.GetComponent<Renderer>();
                 renderer.lightmapIndex = m_LightmapIndex;
                 renderer.lightmapScaleOffset = m_LightmapScaleOffset;
-            // });
+            }
             return true;
         }
         return false;

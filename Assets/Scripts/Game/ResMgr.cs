@@ -31,7 +31,7 @@ public class ResMgr
         LoadPrefab("Assets/AssetBundleRes/ui/common/FightFlyWord.prefab", "FightFlyWord");
 	}
 
-    public void LoadPrefab(string path, string storePrefabName)
+    public void LoadPrefab(string path, string storePrefabName, Action<GameObject> callBack=null)
     {
         XLuaFramework.ResourceManager.GetInstance().LoadAsset<GameObject>(path, delegate(UnityEngine.Object[] objs) {
             if (objs.Length > 0 && (objs[0] as GameObject)!=null)
@@ -40,6 +40,8 @@ public class ResMgr
                 if (prefab != null) 
                 {
                     this.prefabDic[storePrefabName] = prefab;
+                    if (callBack != null)
+                        callBack(prefab);
                     return;
                 }
             }
@@ -66,15 +68,24 @@ public class ResMgr
                 return obj;
             }
         }
-        var prefab = this.prefabDic[name];
-        if (prefab != null)
-            return GameObject.Instantiate(prefab);
+        if (this.prefabDic.ContainsKey(name))
+        {
+            var prefab = this.prefabDic[name];
+            if (prefab != null)
+                return GameObject.Instantiate(prefab);
+        }
+        Debug.LogError("ResMgr.GetGameObject cannot find prefab name :"+name);
         return null;
+    }
+
+    public bool HasLoadedPrefab(string name)
+    {
+        return this.prefabDic.ContainsKey(name);
     }
 
     public void UnuseGameObject(string name, GameObject obj)
     {
-        // obj.SetActive(false);//交给使用者控制显示隐藏
+        // obj.SetActive(false);//交给使用者控制显示隐藏,因为 entities 的 gameObject 一隐藏就会清掉
         if (gameObjectPool.ContainsKey(name))
         {
             gameObjectPool[name].Add(obj);
@@ -87,14 +98,57 @@ public class ResMgr
         }
     }
 
-    public GameObject SpawnGameObject(string prefabName, Vector3 position=default(Vector3), Quaternion rotation=default(Quaternion))
+    public void LoadMonsterResList(List<int> list, Action<bool> callBack)
     {
-        //Cat:TODO pool this
-        return GameObject.Instantiate(this.prefabDic[prefabName], position, rotation);
+        if (list.Count <= 0 && callBack != null)
+            callBack(true);
+        int count = 0;
+        for (int i = 0; i < list.Count; i++)
+        {
+            var typeID = list[i];
+            if (this.prefabDic.ContainsKey("MonsterRes_"+typeID))
+            {
+                count++;
+                if (callBack != null && count==list.Count)
+                    callBack(true);
+                continue;
+            }
+            string bodyPath = ResPath.GetMonsterBodyResPath(typeID);
+            if (bodyPath == string.Empty)
+            {
+                Debug.LogError("ResMgr:LoadMonsterResList monster body res id 0, typeID:"+typeID);
+                if (callBack!=null)
+                    callBack(false);
+                return;
+            }
+            XLuaFramework.ResourceManager.GetInstance().LoadAsset<GameObject>(bodyPath, delegate(UnityEngine.Object[] objs) {
+                if (objs.Length > 0 && (objs[0] as GameObject)!=null)
+                {
+                    GameObject prefab = objs[0] as GameObject;
+                    if (prefab != null) 
+                    {
+                        Debug.Log("load monster ok : "+"MonsterRes_"+typeID);
+                        this.prefabDic["MonsterRes_"+typeID] = prefab;
+                        count++;
+                        if (callBack != null && count==list.Count)
+                        {
+                            callBack(true);
+                        }
+                        return;
+                    }
+                }
+                Debug.LogError("ResMgr:LoadMonsterResList cannot find prefab in "+bodyPath);
+                if (callBack!=null)
+                    callBack(false);
+            });
+        }
+        
     }
 
     public void LoadSceneRes(List<string> list, Action<bool> callBack)
     {
+        if (list.Count <= 0 && callBack != null)
+            callBack(true);
         scenePrefabList = new List<GameObject>(list.Count);
         sceneObjectPool = new Dictionary<int, List<GameObject>>();
         UnloadAllPooledSceneObjects();
@@ -125,7 +179,8 @@ public class ResMgr
                     }
                 }
                 Debug.LogError("cannot find scene prefab in "+list[resID]);
-                callBack(false);
+                if (callBack!=null)
+                    callBack(false);
             });
         }
         

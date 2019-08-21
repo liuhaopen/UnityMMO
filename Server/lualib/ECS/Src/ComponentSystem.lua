@@ -99,7 +99,7 @@ function ComponentSystemBase:CompleteDependencyInternal(  )
 end
 
 local ComponentSystem = ECS.BaseClass(ECS.ComponentSystemBase)
-function ComponentSystem:OnCreateManager( )
+function ComponentSystem:OnCreate( )
 	self.PostUpdateCommands = nil
 end
 

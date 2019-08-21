@@ -6,7 +6,7 @@ function TestSystem:Constructor(  )
 	self.Created = false
 end
 
-function TestSystem:OnCreateManager( )
+function TestSystem:OnCreate( )
 	self.Created = true
 end
 
@@ -128,8 +128,8 @@ end
 local TestComponentDataArraySystem = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr("TestComponentDataArraySystem", TestComponentDataArraySystem)
 
-function TestComponentDataArraySystem:OnCreateManager(  )
-    ECS.ComponentSystem.OnCreateManager(self)
+function TestComponentDataArraySystem:OnCreate(  )
+    ECS.ComponentSystem.OnCreate(self)
     self.group = self:GetComponentGroup({"DataForTestComponentDataArray3", "DataForTestComponentDataArray2"})
 end
 function TestComponentDataArraySystem:OnUpdate(  )
@@ -189,8 +189,8 @@ end
 local TestEntityArraySystem = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr("TestEntityArraySystem", TestEntityArraySystem)
 
-function TestEntityArraySystem:OnCreateManager(  )
-    ECS.ComponentSystem.OnCreateManager(self)
+function TestEntityArraySystem:OnCreate(  )
+    ECS.ComponentSystem.OnCreate(self)
     self.group = self:GetComponentGroup({"DataForTestEntityArray3", "DataForTestEntityArray2"})
 end
 function TestEntityArraySystem:OnUpdate(  )
@@ -219,8 +219,8 @@ end
 local TestRemoveEntitySystem = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr("TestRemoveEntitySystem", TestRemoveEntitySystem)
 
-function TestRemoveEntitySystem:OnCreateManager(  )
-    ECS.ComponentSystem.OnCreateManager(self)
+function TestRemoveEntitySystem:OnCreate(  )
+    ECS.ComponentSystem.OnCreate(self)
     self.group = self:GetComponentGroup({"DataForTestRemoveEntity3", "DataForTestRemoveEntity2"})
 end
 function TestRemoveEntitySystem:OnUpdate(  )

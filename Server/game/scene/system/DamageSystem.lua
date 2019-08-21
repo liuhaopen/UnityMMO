@@ -5,8 +5,8 @@ local Time = Time
 local DamageSystem = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr("UMO.DamageSystem", DamageSystem)
 
-function DamageSystem:OnCreateManager(  )
-	ECS.ComponentSystem.OnCreateManager(self)
+function DamageSystem:OnCreate(  )
+	ECS.ComponentSystem.OnCreate(self)
 	self.fightMgr = self.sceneMgr.fightMgr
 
 	self.group = self:GetComponentGroup({"UMO.DamageEvents", "UMO.AOIHandle", "UMO.HP"})

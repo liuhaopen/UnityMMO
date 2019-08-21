@@ -4,8 +4,8 @@ local skynet = require "skynet"
 local SkillMaxTargetNumBuffSys = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr("UMO.SkillMaxTargetNumBuffSys", SkillMaxTargetNumBuffSys)
 
-function SkillMaxTargetNumBuffSys:OnCreateManager(  )
-	ECS.ComponentSystem.OnCreateManager(self)
+function SkillMaxTargetNumBuffSys:OnCreate(  )
+	ECS.ComponentSystem.OnCreate(self)
 	self.fightMgr = self.sceneMgr.fightMgr
 
 	self.group = self:GetComponentGroup({"UMO.Skill"})

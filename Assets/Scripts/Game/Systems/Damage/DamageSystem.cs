@@ -13,9 +13,9 @@ public class HandleDamage : BaseComponentSystem
     public HandleDamage(GameWorld gameWorld) : base(gameWorld)
     {}
 
-    protected override void OnCreateManager()
+    protected override void OnCreate()
     {
-        base.OnCreateManager();
+        base.OnCreate();
         Group = GetEntityQuery(typeof(HealthStateData));
     }
     

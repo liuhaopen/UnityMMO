@@ -21,7 +21,7 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(UnityMMO.SceneInfo);
-			Utils.BeginObjectRegister(type, L, translator, 0, 0, 7, 7);
+			Utils.BeginObjectRegister(type, L, translator, 0, 0, 8, 8);
 			
 			
 			
@@ -32,6 +32,7 @@ namespace XLua.CSObjectWrap
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "Bounds", _g_get_Bounds);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "ObjectInfoList", _g_get_ObjectInfoList);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "BornList", _g_get_BornList);
+            Utils.RegisterFunc(L, Utils.GETTER_IDX, "MonsterList", _g_get_MonsterList);
             
 			Utils.RegisterFunc(L, Utils.SETTER_IDX, "ResPathList", _s_set_ResPathList);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "LightmapMode", _s_set_LightmapMode);
@@ -40,6 +41,7 @@ namespace XLua.CSObjectWrap
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "Bounds", _s_set_Bounds);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "ObjectInfoList", _s_set_ObjectInfoList);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "BornList", _s_set_BornList);
+            Utils.RegisterFunc(L, Utils.SETTER_IDX, "MonsterList", _s_set_MonsterList);
             
 			
 			Utils.EndObjectRegister(type, L, translator, null, null,
@@ -186,6 +188,20 @@ namespace XLua.CSObjectWrap
             return 1;
         }
         
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_MonsterList(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.SceneInfo gen_to_be_invoked = (UnityMMO.SceneInfo)translator.FastGetCSObj(L, 1);
+                translator.Push(L, gen_to_be_invoked.MonsterList);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
+        
         
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -288,6 +304,21 @@ namespace XLua.CSObjectWrap
 			
                 UnityMMO.SceneInfo gen_to_be_invoked = (UnityMMO.SceneInfo)translator.FastGetCSObj(L, 1);
                 gen_to_be_invoked.BornList = (System.Collections.Generic.List<UnityMMO.BornInfoData>)translator.GetObject(L, 2, typeof(System.Collections.Generic.List<UnityMMO.BornInfoData>));
+            
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 0;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _s_set_MonsterList(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.SceneInfo gen_to_be_invoked = (UnityMMO.SceneInfo)translator.FastGetCSObj(L, 1);
+                gen_to_be_invoked.MonsterList = (System.Collections.Generic.List<int>)translator.GetObject(L, 2, typeof(System.Collections.Generic.List<int>));
             
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);

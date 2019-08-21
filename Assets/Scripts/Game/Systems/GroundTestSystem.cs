@@ -21,9 +21,9 @@ public class GroundTestSystem : BaseComponentSystem
         m_mask = 1 << m_defaultLayer | 1 << m_playerLayer | 1 << m_platformLayer | 1 << m_monsterLayer | 1 << m_npcLayer;
     }
 
-    protected override void OnCreateManager()
+    protected override void OnCreate()
     {
-        base.OnCreateManager();
+        base.OnCreate();
         Group = GetEntityQuery(typeof(Transform), typeof(GroundInfo));
     }
 

@@ -6,8 +6,8 @@ ECS.TypeManager.RegisterScriptMgr("UMO.AISystem", AISystem)
 function AISystem:Constructor(  )
 end
 
-function AISystem:OnCreateManager(  )
-	ECS.ComponentSystem.OnCreateManager(self)
+function AISystem:OnCreate(  )
+	ECS.ComponentSystem.OnCreate(self)
 
 	self.monsterMgr = self.sceneMgr.monsterMgr
 	

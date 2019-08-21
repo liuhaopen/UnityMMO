@@ -8,8 +8,8 @@ namespace Cocos
     //因为需要为各种不同的组件获取或设置颜色，所以FadeIn等action支持传入实现过本接口的实例，可以参考ColorAttrCatcherTextMeshPro.cs实现你自己的组件
     public interface IColorAttrCatcher
     {
-        System.Func<Action, Color> GetColor{get;}
-        System.Action<Action, Color> SetColor{get;}
+        System.Func<Transform, Color> GetColor{get;}
+        System.Action<Transform, Color> SetColor{get;}
     }
 
     //
@@ -78,7 +78,7 @@ namespace Cocos
                 }
                 else
                 {
-                    var color = attrCatcher.GetColor(this);
+                    var color = attrCatcher.GetColor(target);
                     fromOpacity = color.a * 255.0f;
                 }
             }
@@ -104,9 +104,9 @@ namespace Cocos
             }
             else
             {
-                color = attrCatcher.GetColor(this);
+                color = attrCatcher.GetColor(target);
                 color.a = (fromOpacity + (toOpacity - fromOpacity)*time)/255.0f;
-                attrCatcher.SetColor(this, color);
+                attrCatcher.SetColor(target, color);
             }
         }
     }
@@ -196,26 +196,26 @@ namespace Cocos
     //仅作例子参考用
     public class ColorAttrCatcherGraphic : IColorAttrCatcher
     {
-        public Func<Action, Color> GetColor { get => GetColorFunc; }
-        public System.Action<Action, Color> SetColor { get => SetColorFunc; }
+        public Func<Transform, Color> GetColor { get => GetColorFunc; }
+        public System.Action<Transform, Color> SetColor { get => SetColorFunc; }
         public static ColorAttrCatcherGraphic Ins = new ColorAttrCatcherGraphic();
 
-        public static Color GetColorFunc(Action action)
+        public static Color GetColorFunc(Transform target)
         {
-            if (action.Target != null)
+            if (target != null)
             {
-                var graphic = action.Target.GetComponent<Graphic>();
+                var graphic = target.GetComponent<Graphic>();
                 if (graphic != null)
                     return graphic.color;
                 Debug.LogError("action target has no Graphic component, please don't use ColorAttrCatcherGraphic!" + new System.Diagnostics.StackTrace().ToString());
             }
             return Color.white;
         }
-        public static void SetColorFunc(Action action, Color color)
+        public static void SetColorFunc(Transform target, Color color)
         {
-            if (action.Target != null)
+            if (target != null)
             {
-                var graphic = action.Target.GetComponent<Graphic>();
+                var graphic = target.GetComponent<Graphic>();
                 if (graphic != null)
                     graphic.color = color;
                 else

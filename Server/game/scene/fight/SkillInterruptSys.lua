@@ -5,8 +5,8 @@ local skynet = require "skynet"
 local SkillInterruptSys = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr("UMO.SkillInterruptSys", SkillInterruptSys)
 
-function SkillInterruptSys:OnCreateManager(  )
-	ECS.ComponentSystem.OnCreateManager(self)
+function SkillInterruptSys:OnCreate(  )
+	ECS.ComponentSystem.OnCreate(self)
 	self.fightMgr = self.sceneMgr.fightMgr
 
 	self.group = self:GetComponentGroup({"UMO.Skill"})

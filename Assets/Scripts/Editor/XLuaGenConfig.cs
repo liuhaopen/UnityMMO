@@ -157,6 +157,7 @@ public static class XLuaGenConfig
         typeof(Func<string, long>),
         typeof(Action<string>),
         typeof(Action<double>),
+        typeof(Action<bool>),
         typeof(Action<float, float>),
         typeof(UnityEngine.Events.UnityAction),
         typeof(UnityEngine.Events.UnityAction<long>),

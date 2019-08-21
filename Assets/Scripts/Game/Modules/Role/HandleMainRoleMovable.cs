@@ -8,9 +8,9 @@
     
 //     public HandleMainRoleMovable(GameWorld world) : base(world) {}
 
-//     protected override void OnCreateManager()
+//     protected override void OnCreate()
 //  	{
-//  		base.OnCreateManager();
+//  		base.OnCreate();
 //         Group = GetComponentGroup();
 //     }
 

@@ -4,8 +4,8 @@ local skynet = require "skynet"
 local BuffSys = ECS.BaseClass(ECS.ComponentSystem)
 ECS.TypeManager.RegisterScriptMgr("UMO.BuffSys", BuffSys)
 
-function BuffSys:OnCreateManager(  )
-	ECS.ComponentSystem.OnCreateManager(self)
+function BuffSys:OnCreate(  )
+	ECS.ComponentSystem.OnCreate(self)
 	self.group = self:GetComponentGroup({"UMO.Buff"})
 end
 

@@ -62,9 +62,9 @@ public class DestroyDespawning : ComponentSystem
 {
     EntityQuery Group;
 
-    protected override void OnCreateManager()
+    protected override void OnCreate()
     {
-        base.OnCreateManager();
+        base.OnCreate();
         Group = GetEntityQuery(typeof(DespawningEntity));
     }
     
