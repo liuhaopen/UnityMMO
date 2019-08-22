@@ -65,7 +65,7 @@ function FightState:Attack(  )
 		return
 	end
 	self.last_attack_time = Time.time
-	self.last_attack_duration = math.random(1, 3)
+	self.last_attack_duration = math.random(2, 5)
 	--先随机挑个技能
 	if not self.cfg or not self.cfg.ai.skill_list then return end
 	local skill_id = nil

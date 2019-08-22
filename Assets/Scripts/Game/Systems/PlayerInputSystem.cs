@@ -31,7 +31,7 @@ namespace UnityMMO
             float dt = Time.deltaTime;
             var userCommandArray = group.ToComponentDataArray<UserCommand>(Allocator.TempJob);
             var targetPosArray = group.ToComponentDataArray<TargetPosition>(Allocator.TempJob);
-            var moveSpeedArray = group.ToComponentDataArray<MoveSpeed>(Allocator.TempJob);
+            // var moveSpeedArray = group.ToComponentDataArray<MoveSpeed>(Allocator.TempJob);
             if (userCommandArray.Length > 0)
             {
                 var userCommand = userCommandArray[0];
@@ -39,7 +39,7 @@ namespace UnityMMO
             }
             userCommandArray.Dispose();
             targetPosArray.Dispose();
-            moveSpeedArray.Dispose();
+            // moveSpeedArray.Dispose();
         }
 
         public void SampleInput(ref UserCommand command, float deltaTime)
@@ -97,6 +97,7 @@ namespace UnityMMO
                 //已经最高跳段了，就不能再跳
                 return;
             }
+            RoleMgr.GetInstance().StopMainRoleRunning();
             var actionData = EntityManager.GetComponentData<ActionData>(roleGameOE.Entity);
             actionData.Jump = 1;
             EntityManager.SetComponentData<ActionData>(roleGameOE.Entity, actionData);

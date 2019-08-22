@@ -60,11 +60,11 @@ public class SynchFromNet {
         SprotoType.scene_listen_hurt_event.request req = new SprotoType.scene_listen_hurt_event.request();
         NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_listen_hurt_event>(req, OnAckHurtEvents);
         SprotoType.scene_listen_hurt_event.response ack = result as SprotoType.scene_listen_hurt_event.response;
-        // Debug.Log("ack : "+(ack!=null).ToString()+" fightevents:"+(ack.events!=null).ToString());
+        Debug.Log("ack : "+(ack!=null).ToString()+" fightevents:"+(ack.events!=null).ToString());
         if (ack==null || ack.events==null)
             return;
         var len = ack.events.Count;
-        // Debug.Log("lisend hurt event : "+len);
+        Debug.Log("lisend hurt event : "+len);
         // ack.events.Sort((SprotoType.scene_hurt_event_info a, SprotoType.scene_hurt_event_info b)=>DisallowRefReturnCrossingThisAttribute a.time)
         for (int i = 0; i < len; i++)
         {

@@ -33,7 +33,7 @@ local print_net = function() end
 -- print_net = print --注释掉就不打印网络信息了
 
 function NetDispatcher:Start() 
-    print("NetDispatcher.Start!!", GameConst.MaxLuaNetSessionID);
+    print("NetDispatcher.Start!!", GameConst.MaxLuaNetSessionID)
     self.min_lua_net_session_id = GameConst.MinLuaNetSessionID
     self.max_lua_net_session_id = GameConst.MaxLuaNetSessionID
     self.session = self.max_lua_net_session_id
@@ -103,7 +103,7 @@ function NetDispatcher:SendMessage( req_name, req_arg, response_call_back )
     -- for i=1,#pack_str do
     --     print_net(pack_str:byte(i))
     -- end
-    NetMgr:SendBytes(pack_str);
+    NetMgr:SendBytes(pack_str)
 end
 
 function NetDispatcher:Listen( req_name, req_arg, response_call_back )

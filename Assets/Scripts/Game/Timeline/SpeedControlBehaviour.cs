@@ -31,8 +31,8 @@ public class SpeedControlBehaviour : PlayableBehaviour
     // Called when the state of the playable is set to Play
     public override void OnBehaviourPlay(Playable playable, FrameData info)
     {
-        var newSpeedValue = lastSpeed.Value*SpeedFactor;
-        EntityMgr.SetComponentData<MoveSpeed>(SpeedOwner, new MoveSpeed{Value=newSpeedValue});
+        var newSpeedValue = lastSpeed.BaseValue*SpeedFactor;
+        EntityMgr.SetComponentData<MoveSpeed>(SpeedOwner, new MoveSpeed{Value=newSpeedValue, BaseValue=lastSpeed.BaseValue});
     }
 
     // Called when the state of the playable is set to Paused
@@ -40,6 +40,7 @@ public class SpeedControlBehaviour : PlayableBehaviour
     {
         if (!EntityMgr.HasComponent<MoveSpeed>(SpeedOwner))
             return;
+        lastSpeed.Value = lastSpeed.BaseValue;
         EntityMgr.SetComponentData<MoveSpeed>(SpeedOwner, lastSpeed);
     }
 

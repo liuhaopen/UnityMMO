@@ -16,23 +16,23 @@ public class UpdateAnimatorSystem : BaseComponentSystem
     protected override void OnCreate()
     {
         base.OnCreate();
-        group = GetEntityQuery(typeof(LooksInfo), typeof(LocomotionState), typeof(PlayableDirector));
+        group = GetEntityQuery(typeof(LooksInfo), typeof(LocomotionState));
     }
 
     protected override void OnUpdate()
     {
         var looksInfos = group.ToComponentDataArray<LooksInfo>(Allocator.TempJob);
         var locoStates = group.ToComponentDataArray<LocomotionState>(Allocator.TempJob);
-        var directors = group.ToComponentArray<PlayableDirector>();
+        // var directors = group.ToComponentArray<PlayableDirector>();
         for (int i=0; i<looksInfos.Length; i++)
         {
             var looksInfo = looksInfos[i];
-            var director = directors[i];
+            // var director = directors[i];
             // Debug.Log("director.state : "+director.state.ToString());
             if (looksInfo.CurState!=LooksInfo.State.Loaded)
                 continue;
             var looksEntity = looksInfo.LooksEntity;
-            var animator = m_world.GetEntityManager().GetComponentObject<Animator>(looksEntity);
+            var animator = EntityManager.GetComponentObject<Animator>(looksEntity);
             if (animator!=null)
                 UpdateAnimator(animator, locoStates[i]);
         }

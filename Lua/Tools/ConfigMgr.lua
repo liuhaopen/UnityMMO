@@ -43,7 +43,7 @@ function ConfigMgr:GetMonsterPosInScene( sceneID, monsterID )
 	if cfg and cfg.monster_list then
 		for k,v in pairs(cfg.monster_list) do
 			if v.monster_type_id == monsterID then
-				return {x=v.pos_x, y=v.pos_y, z=v.pos_z}
+				return {x=v.pos_x/GameConst.RealToLogic, y=v.pos_y/GameConst.RealToLogic, z=v.pos_z/GameConst.RealToLogic}
 			end
 		end
 	end

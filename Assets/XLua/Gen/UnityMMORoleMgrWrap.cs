@@ -21,7 +21,7 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(UnityMMO.RoleMgr);
-			Utils.BeginObjectRegister(type, L, translator, 0, 12, 2, 1);
+			Utils.BeginObjectRegister(type, L, translator, 0, 13, 2, 1);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Init", _m_Init);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "OnDestroy", _m_OnDestroy);
@@ -33,8 +33,9 @@ namespace XLua.CSObjectWrap
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetName", _m_GetName);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "SetName", _m_SetName);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "UpdateLooksInfo", _m_UpdateLooksInfo);
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetlooksInfo", _m_GetlooksInfo);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetLooksInfo", _m_GetLooksInfo);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetMainRoleLooksInfo", _m_GetMainRoleLooksInfo);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "StopMainRoleRunning", _m_StopMainRoleRunning);
 			
 			
 			Utils.RegisterFunc(L, Utils.GETTER_IDX, "EntityManager", _g_get_EntityManager);
@@ -393,7 +394,7 @@ namespace XLua.CSObjectWrap
         }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-        static int _m_GetlooksInfo(RealStatePtr L)
+        static int _m_GetLooksInfo(RealStatePtr L)
         {
 		    try {
             
@@ -407,7 +408,7 @@ namespace XLua.CSObjectWrap
                 {
                     long _uid = LuaAPI.lua_toint64(L, 2);
                     
-                        UnityMMO.RoleLooksInfo gen_ret = gen_to_be_invoked.GetlooksInfo( _uid );
+                        UnityMMO.RoleLooksInfo gen_ret = gen_to_be_invoked.GetLooksInfo( _uid );
                         translator.Push(L, gen_ret);
                     
                     
@@ -441,6 +442,33 @@ namespace XLua.CSObjectWrap
                     
                     
                     return 1;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_StopMainRoleRunning(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                UnityMMO.RoleMgr gen_to_be_invoked = (UnityMMO.RoleMgr)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    
+                    gen_to_be_invoked.StopMainRoleRunning(  );
+                    
+                    
+                    
+                    return 0;
                 }
                 
             } catch(System.Exception gen_e) {

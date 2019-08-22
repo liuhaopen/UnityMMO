@@ -17,7 +17,7 @@ local Buff = Ac.OO.Class {
 		end,
 		Update = function(self, deltaTime)
 			local buff_id = self[1]
-			local buff_arge = self[2] or self.skillData.cfg.buff
+			local buff_arge = self[2] or self.skillData.cfg.detail[self.skillData.skill_lv].buff
 			local curTime = Time.timeMS
 			for uid,_ in pairs(self.skillData.targets) do
 				local targetEntity = self.sceneMgr:GetEntity(uid)

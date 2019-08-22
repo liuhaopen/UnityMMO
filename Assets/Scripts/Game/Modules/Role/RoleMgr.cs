@@ -96,7 +96,7 @@ public class RoleMgr
 
     private void InitRole(Entity role, long uid, long typeID, Vector3 pos, Vector3 targetPos, float curHp, float maxHp, bool isNeedNavAgent=false)
     {
-        EntityManager.AddComponentData(role, new MoveSpeed {Value = 2200});
+        EntityManager.AddComponentData(role, new MoveSpeed {Value = 2200, BaseValue = 2200});
         EntityManager.AddComponentData(role, new TargetPosition {Value = targetPos});
         EntityManager.AddComponentData(role, new LocomotionState {LocoState = LocomotionState.State.Idle});
         EntityManager.AddComponentData(role, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
@@ -132,7 +132,7 @@ public class RoleMgr
         looksInfos[uid] = info;
     }
 
-    public RoleLooksInfo GetlooksInfo(long uid)
+    public RoleLooksInfo GetLooksInfo(long uid)
     {
         RoleLooksInfo info = new RoleLooksInfo();
         looksInfos.TryGetValue(uid, out info);
@@ -142,7 +142,17 @@ public class RoleMgr
     public RoleLooksInfo GetMainRoleLooksInfo()
     {
         long uid = GetMainRoleUID();
-        return GetlooksInfo(uid);
+        return GetLooksInfo(uid);
+    }
+
+    public void StopMainRoleRunning()
+    {
+        if (mainRoleGOE == null)
+            return;
+        var query = mainRoleGOE.GetComponent<MoveQuery>();
+        query.StopFindWay();
+        var auto = mainRoleGOE.GetComponent<AutoFight>();
+        auto.enabled = false;
     }
 }
 

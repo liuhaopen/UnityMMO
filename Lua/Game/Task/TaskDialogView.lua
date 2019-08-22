@@ -80,7 +80,7 @@ function TaskDialogView:ProcessBtnNameAndCallBack( flag )
 		self.flagMap = {
 			[TaskConst.DialogBtnFlag.Continue] = {name="继续", func=TaskDialogView.ShowNextTalk},
 			[TaskConst.DialogBtnFlag.TakeTask] = {name="接取", func=TaskDialogView.ReqTakeTask},
-			[TaskConst.DialogBtnFlag.DoTask]   = {name="接取", func=TaskDialogView.ReqDoTask},
+			[TaskConst.DialogBtnFlag.DoTask]   = {name="完成", func=TaskDialogView.ReqDoTask},
 			[TaskConst.DialogBtnFlag.Ok] 	   = {name="确定", func=TaskDialogView.ClickOk},
 		}
 	end
@@ -140,12 +140,14 @@ end
 function TaskDialogView:UpdateLooks( )
 	local show_data
 	if self.curShowData.who == 0 then
+		local mainRoleLooksInfo = LRoleMgr:GetMainRoleLooksInfo()
+		if not mainRoleLooksInfo then return end
 		show_data = {
 			showType = UILooksNode.ShowType.Role,
 			showRawImg = self.npc_raw,
-			body = 1,
-			hair = 1,
-			career = 2,
+			body = mainRoleLooksInfo.body,
+			hair = mainRoleLooksInfo.hair,
+			career = mainRoleLooksInfo.career,
 			canRotate = true,
 		}
 	else

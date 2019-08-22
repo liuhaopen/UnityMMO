@@ -93,9 +93,5 @@ public class AutoFight : MonoBehaviour
         }
     }
 
-    private void HasCD()
-    {
-    }
-
 }
 }

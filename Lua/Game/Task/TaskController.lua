@@ -33,7 +33,7 @@ function TaskController:ListenTaskProgressChange(  )
         print("Cat:TaskController [end]")
         self.model:UpdateTaskInfo(ack_data.taskInfo)
         if ack_data.status == TaskConst.Status.Finished then
-            self.model:Fire(TaskConst.Events.ReqTaskList)
+            self:ReqTaskList()
         else
             self.model:Fire(TaskConst.Events.AckTaskList)
             self:HandleAutoDoTask()
@@ -44,12 +44,15 @@ end
 
 function TaskController:ReqTaskList(  )
 	local on_ack = function ( ackData )
+        print("Cat:TaskController [start:47] ackData: ", ackData)
+        PrintTable(ackData)
+        print("Cat:TaskController [end]")
 		self.model:SetTaskInfos(ackData)
 		self.model:Fire(TaskConst.Events.AckTaskList)
         self:HandleAutoDoTask()
 	end
     NetDispatcher:SendMessage("Task_GetInfoList", nil, on_ack)
-
+    print('Cat:TaskController.lua[55] ReqTaskList')
 end
 
 function TaskController:HandleAutoDoTask(  )

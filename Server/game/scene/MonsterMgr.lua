@@ -5,8 +5,8 @@ local MonsterFSM = require "game.scene.ai.MonsterFSM"
 local BP = require("Blueprint")
 local MonsterMgr = BaseClass()
 local test_info = {
-	-- create_num = 1,--只创建1只怪物，方便调试
-	-- create_mon_types = {2000}
+	-- create_num = 5,--只创建1只怪物，方便调试
+	-- create_mon_types = {2000,2001,2002,2003,2004,2005}
 }
 
 function MonsterMgr:Init( sceneMgr, cfg )
@@ -38,7 +38,7 @@ function MonsterMgr:InitMonster(  )
 			create_num = 0
 			for _,test_mons_type in ipairs(test_info.create_mon_types) do
 				if v.monster_type_id == test_mons_type then
-					mons_type_ok = true
+					mons_type_ok = true 
 					break
 				end
 			end
