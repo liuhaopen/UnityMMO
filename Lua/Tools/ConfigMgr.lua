@@ -50,4 +50,16 @@ function ConfigMgr:GetMonsterPosInScene( sceneID, monsterID )
 	return nil
 end
 
+function ConfigMgr:GetNPCPosInScene( sceneID, npcID )
+	local cfg = self:GetSceneCfg(sceneID)
+	if cfg and cfg.npc_list then
+		for k,v in pairs(cfg.npc_list) do
+			if v.npc_id == npcID then
+				return {x=v.pos_x/GameConst.RealToLogic, y=v.pos_y/GameConst.RealToLogic, z=v.pos_z/GameConst.RealToLogic}
+			end
+		end
+	end
+	return nil
+end
+
 return ConfigMgr

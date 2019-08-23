@@ -13,6 +13,7 @@ public class SkillManager
     static SkillManager instance;
     int curComboIndex;
     int career;
+    int lastRandomSkillID=0;
     int[] skillIDs = new int[4];//主界面里的四个技能id，因为人物有多于4技能可以选择，所以需要后端记录下来哪四个常用的放在主界面
     Dictionary<int,long> skillCDEndTime = new Dictionary<int,long>();
     public static SkillManager GetInstance()
@@ -123,25 +124,29 @@ public class SkillManager
         return combatID<10;
     }
 
-    public void CastSkillByIndex(int skillIndex=-1)
+    public int CastSkillByIndex(int skillIndex=-1)
     {
         var skillID = GetSkillIDByIndex(skillIndex);
         CastSkill(skillID);
+        return skillID;
     }
 
-    public void CastRandomSkill()
+    public int CastRandomSkill()
     {
         for (int i = 0; i < skillIDs.Length; i++)
         {
             var skillID = skillIDs[i];
+            if (lastRandomSkillID == skillID)
+                continue;
             var isInCD = IsSkillInCD(skillID);
             if (!isInCD)
             {
                 CastSkill(skillID);
-                break;
+                lastRandomSkillID = skillID;
+                return skillID;
             }
         }
-        CastSkillByIndex(-1);
+        return CastSkillByIndex(-1);
     }
 
     public void CastSkill(int skillID)
@@ -155,7 +160,6 @@ public class SkillManager
         }
         var roleGameOE = RoleMgr.GetInstance().GetMainRole();
         var roleInfo = roleGameOE.GetComponent<RoleInfo>();
-        
         string assetPath = ResPath.GetRoleSkillResPath(skillID);
         bool isNormalAttack = IsNormalAttack(skillID);//普通攻击
         // Debug.Log("isNormalAttack : "+isNormalAttack);

@@ -35,9 +35,26 @@ monster_list = {{
 		pos_y = -1929,
 		pos_z = 13800,
 		monster_type_id = 2004,
-		monster_num = 20,
-		radius = 800,
+		monster_num = 4,
+		radius = 1500,
+},
+{
+		pos_x = -2139,
+		pos_y = -1929,
+		pos_z = 13800,
+		monster_type_id = 2002,
+		monster_num = 3,
+		radius = 1500,
+},
+{
+		pos_x = -2139,
+		pos_y = -1929,
+		pos_z = 13800,
+		monster_type_id = 2000,
+		monster_num = 3,
+		radius = 1500,
 },
 },
+collectable_list = {},
 }
 return config

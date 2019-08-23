@@ -11,7 +11,7 @@ end
 
 function TaskDialogView:OnLoad(  )
 	local names = {
-		"skip_con/skip_btn:obj","bottom/npc:raw","bottom/btn:obj","bottom/npc_name:txt","bottom/chat:txt","click_bg:obj","bottom/btn/btn_label:txt"
+		"skip_con/skip_btn:obj","bottom/npc:raw","bottom/btn:obj","bottom/npc_name:txt","bottom/chat:txt","click_bg:obj","bottom/btn/btn_label:txt","bottom/left_time:txt",
 	}
 	UI.GetChildren(self, self.transform, names)
 	self.transform.sizeDelta = Vector2.zero
@@ -19,19 +19,19 @@ function TaskDialogView:OnLoad(  )
 	self:AddEvents()
 end
 
--- function TaskDialogView:SetData( data )
--- 	UINode.SetData(self, data)
--- end
+function TaskDialogView:HandleBtnClick(  )
+	print('Cat:TaskDialogView.lua[26] self.curShowData.clickCallBack', self.curShowData.clickCallBack)
+	if self.curShowData.clickCallBack then
+		self.curShowData.clickCallBack()
+	else
+		self:Unload()
+	end
+end
 
 function TaskDialogView:AddEvents(  )
 	local on_click = function ( click_obj )
 		if self.btn_obj == click_obj then
-			print('Cat:TaskDialogView.lua[26] self.curShowData.clickCallBack', self.curShowData.clickCallBack)
-			if self.curShowData.clickCallBack then
-				self.curShowData.clickCallBack()
-			else
-				self:Unload()
-			end
+			self:HandleBtnClick()
 		elseif self.skip_btn_obj == click_obj then
 			self:Unload()
 		elseif self.click_bg_obj == click_obj then
@@ -91,6 +91,14 @@ function TaskDialogView:ProcessBtnNameAndCallBack( flag )
     self.curShowData.clickCallBack = function()
     	flagInfo.func(self)
 	end
+	self.countdown = self.countdown or self:AddUIComponent(UI.Countdown)
+  	self.countdown:CountdownByLeftTime(8000, function(leftTime)
+  		if leftTime > 0 then
+  			self.left_time_txt.text = string.format("%s秒后自动", math.floor(leftTime/1000))
+  		else
+			self:HandleBtnClick()
+		end
+	end, 200)
 end
 
 function TaskDialogView:ProcessTaskInfo(  )
@@ -117,7 +125,7 @@ function TaskDialogView:ProcessTaskInfo(  )
     else
         --show default conversation
         self.curShowData = {}
-        self.curShowData.content = "哈哈，你猜我是谁？"
+        self.curShowData.content = "哈哈,你猜我是谁?"
         self.curShowData.who = self.data.npcID
         self:ProcessBtnNameAndCallBack(TaskConst.DialogBtnFlag.Ok)
     end

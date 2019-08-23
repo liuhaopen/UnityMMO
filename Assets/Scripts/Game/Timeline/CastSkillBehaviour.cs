@@ -57,7 +57,7 @@ public class CastSkillBehaviour : PlayableBehaviour
                     // Debug.Log("ack : "+(ack!=null).ToString());
                     if (ack==null)
                         return;
-                    Debug.Log("scene_cast_skill ack.result : "+ack.result);
+                    // Debug.Log("scene_cast_skill ack.result : "+ack.result);
                     if (ack.result == 1)
                     {
                         XLuaFramework.CSLuaBridge.GetInstance().CallLuaFuncStr(GlobalEvents.MessageShow, "技能冷却中...");

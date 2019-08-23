@@ -56,7 +56,7 @@ end
 local updateTargetMonsterIfKillTask = function ( roleID, taskInfo )
 	if taskInfo.subType == TaskConst.SubType.KillMonster and Task.monsterTargetIDs[roleID] and Task.monsterTargetIDs[roleID][taskInfo.contentID] then
 		Task.monsterTargetIDs[roleID][taskInfo.contentID] = Task.monsterTargetIDs[roleID][taskInfo.contentID] - 1
-		if Task.monsterTargetIDs[roleID][taskInfo.contentID] < 0 then
+		if Task.monsterTargetIDs[roleID][taskInfo.contentID] <= 0 then
 			Task.monsterTargetIDs[roleID][taskInfo.contentID] = nil
 		end
 	end 
@@ -93,9 +93,6 @@ end
 local SprotoHandlers = {}
 function SprotoHandlers.Task_GetInfoList(userInfo, reqData)
 	local taskInfos = Task.taskInfos[userInfo.cur_role_id]
-	print("Cat:Task [start:96] taskInfos: ", taskInfos)
-	PrintTable(taskInfos)
-	print("Cat:Task [end]")
 	if not taskInfos then
 		taskInfos = InitTaskInfos(userInfo)
 		Task.taskInfos[userInfo.cur_role_id] = taskInfos
@@ -161,9 +158,6 @@ function SprotoHandlers.Task_DoTask( userInfo, reqData )
 					table.remove_value_in_array(taskInfos.taskList, "taskID", reqData.taskID)
 					local nextTaskInfo = createTaskInfoByID(userInfo, cfg.nextTaskID)
 					nextTaskInfo.id = taskInfo.id
-					print("Cat:Task [start:160] nextTaskInfo: ", nextTaskInfo)
-					PrintTable(nextTaskInfo)
-					print("Cat:Task [end]")
 					addTargetMonsterIfKillTask(userInfo.cur_role_id, nextTaskInfo)
 					table.insert(taskInfos.taskList, nextTaskInfo)
 					skynet.send(Task.gameDBServer, "lua", "update", "TaskList", "id", taskInfo.id, nextTaskInfo)
@@ -227,7 +221,6 @@ end
 local PublicFuncs = {}
 
 function PublicFuncs.Init( userInfo )
-	print('Cat:Task.lua[Init] userInfo', userInfo)
 	user_info = userInfo
 end
 
@@ -243,16 +236,17 @@ function PublicFuncs.NPCHasTask( roleID, npcID )
 end
 
 function PublicFuncs.KillMonster( roleID, monsterID, killNum )
-	print('Cat:Task.lua[203] roleID, monsterID, killNum', roleID, monsterID, killNum, Task.monsterTargetIDs[roleID], Task.monsterTargetIDs[roleID] and Task.monsterTargetIDs[roleID][monsterID] or "nil", Task.taskInfos[roleID])
+	-- print('Cat:Task.lua[203] roleID, monsterID, killNum', roleID, monsterID, killNum, Task.monsterTargetIDs[roleID], Task.monsterTargetIDs[roleID] and Task.monsterTargetIDs[roleID][monsterID] or "nil", Task.taskInfos[roleID])
 	if Task.monsterTargetIDs[roleID] and Task.monsterTargetIDs[roleID][monsterID] then
 		local taskInfos = Task.taskInfos[roleID]
 		if taskInfos and taskInfos.taskList then
 			for i,v in ipairs(taskInfos.taskList) do
-				print('Cat:Task.lua[216] v.curProgress', v.curProgress, v.contentID, v.subType)
+				-- print('Cat:Task.lua[216] v.curProgress', v.curProgress, v.maxProgress, v.contentID, v.subType)
 				if v.subType == TaskConst.SubType.KillMonster and v.contentID == monsterID then
 					v.curProgress = v.curProgress + killNum
 					if v.curProgress >= v.maxProgress then
 						completeSubTask(roleID, v)
+						addNewChangedTaskInfo(roleID, v)
 					else
 						addNewChangedTaskInfo(roleID, v)
 						--avoid frequent update database

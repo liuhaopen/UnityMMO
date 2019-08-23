@@ -60,11 +60,11 @@ public class SynchFromNet {
         SprotoType.scene_listen_hurt_event.request req = new SprotoType.scene_listen_hurt_event.request();
         NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_listen_hurt_event>(req, OnAckHurtEvents);
         SprotoType.scene_listen_hurt_event.response ack = result as SprotoType.scene_listen_hurt_event.response;
-        Debug.Log("ack : "+(ack!=null).ToString()+" fightevents:"+(ack.events!=null).ToString());
+        // Debug.Log("ack : "+(ack!=null).ToString()+" fightevents:"+(ack.events!=null).ToString());
         if (ack==null || ack.events==null)
             return;
         var len = ack.events.Count;
-        Debug.Log("lisend hurt event : "+len);
+        // Debug.Log("lisend hurt event : "+len);
         // ack.events.Sort((SprotoType.scene_hurt_event_info a, SprotoType.scene_hurt_event_info b)=>DisallowRefReturnCrossingThisAttribute a.time)
         for (int i = 0; i < len; i++)
         {
@@ -89,10 +89,14 @@ public class SynchFromNet {
             if (entityMgr.HasComponent<LocomotionState>(defenderEntity))
             {
                 //进入受击状态
-                var locomotionState = entityMgr.GetComponentData<LocomotionState>(defenderEntity);
-                locomotionState.LocoState = LocomotionState.State.BeHit;
-                locomotionState.StartTime = Time.time;
-                entityMgr.SetComponentData<LocomotionState>(defenderEntity, locomotionState);
+                bool playBehit = UnityEngine.Random.RandomRange(0, 100) > 90.0f;
+                if (playBehit)
+                {
+                    var locomotionState = entityMgr.GetComponentData<LocomotionState>(defenderEntity);
+                    locomotionState.LocoState = LocomotionState.State.BeHit;
+                    locomotionState.StartTime = Time.time;
+                    entityMgr.SetComponentData<LocomotionState>(defenderEntity, locomotionState);
+                }
                 //显示战斗飘字
                 var defenderTrans = entityMgr.GetComponentObject<Transform>(defenderEntity);
                 var flyWordObj = ResMgr.GetInstance().GetGameObject("FightFlyWord");
@@ -307,8 +311,6 @@ public class SynchFromNet {
             }
             else if (nameboardData.UIResState==NameboardData.ResState.DontLoad)
             {
-                // var isRelive = flag==5;
-                Debug.Log("isRelive : "+isRelive);
                 if (isRelive)
                 {
                     nameboardData.UIResState = NameboardData.ResState.WaitLoad;
@@ -334,7 +336,7 @@ public class SynchFromNet {
     
     private void ApplyChangeInfoHPChange(Entity entity, SprotoType.info_item change_info)
     {
-        Debug.Log("hp change : "+change_info.value);
+        // Debug.Log("hp change : "+change_info.value);
         string[] strs = change_info.value.Split(',');
         float curHp = (float)Int64.Parse(strs[0])/GameConst.RealToLogic;
         long flag = 0;

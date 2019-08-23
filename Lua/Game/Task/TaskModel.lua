@@ -71,8 +71,8 @@ end
 
 function TaskModel:CompleteTalk( taskInfo, cfg, subCfg )
 	taskInfo.npcID = subCfg.contentID
+	taskInfo.sceneID = subCfg.sceneID
 	local npcName = ConfigMgr:GetNPCName(taskInfo.npcID)
-	print('Cat:TaskModel.lua[74] npcName', npcName)
 	taskInfo.desc = string.format(TaskConst.Desc[TaskConst.SubType.Talk], npcName)
 end
 

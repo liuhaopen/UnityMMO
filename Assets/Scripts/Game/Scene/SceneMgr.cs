@@ -8,6 +8,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityMMO.Component;
 using XLua;
 
@@ -40,6 +41,8 @@ public class SceneMgr : MonoBehaviour
     public SceneInfo CurSceneInfo { get => curSceneInfo; }
     public Transform MoveQueryContainer { get =>moveQueryContainer; }
     public Transform FlyWordContainer { get =>flyWordContainer; }
+    public int CurSceneID { get => curSceneID; set => curSceneID = value; }
+
     Cinemachine.CinemachineFreeLook freeLookCamera;
     Transform freeLookCameraTrans;
     Transform mainCameraTrans;
@@ -165,18 +168,18 @@ public class SceneMgr : MonoBehaviour
         isLoadingScene = true;
         isBaseWorldLoadOk = false;
         LoadSceneInfo(scene_id, delegate(int result){
-            string navmeshPath = "";
+            string baseWorldScenePath = "";
             if (XLuaFramework.AppConfig.DebugMode)
             {
-                navmeshPath = "Assets/AssetBundleRes/scene/base_world/base_world_"+scene_id+".unity";
+                baseWorldScenePath = "Assets/AssetBundleRes/scene/base_world/base_world_"+scene_id+".unity";
             }
             else
             {
-                navmeshPath = "base_world_"+scene_id;
-                XLuaFramework.ResourceManager.GetInstance().LoadNavMesh(navmeshPath);
+                baseWorldScenePath = "base_world_"+scene_id;
+                XLuaFramework.ResourceManager.GetInstance().LoadNavMesh(baseWorldScenePath);
             }
             LoadingView.Instance.SetData(0.8f, "加载基础场景...");
-            AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(navmeshPath, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+            AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(baseWorldScenePath, UnityEngine.SceneManagement.LoadSceneMode.Additive);
             asy.completed += delegate(AsyncOperation asyOp){
                 Debug.Log("load base world:"+asyOp.isDone.ToString());
                 isLoadingScene = false;
@@ -200,7 +203,9 @@ public class SceneMgr : MonoBehaviour
 
     public void UnloadScene()
     {
+        RoleMgr.GetInstance().StopMainRoleRunning();
         string baseSceneName = "base_world_"+curSceneID;
+        NavMesh.RemoveAllNavMeshData();
         AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(baseSceneName);
         asy.completed += delegate(AsyncOperation asyOp){
             Debug.Log("unload scene finish");
@@ -208,15 +213,9 @@ public class SceneMgr : MonoBehaviour
         if (m_Controller != null)
             m_Controller.ResetAllData();
         RemoveAllSceneObjects();
-        var mainRole = RoleMgr.GetInstance().GetMainRole();
-        if (mainRole != null)
-        {
-            var fight = mainRole.GetComponent<AutoFight>();
-            fight.enabled = false;
-        }
     }
 
-    public void ReqEnterScene(int scene_id, int door_id)
+    public void ReqEnterScene(int scene_id, int door_id=0)
     {
         SprotoType.scene_enter_to.request req = new SprotoType.scene_enter_to.request();
         req.scene_id = scene_id;

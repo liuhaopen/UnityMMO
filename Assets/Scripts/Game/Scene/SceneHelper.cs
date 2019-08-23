@@ -8,6 +8,7 @@ public struct RaycastSceneObjHit
 {
     public Entity entity;
     public Vector3 point;
+    public bool hit;
 }
 public class SceneHelper
 {
@@ -22,13 +23,15 @@ public class SceneHelper
     public static RaycastSceneObjHit GetClickSceneObject()
     {
         RaycastSceneObjHit result = new RaycastSceneObjHit();
+        result.hit = false;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         // Debug.Log("Input.mousePosition : "+Input.mousePosition.x+" "+Input.mousePosition.y+" z:"+Input.mousePosition.z);
         RaycastHit hit=new RaycastHit();
         if(Physics.Raycast(ray,out hit))
         {
-            // Debug.Log("get click scene object : "+hit.collider.name);
+            Debug.Log("get click scene object : "+hit.collider.name);
             result.point = hit.point;
+            result.hit = true;
             var uid = hit.collider.GetComponentInParent<UIDProxy>();
             if (uid != null)
             {

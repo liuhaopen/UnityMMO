@@ -32,7 +32,8 @@ function TaskController:ListenTaskProgressChange(  )
         PrintTable(ack_data)
         print("Cat:TaskController [end]")
         self.model:UpdateTaskInfo(ack_data.taskInfo)
-        if ack_data.status == TaskConst.Status.Finished then
+        print('Cat:TaskController.lua[35] ack_data.status, ', ack_data.status, TaskConst.Status.Finished)
+        if ack_data.taskInfo and ack_data.taskInfo.status == TaskConst.Status.Finished then
             self:ReqTaskList()
         else
             self.model:Fire(TaskConst.Events.AckTaskList)
@@ -60,17 +61,17 @@ function TaskController:HandleAutoDoTask(  )
     
     local lastDoingType = self.model:GetTaskType(self.curDoingTaskInfo.taskID)
     local taskInfo = self.model:GetTaskInfoByType(lastDoingType)
-    if taskInfo and (taskInfo.status == TaskConst.Status.CanTake or taskInfo.status == TaskConst.Status.Doing or taskInfo.status == TaskConst.Status.Finished) then
+    if taskInfo and (taskInfo.subTaskIndex ~= self.curDoingTaskInfo.subTaskIndex) and (taskInfo.status == TaskConst.Status.CanTake or taskInfo.status == TaskConst.Status.Doing or taskInfo.status == TaskConst.Status.Finished) then
         self:DoTask(taskInfo)
     end
 end
 
 function TaskController:DoTask( taskInfo )
-    print("Cat:TaskController [start:39] taskInfo:", taskInfo)
+    print("Cat:TaskController [start:DoTask] taskInfo:", taskInfo)
     PrintTable(taskInfo)
     print("Cat:TaskController [end]")
 	if not taskInfo or not taskInfo.subType then return end
-
+    RoleMgr.GetInstance():StopMainRoleRunning()
     if not self.handleTaskFuncs then
         self.handleTaskFuncs = {
             [TaskConst.SubType.Talk] = TaskController.DoTalk,
@@ -98,16 +99,12 @@ function TaskController:DoTalk( taskInfo )
     end
     local goe = RoleMgr.GetInstance():GetMainRole()
     local moveQuery = goe:GetComponent(typeof(CS.UnityMMO.MoveQuery))
-    --Cat_Todo : read npc pos from config file
-    local npcPosList = {
-        [3000] = {x = 787.90, y = 166.19, z = 1073.90},
-        [3001] = {x = 749.90, y = 163.00, z = 1182.40},
-        [3002] = {x = 845.00, y = 169.00, z = 1221.00},
-    }
+    local npcPos = ConfigMgr:GetNPCPosInScene(taskInfo.sceneID, npcID)
     local findInfo = {
-        destination = npcPosList[npcID],
+        destination = npcPos,
         stoppingDistance = 1.2,
         onStop = onApproachingNpc,
+        sceneID = taskInfo.sceneID,
     }
     --Cat_Todo : handle destination are in different scene
     moveQuery:StartFindWay(findInfo)
@@ -133,6 +130,7 @@ function TaskController:DoKillMonster( taskInfo )
         destination = monsterPos,
         stoppingDistance = 1,
         onStop = onApproachingMonster,
+        sceneID = taskInfo.sceneID,
     }
     --Cat_Todo : handle destination are in different scene
     local goe = RoleMgr.GetInstance():GetMainRole()

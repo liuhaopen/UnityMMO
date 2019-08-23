@@ -24,10 +24,12 @@ public class CommonAnimatorBehaviour : StateMachineBehaviour
     {
         // Debug.Log("stateInfo : "+stateInfo.IsName("behit")+" "+stateInfo.ToString());
         var goe = animator.transform.parent.GetComponent<GameObjectEntity>();
-        if (SceneMgr.Instance.EntityManager.HasComponent<LocomotionState>(goe.Entity))
+        bool hasLocomotion = SceneMgr.Instance.EntityManager.HasComponent<LocomotionState>(goe.Entity);
+        Debug.Log("animator beh haslocomo"+hasLocomotion);
+        if (hasLocomotion)
         {
             var locoState = SceneMgr.Instance.EntityManager.GetComponentData<LocomotionState>(goe.Entity);
-            if (locoState.LocoState == LocomotionState.State.BeHit)
+            // if (locoState.LocoState == LocomotionState.State.BeHit)
             {
                 locoState.LocoState = LocomotionState.State.Idle;
                 locoState.StartTime = Time.time;

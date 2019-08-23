@@ -15,6 +15,7 @@ public struct FindWayInfo
     //到达目的地前的一段距离就停下来
     public float stoppingDistance;
     public Action onStop;
+    public int sceneID;
 }
 public class MoveQuery : MonoBehaviour
 {
@@ -26,6 +27,7 @@ public class MoveQuery : MonoBehaviour
     public float radius;
     public float height;
     private bool isAutoFinding;
+    private FindWayInfo findWayAfterLoadScene;
 
     [NonSerialized] public int collisionLayer;
     [NonSerialized] public float3 moveQueryStart;
@@ -77,22 +79,51 @@ public class MoveQuery : MonoBehaviour
 
     public void UpdateNavAgent()
     {
+        
         NavMeshHit closestHit;
         // Debug.Log("transform.position : "+transform.position.x+" "+transform.position.y+" "+transform.position.z);
-        if (NavMesh.SamplePosition(transform.position, out closestHit, 100f, NavMesh.AllAreas)) {
+        if (NavMesh.SamplePosition(transform.position, out closestHit, 1000f, NavMesh.AllAreas)) 
+        {
+            Debug.Log("update nav agent in sample pos");
             transform.position = closestHit.position;
             charController.transform.position = closestHit.position;
-            //after load new scene, it will 
-            if (navAgent != null)
-                GameObject.DestroyImmediate(navAgent);
-            navAgent = charController.gameObject.AddComponent<NavMeshAgent>();
+            if (navAgent == null)
+            {
+                navAgent = charController.gameObject.AddComponent<NavMeshAgent>();
+            }
+            else
+            {
+                navAgent.enabled = false;
+                navAgent.enabled = true;
+            }
             navAgent.radius = this.radius;
             navAgent.height = this.height;
+        }
+        else
+        {
+            Debug.LogError("has not in navmesh");
+        }
+        // if (navAgent != null)
+        //     GameObject.DestroyImmediate(navAgent);
+        // navAgent = charController.gameObject.AddComponent<NavMeshAgent>();
+        // navAgent.radius = this.radius;
+        // navAgent.height = this.height;
+        Debug.Log("findWayAfterLoadScene.sceneID : "+findWayAfterLoadScene.sceneID);
+        if (findWayAfterLoadScene.sceneID != 0)
+        {
+            StartFindWay(findWayAfterLoadScene);
+            findWayAfterLoadScene.sceneID = 0;
         }
     }
 
     public void StartFindWay(FindWayInfo info)
     {
+        if (info.sceneID != 0 && info.sceneID != SceneMgr.Instance.CurSceneID)
+        {
+            findWayAfterLoadScene = info;
+            SceneMgr.Instance.ReqEnterScene(info.sceneID);
+            return;
+        }
         if (!navAgent)
         {
             Debug.LogError("has no NavMeshAgent Component!call my method Initialize(true)");
@@ -101,6 +132,7 @@ public class MoveQuery : MonoBehaviour
         else if (!navAgent.isOnNavMesh)
         {
             Debug.Log("nav agent is not on navmesh!");
+            UpdateNavAgent();
             return;
         }
         navAgent.isStopped = false;

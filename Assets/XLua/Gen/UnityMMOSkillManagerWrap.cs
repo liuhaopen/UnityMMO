@@ -455,20 +455,22 @@ namespace XLua.CSObjectWrap
                 {
                     int _skillIndex = LuaAPI.xlua_tointeger(L, 2);
                     
-                    gen_to_be_invoked.CastSkillByIndex( _skillIndex );
+                        int gen_ret = gen_to_be_invoked.CastSkillByIndex( _skillIndex );
+                        LuaAPI.xlua_pushinteger(L, gen_ret);
                     
                     
                     
-                    return 0;
+                    return 1;
                 }
                 if(gen_param_count == 1) 
                 {
                     
-                    gen_to_be_invoked.CastSkillByIndex(  );
+                        int gen_ret = gen_to_be_invoked.CastSkillByIndex(  );
+                        LuaAPI.xlua_pushinteger(L, gen_ret);
                     
                     
                     
-                    return 0;
+                    return 1;
                 }
                 
             } catch(System.Exception gen_e) {
@@ -493,11 +495,12 @@ namespace XLua.CSObjectWrap
                 
                 {
                     
-                    gen_to_be_invoked.CastRandomSkill(  );
+                        int gen_ret = gen_to_be_invoked.CastRandomSkill(  );
+                        LuaAPI.xlua_pushinteger(L, gen_ret);
                     
                     
                     
-                    return 0;
+                    return 1;
                 }
                 
             } catch(System.Exception gen_e) {

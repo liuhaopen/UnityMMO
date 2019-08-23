@@ -22,7 +22,7 @@ namespace UnityMMO
         protected override void OnCreate()
         {
             base.OnCreate();
-            group = GetEntityQuery(typeof(UserCommand), typeof(TargetPosition), typeof(MoveSpeed));
+            group = GetEntityQuery(typeof(UserCommand), typeof(TargetPosition));
         }
 
         protected override void OnUpdate()
@@ -31,7 +31,6 @@ namespace UnityMMO
             float dt = Time.deltaTime;
             var userCommandArray = group.ToComponentDataArray<UserCommand>(Allocator.TempJob);
             var targetPosArray = group.ToComponentDataArray<TargetPosition>(Allocator.TempJob);
-            // var moveSpeedArray = group.ToComponentDataArray<MoveSpeed>(Allocator.TempJob);
             if (userCommandArray.Length > 0)
             {
                 var userCommand = userCommandArray[0];
@@ -39,7 +38,6 @@ namespace UnityMMO
             }
             userCommandArray.Dispose();
             targetPosArray.Dispose();
-            // moveSpeedArray.Dispose();
         }
 
         public void SampleInput(ref UserCommand command, float deltaTime)

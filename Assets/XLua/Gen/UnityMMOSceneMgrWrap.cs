@@ -21,7 +21,7 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(UnityMMO.SceneMgr);
-			Utils.BeginObjectRegister(type, L, translator, 0, 20, 11, 4);
+			Utils.BeginObjectRegister(type, L, translator, 0, 20, 12, 5);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "CheckMainRolePos", _m_CheckMainRolePos);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Init", _m_Init);
@@ -54,11 +54,13 @@ namespace XLua.CSObjectWrap
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "CurSceneInfo", _g_get_CurSceneInfo);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "MoveQueryContainer", _g_get_MoveQueryContainer);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "FlyWordContainer", _g_get_FlyWordContainer);
+            Utils.RegisterFunc(L, Utils.GETTER_IDX, "CurSceneID", _g_get_CurSceneID);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "detector", _g_get_detector);
             Utils.RegisterFunc(L, Utils.GETTER_IDX, "groundLayer", _g_get_groundLayer);
             
 			Utils.RegisterFunc(L, Utils.SETTER_IDX, "IsLoadingScene", _s_set_IsLoadingScene);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "FreeLookCamera", _s_set_FreeLookCamera);
+            Utils.RegisterFunc(L, Utils.SETTER_IDX, "CurSceneID", _s_set_CurSceneID);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "detector", _s_set_detector);
             Utils.RegisterFunc(L, Utils.SETTER_IDX, "groundLayer", _s_set_groundLayer);
             
@@ -256,7 +258,9 @@ namespace XLua.CSObjectWrap
                 UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
             
             
-                
+			    int gen_param_count = LuaAPI.lua_gettop(L);
+            
+                if(gen_param_count == 3&& LuaTypes.LUA_TNUMBER == LuaAPI.lua_type(L, 2)&& LuaTypes.LUA_TNUMBER == LuaAPI.lua_type(L, 3)) 
                 {
                     int _scene_id = LuaAPI.xlua_tointeger(L, 2);
                     int _door_id = LuaAPI.xlua_tointeger(L, 3);
@@ -267,10 +271,22 @@ namespace XLua.CSObjectWrap
                     
                     return 0;
                 }
+                if(gen_param_count == 2&& LuaTypes.LUA_TNUMBER == LuaAPI.lua_type(L, 2)) 
+                {
+                    int _scene_id = LuaAPI.xlua_tointeger(L, 2);
+                    
+                    gen_to_be_invoked.ReqEnterScene( _scene_id );
+                    
+                    
+                    
+                    return 0;
+                }
                 
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
             }
+            
+            return LuaAPI.luaL_error(L, "invalid arguments to UnityMMO.SceneMgr.ReqEnterScene!");
             
         }
         
@@ -838,6 +854,20 @@ namespace XLua.CSObjectWrap
         }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _g_get_CurSceneID(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
+                LuaAPI.xlua_pushinteger(L, gen_to_be_invoked.CurSceneID);
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 1;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         static int _g_get_Instance(RealStatePtr L)
         {
 		    try {
@@ -902,6 +932,21 @@ namespace XLua.CSObjectWrap
 			
                 UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
                 gen_to_be_invoked.FreeLookCamera = (Cinemachine.CinemachineFreeLook)translator.GetObject(L, 2, typeof(Cinemachine.CinemachineFreeLook));
+            
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            return 0;
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _s_set_CurSceneID(RealStatePtr L)
+        {
+		    try {
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+			
+                UnityMMO.SceneMgr gen_to_be_invoked = (UnityMMO.SceneMgr)translator.FastGetCSObj(L, 1);
+                gen_to_be_invoked.CurSceneID = LuaAPI.xlua_tointeger(L, 2);
             
             } catch(System.Exception gen_e) {
                 return LuaAPI.luaL_error(L, "c# exception:" + gen_e);

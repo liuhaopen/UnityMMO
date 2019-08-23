@@ -6,6 +6,7 @@ namespace UnityMMO
 {
 public class AutoFight : MonoBehaviour 
 {
+    float attackInterval = 0.8f;
     float lastAttackTime;
     GameObjectEntity mainRoleGOE;
     Transform mainRoleTrans;
@@ -33,7 +34,7 @@ public class AutoFight : MonoBehaviour
         // Debug.Log("mainRoleMoveQuery.IsAutoFinding : "+mainRoleMoveQuery.IsAutoFinding+" lastTime:"+lastAttackTime+" target:"+(target!=Entity.Null));
         if (mainRoleMoveQuery.IsAutoFinding || mainRoleMoveQuery.navAgent.pathPending || !mainRoleMoveQuery.navAgent.isStopped)
             return;
-        if (Time.time - lastAttackTime < 0.8f)
+        if (Time.time - lastAttackTime < attackInterval)
             return;
         if (target == Entity.Null)
         {
@@ -80,7 +81,9 @@ public class AutoFight : MonoBehaviour
         if (dis <= 1.2)
         {
             lastAttackTime = Time.time;
-            SkillManager.GetInstance().CastRandomSkill();
+            var skillID = SkillManager.GetInstance().CastRandomSkill();
+            var isNormalAttack = SkillManager.GetInstance().IsNormalAttack(skillID);
+            attackInterval = isNormalAttack?0.8f:1.5f;
         }
         else
         {

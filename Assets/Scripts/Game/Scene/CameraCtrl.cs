@@ -13,8 +13,8 @@ public class CameraCtrl : MonoBehaviour {
         freeLookCam = GetComponent<CinemachineFreeLook>();
         additionMove = Vector3.zero;
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-        freeLookCam.m_XAxis.m_InputAxisName = "Mouse X";
-        freeLookCam.m_YAxis.m_InputAxisName = "Mouse Y";
+        // freeLookCam.m_XAxis.m_InputAxisName = "Mouse X";
+        // freeLookCam.m_YAxis.m_InputAxisName = "Mouse Y";
 #endif
     }
 
@@ -28,7 +28,7 @@ public class CameraCtrl : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-#if !UNITY_EDITOR_WIN && !UNITY_STANDALONE_WIN
+// #if !UNITY_EDITOR_WIN && !UNITY_STANDALONE_WIN
         if (additionMove.Equals(Vector2.zero))
             return;
         var newAdditionX = speed.x*Time.deltaTime*additionMove.x;
@@ -42,7 +42,7 @@ public class CameraCtrl : MonoBehaviour {
             newAdditionY = additionMove.y;
         freeLookCam.m_YAxis.Value += newAdditionY;
         additionMove.y -= newAdditionY;
-#endif
+// #endif
         // Debug.Log("freeLookCam.m_XAxis.Value : "+freeLookCam.m_XAxis.Value+" "+freeLookCam.m_YAxis.Value);
     }
 }

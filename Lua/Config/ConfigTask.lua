@@ -18,7 +18,7 @@ local config = {
 		}, nextTaskID = 2,
 		subTasks = {
 			{
-				subType = 1, contentID = 3001, content = {
+				subType = 1, sceneID=1001, contentID = 3001, content = {
 					{who=3001, chat=[[我家被怪物占领了,你可以帮我赶走它们吗?]], flag=1},
 					{who=0, chat=[[好啊,但是你能给我什么好处?]], flag=1}, 
 					{who=3001, chat=[[我愿意献上我所有的节操...]], flag=2},
@@ -28,7 +28,7 @@ local config = {
 				subType = 2, sceneID=1001, contentID=2000, maxProgress=10
 			},
 			{
-				subType = 1, contentID = 3001, content = {
+				subType = 1, sceneID=1001, contentID = 3001, content = {
 					{who=0, chat=[[我把怪物都打掉了,快给我节操吧]], flag=1},
 					{who=3001, chat=[[去那边地上捡吧...]], flag=3},
 				},
@@ -41,7 +41,7 @@ local config = {
 		}, nextTaskID = 3,
 		subTasks = {
 			{
-				subType = 1, contentID = 3002, content = {
+				subType = 1, sceneID=1001, contentID = 3002, content = {
 					{who=3002, chat=[[我被那些怪物欺负了,可以帮我教训它们吗?]], flag=1},
 					{who=0, chat=[[看你这么骚，好吧]], flag=1}, 
 					{who=3002, chat=[[就喜欢你这么直接的...]], flag=2},
@@ -51,7 +51,7 @@ local config = {
 				subType = 2, sceneID=1001, contentID=2002, maxProgress=20
 			},
 			{
-				subType = 1, contentID = 3002, content = {
+				subType = 1, sceneID=1001, contentID = 3002, content = {
 					{who=0, chat=[[我帮你收拾它们了,给我一个吻吧]], flag=1},
 					{who=3002, chat=[[你确定吗?我是人妖]], flag=3},
 				},
@@ -64,17 +64,270 @@ local config = {
 		}, nextTaskID = 4,
 		subTasks = {
 			{
-				subType = 1, contentID = 3000, content = {
+				subType = 1, sceneID=1001, contentID = 3000, content = {
 					{who=3000, chat=[[虽然我是剑客,但我答应过我师傅不再动刀的?]], flag=1},
 					{who=0, chat=[[说吧，被谁打了?]], flag=1}, 
 					{who=3000, chat=[[呜,是断头鬼]], flag=2},
 				},
 			},
 			{
-				subType = 2, sceneID=1001, contentID=2004, maxProgress=30
+				subType = 2, sceneID=1001, sceneID=1001, contentID=2004, maxProgress=30
 			},
 			{
-				subType = 1, contentID = 3000, content = {
+				subType = 1, sceneID=1001, contentID = 3000, content = {
+					{who=0, chat=[[以后它们不敢打你了]], flag=1},
+					{who=3000, chat=[[请受我一跪]], flag=3},
+				},
+			},
+		},
+	},
+	[4] = {
+		id = 4, taskType = 1, name = [[4.帮下美女]], condition = {
+			{conditionType = 1, conditionValue = 1},
+		}, nextTaskID = 5,
+		subTasks = {
+			{
+				subType = 1, sceneID=1001, contentID = 3002, content = {
+					{who=3002, chat=[[我被那些怪物欺负了,可以帮我教训它们吗?]], flag=1},
+					{who=0, chat=[[看你这么骚，好吧]], flag=1}, 
+					{who=3002, chat=[[就喜欢你这么直接的...]], flag=2},
+				},
+			},
+			{
+				subType = 2, sceneID=1001, contentID=2000, maxProgress=5
+			},
+			{
+				subType = 1, sceneID=1001, contentID = 3002, content = {
+					{who=0, chat=[[我帮你收拾它们了,给我一个吻吧]], flag=1},
+					{who=3002, chat=[[你确定吗?我是人妖]], flag=3},
+				},
+			},
+		},
+	},
+	[5] = {
+		id = 5, taskType = 1, name = [[5.帮风车男孩赶怪]], condition = {
+			{conditionType = 1, conditionValue = 1},
+		}, nextTaskID = 6,
+		subTasks = {
+			{
+				subType = 1, sceneID=1001, contentID = 3001, content = {
+					{who=3001, chat=[[我家被怪物占领了,你可以帮我赶走它们吗?]], flag=1},
+					{who=0, chat=[[好啊,但是你能给我什么好处?]], flag=1}, 
+					{who=3001, chat=[[我愿意献上我所有的节操...]], flag=2},
+				},
+			},
+			{
+				subType = 2, sceneID=1001, contentID=2002, maxProgress=10
+			},
+			{
+				subType = 1, sceneID=1001, contentID = 3001, content = {
+					{who=0, chat=[[我把怪物都打掉了,快给我节操吧]], flag=1},
+					{who=3001, chat=[[去那边地上捡吧...]], flag=3},
+				},
+			},
+		},
+	},
+	[6] = {
+		id = 6, taskType = 1, name = [[6.帮帮流浪剑客]], condition = {
+			{conditionType = 1, conditionValue = 1},
+		}, nextTaskID = 7,
+		subTasks = {
+			{
+				subType = 1, sceneID=1001, contentID = 3000, content = {
+					{who=3000, chat=[[虽然我是剑客,但我答应过我师傅不再动刀的?]], flag=1},
+					{who=0, chat=[[说吧，被谁打了?]], flag=1}, 
+					{who=3000, chat=[[呜,是断头鬼]], flag=2},
+				},
+			},
+			{
+				subType = 2, sceneID=1001, sceneID=1001, contentID=2004, maxProgress=5
+			},
+			{
+				subType = 1, sceneID=1001, contentID = 3000, content = {
+					{who=0, chat=[[以后它们不敢打你了]], flag=1},
+					{who=3000, chat=[[请受我一跪]], flag=3},
+				},
+			},
+		},
+	},
+	[7] = {
+		id = 7, taskType = 1, name = [[7.帮风车男孩赶怪]], condition = {
+			{conditionType = 1, conditionValue = 1},
+		}, nextTaskID = 8,
+		subTasks = {
+			{
+				subType = 1, sceneID=1001, contentID = 3001, content = {
+					{who=3001, chat=[[我家被怪物占领了,你可以帮我赶走它们吗?]], flag=1},
+					{who=0, chat=[[好啊,但是你能给我什么好处?]], flag=1}, 
+					{who=3001, chat=[[我愿意献上我所有的节操...]], flag=2},
+				},
+			},
+			{
+				subType = 2, sceneID=1001, contentID=2000, maxProgress=10
+			},
+			{
+				subType = 1, sceneID=1001, contentID = 3001, content = {
+					{who=0, chat=[[我把怪物都打掉了,快给我节操吧]], flag=1},
+					{who=3001, chat=[[去那边地上捡吧...]], flag=3},
+				},
+			},
+		},
+	},
+	[8] = {
+		id = 8, taskType = 1, name = [[8.帮下美女]], condition = {
+			{conditionType = 1, conditionValue = 1},
+		}, nextTaskID = 9,
+		subTasks = {
+			{
+				subType = 1, sceneID=1001, contentID = 3002, content = {
+					{who=3002, chat=[[我被那些怪物欺负了,可以帮我教训它们吗?]], flag=1},
+					{who=0, chat=[[看你这么骚，好吧]], flag=1}, 
+					{who=3002, chat=[[就喜欢你这么直接的...]], flag=2},
+				},
+			},
+			{
+				subType = 2, sceneID=1001, contentID=2002, maxProgress=25
+			},
+			{
+				subType = 1, sceneID=1001, contentID = 3002, content = {
+					{who=0, chat=[[我帮你收拾它们了,给我一个吻吧]], flag=1},
+					{who=3002, chat=[[你确定吗?我是人妖]], flag=3},
+				},
+			},
+		},
+	},
+	[9] = {
+		id = 9, taskType = 1, name = [[9.帮风车男孩赶怪]], condition = {
+			{conditionType = 1, conditionValue = 1},
+		}, nextTaskID = 10,
+		subTasks = {
+			{
+				subType = 1, sceneID=1001, contentID = 3001, content = {
+					{who=3001, chat=[[我家被怪物占领了,你可以帮我赶走它们吗?]], flag=1},
+					{who=0, chat=[[好啊,但是你能给我什么好处?]], flag=1}, 
+					{who=3001, chat=[[我愿意献上我所有的节操...]], flag=2},
+				},
+			},
+			{
+				subType = 2, sceneID=1001, contentID=2000, maxProgress=10
+			},
+			{
+				subType = 1, sceneID=1001, contentID = 3001, content = {
+					{who=0, chat=[[我把怪物都打掉了,快给我节操吧]], flag=1},
+					{who=3001, chat=[[去那边地上捡吧...]], flag=3},
+				},
+			},
+		},
+	},
+	[10] = {
+		id = 10, taskType = 1, name = [[10.帮猫女赶怪]], condition = {
+			{conditionType = 1, conditionValue = 1},
+		}, nextTaskID = 11,
+		subTasks = {
+			{
+				subType = 1, sceneID=1001, contentID = 3002, content = {
+					{who=3002, chat=[[我被那些怪物欺负了,可以帮我教训它们吗?]], flag=1},
+					{who=0, chat=[[看你这么骚，好吧]], flag=1}, 
+					{who=3002, chat=[[就喜欢你这么直接的...]], flag=2},
+				},
+			},
+			{
+				subType = 2, sceneID=1001, contentID=2004, maxProgress=20
+			},
+			{
+				subType = 1, sceneID=1001, contentID = 3002, content = {
+					{who=0, chat=[[我帮你收拾它们了,给我一个吻吧]], flag=1},
+					{who=3002, chat=[[你确定吗?我是人妖]], flag=3},
+				},
+			},
+		},
+	},
+	[11] = {
+		id = 11, taskType = 1, name = [[11.帮帮流浪剑客]], condition = {
+			{conditionType = 1, conditionValue = 1},
+		}, nextTaskID = 12,
+		subTasks = {
+			{
+				subType = 1, sceneID=1001, contentID = 3000, content = {
+					{who=3000, chat=[[虽然我是剑客,但我答应过我师傅不再动刀的?]], flag=1},
+					{who=0, chat=[[说吧，被谁打了?]], flag=1}, 
+					{who=3000, chat=[[呜,是断头鬼]], flag=2},
+				},
+			},
+			{
+				subType = 2, sceneID=1001, sceneID=1001, contentID=2004, maxProgress=30
+			},
+			{
+				subType = 1, sceneID=1001, contentID = 3000, content = {
+					{who=0, chat=[[以后它们不敢打你了]], flag=1},
+					{who=3000, chat=[[请受我一跪]], flag=3},
+				},
+			},
+		},
+	},
+	[12] = {
+		id = 12, taskType = 1, name = [[12.帮风车男孩赶怪]], condition = {
+			{conditionType = 1, conditionValue = 1},
+		}, nextTaskID = 13,
+		subTasks = {
+			{
+				subType = 1, sceneID=1001, contentID = 3001, content = {
+					{who=3001, chat=[[我家被怪物占领了,你可以帮我赶走它们吗?]], flag=1},
+					{who=0, chat=[[好啊,但是你能给我什么好处?]], flag=1}, 
+					{who=3001, chat=[[我愿意献上我所有的节操...]], flag=2},
+				},
+			},
+			{
+				subType = 2, sceneID=1001, contentID=2000, maxProgress=10
+			},
+			{
+				subType = 1, sceneID=1001, contentID = 3001, content = {
+					{who=0, chat=[[我把怪物都打掉了,快给我节操吧]], flag=1},
+					{who=3001, chat=[[去那边地上捡吧...]], flag=3},
+				},
+			},
+		},
+	},
+	[13] = {
+		id = 13, taskType = 1, name = [[13.帮猫女赶怪]], condition = {
+			{conditionType = 1, conditionValue = 1},
+		}, nextTaskID = 14,
+		subTasks = {
+			{
+				subType = 1, sceneID=1001, contentID = 3002, content = {
+					{who=3002, chat=[[我被那些怪物欺负了,可以帮我教训它们吗?]], flag=1},
+					{who=0, chat=[[看你这么骚，好吧]], flag=1}, 
+					{who=3002, chat=[[就喜欢你这么直接的...]], flag=2},
+				},
+			},
+			{
+				subType = 2, sceneID=1001, contentID=2002, maxProgress=20
+			},
+			{
+				subType = 1, sceneID=1001, contentID = 3002, content = {
+					{who=0, chat=[[我帮你收拾它们了,给我一个吻吧]], flag=1},
+					{who=3002, chat=[[你确定吗?我是人妖]], flag=3},
+				},
+			},
+		},
+	},
+	[14] = {
+		id = 14, taskType = 1, name = [[14.帮帮流浪剑客]], condition = {
+			{conditionType = 1, conditionValue = 1},
+		}, nextTaskID = 15,
+		subTasks = {
+			{
+				subType = 1, sceneID=1001, contentID = 3000, content = {
+					{who=3000, chat=[[虽然我是剑客,但我答应过我师傅不再动刀的?]], flag=1},
+					{who=0, chat=[[说吧，被谁打了?]], flag=1}, 
+					{who=3000, chat=[[呜,是断头鬼]], flag=2},
+				},
+			},
+			{
+				subType = 2, sceneID=1001, sceneID=1001, contentID=2004, maxProgress=30
+			},
+			{
+				subType = 1, sceneID=1001, contentID = 3000, content = {
 					{who=0, chat=[[以后它们不敢打你了]], flag=1},
 					{who=3000, chat=[[请受我一跪]], flag=3},
 				},
@@ -87,17 +340,17 @@ local config = {
 		}, nextTaskID = 3,
 		subTasks = {
 			{
-				subType = 1, contentID = 3002, content = {
+				subType = 1, sceneID=1001, contentID = 3002, content = {
 					{who=3002, chat=[[可以采朵花给我吗?]]},
 					{who=0, chat=[[没问题,但是你可以嫁给我吗?]]}, 
 					{who=3002, chat=[[你先采来看看嘛]]},
 				},
 			},
 			{
-				subType = 3, sceneID=1001, contentID=4000, maxProgress=1
+				subType = 3, sceneID=1001, sceneID=1001, contentID=4000, maxProgress=1
 			},
 			{
-				subType = 1, contentID = 3002, content = {
+				subType = 1, sceneID=1001, contentID = 3002, content = {
 					{who=0, chat=[[我们结婚吧]]},
 					{who=3002, chat=[[来吧,刚好我怀了你的孩子...]]},
 					{who=0, chat=[[...我们好像才第一天认识]]},

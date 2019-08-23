@@ -21,8 +21,13 @@ local Update = function ( self )
 			self.skillData.targets = {}
 			--Cat_Todo : 区分我方和敌方阵营
 			if isPickEnemy then
-				local attacker_aoi_handle = self.EntityManager:GetComponentData(self.skillData.caster_entity, "UMO.AOIHandle")
-				around[attacker_aoi_handle.value] = nil--把攻击者自己去掉
+				local isExist = self.EntityManager:Exists(self.skillData.caster_entity)
+				if isExist then
+					local attacker_aoi_handle = self.EntityManager:GetComponentData(self.skillData.caster_entity, "UMO.AOIHandle")
+					around[attacker_aoi_handle.value] = nil--把攻击者自己去掉
+				else
+					print("caster entity unexist on pick target "..tostring(self.skillData.caster_entity).." skill id : "..self.skillData.skill_id)
+				end
 			end
 			for aoi_handle,v in pairs(around) do
 				local uid = self.aoi:get_user_data(aoi_handle, "uid")

@@ -226,41 +226,6 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
         group = GetEntityQuery(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(PosSynchInfo), typeof(LocomotionState), typeof(MoveQuery));
     }
 
-#if false
-    protected override void OnUpdate()
-    {
-        var posArray = group.ToComponentArray<Transform>();
-        Entities.ForEach((Entity entity, ref TargetPosition targetPos, ref MoveSpeed moveSpeed, ref LocomotionState curLocoStateObj, ref PosSynchInfo synchInfo)=>{
-            if (curLocoStateObj.LocoState==LocomotionState.State.BeHit|| curLocoStateObj.LocoState==LocomotionState.State.Dead)
-                return;
-            var input = GameInput.GetInstance().JoystickDir;
-            // Debug.Log("input.sqrMagnitude:"+input.sqrMagnitude);
-            if (input.sqrMagnitude > 0)
-            {
-                var forward = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.forward);
-                forward.y = 0;
-                var right = SceneMgr.Instance.MainCameraTrans.TransformDirection(Vector3.right);
-                float3 targetDirection = input.x * right + input.y * forward;
-                targetDirection.y = 0;
-                targetDirection = Vector3.Normalize(targetDirection);
-                float3 curPos = posArray[0].localPosition;
-                var speed = moveSpeed.Value;
-                float3 newTargetPos;
-                if (speed > 0)
-                    newTargetPos = curPos+targetDirection*(speed/GameConst.SpeedFactor*0.10f);//延着方向前进0.10秒为目标坐标
-                else
-                    newTargetPos = curPos;
-                newTargetPos.y = targetPos.Value.y;
-                targetPos.Value = newTargetPos;
-                // Debug.Log("targetDirection : "+newTargetPos.x+" "+newTargetPos.y+" "+newTargetPos.z);
-            }
-            else
-            {
-                targetPos.Value = posArray[0].localPosition;
-            }
-        });
-    }
-#endif
     protected override void OnUpdate()
     {
         var entities = group.ToEntityArray(Allocator.TempJob);

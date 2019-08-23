@@ -13,18 +13,18 @@ function UI.Countdown:CountdownByEndTime( end_time, step_call_back, duration )
 		local function step_countdown( )
 			local curTime = Time:GetServerTime()
 			local left_time = self.end_time - curTime
-			self.step_call_back(left_time)
 			if left_time <= 0 then
-				self:OnDestroy()
+				self:OnClose()
 			else
 				self.is_counting = true
 			end
+			self.step_call_back(left_time)
 		end
-		self.timer = Timer.New(step_countdown, duration or 1, -1)
+		self.timer = Timer.New(step_countdown, duration and duration/1000 or 1, -1)
 		self.timer:Start()
 		step_countdown()
-	else
-		self.timer:SetDuration(duration)
+	elseif duration then
+		self.timer:SetDuration(duration/1000)
 	end
 end
 
@@ -46,10 +46,10 @@ function UI.Countdown:IsCounting(  )
 end
 
 function UI.Countdown:Stop(  )
-	self:OnDestroy()
+	self:OnClose()
 end
 
-function UI.Countdown:OnDestroy(  )
+function UI.Countdown:OnClose(  )
 	if self.timer then
 		self.timer:Stop()
 		self.timer = nil
