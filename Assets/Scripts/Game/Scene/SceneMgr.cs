@@ -95,7 +95,7 @@ public class SceneMgr : MonoBehaviour
 	{
         m_GameWorld = world;
 
-        ResMgr.GetInstance().Init();
+        // ResMgr.GetInstance().Init();
         RoleMgr.GetInstance().Init(world);
         MonsterMgr.GetInstance().Init(world);
         NPCMgr.GetInstance().Init(world);
@@ -187,13 +187,16 @@ public class SceneMgr : MonoBehaviour
                 // CorrectMainRolePos();
                 LoadingView.Instance.SetData(1, "加载场景完毕");
                 LoadingView.Instance.SetActive(false, 0.5f);
-                var mainRole = RoleMgr.GetInstance().GetMainRole();
-                if (mainRole != null)
-                {
-                    Debug.Log("reset nav agent");
-                    var moveQuery = mainRole.GetComponent<MoveQuery>();
-                    moveQuery.UpdateNavAgent();
-                }
+                Timer.Register(0.01f, () => {
+                    //切换场景后需要重置一下 NavMeshAgent 组件
+                    var mainRole = RoleMgr.GetInstance().GetMainRole();
+                    if (mainRole != null)
+                    {
+                        Debug.Log("reset nav agent");
+                        var moveQuery = mainRole.GetComponent<MoveQuery>();
+                        moveQuery.UpdateNavAgent();
+                    }
+                });
                 CorrectSceneObjectsPos();
                 CorrectMainRolePos();
                 XLuaFramework.CSLuaBridge.GetInstance().CallLuaFunc(GlobalEvents.SceneChanged);
@@ -205,7 +208,7 @@ public class SceneMgr : MonoBehaviour
     {
         RoleMgr.GetInstance().StopMainRoleRunning();
         string baseSceneName = "base_world_"+curSceneID;
-        NavMesh.RemoveAllNavMeshData();
+        // NavMesh.RemoveAllNavMeshData();
         AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(baseSceneName);
         asy.completed += delegate(AsyncOperation asyOp){
             Debug.Log("unload scene finish");

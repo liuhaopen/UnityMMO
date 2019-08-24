@@ -42,20 +42,12 @@ function LoginSceneBgView:SwitchLoginCamera( is_login_camera )
 end
 
 function LoginSceneBgView:LoadSceneView()
-	local camera_prefab_name = "Assets/AssetBundleRes/scene/login/objs/other_effect/chuangjue/camera_for_create_role.prefab"
-	local on_load_camera_ok = function ( go )
-		self.login_camera = go
-		self.camera_animator = go:GetComponent("Animator")
-		self.camera = go.transform
-		self:SwitchLoginCamera(true)
-	end
-	ResMgr:LoadPrefabGameObject(camera_prefab_name, on_load_camera_ok)
+	self.login_camera = CS.UnityMMO.ResMgr.GetInstance():GetGameObject("CameraForLogin")
+	self.camera_animator = self.login_camera:GetComponent("Animator")
+	self.camera = self.login_camera.transform
+	self:SwitchLoginCamera(true)
 	
-	local scene_prefab_name = "Assets/AssetBundleRes/scene/login/objs/other_effect/chuangjue/scene_for_login.prefab"
-	local on_load_scene_ok = function ( go )
-		self.scene_obj = go
-	end
-	ResMgr:LoadPrefabGameObject(scene_prefab_name, on_load_scene_ok)
+	self.scene_obj = CS.UnityMMO.ResMgr.GetInstance():GetGameObject("SceneForLogin")
 end
 
 return LoginSceneBgView

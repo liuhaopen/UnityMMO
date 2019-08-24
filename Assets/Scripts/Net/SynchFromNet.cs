@@ -329,6 +329,7 @@ public class SynchFromNet {
             if (isDead && RoleMgr.GetInstance().IsMainRoleEntity(entity))
             {
                 // var attackerName = SceneMgr.Instance.GetNameByUID(attackerUID);
+                RoleMgr.GetInstance().StopMainRoleRunning();
                 XLuaFramework.CSLuaBridge.GetInstance().CallLuaFuncNum(GlobalEvents.MainRoleDie, attackerUID);
             }
         }

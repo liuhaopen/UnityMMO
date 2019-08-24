@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50640
 File Encoding         : 65001
 
-Date: 2019-08-11 13:00:21
+Date: 2019-08-24 16:33:42
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -20,12 +20,13 @@ SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
 DROP TABLE IF EXISTS `AttrInfo`;
 CREATE TABLE `AttrInfo` (
-  `role_id` bigint(60) NOT NULL,
-  `att` int(255) DEFAULT NULL,
-  `hp` int(255) DEFAULT NULL,
-  `def` int(255) DEFAULT NULL,
-  `hit` int(255) DEFAULT NULL,
-  `dodge` int(255) DEFAULT NULL,
+  `role_id` bigint(60) unsigned NOT NULL,
+  `att` int(255) unsigned zerofill DEFAULT NULL,
+  `hp` int(255) unsigned zerofill DEFAULT NULL,
+  `def` int(255) unsigned zerofill DEFAULT NULL,
+  `crit` int(255) unsigned zerofill DEFAULT NULL,
+  `hit` int(255) unsigned zerofill DEFAULT NULL,
+  `dodge` int(255) unsigned zerofill DEFAULT NULL,
   PRIMARY KEY (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -70,7 +71,7 @@ CREATE TABLE `RoleBaseInfo` (
   `pos_z` int(11) DEFAULT NULL,
   `coin` int(11) unsigned zerofill DEFAULT NULL,
   `diamond` int(11) unsigned zerofill DEFAULT NULL,
-  `hp` int(11) unsigned zerofill DEFAULT NULL,
+  `hp` int(11) unsigned zerofill NOT NULL,
   PRIMARY KEY (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -114,4 +115,4 @@ CREATE TABLE `TaskList` (
   `contentID` int(8) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `role_id` (`roleID`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=latin1;

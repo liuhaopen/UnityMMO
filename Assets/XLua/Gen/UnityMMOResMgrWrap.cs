@@ -21,10 +21,12 @@ namespace XLua.CSObjectWrap
         {
 			ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
 			System.Type type = typeof(UnityMMO.ResMgr);
-			Utils.BeginObjectRegister(type, L, translator, 0, 11, 0, 0);
+			Utils.BeginObjectRegister(type, L, translator, 0, 13, 0, 0);
 			
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "Init", _m_Init);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "StartPreLoadRes", _m_StartPreLoadRes);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "LoadPrefab", _m_LoadPrefab);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "LoadPlayable", _m_LoadPlayable);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetPrefab", _m_GetPrefab);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "GetGameObject", _m_GetGameObject);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "HasLoadedPrefab", _m_HasLoadedPrefab);
@@ -137,6 +139,34 @@ namespace XLua.CSObjectWrap
         }
         
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_StartPreLoadRes(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                UnityMMO.ResMgr gen_to_be_invoked = (UnityMMO.ResMgr)translator.FastGetCSObj(L, 1);
+            
+            
+                
+                {
+                    System.Action<bool> _onOk = translator.GetDelegate<System.Action<bool>>(L, 2);
+                    
+                    gen_to_be_invoked.StartPreLoadRes( _onOk );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         static int _m_LoadPrefab(RealStatePtr L)
         {
 		    try {
@@ -178,6 +208,51 @@ namespace XLua.CSObjectWrap
             }
             
             return LuaAPI.luaL_error(L, "invalid arguments to UnityMMO.ResMgr.LoadPrefab!");
+            
+        }
+        
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        static int _m_LoadPlayable(RealStatePtr L)
+        {
+		    try {
+            
+                ObjectTranslator translator = ObjectTranslatorPool.Instance.Find(L);
+            
+            
+                UnityMMO.ResMgr gen_to_be_invoked = (UnityMMO.ResMgr)translator.FastGetCSObj(L, 1);
+            
+            
+			    int gen_param_count = LuaAPI.lua_gettop(L);
+            
+                if(gen_param_count == 4&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)&& (LuaAPI.lua_isnil(L, 3) || LuaAPI.lua_type(L, 3) == LuaTypes.LUA_TSTRING)&& translator.Assignable<System.Action<UnityEngine.Playables.PlayableAsset>>(L, 4)) 
+                {
+                    string _path = LuaAPI.lua_tostring(L, 2);
+                    string _storePlayablebName = LuaAPI.lua_tostring(L, 3);
+                    System.Action<UnityEngine.Playables.PlayableAsset> _callBack = translator.GetDelegate<System.Action<UnityEngine.Playables.PlayableAsset>>(L, 4);
+                    
+                    gen_to_be_invoked.LoadPlayable( _path, _storePlayablebName, _callBack );
+                    
+                    
+                    
+                    return 0;
+                }
+                if(gen_param_count == 3&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)&& (LuaAPI.lua_isnil(L, 3) || LuaAPI.lua_type(L, 3) == LuaTypes.LUA_TSTRING)) 
+                {
+                    string _path = LuaAPI.lua_tostring(L, 2);
+                    string _storePlayablebName = LuaAPI.lua_tostring(L, 3);
+                    
+                    gen_to_be_invoked.LoadPlayable( _path, _storePlayablebName );
+                    
+                    
+                    
+                    return 0;
+                }
+                
+            } catch(System.Exception gen_e) {
+                return LuaAPI.luaL_error(L, "c# exception:" + gen_e);
+            }
+            
+            return LuaAPI.luaL_error(L, "invalid arguments to UnityMMO.ResMgr.LoadPlayable!");
             
         }
         

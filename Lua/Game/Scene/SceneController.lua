@@ -17,15 +17,15 @@ function SceneController:InitEvents(  )
 	end
     GlobalEventSystem:Bind(GlobalEvents.GameStart, on_start_game)
 
-    local on_down = function ( target, x, y )
-    	print('Cat:SceneController.lua[down] x, y', target, x, y)
-    	self.touch_begin_x = x
-    	self.touch_begin_y = y
-    end
-	UI.BindClickEvent(self.sceneNode, on_down)
+ --    local on_down = function ( target, x, y )
+ --    	print('Cat:SceneController.lua[down] x, y', target, x, y)
+ --    	self.touch_begin_x = x
+ --    	self.touch_begin_y = y
+ --    end
+	-- UI.BindClickEvent(self.sceneNode, on_down)
 
 	local on_up = function ( target, x, y )
-    	print('Cat:SceneController.lua[up] x, y', target, x, y)
+    	print('Cat:SceneController.lua[up] x, y', target, x, y, self.is_dragged)
         if self.is_dragged then
             self.is_dragged = false
             return

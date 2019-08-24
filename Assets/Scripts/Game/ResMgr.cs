@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 
 namespace UnityMMO
 {
@@ -11,7 +12,10 @@ public class ResMgr
     List<GameObject> scenePrefabList;
     Dictionary<int, List<GameObject>> sceneObjectPool;
     Dictionary<string, List<GameObject>> gameObjectPool;
-
+    List<KeyValuePair<string, string>> preloadRes;
+    List<KeyValuePair<string, string>> preloadTimelineRes;
+    Dictionary<string, PlayableAsset> playablePool;
+    
     public static ResMgr GetInstance()
     {
         if (Instance!=null)
@@ -23,13 +27,76 @@ public class ResMgr
     public void Init()
 	{
         gameObjectPool = new Dictionary<string, List<GameObject>>();
-        LoadPrefab("Assets/AssetBundleRes/role/prefab/MainRole.prefab", "MainRole");    
-        LoadPrefab("Assets/AssetBundleRes/role/prefab/Role.prefab", "Role");
-        LoadPrefab("Assets/AssetBundleRes/monster/prefab/Monster.prefab", "Monster");
-        LoadPrefab("Assets/AssetBundleRes/npc/prefab/NPC.prefab", "NPC");
-        LoadPrefab("Assets/AssetBundleRes/ui/common/Nameboard.prefab", "Nameboard");
-        LoadPrefab("Assets/AssetBundleRes/ui/common/FightFlyWord.prefab", "FightFlyWord");
+        playablePool = new Dictionary<string, PlayableAsset>();
+        preloadRes = new List<KeyValuePair<string, string>>();
+        preloadRes.Add(new KeyValuePair<string,string>("MainRole", "Assets/AssetBundleRes/role/prefab/MainRole.prefab"));
+        preloadRes.Add(new KeyValuePair<string,string>("Role", "Assets/AssetBundleRes/role/prefab/Role.prefab"));
+        preloadRes.Add(new KeyValuePair<string,string>("Monster", "Assets/AssetBundleRes/monster/prefab/Monster.prefab"));
+        preloadRes.Add(new KeyValuePair<string,string>("NPC", "Assets/AssetBundleRes/npc/prefab/NPC.prefab"));
+        preloadRes.Add(new KeyValuePair<string,string>("Nameboard", "Assets/AssetBundleRes/ui/common/Nameboard.prefab"));
+        preloadRes.Add(new KeyValuePair<string,string>("FightFlyWord", "Assets/AssetBundleRes/ui/common/FightFlyWord.prefab"));
+        preloadRes.Add(new KeyValuePair<string,string>("CameraForLogin", "Assets/AssetBundleRes/scene/login/objs/other_effect/chuangjue/camera_for_create_role.prefab"));
+        preloadRes.Add(new KeyValuePair<string,string>("SceneForLogin", "Assets/AssetBundleRes/scene/login/objs/other_effect/chuangjue/scene_for_login.prefab"));
+        preloadRes.Add(new KeyValuePair<string,string>("UIBagView", "Assets/AssetBundleRes/ui/bag/BagView.prefab"));
+        preloadRes.Add(new KeyValuePair<string,string>("UITaskDialogView", "Assets/AssetBundleRes/ui/task/TaskDialogView.prefab"));
+        preloadTimelineRes = new List<KeyValuePair<string, string>>();
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/jump_career1_1.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/jump_career1_2.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/jump_career1_3.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/jump_career2_1.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/jump_career2_2.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/jump_career2_3.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/skill_110000.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/skill_110001.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/skill_110002.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/skill_110003.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/skill_110010.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/skill_110011.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/skill_110012.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/skill_110013.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/skill_120000.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/skill_120001.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/skill_120002.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/skill_120003.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/skill_120010.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/skill_120011.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/skill_120012.playable"));
+        preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/skill_120013.playable"));
 	}
+
+    public void StartPreLoadRes(Action<bool> onOk)
+    {
+        int count = 0;
+        for (int i = 0; i < preloadRes.Count; i++)
+        {
+            LoadPrefab(preloadRes[i].Value, preloadRes[i].Key, (GameObject obj)=>{
+                if (obj != null)
+                {
+                    count++;
+                    if (count >= preloadRes.Count)
+                    {
+                        if (onOk != null)
+                        {
+                            onOk(true);
+                            onOk = null;
+                        }
+                    }
+                }
+                else
+                {
+                    if (onOk != null)
+                    {
+                        onOk(false);
+                        onOk = null;
+                    }
+                }
+            });
+        }
+        for (int i = 0; i < preloadTimelineRes.Count; i++)
+        {
+            LoadPlayable(preloadTimelineRes[i].Value, preloadTimelineRes[i].Key);
+        }
+    }
 
     public void LoadPrefab(string path, string storePrefabName, Action<GameObject> callBack=null)
     {
@@ -46,6 +113,29 @@ public class ResMgr
                 }
             }
             Debug.LogError("cannot find prefab in "+path);
+            if (callBack != null)
+                callBack(null);
+        });
+    }
+
+    public void LoadPlayable(string path, string storePlayablebName, Action<PlayableAsset> callBack=null)
+    {
+        XLuaFramework.ResourceManager.GetInstance().LoadAsset<PlayableAsset>(path, delegate(UnityEngine.Object[] objs) {
+            if (objs.Length > 0 && (objs[0] as PlayableAsset)!=null)
+            {
+                PlayableAsset palyable = objs[0] as PlayableAsset;
+                // Debug.Log("palyable ；"+path+" name:"+storePlayablebName);
+                if (palyable != null) 
+                {
+                    this.playablePool[storePlayablebName] = palyable;
+                    if (callBack != null)
+                        callBack(palyable);
+                    return;
+                }
+            }
+            Debug.LogError("cannot find palyable in "+path);
+            if (callBack != null)
+                callBack(null);
         });
     }
 

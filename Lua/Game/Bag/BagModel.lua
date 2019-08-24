@@ -48,22 +48,28 @@ end
 
 function BagModel:RemoveGoods( uid, pos )
 	local goodsInfo, index = self:FindGoods(uid, pos)
+	print("Cat:BagModel [start:51] goodsInfo: , index", goodsInfo, index, uid, pos)
+	PrintTable(goodsInfo)
+	print("Cat:BagModel [end]")
 	pos = goodsInfo and goodsInfo.pos--可以不传pos的，不传pos则查所有的背包
 	if goodsInfo then
 		local fullGoodsList = self.fullGoodsList and self.fullGoodsList[pos] 
+		print('Cat:BagModel.lua[57] fullGoodsList', fullGoodsList)
 		if fullGoodsList then
 			fullGoodsList[goodsInfo.cell] = false
 		end
 		local goodsList = self.bagInfo and self.bagInfo[pos] and self.bagInfo[pos].goodsList 
-		table.remove(goodsList, i)
+		table.remove(goodsList, index)
 	end
 end
 
 function BagModel:FindGoods( uid, pos )
 	if pos then
 		local goodsList = self.bagInfo and self.bagInfo[pos] and self.bagInfo[pos].goodsList 
+		print('Cat:BagModel.lua[69] goodsList, uid, pos', goodsList, uid, pos)
 		if goodsList then
 			for i,goodsInfo in ipairs(goodsList) do
+				print('Cat:BagModel.lua[72] goodsInfo.uid', goodsInfo.uid)
 				if goodsInfo.uid == uid then
 					return goodsInfo, i
 				end
@@ -101,12 +107,17 @@ function BagModel:AddGoods( newGoodsInfo )
 	local pos = newGoodsInfo.pos
 	local goodsList = self.bagInfo and self.bagInfo[pos] and self.bagInfo[pos].goodsList 
 	if goodsList then
+		local hasInserted = false
 		for i,v in ipairs(goodsList) do
 			if v.cell > newGoodsInfo.cell then
+				hasInserted = true
 				table.insert(goodsList, i, newGoodsInfo)
 				break
 			end
 		end	
+		if not hasInserted then
+			table.insert(goodsList, newGoodsInfo)
+		end
 	end
 	local fullGoodsList = self.fullGoodsList and self.fullGoodsList[pos] 
 	if fullGoodsList then
