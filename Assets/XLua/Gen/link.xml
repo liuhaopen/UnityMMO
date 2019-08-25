@@ -28,6 +28,8 @@
 		<type fullname="XLuaFramework.Pathtool" preserve="all"/>
 		<type fullname="UnityMMO.UID" preserve="all"/>
 		<type fullname="UnityMMO.UIDProxy" preserve="all"/>
+		<type fullname="UnityMMO.ConfigGameData" preserve="all"/>
+		<type fullname="UnityMMO.ConfigGame" preserve="all"/>
 		<type fullname="UnityMMO.GameConst" preserve="all"/>
 		<type fullname="UnityMMO.GlobalEvents" preserve="all"/>
 		<type fullname="UnityMMO.ResPath" preserve="all"/>

@@ -84,6 +84,7 @@ namespace XLuaFramework {
                     {
                         cur_sub_state = SubState.Update;
                         loadingView.SetData(0.3f, "从服务器下载最新的资源文件...");
+                        ConfigGame.GetInstance().Load();
                         AssetsHotFixManager.Instance.UpdateResource(delegate(float percent, string tip){
                             loadingView.SetData(0.3f+0.5f*percent, tip);
                         }, delegate(string result) {

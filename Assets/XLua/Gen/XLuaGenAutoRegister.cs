@@ -381,6 +381,12 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(UnityMMO.UIDProxy), UnityMMOUIDProxyWrap.__Register);
         
         
+            translator.DelayWrapLoader(typeof(UnityMMO.ConfigGameData), UnityMMOConfigGameDataWrap.__Register);
+        
+        
+            translator.DelayWrapLoader(typeof(UnityMMO.ConfigGame), UnityMMOConfigGameWrap.__Register);
+        
+        
             translator.DelayWrapLoader(typeof(UnityMMO.GameConst), UnityMMOGameConstWrap.__Register);
         
         
@@ -482,16 +488,16 @@ namespace XLua.CSObjectWrap
         
             translator.DelayWrapLoader(typeof(UnityMMO.NetMsgDispatcher), UnityMMONetMsgDispatcherWrap.__Register);
         
+        }
+        
+        static void wrapInit3(LuaEnv luaenv, ObjectTranslator translator)
+        {
         
             translator.DelayWrapLoader(typeof(UnityMMO.SynchFromNet), UnityMMOSynchFromNetWrap.__Register);
         
         
             translator.DelayWrapLoader(typeof(UnityMMO.FightFlyWord), UnityMMOFightFlyWordWrap.__Register);
         
-        }
-        
-        static void wrapInit3(LuaEnv luaenv, ObjectTranslator translator)
-        {
         
             translator.DelayWrapLoader(typeof(UnityMMO.LoadingView), UnityMMOLoadingViewWrap.__Register);
         

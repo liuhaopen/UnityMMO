@@ -165,12 +165,14 @@ namespace XLuaFramework {
             {
                 if (webUrl != string.Empty)
                     return webUrl;
+                var fileUrl = UnityMMO.ConfigGame.GetInstance().Data.FileServerURL;
+                Debug.Log("fileUrl : "+fileUrl);
                 if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WebGLPlayer)
-                    webUrl = "http://192.168.5.132/WindowsStreamingAssets/";
+                    webUrl = fileUrl+"/WindowsStreamingAssets/";
                 else if (Application.platform == RuntimePlatform.Android)
-                    webUrl = "http://192.168.5.132/AndroidStreamingAssets/";
+                    webUrl = fileUrl+"/AndroidStreamingAssets/";
                 else if (Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.OSXEditor || Application.platform == RuntimePlatform.OSXPlayer)
-                    webUrl = "http://192.168.5.132/IOSStreamingAssets/";
+                    webUrl = fileUrl+"/IOSStreamingAssets/";
                 else
                     Debug.Log("Unspport System!");
                 return webUrl;
