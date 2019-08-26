@@ -168,6 +168,14 @@ public class ResMgr
         return null;
     }
 
+    public void ClearGameObjectPool(string name)
+    {
+        if (gameObjectPool.ContainsKey(name))
+        {
+            gameObjectPool[name].Clear();
+        }
+    }
+
     public bool HasLoadedPrefab(string name)
     {
         return this.prefabDic.ContainsKey(name);

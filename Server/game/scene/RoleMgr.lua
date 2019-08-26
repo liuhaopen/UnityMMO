@@ -147,9 +147,13 @@ function RoleMgr:RoleLeave( roleID )
 		role_info.ack_scene_get_objs_info_change(true, {})
 		role_info.ack_scene_get_objs_info_change = nil
 	end
-	if role_info.ack_scene_listen_fight_event then
-		role_info.ack_scene_listen_fight_event(true, {})
-		role_info.ack_scene_listen_fight_event = nil
+	if role_info.ack_scene_listen_skill_event then
+		role_info.ack_scene_listen_skill_event(true, {})
+		role_info.ack_scene_listen_skill_event = nil
+	end
+	if role_info.ack_scene_listen_hurt_event then
+		role_info.ack_scene_listen_hurt_event(true, {})
+		role_info.ack_scene_listen_hurt_event = nil
 	end
 	local entity = self.sceneMgr:GetEntity(role_info.scene_uid)
 	self.entityMgr:DestroyEntity(entity)

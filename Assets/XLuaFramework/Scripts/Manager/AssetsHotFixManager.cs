@@ -120,6 +120,7 @@ public class AssetsHotFixManager : MonoBehaviour
             on_ok("下载最新资源列表文件失败!");
             yield break;
         }
+        Debug.Log("is data path exist : "+Directory.Exists(dataPath)+" small:"+Directory.Exists(dataPath.Trim()));
         if (!Directory.Exists(dataPath)) {
             Directory.CreateDirectory(dataPath);
         }

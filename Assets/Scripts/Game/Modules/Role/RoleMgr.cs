@@ -61,6 +61,16 @@ public class RoleMgr
         return role;
 	}
 
+    public void UpdateMainRoleNavAgent()
+    {
+        if (mainRoleGOE != null)
+        {
+            Debug.Log("role mgr reset nav agent");
+            var moveQuery = mainRoleGOE.GetComponent<MoveQuery>();
+            moveQuery.UpdateNavAgent();
+        }
+    }
+
     public GameObjectEntity GetMainRole()
     {
         return mainRoleGOE;

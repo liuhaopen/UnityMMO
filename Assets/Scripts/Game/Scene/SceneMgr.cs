@@ -9,6 +9,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Playables;
 using UnityMMO.Component;
 using XLua;
 
@@ -103,6 +104,8 @@ public class SceneMgr : MonoBehaviour
 
 	public void OnDestroy()
 	{
+        Debug.Log("destroy scene mgr");
+        UnloadScene();
 		Instance = null;
 	}
 
@@ -187,15 +190,9 @@ public class SceneMgr : MonoBehaviour
                 // CorrectMainRolePos();
                 LoadingView.Instance.SetData(1, "加载场景完毕");
                 LoadingView.Instance.SetActive(false, 0.5f);
-                Timer.Register(0.01f, () => {
+                Timer.Register(0.5f, () => {
                     //切换场景后需要重置一下 NavMeshAgent 组件
-                    var mainRole = RoleMgr.GetInstance().GetMainRole();
-                    if (mainRole != null)
-                    {
-                        Debug.Log("reset nav agent");
-                        var moveQuery = mainRole.GetComponent<MoveQuery>();
-                        moveQuery.UpdateNavAgent();
-                    }
+                    RoleMgr.GetInstance().UpdateMainRoleNavAgent();
                 });
                 CorrectSceneObjectsPos();
                 CorrectMainRolePos();
@@ -216,6 +213,11 @@ public class SceneMgr : MonoBehaviour
         if (m_Controller != null)
             m_Controller.ResetAllData();
         RemoveAllSceneObjects();
+        var sceneObjects = GameObject.Find("SceneMgr").transform;
+        XLuaFramework.Util.ClearChild(sceneObjects);
+        // ResMgr.GetInstance().ClearGameObjectPool("Nameboard");
+        // var nameboardCanvas = GameObject.Find("UICanvas/Nameboard").transform;
+        // XLuaFramework.Util.ClearChild(nameboardCanvas);
     }
 
     public void ReqEnterScene(int scene_id, int door_id=0)
@@ -469,6 +471,11 @@ public class SceneMgr : MonoBehaviour
         }
         var trans = EntityManager.GetComponentObject<Transform>(entity);
         World.RequestDespawn(trans.gameObject);
+        var playableDir = trans.GetComponent<PlayableDirector>();
+        if (playableDir != null)
+        {
+            playableDir.Stop();
+        }
         if (deleInDic)
         {
             var UIDData = EntityManager.GetComponentData<UID>(entity);

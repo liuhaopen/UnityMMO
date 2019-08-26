@@ -10,19 +10,11 @@ namespace UnityMMO
     {
         [DataMember]
         public string FileServerURL;
-        // [DataMember]
-        // public string LoginServerIP;
-        // [DataMember]
-        // public string LoginServerPort;
-        // [DataMember]
-        // public string GameServerIP;
-        // [DataMember]
-        // public string GameServerPort;
     }
 
     public class ConfigGame
     {
-        public static string FilePath = Path.Combine(AppConfig.LuaAssetsDir, "Config/ConfigGame.json");
+        public static string FilePath = string.Empty;
         public ConfigGameData Data;
         private static ConfigGame instance;
         private bool isLoaded;
@@ -34,14 +26,31 @@ namespace UnityMMO
             instance = new ConfigGame();
             return instance;
         }
+
+        private ConfigGame()
+        {
+            FilePath = (AppConfig.DataPath+"../config_"+(AppConfig.AppName).ToLower()+".json").Trim();
+            Debug.Log("init config game : "+FilePath);
+        }
+
         public bool Load()
         {
-            string json = File.ReadAllText(FilePath);
-            Debug.Log("FilePath : "+FilePath+" json:"+json);
-            Data = JsonUtility.FromJson<ConfigGameData>(json);
-            Debug.Log("Data : "+Data.FileServerURL);
             isLoaded = true;
-            return true;
+            Debug.Log("Confgi Game FilePath : "+FilePath+" isexist:"+File.Exists(FilePath));
+            if (File.Exists(FilePath))
+            {
+                string json = File.ReadAllText(FilePath);
+                Data = JsonUtility.FromJson<ConfigGameData>(json);
+                Debug.Log("Data : "+Data.FileServerURL+"  json:"+json);
+            }
+            else
+            {
+                Data = new ConfigGameData{
+                    FileServerURL = "http://192.168.43.130"
+                };
+                Save();
+            }
+            return isLoaded;
         }
 
         public void Save()
@@ -49,7 +58,7 @@ namespace UnityMMO
             if (isLoaded)
             {
                 string json = JsonUtility.ToJson(Data, true);
-                Debug.Log("save : "+json);
+                Debug.Log("Config Game Save : "+json);
                 File.WriteAllText(FilePath, json);
             }
             else
