@@ -186,7 +186,7 @@ public class SynchFromNet {
                 // Debug.Log("cur_change_info.key : "+cur_change_info.key.ToString()+" scene_obj:"+(scene_obj!=Entity.Null).ToString()+ " ContainsKey:"+changeFuncDic.ContainsKey((SceneInfoKey)cur_change_info.key).ToString()+" uid"+uid.ToString()+" value:"+cur_change_info.value.ToString());
                 if (cur_change_info.key == (int)SceneInfoKey.EnterView)
                 {
-                    // Debug.Log("some one enter scene:uid:"+uid+" scene_obj==null:"+(scene_obj==Entity.Null).ToString());
+                    Debug.Log("some one enter scene:uid:"+uid+" scene_obj==null:"+(scene_obj==Entity.Null).ToString()+" info:"+cur_change_info.value);
                     if (scene_obj==Entity.Null)
                     {
                         scene_obj = SceneMgr.Instance.AddSceneObject(uid, cur_change_info.value);
@@ -272,12 +272,25 @@ public class SynchFromNet {
 
         if (entity != Entity.Null)
         {
-            long new_x = Int64.Parse(strs[1]);
-            long new_y = Int64.Parse(strs[2]);
-            long new_z = Int64.Parse(strs[3]);
+            long new_x = Int64.Parse(strs[2]);
+            long new_y = Int64.Parse(strs[3]);
+            long new_z = Int64.Parse(strs[4]);
             Transform trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(entity);
             trans.localPosition = SceneMgr.Instance.GetCorrectPos(new Vector3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic));
             SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = trans.localPosition});
+            var uidProxy = SceneMgr.Instance.EntityManager.GetComponentObject<UIDProxy>(entity);
+            // SceneMgr.Instance.EntityManager.SetComponentData<UID>(entity);
+            if (uidProxy!=null)
+            {
+                long uid = Int64.Parse(strs[1]);
+                uidProxy.Value = new UID{Value=uid};
+                MoveQuery moveQuery = SceneMgr.Instance.EntityManager.GetComponentObject<MoveQuery>(entity);
+                // Debug.Log("ApplyChangeInfoSceneChange new uid : "+uid+" moveQuery:"+(moveQuery!=null));
+                if (moveQuery != null)
+                {
+                    moveQuery.ChangeUID(uid);
+                }
+            }
         }
     }
 

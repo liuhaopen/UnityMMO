@@ -11,8 +11,8 @@ RequireAllLuaFileInFolder("./game/scene/system")
 local SceneMgr = BaseClass()
 
 function SceneMgr:Constructor(  )
-	self.uid_obj_map = {}--the scene object includes the role monster npc
 	self.uid_entity_map = {}
+	self.aoi_uid_map = {}
 end
 
 function SceneMgr:GetEntity( uid )
@@ -21,6 +21,14 @@ end
 
 function SceneMgr:SetEntity( uid, entity )
 	self.uid_entity_map[uid] = entity
+end
+
+function SceneMgr:GetUIDByAOI( aoi )
+	return self.aoi_uid_map[aoi]
+end
+
+function SceneMgr:SetAOI( aoi, uid )
+	self.aoi_uid_map[aoi] = uid
 end
 
 local fork_loop_logic = function ( sceneMgr )
@@ -41,10 +49,10 @@ local update_around_objs = function ( sceneMgr, role_info )
 	local objs = sceneMgr.aoi:get_around_offset(role_info.aoi_handle, role_info.radius_short, role_info.radius_long)
 	local cur_time = Time.timeMS
 	for aoi_handle, flag in pairs(objs) do
-		-- local scene_uid = sceneMgr.aoi_handle_uid_map[aoi_handle]
-		local scene_uid = sceneMgr.aoi:get_user_data(aoi_handle, "uid")
+		local scene_uid = sceneMgr:GetUIDByAOI(aoi_handle)
+		-- local scene_uid = sceneMgr.aoi:get_user_data(aoi_handle, "uid")
 		local is_enter = flag==1
-		-- print('Cat:scene.lua[67] flag, ', flag, aoi_handle, role_info.aoi_handle, scene_uid)
+		-- print('Cat:SceneMgr.lua[57] flag, scene_uid, aoi_handle', is_enter, flag, role_info.scene_uid, role_info.aoi_handle, scene_uid, aoi_handle)
 		if is_enter and scene_uid then
 			role_info.around_objs[scene_uid] = scene_uid
 			local entity = sceneMgr.uid_entity_map[scene_uid]
@@ -82,7 +90,7 @@ local collect_events = function ( sceneMgr )
 				end
 			end
 		end
-		--有些就算是自己的事件也要发给前端，比如自己复活
+		--有些就算是自己的事件也要转发给其它玩家，比如自己复活
 		local event_list = sceneMgr.eventMgr:GetSceneEvent(role_info.scene_uid)
 		if event_list then
 			for i,event_info in ipairs(event_list) do

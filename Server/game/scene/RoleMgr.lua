@@ -95,7 +95,7 @@ function RoleMgr:InitPosInfo( baseInfo, targetDoor )
 end
 
 function RoleMgr:RoleEnter( roleID, agent )
-	print('Cat:RoleMgr.lua[role enter] self.roleList[roleID]', self.roleList[roleID], roleID)
+	print('Cat:RoleMgr.lua[role enter] self.roleList[roleID]', self.roleList[roleID], roleID, self.sceneMgr.curSceneID)
 	if not self.roleList[roleID] then
 		local scene_uid = SceneHelper:NewSceneUID(SceneConst.ObjectType.Role)
 		local base_info = self:GetBaseInfoByRoleID(roleID)
@@ -103,10 +103,12 @@ function RoleMgr:RoleEnter( roleID, agent )
 		self:InitPosInfo(base_info)
 
 		local handle = self.sceneMgr.aoi:add()
+		print('Cat:RoleMgr.lua[enter] scene_uid, handle', scene_uid, handle)
 		self.sceneMgr.aoi:set_user_data(handle, "uid", scene_uid)
 		self.roleList[roleID] = {scene_uid=scene_uid, base_info=base_info, looks_info=looks_info, aoi_handle=handle, around_objs={}, radius_short=5000, radius_long=6000, skill_events_in_around={}, hurt_events_in_around={}}
 		-- self.sceneMgr:SetSceneObj(scene_uid, self.roleList[roleID])
 		-- self.aoi_handle_uid_map[handle] = scene_uid
+		self.sceneMgr:SetAOI(handle, scene_uid)
 		self.sceneMgr.aoi:set_pos(handle, base_info.pos_x, base_info.pos_y, base_info.pos_z)
 
 		local entity = self:CreateRole(scene_uid, roleID, base_info.pos_x, base_info.pos_y, base_info.pos_z, handle, agent)
@@ -122,7 +124,8 @@ function RoleMgr:RoleEnter( roleID, agent )
 		self.entityMgr:SetComponentData(entity, "UMO.BaseAttr", baseAttr)
 		self.entityMgr:SetComponentData(entity, "UMO.FightAttr", table.deep_copy(baseAttr))
 		-- self.sceneMgr.aoi:set_user_data(handle, "entity", entity)
-		local changeSceneStr = self.sceneMgr.curSceneID..","..base_info.pos_x..","..base_info.pos_y..","..base_info.pos_z
+		local changeSceneStr = string.format("%s,%s,%s,%s,%s", self.sceneMgr.curSceneID, scene_uid, base_info.pos_x, base_info.pos_y, base_info.pos_z)
+		-- local changeSceneStr = self.sceneMgr.curSceneID..","..","..base_info.pos_x..","..base_info.pos_y..","..base_info.pos_z
 		local change_scene_event_info = {key=SceneConst.InfoKey.SceneChange, value=changeSceneStr}
 		change_scene_event_info.is_private = true
 		-- self.sceneMgr.eventMgr:AddSceneEvent(scene_uid, change_scene_event_info)
@@ -137,9 +140,10 @@ end
 
 function RoleMgr:RoleLeave( roleID )
 	local role_info = self.roleList[roleID]
-	print('Cat:RoleMgr.lua[role_leave_scene] roleID', roleID, role_info)
+	print('Cat:RoleMgr.lua[role_leave_scene] roleID', roleID, role_info, self.sceneMgr.curSceneID)
 	if not role_info then return end
 	
+	print('Cat:RoleMgr.lua[role_leave] role_info.scene_uid', role_info.scene_uid, role_info.aoi_handle)
 	self.sceneMgr.aoi:remove(role_info.aoi_handle)
 	-- self.sceneMgr.aoi_handle_uid_map[role_info.aoi_handle] = nil --角色离开后还需要通过aoi_handle获取ta的uid
 	save_role_pos(roleID, role_info.base_info.pos_x, role_info.base_info.pos_y, role_info.base_info.pos_z, self.sceneMgr.curSceneID)	

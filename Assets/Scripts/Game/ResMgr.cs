@@ -225,7 +225,7 @@ public class ResMgr
                     GameObject prefab = objs[0] as GameObject;
                     if (prefab != null) 
                     {
-                        Debug.Log("load monster ok : "+"MonsterRes_"+typeID);
+                        // Debug.Log("load monster ok : "+"MonsterRes_"+typeID);
                         this.prefabDic["MonsterRes_"+typeID] = prefab;
                         count++;
                         if (callBack != null && count==list.Count)

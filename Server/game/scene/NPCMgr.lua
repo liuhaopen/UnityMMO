@@ -11,10 +11,6 @@ function NPCMgr:Init( sceneMgr, npcCfgList )
 	self.entityMgr = sceneMgr.entityMgr
 	self.aoi = sceneMgr.aoi
 	self.npcCfgList = npcCfgList
-	-- self.aoi = sceneMgr.aoi
-	-- self.nest_cfg = cfg
-	-- self.monster_entities = {}
-	-- self.graphs_owners = {}
 
 	self:InitArchetype()
 	self:InitNPC()
@@ -46,6 +42,7 @@ function NPCMgr:CreateNPC( type_id, pos_x, pos_y, pos_z )
 	local handle = self.aoi:add()
 	self.aoi:set_user_data(handle, "uid", scene_uid)
 	-- self.aoi:set_user_data(handle, "entity", entity)
+	self.sceneMgr:SetAOI(handle, scene_uid)
 	self.aoi:set_pos(handle, pos_x, pos_y, pos_z)
 	self.entityMgr:SetComponentData(entity, "UMO.AOIHandle", {value=handle})
 

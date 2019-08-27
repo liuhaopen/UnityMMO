@@ -91,8 +91,7 @@ function MonsterMgr:CreateMonster( type_id, patrolInfo )
 	self.aoi:set_pos(handle, pos_x, pos_y, pos_z)
 	self.entityMgr:SetComponentData(monster, "UMO.AOIHandle", {value=handle})
 
-	-- print('Cat:MonsterMgr.lua[53] scene_uid', scene_uid, handle)
-	-- self.sceneMgr.aoi_handle_uid_map[handle] = scene_uid
+	self.sceneMgr:SetAOI(handle, scene_uid)
 	self.sceneMgr:SetEntity(scene_uid, monster)
 
     self:InitGraphsForMon(scene_uid, monster, self.entityMgr, handle, self.aoi, cfg)

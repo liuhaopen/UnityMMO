@@ -77,6 +77,12 @@ public class MoveQuery : MonoBehaviour
         }
     }
 
+    public void ChangeUID(long uid)
+    {
+        var uidProxy = queryObj.GetComponent<UIDProxy>();
+        uidProxy.Value = new UID{Value=uid};
+    }
+
     public void UpdateNavAgent()
     {
         
@@ -108,7 +114,7 @@ public class MoveQuery : MonoBehaviour
         // navAgent = charController.gameObject.AddComponent<NavMeshAgent>();
         // navAgent.radius = this.radius;
         // navAgent.height = this.height;
-        Debug.Log("findWayAfterLoadScene.sceneID : "+findWayAfterLoadScene.sceneID);
+        // Debug.Log("findWayAfterLoadScene.sceneID : "+findWayAfterLoadScene.sceneID);
         if (findWayAfterLoadScene.sceneID != 0)
         {
             StartFindWay(findWayAfterLoadScene);

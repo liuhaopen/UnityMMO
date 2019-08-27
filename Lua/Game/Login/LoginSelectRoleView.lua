@@ -39,9 +39,6 @@ end
 function LoginSelectRoleView:UpdateView()
     local role_list = LoginModel:GetInstance():GetRoleList()
     self.data = role_list
-    print("Cat:LoginSelectRoleView [start:42] self.data: ", self.data)
-    PrintTable(self.data)
-    print("Cat:LoginSelectRoleView [end]")
     if not role_list or #role_list <= 0 then 
     	return
     end
@@ -64,7 +61,6 @@ function LoginSelectRoleView:UpdateView()
 			"head_bg:img:obj","name_bg:img:obj","role_lv:txt","role_name:txt","role_head:raw:obj",
 		},
 		on_update_item = function(item, i, v)
-			print('Cat:LoginSelectRoleView.lua[64] item, i, v', item, i, v)
 			self:UpdateRoleHeadItems(item, i, v)
 		end,
 	}
