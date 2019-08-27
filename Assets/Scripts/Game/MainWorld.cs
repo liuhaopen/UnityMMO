@@ -51,7 +51,7 @@ namespace UnityMMO{
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<ResetPosOffsetSystem>(m_GameWorld));
             
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<NameboardSystem>(m_GameWorld));
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<NameboardSpawnRequestSystem>(m_GameWorld));
+            // m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<NameboardSpawnRequestSystem>(m_GameWorld));
 
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<ActionDataResetSystem>(m_GameWorld));
             

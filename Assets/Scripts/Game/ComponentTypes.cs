@@ -80,27 +80,28 @@ namespace Component
         public static ActionData Empty = new ActionData{Jump=0};
     }
 
-    public struct NameboardData : IComponentData
-    {
-        public enum ResState 
-        {
-            WaitLoad,//等待判断是否离主角够近，够近才进入此状态等待加载prefab
-            Loading,//加载中
-            Loaded,//已加载
-            Deleting,//远离主角，别加载了
-            DontLoad,//不需要再加载了
-        }
-        public ResState UIResState;
-        public Entity UIEntity;
-        public void Destroy()
-        {
-            if (UIResState == ResState.Loaded && SceneMgr.Instance.EntityManager.HasComponent<Transform>(UIEntity))
-            {
-                var trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(UIEntity);
-                SceneMgr.Instance.World.RequestDespawn(trans.gameObject);
-            }
-        }
-    }
+    // public struct NameboardData : IComponentData
+    // {
+    //     public enum ResState 
+    //     {
+    //         WaitLoad,//等待判断是否离主角够近，够近才进入此状态等待加载prefab
+    //         Loading,//加载中
+    //         Loaded,//已加载
+    //         // Deleting,//远离主角，别加载了
+    //         DontLoad,//不需要再加载了
+    //     }
+    //     public ResState UIResState;
+    //     public Entity UIEntity;
+    //     // public void Destroy()
+    //     // {
+    //     //     Debug.Log("Destroy UIResState :"+UIResState+" hasTrans:"+SceneMgr.Instance.EntityManager.HasComponent<Transform>(UIEntity));
+    //     //     if (UIResState == ResState.Loaded && SceneMgr.Instance.EntityManager.HasComponent<Transform>(UIEntity))
+    //     //     {
+    //     //         var trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(UIEntity);
+    //     //         SceneMgr.Instance.World.RequestDespawn(trans.gameObject);
+    //     //     }
+    //     // }
+    // }
 
     public struct PosOffset : IComponentData
     {
@@ -181,30 +182,6 @@ namespace Component
         // public GroundInfo(){}
     }
 
-    public struct SprintInfo : IComponentData
-    {
-        public int IsSprinting;//1:yes
-    }
-
-    public struct Shot : IComponentData
-    {
-        public float TimeToLive;
-        public float Energy;
-    }
-
-    public struct Factions
-    {
-        public const int kPlayer = 0;
-        public const int kEnemy = 1;
-    }
-    // public struct ModifyHealthQueue : IComponentData
-    // {
-    //     public NativeArray<float> queue;
-    // }
-    // public struct Health : IComponentData
-    // {
-    //     public float Value;
-    // }
     public struct HealthStateData : IComponentData      
     {
         public float CurHp;
@@ -212,32 +189,6 @@ namespace Component
         public int DeathTick;
         public Entity KilledBy;
     }
-    public struct SceneObjectData : IComponentData
-    {
-        public enum Type 
-        {
-            Role,Monster,NPC
-        }
-        Type type;
-    }
-    // Pure marker types
-    public struct Enemy : IComponentData { }
-
-    public struct EnemyShootState : IComponentData
-    {
-        public float Cooldown;
-    }
-
-    // TODO: Call out that this is better than storing state in the system, because it can support things like replay.
-    public struct EnemySpawnCooldown : IComponentData
-    {
-        public float Value;
-    }
-
-    public struct EnemySpawnSystemState : IComponentData
-    {
-        public int SpawnedEnemyCount;
-        public UnityEngine.Random.State RandomState;
-    }
+  
 }
 }

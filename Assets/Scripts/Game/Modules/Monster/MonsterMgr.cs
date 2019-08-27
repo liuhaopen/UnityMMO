@@ -59,11 +59,14 @@ public class MonsterMgr
         EntityManager.AddComponentData(monster, new TypeID {Value=typeID});
         EntityManager.AddComponentData(monster, ActionData.Empty);
         EntityManager.AddComponentData(monster, new SceneObjectTypeData {Value=SceneObjectType.Monster});
-        EntityManager.AddComponentData(monster, new NameboardData {UIResState=NameboardData.ResState.WaitLoad});
+        // EntityManager.AddComponentData(monster, new NameboardData {UIResState=NameboardData.ResState.WaitLoad});
         // EntityManager.AddComponentData(monster, new JumpState {JumpStatus=JumpState.State.None, JumpCount=0, OriginYPos=0, AscentHeight=0});
         EntityManager.AddComponentData(monster, new PosOffset {Value = float3.zero});
         EntityManager.AddComponentData(monster, new HealthStateData {CurHp=curHp, MaxHp=maxHp});
         EntityManager.AddComponentData(monster, new TimelineState {NewStatus=TimelineState.NewState.Allow, InterruptStatus=TimelineState.InterruptState.Allow});
+        // var NameboardData = EntityManager.GetComponentObject<NameboardData>(monster);
+        // NameboardData.UIResState = NameboardData.ResState.WaitLoad;
+        // NameboardData.LooksNode = null;
         
         MoveQuery rmq = EntityManager.GetComponentObject<MoveQuery>(monster);
         rmq.Initialize();

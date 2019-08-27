@@ -278,19 +278,27 @@ public class SynchFromNet {
             Transform trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(entity);
             trans.localPosition = SceneMgr.Instance.GetCorrectPos(new Vector3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic));
             SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = trans.localPosition});
-            var uidProxy = SceneMgr.Instance.EntityManager.GetComponentObject<UIDProxy>(entity);
+            // var uidData = SceneMgr.Instance.EntityManager.GetComponentData<UID>(entity);
+            long uid = Int64.Parse(strs[1]);
+            SceneMgr.Instance.EntityManager.SetComponentData<UID>(entity, new UID{Value=uid});
             // SceneMgr.Instance.EntityManager.SetComponentData<UID>(entity);
-            if (uidProxy!=null)
-            {
-                long uid = Int64.Parse(strs[1]);
-                uidProxy.Value = new UID{Value=uid};
-                MoveQuery moveQuery = SceneMgr.Instance.EntityManager.GetComponentObject<MoveQuery>(entity);
-                // Debug.Log("ApplyChangeInfoSceneChange new uid : "+uid+" moveQuery:"+(moveQuery!=null));
-                if (moveQuery != null)
-                {
-                    moveQuery.ChangeUID(uid);
-                }
-            }
+            MoveQuery moveQuery = SceneMgr.Instance.EntityManager.GetComponentObject<MoveQuery>(entity);
+            // Debug.Log("ApplyChangeInfoSceneChange new uid : "+uid+" moveQuery:"+(moveQuery!=null));
+            if (moveQuery != null)
+                moveQuery.ChangeUID(uid);
+            // var uidProxy = SceneMgr.Instance.EntityManager.GetComponentObject<UIDProxy>(entity);
+            // // SceneMgr.Instance.EntityManager.SetComponentData<UID>(entity);
+            // if (uidProxy!=null)
+            // {
+            //     long uid = Int64.Parse(strs[1]);
+            //     uidProxy.Value = new UID{Value=uid};
+            //     MoveQuery moveQuery = SceneMgr.Instance.EntityManager.GetComponentObject<MoveQuery>(entity);
+            //     // Debug.Log("ApplyChangeInfoSceneChange new uid : "+uid+" moveQuery:"+(moveQuery!=null));
+            //     if (moveQuery != null)
+            //     {
+            //         moveQuery.ChangeUID(uid);
+            //     }
+            // }
         }
     }
 
@@ -305,20 +313,21 @@ public class SynchFromNet {
         var isDead = hp==0;//死亡
         if (hasNameboardData)
         {
-            var nameboardData = SceneMgr.Instance.EntityManager.GetComponentData<NameboardData>(entity);
+            var nameboardData = SceneMgr.Instance.EntityManager.GetComponentObject<NameboardData>(entity);
             if (nameboardData.UIResState==NameboardData.ResState.Loaded)
             {
-                var nameboardNode = SceneMgr.Instance.EntityManager.GetComponentObject<Nameboard>(nameboardData.UIEntity);
+                var nameboardNode = nameboardData.LooksNode.GetComponent<Nameboard>();
                 if (nameboardNode != null)
                 {
                     nameboardNode.CurHp = curHp;
                     //remove nameboard when dead
                     if (isDead)
                     {
-                        SceneMgr.Instance.World.RequestDespawn(nameboardNode.gameObject);
+                        nameboardData.UnuseLooks();
+                        // SceneMgr.Instance.World.RequestDespawn(nameboardNode.gameObject);
                         nameboardData.UIResState = NameboardData.ResState.DontLoad;
-                        nameboardData.UIEntity = Entity.Null;
-                        SceneMgr.Instance.EntityManager.SetComponentData(entity, nameboardData);
+                        // nameboardData.LooksNode = null;
+                        // SceneMgr.Instance.EntityManager.SetComponentData(entity, nameboardData);
                     }
                 }
             }
@@ -327,7 +336,7 @@ public class SynchFromNet {
                 if (isRelive)
                 {
                     nameboardData.UIResState = NameboardData.ResState.WaitLoad;
-                    SceneMgr.Instance.EntityManager.SetComponentData(entity, nameboardData);
+                    // SceneMgr.Instance.EntityManager.SetComponentData(entity, nameboardData);
                 }
             }
         }

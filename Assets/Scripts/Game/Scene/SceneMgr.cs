@@ -105,7 +105,7 @@ public class SceneMgr : MonoBehaviour
 	public void OnDestroy()
 	{
         Debug.Log("destroy scene mgr");
-        UnloadScene();
+        // UnloadScene();
 		Instance = null;
 	}
 
@@ -456,13 +456,15 @@ public class SceneMgr : MonoBehaviour
 
     public void RemoveSceneEntity(Entity entity, bool deleInDic)
     {
-        MoveQuery moveQuery=null;
+        MoveQuery moveQuery = null;
         if (EntityManager.HasComponent<MoveQuery>(entity))
             moveQuery = EntityManager.GetComponentObject<MoveQuery>(entity);
-        if (EntityManager.HasComponent<NameboardData>(entity))
+        bool hasNameboard = EntityManager.HasComponent<NameboardData>(entity);
+        // Debug.Log("RemoveSceneEntity hasNameboard:"+hasNameboard+" entity:"+entity);
+        if (hasNameboard)
         {
-            var nameboardData = EntityManager.GetComponentData<NameboardData>(entity);
-            nameboardData.Destroy();
+            var nameboardData = EntityManager.GetComponentObject<NameboardData>(entity);
+            nameboardData.UnuseLooks();
         }
         if (EntityManager.HasComponent<LooksInfo>(entity))
         {

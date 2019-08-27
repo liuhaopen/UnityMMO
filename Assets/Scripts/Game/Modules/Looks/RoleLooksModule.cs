@@ -97,7 +97,8 @@ public class HandleRoleLooksNetRequest : BaseComponentSystem
                 // Debug.Log("rsp.result : "+rsp.result.ToString()+" owner:"+owner.ToString());
                 if (rsp.result == UnityMMO.GameConst.NetResultOk)
                 {
-                    RoleMgr.GetInstance().SetName(req.uid, rsp.role_looks_info.name);
+                    var name = rsp.role_looks_info.name;
+                    RoleMgr.GetInstance().SetName(req.uid, name);
                     RoleMgr.GetInstance().UpdateLooksInfo(req.uid, new RoleLooksInfo{
                         uid=req.uid, career=(int)rsp.role_looks_info.career,
                         body=(int)rsp.role_looks_info.body,
@@ -107,7 +108,7 @@ public class HandleRoleLooksNetRequest : BaseComponentSystem
                         horse=(int)rsp.role_looks_info.horse,
                         hp=(int)rsp.role_looks_info.hp,
                         maxHp=(int)rsp.role_looks_info.max_hp,
-                        name=rsp.role_looks_info.name,
+                        name=name,
                     });
                     if (m_world.GetEntityManager().HasComponent<HealthStateData>(owner))
                     {
@@ -115,6 +116,11 @@ public class HandleRoleLooksNetRequest : BaseComponentSystem
                         hpData.CurHp = rsp.role_looks_info.hp;
                         hpData.MaxHp = rsp.role_looks_info.max_hp;
                         m_world.GetEntityManager().SetComponentData<HealthStateData>(owner, hpData);
+                    }
+                    if (m_world.GetEntityManager().HasComponent<NameboardData>(owner))
+                    {
+                        var nameboardData = m_world.GetEntityManager().GetComponentObject<NameboardData>(owner);
+                        nameboardData.SetName(name);
                     }
                     bool hasTrans = m_world.GetEntityManager().HasComponent<Transform>(owner);
                     if (hasTrans)

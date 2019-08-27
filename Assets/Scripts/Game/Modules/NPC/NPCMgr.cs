@@ -50,17 +50,12 @@ public class NPCMgr
 
     private void InitNPC(Entity NPC, long uid, long typeID, Vector3 pos, Vector3 targetPos)
     {
-        // EntityManager.AddComponentData(NPC, new MoveSpeed {Value = ConfigNPC.GetInstance().GetMoveSpeed(typeID)});
-        // EntityManager.AddComponentData(NPC, new TargetPosition {Value = targetPos});
         EntityManager.AddComponentData(NPC, new LocomotionState {LocoState = LocomotionState.State.Idle});
         EntityManager.AddComponentData(NPC, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
-        // EntityManager.SetComponentData(NPC, new UID {Value=uid});
         EntityManager.AddComponentData(NPC, new TypeID {Value=typeID});
         EntityManager.AddComponentData(NPC, ActionData.Empty);
         EntityManager.AddComponentData(NPC, new SceneObjectTypeData {Value=SceneObjectType.NPC});
-        EntityManager.AddComponentData(NPC, new NameboardData {UIResState=NameboardData.ResState.WaitLoad});
-        // EntityManager.AddComponentData(NPC, new PosOffset {Value = float3.zero});
-        // EntityManager.AddComponentData(NPC, new TimelineState {NewStatus=TimelineState.NewState.Allow, InterruptStatus=TimelineState.InterruptState.Allow});
+        // EntityManager.AddComponentData(NPC, new NameboardData {UIResState=NameboardData.ResState.WaitLoad});
         // MoveQuery rmq = EntityManager.GetComponentObject<MoveQuery>(NPC);
         // rmq.Initialize();
         CreateLooks(NPC, typeID);
