@@ -30,7 +30,7 @@ namespace UnityMMO
 
         public void SetName(string name)
         {
-            Debug.Log("nameboard name:"+name+" "+new System.Diagnostics.StackTrace().ToString());
+            // Debug.Log("nameboard name:"+name+" "+new System.Diagnostics.StackTrace().ToString());
             Name = name;
             if (UIResState == ResState.Loaded && LooksNode != null)
             {

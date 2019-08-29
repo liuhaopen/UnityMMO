@@ -70,6 +70,14 @@ public class SceneInfoExporter : Editor
         {
             export_info.BornList.Add(new BornInfoData(item.GetUnityPos(), item.born_id));
         }
+        MonsterInfo[] mons_list = Selection.activeTransform.GetComponentsInChildren<MonsterInfo>();
+        export_info.MonsterList = new List<int>();
+        foreach (var item in mons_list)
+        {
+            if (!export_info.MonsterList.Exists(x => x==item.monster_type_id))
+                export_info.MonsterList.Add(item.monster_type_id);
+        }
+
         export_info.ResPathList = ResPathList;
         string json = JsonUtility.ToJson(export_info, true);
         File.WriteAllText(save_path, json);
@@ -174,7 +182,8 @@ public class SceneInfoExporter : Editor
             expandAmount.z *= boundScale.z;
         if (expandAmount != size)
             bounds.Expand(expandAmount);
-        int lightmapIndex = renderers[0].lightmapIndex;
+        bool useLightProbe = renderers[0].lightProbeUsage != UnityEngine.Rendering.LightProbeUsage.Off;
+        int lightmapIndex = useLightProbe?-1:renderers[0].lightmapIndex;
         Vector4 lightmapScaleOffset = renderers[0].lightmapScaleOffset;
         SceneStaticObject obj = new SceneStaticObject(bounds, transform.position, transform.eulerAngles, transform.localScale, resID, lightmapIndex, lightmapScaleOffset);
         return obj;

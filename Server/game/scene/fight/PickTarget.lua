@@ -9,6 +9,7 @@ local Update = function ( self )
 	if not cfg then return end
 	
 	local target_type = self[1] or cfg.target_type
+	local maxTargetNum = self[2] or cfg.detail[self.skillData.skill_lv].attack_max_num
 	self.skillData.targets = nil
 	local isPickEnemy = target_type == SceneConst.SkillTargetType.Enemy
 	if isPickEnemy or target_type == SceneConst.SkillTargetType.Our then
@@ -29,6 +30,7 @@ local Update = function ( self )
 					print("caster entity unexist on pick target "..tostring(self.skillData.caster_entity).." skill id : "..self.skillData.skill_id)
 				end
 			end
+			local targetNums = 0
 			for aoi_handle,v in pairs(around) do
 				local uid = self.aoi:get_user_data(aoi_handle, "uid")
 				local entity = self.sceneMgr:GetEntity(uid)
@@ -37,6 +39,10 @@ local Update = function ( self )
 					local hpData = self.EntityManager:GetComponentData(entity, "UMO.HP")
 					if hpData.cur > 0 then
 						self.skillData.targets[uid] = true
+						targetNums = targetNums + 1
+						if targetNums >= maxTargetNum then
+							break
+						end
 					end
 				end
 			end

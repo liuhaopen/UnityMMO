@@ -183,7 +183,14 @@ public class SceneMgr : MonoBehaviour
             }
             LoadingView.Instance.SetData(0.8f, "加载基础场景...");
             AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(baseWorldScenePath, UnityEngine.SceneManagement.LoadSceneMode.Additive);
-            asy.completed += delegate(AsyncOperation asyOp){
+            // asy.allowSceneActivation = false;
+            // while (asy.progress < 0.9f)
+            // {
+            //     Debug.Log("Loading scene " + " [][] Progress: " + asy.progress);
+            //     yield return null;
+            // }
+            asy.completed += delegate(AsyncOperation asyOp)
+            {
                 Debug.Log("load base world:"+asyOp.isDone.ToString());
                 isLoadingScene = false;
                 isBaseWorldLoadOk = true;
@@ -215,9 +222,6 @@ public class SceneMgr : MonoBehaviour
         RemoveAllSceneObjects();
         var sceneObjects = GameObject.Find("SceneMgr").transform;
         XLuaFramework.Util.ClearChild(sceneObjects);
-        // ResMgr.GetInstance().ClearGameObjectPool("Nameboard");
-        // var nameboardCanvas = GameObject.Find("UICanvas/Nameboard").transform;
-        // XLuaFramework.Util.ClearChild(nameboardCanvas);
     }
 
     public void ReqEnterScene(int scene_id, int door_id=0)
@@ -399,7 +403,6 @@ public class SceneMgr : MonoBehaviour
         }
         else if (type == SceneObjectType.NPC)
         {
-            Debug.Log("content : "+content+" newPos:"+pos.x+" "+pos.y+" "+pos.z);
             Entity npc = NPCMgr.GetInstance().AddNPC(uid, typeID, pos, targetPos);
             entitiesDic[SceneObjectType.NPC].Add(uid, npc);
             return npc;
@@ -460,7 +463,6 @@ public class SceneMgr : MonoBehaviour
         if (EntityManager.HasComponent<MoveQuery>(entity))
             moveQuery = EntityManager.GetComponentObject<MoveQuery>(entity);
         bool hasNameboard = EntityManager.HasComponent<NameboardData>(entity);
-        // Debug.Log("RemoveSceneEntity hasNameboard:"+hasNameboard+" entity:"+entity);
         if (hasNameboard)
         {
             var nameboardData = EntityManager.GetComponentObject<NameboardData>(entity);
@@ -520,9 +522,6 @@ public class SceneMgr : MonoBehaviour
 
     public Entity GetSceneObject(long uid)
     {
-        // Debug.Log("GetSceneObject uid : "+uid.ToString()+" ContainsKey:"+entityDic.ContainsKey(uid).ToString());
-        // if (entityDic.ContainsKey(uid))
-            // return entityDic[uid];
         foreach (var item in entitiesDic)
         {
             if (item.Value.ContainsKey(uid))
@@ -537,7 +536,6 @@ public class SceneMgr : MonoBehaviour
     {
         return entitiesDic[type];
     }
-
 }
 
 }

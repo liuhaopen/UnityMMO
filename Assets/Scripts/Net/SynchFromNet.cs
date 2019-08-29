@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cinemachine;
 using Sproto;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -96,6 +97,12 @@ public class SynchFromNet {
                     locomotionState.LocoState = LocomotionState.State.BeHit;
                     locomotionState.StartTime = Time.time;
                     entityMgr.SetComponentData<LocomotionState>(defenderEntity, locomotionState);
+                }
+                if (entityMgr.HasComponent<CinemachineImpulseSource>(defenderEntity))
+                {
+                    var impulseCom = entityMgr.GetComponentObject<CinemachineImpulseSource>(defenderEntity);
+                    var velocity = Vector3.one * defender.change_num/5;
+                    impulseCom.GenerateImpulse();
                 }
                 //显示战斗飘字
                 var defenderTrans = entityMgr.GetComponentObject<Transform>(defenderEntity);

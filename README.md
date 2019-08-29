@@ -10,7 +10,7 @@
 后端:  
 )安装虚拟机,我使用的是 CentOS7,然后设置整个项目目录为虚拟机的共享目录, cd到 Server 目录,先编译 skynet:[skynet 主页](https://github.com/cloudwu/skynet "skynet 主页")  
 )在虚拟机安装 mysql 并导入 Server/data/ 里的两个数据库文件  
-)运行: ./run.sh 跑起服务端  
+)运行: ./run.sh 跑起服务端(如果你要把 Server 目录单独提取到其它机器运行时，记得把 UnityMMO/Lua 里的 Config,Proto,Common 三个目录也复制过去并保持目录层级关系)  
 
 # Status & Prerequisites
 ```
@@ -28,3 +28,4 @@ server only for Linux;
 19.07.31：初步完成背包和 GM 系统      
 19.08.11：初步完成基于 action 组件的技能系统,见 Server/lualib/Action及 FightMgr,Hurt 和 PickTarget.lua          
 19.08.13：完成复活流程      
+19.08.28：最近经常在手机上测试，优化了一波：摄像机操作，资源预加载，对象池，和使用了 AutoLOD 插件为各场景节点生成了两级简模（其实很多模型在最远处时是可以用一个面片替代的，就是做成公告板永远面向摄像机，但没美术资源就算了），树的话删了不少上万三角面的了。灯光烘培改成用 Distance ShadowMask,近处实时阴影远处贴图。暂时可以在我的垃圾手机流畅运行了。    

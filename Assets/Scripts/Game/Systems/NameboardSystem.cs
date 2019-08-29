@@ -51,7 +51,6 @@ public class NameboardSystem : BaseComponentSystem
         Vector3 dir = (target.position - Camera.main.transform.position).normalized;
         float dot = Vector3.Dot(Camera.main.transform.forward, dir);     //判断物体是否在相机前面
         bool isBoardVisible = dot > 0 && (board2DPosition.x <= Screen.width && board2DPosition.x >= 0 && board2DPosition.y <= Screen.height && board2DPosition.y >= 0);
-
         if (isBoardVisible)
         {
             if (nameboardData.UIResState == NameboardData.ResState.WaitLoad)

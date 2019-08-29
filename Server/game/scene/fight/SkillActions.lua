@@ -66,16 +66,24 @@ function SkillActions:Init(  )
 		end
 	end
 
-	local simple_skill_list = {
-		200000, 200001, 200100, 200101, 200200, 200201, 200300, 200301, 200400, 200401, 200500, 200501,
+	local skill_list_with_delay = {
+		[200000]=300, [200001]=800,
+		[200100]=600, [200101]=600, 
+		[200200]=500, [200201]=600, 
+		[200300]=350, [200301]=400, 
+		[200400]=400, [200401]=300, 
+		[200500]=500, [200501]=300,
 	}
 	--怪物的普通技能，因为是单体攻击所以就从调用 FightMgr:CastSkill 时就已经传入攻击目标了，直接扣血
-	for i,v in ipairs(simple_skill_list) do
-		self.actions[v] = function( cfg )
-			return Hurt {} 
+	for k,v in pairs(skill_list_with_delay) do
+		self.actions[k] = function( cfg )
+			return Sequence { 
+				Delay {v}, 
+				Hurt {} 
+			}
 		end
 	end
-
+	
 	--扣血后有万份之 x 概率触发400000buff(降低防御),具体降低的数值根据技能等级读取配置的
 	self.actions[110010] = function( cfg )
 		return Sequence {

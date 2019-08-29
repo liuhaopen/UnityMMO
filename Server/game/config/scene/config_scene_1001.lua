@@ -59,7 +59,7 @@ monster_list = {{
 		pos_y = 16538,
 		pos_z = 116869,
 		monster_type_id = 2000,
-		monster_num = 10,
+		monster_num = 7,
 		radius = 1000,
 },
 {
@@ -75,7 +75,7 @@ monster_list = {{
 		pos_y = 16450,
 		pos_z = 124200,
 		monster_type_id = 2002,
-		monster_num = 10,
+		monster_num = 6,
 		radius = 1200,
 },
 {
@@ -123,7 +123,7 @@ monster_list = {{
 		pos_y = 16450,
 		pos_z = 129530,
 		monster_type_id = 2002,
-		monster_num = 10,
+		monster_num = 8,
 		radius = 1600,
 },
 {
@@ -139,7 +139,7 @@ monster_list = {{
 		pos_y = 16538,
 		pos_z = 119490,
 		monster_type_id = 2000,
-		monster_num = 10,
+		monster_num = 7,
 		radius = 1300,
 },
 {
@@ -155,7 +155,7 @@ monster_list = {{
 		pos_y = 16538,
 		pos_z = 133530,
 		monster_type_id = 2000,
-		monster_num = 10,
+		monster_num = 6,
 		radius = 1000,
 },
 {
