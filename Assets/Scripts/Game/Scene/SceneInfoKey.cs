@@ -13,6 +13,8 @@ public enum SceneInfoKey
     HPChange=6,
     NPCState=7,
     SceneChange=8,
+    Buff=9,
+    Speed=10,
 }
 
 public enum SceneObjectType

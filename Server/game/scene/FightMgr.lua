@@ -37,7 +37,7 @@ function FightMgr:CastSkill( uid, req_data )
 	end
 	
 	local aoi_handle = self.entityMgr:GetComponentData(entity, "UMO.AOIHandle")
-	local isSkillInCD = FightHelper.IsSkillInCD(entity, req_data.skill_id)
+	local isSkillInCD = FightHelper:IsSkillInCD(entity, req_data.skill_id)
 	-- print('Cat:FightMgr.lua[21] isSkillInCD', isSkillInCD)
 	local is_can_cast = not isSkillInCD
 	local cdEndTime = 0
@@ -66,7 +66,7 @@ function FightMgr:CastSkill( uid, req_data )
 		-- skillData.action = skillAction
 		-- self.entityMgr:SetComponentData(skillEntity, "UMO.Skill", skillData)
 		-- print('Cat:FightMgr.lua[64] skillEntity', skillEntity, req_data.skill_id)
-		cdEndTime = FightHelper.ApplySkillCD(entity, req_data.skill_id, skillLv)
+		cdEndTime = FightHelper:ApplySkillCD(entity, req_data.skill_id, skillLv)
 
 		errorCode = ErrorCode.Succeed
 		fight_event = {

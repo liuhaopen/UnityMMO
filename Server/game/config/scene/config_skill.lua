@@ -131,6 +131,8 @@ local config = {
 		skill_id = 120013, target_type = 1, shape = 1, duration = 1000, detail = {
 			[1] = {
 				condition = {{lv, 1}}, cd = 15000, attack_max_num = 5, damage_rate = 10000, area = 600,
+				desc = [[女主大招，5秒内造成5次范围伤害，每次有100%的概率从对方吸收5%血量]],
+				buff = {probability=10000,suck_interval=0,suck_count=1,value=500,is_percent=true}
 			},
 		},	
 	},

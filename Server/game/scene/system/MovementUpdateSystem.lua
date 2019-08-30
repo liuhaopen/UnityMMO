@@ -24,7 +24,7 @@ function MovementUpdateSystem:OnUpdate(  )
 		startPos = Vector3(startPos.x, startPos.y, startPos.z)
 		local targetPos = targetPositions[i]
 		targetPos = Vector3(targetPos.x, targetPos.y, targetPos.z)
-        local speed = speeds[i].value
+        local speed = speeds[i].curSpeed
         if speed > 0 then
 	        local moveDir = Vector3.Sub(targetPos, startPos)
 	        local groundDir = moveDir

@@ -93,6 +93,15 @@ function SkillActions:Init(  )
 		}
 	end
 
+	--扣血后有万份之 x 概率触发400002buff(晕眩)
+	self.actions[110010] = function( cfg )
+		return Sequence {
+			PickTarget {}, 
+			Hurt {}, 
+			If { Random{cfg.buff.probability}, Buff{400002} } 
+		}
+	end
+
 	--男主大招，300毫秒后，重复5次攻击，每次间隔700毫秒，每次都有一定概率加晕眩 buff
 	self.actions[110013] = function( cfg )
 		return Sequence { 
@@ -101,7 +110,7 @@ function SkillActions:Init(  )
 				Sequence { 
 					PickTarget {}, 
 					Hurt {}, 
-					-- If { Random{cfg.buff.probability}, Buff{400002} },
+					If { Random{cfg.buff.probability}, Buff{400002} },
 					Delay {700} 
 				}
 			}
@@ -116,7 +125,7 @@ function SkillActions:Init(  )
 				Sequence { 
 					PickTarget {}, 
 					Hurt {}, 
-					-- If { Random{cfg.buff.probability}, Buff{400001} },
+					If { Random{cfg.buff.probability}, Buff{400001} },
 					Delay {700} 
 				}
 			}

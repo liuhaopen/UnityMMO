@@ -28,7 +28,7 @@ end
 
 function FightState:OnUpdate( )
 	if self.sub_state == SubState.Chase then
-		local isLive = FightHelper.IsLive(self.targetEnemyEntity)
+		local isLive = FightHelper:IsLive(self.targetEnemyEntity)
 		if isLive then
 			if not self.last_retarget_time or Time.time-self.last_retarget_time > 0.5 then
 				self.last_retarget_time = Time.time
@@ -48,7 +48,7 @@ function FightState:OnUpdate( )
 					self:Attack()
 				else
 					--离敌人太远或太近了，走位移动到可攻击的目标点
-					local newPos = FightHelper.GetAssailablePos(myPos, enemyPos, self.cfg.ai.attack_area.min_distance, self.cfg.ai.attack_area.max_distance)			
+					local newPos = FightHelper:GetAssailablePos(myPos, enemyPos, self.cfg.ai.attack_area.min_distance, self.cfg.ai.attack_area.max_distance)			
 					self.monsterMgr:ChangeTargetPos(self.entity, newPos)
 				end
 			end

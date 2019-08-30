@@ -1,4 +1,5 @@
 require "game.scene.Global"
+require "game.scene.com.Components"
 local skynet = require "skynet"
 local Ac = require "Action"
 local ECS = require "ECS"
@@ -221,7 +222,7 @@ function SceneMgr:Init( scene_id )
 	self.ecsSystemMgr:Init(self.ecs_world, self)
 	self.eventMgr:Init(self)
 	local FightHelper = require("game.scene.FightHelper")
-	FightHelper.Init()
+	FightHelper:Init(self)
 	--开始游戏循环
 	fork_loop_logic(self)
 	fork_loop_scene_info_change(self)

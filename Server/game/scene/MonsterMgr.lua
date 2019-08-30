@@ -3,6 +3,7 @@ local SceneHelper = require "game.scene.SceneHelper"
 local SceneConst = require "game.scene.SceneConst"
 local MonsterFSM = require "game.scene.ai.MonsterFSM"
 local BP = require("Blueprint")
+local SpeedData = require("game.scene.com.SpeedData")
 local MonsterMgr = BaseClass()
 local test_info = {
 	-- create_num = 1,--只创建1只怪物，方便调试
@@ -76,7 +77,8 @@ function MonsterMgr:CreateMonster( type_id, patrolInfo )
 	self.entityMgr:SetComponentData(monster, "UMO.SceneObjType", {value=SceneConst.ObjectType.Monster})
 	self.entityMgr:SetComponentData(monster, "UMO.MonsterAI", scene_uid)
 	self.entityMgr:SetComponentData(monster, "UMO.PatrolInfo", patrolInfo)
-	self.entityMgr:SetComponentData(monster, "UMO.MoveSpeed", {value=cfg.move_speed})
+	-- self.entityMgr:SetComponentData(monster, "UMO.MoveSpeed", {value=cfg.move_speed})
+	self.entityMgr:SetComponentData(monster, "UMO.MoveSpeed", SpeedData.New(cfg.move_speed))
 	self.entityMgr:SetComponentData(monster, "UMO.BaseAttr", cfg.attr_list)
 	self.entityMgr:SetComponentData(monster, "UMO.FightAttr", table.deep_copy(cfg.attr_list))
 	local maxHp = cfg.attr_list[SceneConst.Attr.HP] or 0

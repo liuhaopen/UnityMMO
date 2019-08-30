@@ -1,6 +1,7 @@
 local Ac = require "Action"
 local skynet = require "skynet"
 local SceneConst = require "game.scene.SceneConst"
+local FightHelper = require("game.scene.FightHelper")
 
 local CalDamage = function( self, targetEntity )
 	local targetFightAttr = self.entityMgr:GetComponentData(targetEntity, "UMO.FightAttr")
@@ -13,31 +14,31 @@ local CalDamage = function( self, targetEntity )
 	return math.floor(baseDamage+critDamage)
 end
 
-local ApplyDamage = function( self, entity, hp, damage, attacker )
-	if hp.cur <= 0 then return end
-	hp.cur = hp.cur - damage
-	if hp.cur <= 0 then
-		hp.cur = 0
-		hp.killedBy = attacker
-		hp.deathTime = Time.time
-	end
+-- local ApplyDamage = function( self, entity, hp, damage, attacker )
+-- 	if hp.cur <= 0 then return end
+-- 	hp.cur = hp.cur - damage
+-- 	if hp.cur <= 0 then
+-- 		hp.cur = 0
+-- 		hp.killedBy = attacker
+-- 		hp.deathTime = Time.time
+-- 	end
 		
-	local uid = self.entityMgr:GetComponentData(entity, "UMO.UID")
-	-- local change_target_pos_event_info
-	if hp.cur <= 0 then
-		--enter dead state
-		if self.entityMgr:HasComponent(entity, "UMO.MonsterAI") then
-			self.sceneMgr.monsterMgr:TriggerState(uid, "DeadState")
-			local killer = self.sceneMgr:GetEntity(hp.killedBy)
-			if self.entityMgr:HasComponent(killer, "UMO.MsgAgent") then
-				local agent = self.entityMgr:GetComponentData(killer, "UMO.MsgAgent")
-				local roleID = self.entityMgr:GetComponentData(killer, "UMO.TypeID")
-				local monsterID = self.entityMgr:GetComponentData(entity, "UMO.TypeID")
-				skynet.send(agent, "lua", "execute", "Task", "KillMonster", roleID, monsterID, 1)
-			end
-		end
-	end
-end
+-- 	local uid = self.entityMgr:GetComponentData(entity, "UMO.UID")
+-- 	-- local change_target_pos_event_info
+-- 	if hp.cur <= 0 then
+-- 		--enter dead state
+-- 		if self.entityMgr:HasComponent(entity, "UMO.MonsterAI") then
+-- 			self.sceneMgr.monsterMgr:TriggerState(uid, "DeadState")
+-- 			local killer = self.sceneMgr:GetEntity(hp.killedBy)
+-- 			if self.entityMgr:HasComponent(killer, "UMO.MsgAgent") then
+-- 				local agent = self.entityMgr:GetComponentData(killer, "UMO.MsgAgent")
+-- 				local roleID = self.entityMgr:GetComponentData(killer, "UMO.TypeID")
+-- 				local monsterID = self.entityMgr:GetComponentData(entity, "UMO.TypeID")
+-- 				skynet.send(agent, "lua", "execute", "Task", "KillMonster", roleID, monsterID, 1)
+-- 			end
+-- 		end
+-- 	end
+-- end
 
 local Update = function ( self )
 	local hurtEvent = {
@@ -53,7 +54,7 @@ local Update = function ( self )
 		if entity then
 			local hp = self.entityMgr:GetComponentData(entity, "UMO.HP")
 			local damage_value = CalDamage(self, entity)
-			ApplyDamage(self, entity, hp, damage_value, self.skillData.caster_uid)
+			FightHelper:ChangeHP(entity, hp, damage_value, self.skillData.caster_uid)
 			table.insert(hurtEvent.defenders, {uid=uid, cur_hp=hp.cur, change_num=damage_value, flag=math.random(0, 2)})
 		end
 	end

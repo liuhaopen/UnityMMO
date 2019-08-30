@@ -10,11 +10,8 @@ local SubState = {
 }
 function DeadState:OnInit(  )
 	-- print('Cat:DeadState.lua[OnInit]')
-	-- self.aoi_handle = self.blackboard:GetVariable("aoi_handle")
-	-- self.aoi_area = self.blackboard:GetVariable("aoi_area")
 	self.entity = self.blackboard:GetVariable("entity")
 	self.sceneMgr = self.blackboard:GetVariable("sceneMgr")
-	-- self.aoi = self.sceneMgr.aoi
 	self.entityMgr = self.sceneMgr.entityMgr
 	self.monsterMgr = self.sceneMgr.monsterMgr
 	self.cfg = self.blackboard:GetVariable("cfg")

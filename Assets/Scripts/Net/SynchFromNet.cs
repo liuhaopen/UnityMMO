@@ -32,6 +32,7 @@ public class SynchFromNet {
         changeFuncDic[SceneInfoKey.HPChange] = ApplyChangeInfoHPChange;
         //The main role may not exist until the scene change event is received
         changeFuncDic[SceneInfoKey.SceneChange] = ApplyChangeInfoSceneChange;
+        changeFuncDic[SceneInfoKey.Buff] = ApplyChangeInfoBuff;
     }
 
     public void StartSynchFromNet()
@@ -268,9 +269,17 @@ public class SynchFromNet {
         SceneMgr.Instance.EntityManager.SetComponentData(entity, actionData);
     }
 
+    private void ApplyChangeInfoBuff(Entity entity, SprotoType.info_item change_info)
+    {
+        Debug.Log("ApplyChangeInfoBuff : "+change_info.value);
+        string[] strs = change_info.value.Split(',');
+        int buffID = int.Parse(strs[0]);
+
+    }
+
     private void ApplyChangeInfoSceneChange(Entity entity, SprotoType.info_item change_info)
     {
-        Debug.Log("ApplyChangeInfoSceneChange : "+change_info.value);
+        // Debug.Log("ApplyChangeInfoSceneChange : "+change_info.value);
         string[] strs = change_info.value.Split(',');
         int sceneID = int.Parse(strs[0]);
         LoadingView.Instance.SetActive(true);
@@ -366,7 +375,7 @@ public class SynchFromNet {
     
     private void ApplyChangeInfoHPChange(Entity entity, SprotoType.info_item change_info)
     {
-        // Debug.Log("hp change : "+change_info.value);
+        Debug.Log("hp change : "+change_info.value);
         string[] strs = change_info.value.Split(',');
         float curHp = (float)Int64.Parse(strs[0])/GameConst.RealToLogic;
         long flag = 0;

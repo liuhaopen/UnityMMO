@@ -1,9 +1,9 @@
 local skynet = require "skynet"
 local SceneConst = require "game.scene.SceneConst"
 local SceneHelper = require "game.scene.SceneHelper"
+local SpeedData = require("game.scene.com.SpeedData")
 
 local RoleMgr = BaseClass()
-
 function RoleMgr:Init( sceneMgr )
 	self.sceneMgr = sceneMgr
 	self.entityMgr = sceneMgr.entityMgr
@@ -30,7 +30,7 @@ function RoleMgr:CreateRole( uid, roleID, pos_x, pos_y, pos_z, aoi_handle, agent
 	self.entityMgr:SetComponentData(role, "UMO.UID", uid)
 	self.entityMgr:SetComponentData(role, "UMO.TypeID", roleID)
 	self.entityMgr:SetComponentData(role, "UMO.SceneObjType", {value=SceneConst.ObjectType.Role})
-	self.entityMgr:SetComponentData(role, "UMO.MoveSpeed", {value=100})
+	self.entityMgr:SetComponentData(role, "UMO.MoveSpeed", SpeedData.New(100))
 	self.entityMgr:SetComponentData(role, "UMO.AOIHandle", {value=aoi_handle})
 	self.entityMgr:SetComponentData(role, "UMO.MsgAgent", agent)
 	self.entityMgr:SetComponentData(role, "UMO.CD", {})

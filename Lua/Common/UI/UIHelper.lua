@@ -21,34 +21,34 @@ UI.UpdateVisibleJuryTable = {}
 UI.UpdateVisibleJuryTableForValue = {}
 function UI.InitForUIHelper(  )
 	print('Cat:UIHelper.lua[InitForUIHelper]')
-	setmetatable(UpdateVisibleJuryTable, {__mode = "k"})   
-	setmetatable(UpdateVisibleJuryTableForValue, {__mode = "v"})   
+	setmetatable(UI.UpdateVisibleJuryTable, {__mode = "k"})   
+	setmetatable(UI.UpdateVisibleJuryTableForValue, {__mode = "v"})   
 end
 
 --你显示隐藏前都要给我一个理由,我会综合考虑,只会在没有任何理由隐藏时我才会真正地显示出来
 function UI.UpdateVisibleByJury( obj, is_show, reason )
 	if not obj then return end
 	local tab_str = tostring(obj)
-	UpdateVisibleJuryTableForValue[tab_str] = obj
-	if not UpdateVisibleJuryTable[obj] then
+	UI.UpdateVisibleJuryTableForValue[tab_str] = obj
+	if not UI.UpdateVisibleJuryTable[obj] then
 		local jury = Jury.New()
 		--当陪审团的投票结果变更时触发 
 		local on_jury_change = function (  )
 			--之所以用UpdateVisibleJuryTableForValue弱表是因为直接引用obj的话将影响到obj的gc,因为Jury等着obj释放时跟着自动释放,但Jury引用了本函数,而本函数又引用obj的话就循环引用了(想依赖弱引用做自动回收是会有这个问题的)
-			if UpdateVisibleJuryTableForValue[tab_str] then
+			if UI.UpdateVisibleJuryTableForValue[tab_str] then
 				--没人投票的话就说明可以显示啦
 				-- print('Cat:UIHelper.lua[obj] jury:IsNoneVote()', jury:IsNoneVote())
-				UI.SetActive(UpdateVisibleJuryTableForValue[tab_str], jury:IsNoneVote())
+				UI.SetActive(UI.UpdateVisibleJuryTableForValue[tab_str], jury:IsNoneVote())
 			end
 		end
 		jury:CallBackOnResultChange(on_jury_change)
-		UpdateVisibleJuryTable[obj] = jury
+		UI.UpdateVisibleJuryTable[obj] = jury
 	end
 	if is_show then
-		UpdateVisibleJuryTable[obj]:UnVote(reason)
+		UI.UpdateVisibleJuryTable[obj]:UnVote(reason)
 	else
 		--想隐藏就投票
-		UpdateVisibleJuryTable[obj]:Vote(reason)
+		UI.UpdateVisibleJuryTable[obj]:Vote(reason)
 	end
 end
 
