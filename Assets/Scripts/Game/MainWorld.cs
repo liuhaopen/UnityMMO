@@ -26,35 +26,34 @@ namespace UnityMMO{
 
         public void InitializeSystems() {
             m_Systems = new SystemCollection();
+            //玩家输入
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<PlayerInputSystem>());
-            
+            //管理角色的外观信息获取和模型加载
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<HandleRoleLooks>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<HandleRoleLooksNetRequest>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<HandleRoleLooksSpawnRequests>(m_GameWorld));
-
+            //从输入获取主角的目标坐标
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<CreateTargetPosFromUserInputSystem>(m_GameWorld));
-
+            //角色移动相关
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<MovementUpdateSystem>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<HandleMovementQueries>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<MovementHandleGroundCollision>(m_GameWorld));
-
+            //判定所有节点和地面的关系
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<GroundTestSystem>(m_GameWorld));
-
+            //上传角色坐标信息
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<UploadMainRolePosSystem>(m_GameWorld));
-
-            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<SkillSpawnSystem>(m_GameWorld));
-
+            // m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<SkillSpawnSystem>(m_GameWorld));
+            //管理 Timeline
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<TimelineSpawnSystem>(m_GameWorld));
-            
+            //管理 Animator
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<UpdateAnimatorSystem>(m_GameWorld));
-
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<ResetPosOffsetSystem>(m_GameWorld));
-            
+            //管理所有名字和血量条：Nameboard 对象
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<NameboardSystem>(m_GameWorld));
-            // m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<NameboardSpawnRequestSystem>(m_GameWorld));
-
+            //重置所有动作
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<ActionDataResetSystem>(m_GameWorld));
-            
+            //处理各种粒子或 shader 特效
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<BeHitEffectSys>(m_GameWorld));
         }
 
         public void StartGame() {

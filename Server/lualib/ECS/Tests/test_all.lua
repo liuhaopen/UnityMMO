@@ -50,8 +50,8 @@ function PrintTable( tbl, level, return_counter )
 	print(indent_str .. "}")
 	
 end
--- local s = io.popen("ls ./Tests")--for linux
-local s = io.popen("dir /b Tests")--for windows
+local s = io.popen("ls ./Tests")--for linux
+-- local s = io.popen("dir /b Tests")--for windows
 local fileNames = s:read("*all")
 fileNames = Split(fileNames, "\n")
 for k,v in pairs(fileNames or {}) do

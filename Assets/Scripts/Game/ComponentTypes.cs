@@ -160,7 +160,6 @@ namespace Component
             None = 0,
             Loading = 1,
             Loaded = 2,
-            // Deleting = 3,
         }
         public Entity LooksEntity;
         public State CurState;
