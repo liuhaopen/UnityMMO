@@ -44,6 +44,8 @@ public class UpdateAnimatorSystem : BaseComponentSystem
     {
         LocomotionState.State locoState = locoData.LocoState;
         string aniName = "";
+        if (locoState == LocomotionState.State.BeHit)
+            Debug.Log("be hit ani : "+animator.GetCurrentAnimatorStateInfo(0).IsName("behit"));
         if (locoState == LocomotionState.State.Idle && !animator.GetCurrentAnimatorStateInfo(0).IsName("idle"))
         {
             aniName = "idle";

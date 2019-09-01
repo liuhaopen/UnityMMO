@@ -91,7 +91,7 @@ public class SynchFromNet {
             if (entityMgr.HasComponent<LocomotionState>(defenderEntity))
             {
                 //进入受击状态
-                bool playBehit = UnityEngine.Random.RandomRange(0, 100) > 90.0f;
+                bool playBehit = UnityEngine.Random.RandomRange(0, 100) > 50.0f;
                 if (playBehit)
                 {
                     var locomotionState = entityMgr.GetComponentData<LocomotionState>(defenderEntity);
@@ -99,11 +99,19 @@ public class SynchFromNet {
                     locomotionState.StartTime = Time.time;
                     entityMgr.SetComponentData<LocomotionState>(defenderEntity, locomotionState);
                 }
-                if (entityMgr.HasComponent<CinemachineImpulseSource>(defenderEntity))
+                var isMainRole = RoleMgr.GetInstance().IsMainRoleEntity(defenderEntity);
+                bool isNeedShakeCamera = (isMainRole&&playBehit) || !isMainRole;
+                if (isNeedShakeCamera && entityMgr.HasComponent<CinemachineImpulseSource>(defenderEntity))
                 {
                     var impulseCom = entityMgr.GetComponentObject<CinemachineImpulseSource>(defenderEntity);
                     var velocity = Vector3.one * defender.change_num/5;
                     impulseCom.GenerateImpulse();
+                }
+                if (entityMgr.HasComponent<BeHitEffect>(defenderEntity))
+                {
+                    var behitEffect = entityMgr.GetComponentObject<BeHitEffect>(defenderEntity);
+                    behitEffect.EndTime = TimeEx.ServerTime+300;
+                    behitEffect.Status = EffectStatus.WaitForRender;
                 }
                 //显示战斗飘字
                 var defenderTrans = entityMgr.GetComponentObject<Transform>(defenderEntity);
@@ -271,10 +279,19 @@ public class SynchFromNet {
 
     private void ApplyChangeInfoBuff(Entity entity, SprotoType.info_item change_info)
     {
-        Debug.Log("ApplyChangeInfoBuff : "+change_info.value);
+        // Debug.Log("ApplyChangeInfoBuff : "+change_info.value);
         string[] strs = change_info.value.Split(',');
         int buffID = int.Parse(strs[0]);
-
+        if (buffID == (int)SceneConst.Buff.SuckHP)
+        {
+            var entityMgr = SceneMgr.Instance.EntityManager;
+            if (entityMgr.HasComponent<SuckHPEffect>(entity))
+            {
+                var suckHPEffect = entityMgr.GetComponentObject<SuckHPEffect>(entity);
+                suckHPEffect.EndTime = TimeEx.ServerTime+400;
+                suckHPEffect.Status = EffectStatus.WaitForRender;
+            }
+        }
     }
 
     private void ApplyChangeInfoSceneChange(Entity entity, SprotoType.info_item change_info)

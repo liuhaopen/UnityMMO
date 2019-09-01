@@ -84,6 +84,11 @@ public class AssetBundleInfo {
             LoadAsset<UnityEngine.GameObject>(file_path, null, func);
         }
 
+        public void LoadMaterial(string file_path, LuaFunction func = null)
+        {
+            LoadAsset<Material>(file_path, null, func);
+        }
+
         public void LoadNavMesh(string file_name, LuaFunction func = null)
         {
             string url = m_BaseDownloadingURL + "/" + file_name;

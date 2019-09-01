@@ -12,8 +12,10 @@ public class ResMgr
     List<GameObject> scenePrefabList;
     Dictionary<int, List<GameObject>> sceneObjectPool;
     Dictionary<string, List<GameObject>> gameObjectPool;
+    Dictionary<string, Material> materialDic;
     List<KeyValuePair<string, string>> preloadRes;
     List<KeyValuePair<string, string>> preloadTimelineRes;
+    List<KeyValuePair<string, string>> preloadMaterialRes;
     Dictionary<string, PlayableAsset> playablePool;
     
     public static ResMgr GetInstance()
@@ -28,6 +30,7 @@ public class ResMgr
 	{
         gameObjectPool = new Dictionary<string, List<GameObject>>();
         playablePool = new Dictionary<string, PlayableAsset>();
+        materialDic = new Dictionary<string, Material>();
         preloadRes = new List<KeyValuePair<string, string>>();
         preloadRes.Add(new KeyValuePair<string,string>("MainRole", "Assets/AssetBundleRes/role/prefab/MainRole.prefab"));
         preloadRes.Add(new KeyValuePair<string,string>("Role", "Assets/AssetBundleRes/role/prefab/Role.prefab"));
@@ -62,6 +65,8 @@ public class ResMgr
         preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/skill_120011.playable"));
         preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/skill_120012.playable"));
         preloadTimelineRes.Add(new KeyValuePair<string,string>("Playable", "Assets/AssetBundleRes/role/timeline/skill_120013.playable"));
+        preloadMaterialRes =  new List<KeyValuePair<string, string>>();
+        preloadMaterialRes.Add(new KeyValuePair<string,string>("function_hitfresnel", "Assets/AssetBundleRes/effect/materials/function_hitfresnel.mat"));
 	}
 
     public void StartPreLoadRes(Action<bool> onOk)
@@ -96,6 +101,30 @@ public class ResMgr
         {
             LoadPlayable(preloadTimelineRes[i].Value, preloadTimelineRes[i].Key);
         }
+        for (int i = 0; i < preloadMaterialRes.Count; i++)
+        {
+            LoadMaterial(preloadMaterialRes[i].Value, preloadMaterialRes[i].Key);
+        }
+    }
+
+    public void LoadMaterial(string path, string storeName, Action<Material> callBack=null)
+    {
+        XLuaFramework.ResourceManager.GetInstance().LoadAsset<Material>(path, delegate(UnityEngine.Object[] objs) {
+            if (objs.Length > 0 && (objs[0] as Material)!=null)
+            {
+                var material = objs[0] as Material;
+                if (material != null) 
+                {
+                    this.materialDic[storeName] = material;
+                    if (callBack != null)
+                        callBack(material);
+                    return;
+                }
+            }
+            Debug.LogError("cannot find material in "+path);
+            if (callBack != null)
+                callBack(null);
+        });
     }
 
     public void LoadPrefab(string path, string storePrefabName, Action<GameObject> callBack=null)
@@ -165,6 +194,14 @@ public class ResMgr
                 return GameObject.Instantiate(prefab);
         }
         Debug.LogError("ResMgr.GetGameObject cannot find prefab name :"+name);
+        return null;
+    }
+
+    public Material GetMeterial(string name)
+    {
+        var material = this.materialDic[name];
+        if (material != null)
+            return new Material(material);
         return null;
     }
 

@@ -3,19 +3,17 @@ local SpeedData = BaseClass()
 function SpeedData:Constructor( baseSpeed, curSpeed )
 	self.baseSpeed = baseSpeed
 	self.curSpeed = curSpeed or baseSpeed
-	self.jury = {}
-	self.frozenJury = {}
+	self.bod = {}--董事会缩写:board of directors
 end
 
-function SpeedData:ChangeSpeed( juryName, offset )
-	self.jury[juryName] = offset
-end
-
-function SpeedData:SetFrozen( juryName, isFrozen )
-	if isFrozen then
-		self.frozenJury[juryName] = isFrozen
+--bodName : 每次更改速度都要指定是哪个董事会成员的意见, 
+--offset：变更万分比，0时即不动
+--isSet: true 时即发表意见，false 时为撤消意见
+function SpeedData:ChangeSpeed( bodName, offset, isSet )
+	if isSet then
+		self.bod[bodName] = offset
 	else
-		table.remove(self.frozenJury, juryName)
+		table.remove(self.bod, bodName)
 	end
 	self:UpdateSpeed()
 end
@@ -26,7 +24,7 @@ function SpeedData:UpdateSpeed(  )
 		self.curSpeed = 0
 	else
 		local factor = 0
-		for k,v in pairs(self.jury) do
+		for k,v in pairs(self.bod) do
 			factor = factor + v
 		end
 		self.curSpeed = self.baseSpeed + self.baseSpeed*factor
@@ -34,7 +32,14 @@ function SpeedData:UpdateSpeed(  )
 end
 
 function SpeedData:HasFrozen(  )
-	return next(self.frozenJury)
+	local hasFrozen = false
+	for k,v in pairs(self.bod) do
+		if v == 0 then
+			hasFrozen = true
+			break
+		end
+	end
+	return hasFrozen
 end
 
 return SpeedData

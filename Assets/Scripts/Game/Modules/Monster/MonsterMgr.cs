@@ -64,6 +64,8 @@ public class MonsterMgr
         EntityManager.AddComponentData(monster, new PosOffset {Value = float3.zero});
         EntityManager.AddComponentData(monster, new HealthStateData {CurHp=curHp, MaxHp=maxHp});
         EntityManager.AddComponentData(monster, new TimelineState {NewStatus=TimelineState.NewState.Allow, InterruptStatus=TimelineState.InterruptState.Allow});
+        EntityManager.AddComponentObject(monster, new BeHitEffect{Status=EffectStatus.None, EndTime=0});
+        EntityManager.AddComponentObject(monster, new SuckHPEffect{Status=EffectStatus.None, EndTime=0});
         // var NameboardData = EntityManager.GetComponentObject<NameboardData>(monster);
         // NameboardData.UIResState = NameboardData.ResState.WaitLoad;
         // NameboardData.LooksNode = null;

@@ -52,8 +52,10 @@ namespace UnityMMO{
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<NameboardSystem>(m_GameWorld));
             //重置所有动作
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<ActionDataResetSystem>(m_GameWorld));
-            //处理各种粒子或 shader 特效
+            //协调处理各种粒子或 shader 特效，解决特效间的冲突关系
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<EffectHarmonizeSys>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<BeHitEffectSys>(m_GameWorld));
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<SuckHPEffectSys>(m_GameWorld));
         }
 
         public void StartGame() {

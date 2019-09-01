@@ -90,7 +90,7 @@ function FightHelper:ChangeHP( entity, hp, offsetValue, attacker )
 	end
 end
 
-function FightHelper:ChangeSpeed( entity, speed )
+function FightHelper:ChangeSpeed( entity, speed, reason )
 	local buffEvent = {
 		key = SceneConst.InfoKey.Speed, 
 		value = string.format("%s,%s,%s", SceneConst.Buff.Speed, math.floor(Speed), self.buffData.caster_uid),

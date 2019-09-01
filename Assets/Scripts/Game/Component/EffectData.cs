@@ -4,9 +4,9 @@ namespace UnityMMO
 {
     public enum EffectStatus
     {
-        None,
         WaitForRender,
         Rendering,
+        None,
     }
     public class EffectData : MonoBehaviour {
     }
