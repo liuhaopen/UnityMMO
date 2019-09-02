@@ -10,7 +10,14 @@ local NotifyBuff = Ac.OO.Class {
 			return true
 		end,
 		Update = function(self, deltaTime)
-			
+			local buffID = self[1]
+			local duration = self[2]
+			local endTime = Time.timeMS + duration
+			local buffEvent = {
+				key = SceneConst.InfoKey.Buff, 
+				value = string.format("%s,%s,%s", buffID, endTime, self.buffData.caster_uid),
+			}
+			self.sceneMgr.eventMgr:AddSceneEvent(self.buffData.victim_uid, buffEvent)
 		end,
 	},
 }

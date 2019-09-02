@@ -47,6 +47,14 @@ local Update = function ( self )
 		defenders = {},
 	}
 	local attackerEntity = self.sceneMgr:GetEntity(self.skillData.caster_uid)
+	if not attackerEntity then 
+		return 
+	end
+	
+	local isExist = self.entityMgr:Exists(attackerEntity)
+	if not isExist then
+		return
+	end
 	self.attackerFightAttr = self.entityMgr:GetComponentData(attackerEntity, "UMO.FightAttr")
 
 	for uid,_ in pairs(self.skillData.targets) do

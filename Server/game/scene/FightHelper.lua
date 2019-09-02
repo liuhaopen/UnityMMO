@@ -90,10 +90,12 @@ function FightHelper:ChangeHP( entity, hp, offsetValue, attacker )
 	end
 end
 
-function FightHelper:ChangeSpeed( entity, speed, reason )
+function FightHelper:ChangeSpeed( entity, speed, bodName, isSet )
+	local speedData = self.entityMgr:GetComponentData(entity, "UMO.MoveSpeed")
+	speedData:ChangeSpeed(bodName, isSet, speed)
 	local buffEvent = {
 		key = SceneConst.InfoKey.Speed, 
-		value = string.format("%s,%s,%s", SceneConst.Buff.Speed, math.floor(Speed), self.buffData.caster_uid),
+		value = string.format("%s,%s,%s,%s", bodName, isSet, math.floor(Speed), self.buffData.caster_uid),
 	}
 	self.sceneMgr.eventMgr:AddSceneEvent(self.buffData.victim_uid, buffEvent)
 end

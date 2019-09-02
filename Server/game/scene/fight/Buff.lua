@@ -22,7 +22,6 @@ local Buff = Ac.OO.Class {
 			for uid,_ in pairs(self.skillData.targets) do
 				local targetEntity = self.sceneMgr:GetEntity(uid)
 				local buffList = self.entityMgr:GetComponentData(targetEntity, "UMO.Buff")
-				
 				local buffActionCreator = BuffActions:GetActionCreator(buff_id)
 				local buffAction = buffActionCreator(buff_arge)
 				local buffData = TablePool:Get("BuffComData") or {}

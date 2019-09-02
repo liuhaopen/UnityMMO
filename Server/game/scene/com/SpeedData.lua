@@ -7,9 +7,9 @@ function SpeedData:Constructor( baseSpeed, curSpeed )
 end
 
 --bodName : 每次更改速度都要指定是哪个董事会成员的意见, 
---offset：变更万分比，0时即不动
 --isSet: true 时即发表意见，false 时为撤消意见
-function SpeedData:ChangeSpeed( bodName, offset, isSet )
+--offset：变更万分比，0时即不动
+function SpeedData:ChangeSpeed( bodName, isSet, offset )
 	if isSet then
 		self.bod[bodName] = offset
 	else
@@ -19,8 +19,8 @@ function SpeedData:ChangeSpeed( bodName, offset, isSet )
 end
 
 function SpeedData:UpdateSpeed(  )
-	local hasFrozen = self:HasFrozen()
-	if hasFrozen then
+	local hasZero = self:HasZero()
+	if hasZero then
 		self.curSpeed = 0
 	else
 		local factor = 0
@@ -31,15 +31,15 @@ function SpeedData:UpdateSpeed(  )
 	end
 end
 
-function SpeedData:HasFrozen(  )
-	local hasFrozen = false
+function SpeedData:HasZero(  )
+	local hasZero = false
 	for k,v in pairs(self.bod) do
 		if v == 0 then
-			hasFrozen = true
+			hasZero = true
 			break
 		end
 	end
-	return hasFrozen
+	return hasZero
 end
 
 return SpeedData

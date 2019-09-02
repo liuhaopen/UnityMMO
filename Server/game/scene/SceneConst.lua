@@ -74,6 +74,12 @@ local SceneConst = {
 		SafeArea = 1,
 		Inplace = 2,
 	},
+	--SceneConst.ClearBuffType.All
+	ClearBuffType = {
+		All = 1,
+		Bad = 2,
+		Good = 3,
+	},
 }
 
 return SceneConst

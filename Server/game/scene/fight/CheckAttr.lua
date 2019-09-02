@@ -17,13 +17,6 @@ local CheckAttr = Ac.OO.Class {
 		local curAttrValue = curAttrList[self[1]]
 		local operator = self[2]
 		local compareValue = self[3]
-		local isPercent = self[4] and self[4]=="%"
-		if isPercent then
-			-- if self[1] == SceneConst.Attr.HP then
-			-- 	local maxAttrValue = curAttrList[SceneConst.Attr.MaxHP]
-			-- 	curAttrValue = (curAttrValue/maxAttrValue)*10000
-			-- end
-		end
 		local compareFunc = OperatorMap[operator]
 		return compareFunc(curAttrValue, compareValue)
 	end
