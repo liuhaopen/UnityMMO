@@ -10,35 +10,8 @@ local CalDamage = function( self, targetEntity )
 	local baseDamage = math.max(attackerAtt-defenderDef, 0)*self.damageRate/10000
 	local attackerCrit = self.attackerFightAttr[SceneConst.Attr.Crit] or 0
 	local critDamage = attackerCrit*math.random(1,100)/100
-	-- local critDamage = 0
 	return math.floor(baseDamage+critDamage)
 end
-
--- local ApplyDamage = function( self, entity, hp, damage, attacker )
--- 	if hp.cur <= 0 then return end
--- 	hp.cur = hp.cur - damage
--- 	if hp.cur <= 0 then
--- 		hp.cur = 0
--- 		hp.killedBy = attacker
--- 		hp.deathTime = Time.time
--- 	end
-		
--- 	local uid = self.entityMgr:GetComponentData(entity, "UMO.UID")
--- 	-- local change_target_pos_event_info
--- 	if hp.cur <= 0 then
--- 		--enter dead state
--- 		if self.entityMgr:HasComponent(entity, "UMO.MonsterAI") then
--- 			self.sceneMgr.monsterMgr:TriggerState(uid, "DeadState")
--- 			local killer = self.sceneMgr:GetEntity(hp.killedBy)
--- 			if self.entityMgr:HasComponent(killer, "UMO.MsgAgent") then
--- 				local agent = self.entityMgr:GetComponentData(killer, "UMO.MsgAgent")
--- 				local roleID = self.entityMgr:GetComponentData(killer, "UMO.TypeID")
--- 				local monsterID = self.entityMgr:GetComponentData(entity, "UMO.TypeID")
--- 				skynet.send(agent, "lua", "execute", "Task", "KillMonster", roleID, monsterID, 1)
--- 			end
--- 		end
--- 	end
--- end
 
 local Update = function ( self )
 	local hurtEvent = {
@@ -47,12 +20,15 @@ local Update = function ( self )
 		defenders = {},
 	}
 	local attackerEntity = self.sceneMgr:GetEntity(self.skillData.caster_uid)
+	-- print('Cat:Hurt.lua[23] self.skillData.caster_uid, attackerEntity', self.skillData.caster_uid, attackerEntity)
 	if not attackerEntity then 
+		print('Cat:Hurt.lua attackerEntity no exist uid : ', self.skillData.caster_uid)
 		return 
 	end
 	
 	local isExist = self.entityMgr:Exists(attackerEntity)
 	if not isExist then
+		print('Cat:Hurt.lua attackerEntity no exist')
 		return
 	end
 	self.attackerFightAttr = self.entityMgr:GetComponentData(attackerEntity, "UMO.FightAttr")

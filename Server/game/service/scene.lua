@@ -79,7 +79,6 @@ function CMD.scene_listen_hurt_event( user_info, req_data )
 		role_info.ack_scene_listen_hurt_event = skynet.response()
 		return NORET
 	end
-	print('Cat:scene.lua[82] sdfesdf')
 	return {}
 end
 

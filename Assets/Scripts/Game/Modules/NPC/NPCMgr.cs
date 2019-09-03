@@ -55,9 +55,6 @@ public class NPCMgr
         EntityManager.AddComponentData(NPC, new TypeID {Value=typeID});
         EntityManager.AddComponentData(NPC, ActionData.Empty);
         EntityManager.AddComponentData(NPC, new SceneObjectTypeData {Value=SceneObjectType.NPC});
-        // EntityManager.AddComponentData(NPC, new NameboardData {UIResState=NameboardData.ResState.WaitLoad});
-        // MoveQuery rmq = EntityManager.GetComponentObject<MoveQuery>(NPC);
-        // rmq.Initialize();
         CreateLooks(NPC, typeID);
     }
 

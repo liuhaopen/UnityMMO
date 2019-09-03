@@ -62,11 +62,11 @@ public class SynchFromNet {
         SprotoType.scene_listen_hurt_event.request req = new SprotoType.scene_listen_hurt_event.request();
         NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_listen_hurt_event>(req, OnAckHurtEvents);
         SprotoType.scene_listen_hurt_event.response ack = result as SprotoType.scene_listen_hurt_event.response;
-        // Debug.Log("ack : "+(ack!=null).ToString()+" fightevents:"+(ack.events!=null).ToString());
+        Debug.Log("ack : "+(ack!=null).ToString()+" fightevents:"+(ack.events!=null).ToString());
         if (ack==null || ack.events==null)
             return;
         var len = ack.events.Count;
-        // Debug.Log("lisend hurt event : "+len);
+        Debug.Log("lisend hurt event : "+len);
         // ack.events.Sort((SprotoType.scene_hurt_event_info a, SprotoType.scene_hurt_event_info b)=>DisallowRefReturnCrossingThisAttribute a.time)
         for (int i = 0; i < len; i++)
         {
@@ -83,9 +83,9 @@ public class SynchFromNet {
         for (int i=0; i<hurtEvent.defenders.Count; i++)
         {
             var defender = hurtEvent.defenders[i];
-            // Debug.Log("defender uid : "+defender.uid+" count:"+hurtEvent.defenders.Count+" damage:"+defender.damage+" hp:"+defender.cur_hp+" damagetype:"+defender.flag);
+            Debug.Log("defender uid : "+defender.uid+" count:"+hurtEvent.defenders.Count+" hp:"+defender.cur_hp+" damagetype:"+defender.flag);
             var defenderEntity = SceneMgr.Instance.GetSceneObject(defender.uid);
-            // Debug.Log("has health : "+entityMgr.HasComponent<HealthStateData>(defenderEntity));
+            Debug.Log("has LocomotionState : "+entityMgr.HasComponent<LocomotionState>(defenderEntity)+" isdead:"+ECSHelper.IsDead(defenderEntity, entityMgr)+" isnull:"+defenderEntity.Equals(Entity.Null));
             if (defenderEntity.Equals(Entity.Null) || ECSHelper.IsDead(defenderEntity, entityMgr))
                 continue;
             if (entityMgr.HasComponent<LocomotionState>(defenderEntity))
@@ -296,14 +296,17 @@ public class SynchFromNet {
 
     private void ApplyChangeInfoSceneChange(Entity entity, SprotoType.info_item change_info)
     {
-        // Debug.Log("ApplyChangeInfoSceneChange : "+change_info.value);
+        //本条信息变更只会收到自己的
+        var mainRoleGOE = RoleMgr.GetInstance().GetMainRole();
+        entity = mainRoleGOE!=null?mainRoleGOE.Entity:Entity.Null;
+        Debug.Log("ApplyChangeInfoSceneChange : "+change_info.value+" entity:"+entity);
         string[] strs = change_info.value.Split(',');
         int sceneID = int.Parse(strs[0]);
         LoadingView.Instance.SetActive(true);
         LoadingView.Instance.ResetData();
         SceneMgr.Instance.LoadScene(sceneID);
 
-        if (entity != Entity.Null)
+        if (entity != Entity.Null && SceneMgr.Instance.EntityManager.Exists(entity))
         {
             long new_x = Int64.Parse(strs[2]);
             long new_y = Int64.Parse(strs[3]);
@@ -311,27 +314,13 @@ public class SynchFromNet {
             Transform trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(entity);
             trans.localPosition = SceneMgr.Instance.GetCorrectPos(new Vector3(new_x/GameConst.RealToLogic, new_y/GameConst.RealToLogic, new_z/GameConst.RealToLogic));
             SceneMgr.Instance.EntityManager.SetComponentData(entity, new TargetPosition {Value = trans.localPosition});
-            // var uidData = SceneMgr.Instance.EntityManager.GetComponentData<UID>(entity);
             long uid = Int64.Parse(strs[1]);
-            SceneMgr.Instance.EntityManager.SetComponentData<UID>(entity, new UID{Value=uid});
-            // SceneMgr.Instance.EntityManager.SetComponentData<UID>(entity);
-            MoveQuery moveQuery = SceneMgr.Instance.EntityManager.GetComponentObject<MoveQuery>(entity);
-            // Debug.Log("ApplyChangeInfoSceneChange new uid : "+uid+" moveQuery:"+(moveQuery!=null));
-            if (moveQuery != null)
-                moveQuery.ChangeUID(uid);
-            // var uidProxy = SceneMgr.Instance.EntityManager.GetComponentObject<UIDProxy>(entity);
-            // // SceneMgr.Instance.EntityManager.SetComponentData<UID>(entity);
-            // if (uidProxy!=null)
-            // {
-            //     long uid = Int64.Parse(strs[1]);
-            //     uidProxy.Value = new UID{Value=uid};
-            //     MoveQuery moveQuery = SceneMgr.Instance.EntityManager.GetComponentObject<MoveQuery>(entity);
-            //     // Debug.Log("ApplyChangeInfoSceneChange new uid : "+uid+" moveQuery:"+(moveQuery!=null));
-            //     if (moveQuery != null)
-            //     {
-            //         moveQuery.ChangeUID(uid);
-            //     }
-            // }
+            SceneMgr.Instance.ChangeRoleUID(entity, uid);
+            mainRoleGOE.name = "MainRole_"+uid;
+            // SceneMgr.Instance.EntityManager.SetComponentData<UID>(entity, new UID{Value=uid});
+            // MoveQuery moveQuery = SceneMgr.Instance.EntityManager.GetComponentObject<MoveQuery>(entity);
+            // if (moveQuery != null)
+            //     moveQuery.ChangeUID(uid);
         }
     }
 

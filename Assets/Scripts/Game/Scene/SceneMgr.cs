@@ -520,6 +520,27 @@ public class SceneMgr : MonoBehaviour
         }
     }
 
+    public void ChangeRoleUID(Entity entity, long newUID)
+    {
+        // var mainRoleGOE = RoleMgr.GetInstance().GetMainRole();
+        // if (mainRoleGOE == null || mainRoleGOE.Entity==Entity.Null)
+            // return;
+        // var entity = mainRoleGOE.Entity;
+        var lastUID = SceneMgr.Instance.EntityManager.GetComponentData<UID>(entity);
+        Debug.Log("lastUID.value : "+lastUID.Value+" newUID:"+newUID);
+        var roleDic = entitiesDic[SceneObjectType.Role];
+        if (roleDic.ContainsKey(lastUID.Value))
+        {
+            roleDic.Remove(lastUID.Value);
+        }
+        roleDic.Add(newUID, entity);
+        SceneMgr.Instance.EntityManager.SetComponentData<UID>(entity, new UID{Value=newUID});
+        MoveQuery moveQuery = SceneMgr.Instance.EntityManager.GetComponentObject<MoveQuery>(entity);
+        // Debug.Log("ApplyChangeInfoSceneChange new uid : "+uid+" moveQuery:"+(moveQuery!=null));
+        if (moveQuery != null)
+            moveQuery.ChangeUID(newUID);
+    }
+
     public Entity GetSceneObject(long uid)
     {
         foreach (var item in entitiesDic)

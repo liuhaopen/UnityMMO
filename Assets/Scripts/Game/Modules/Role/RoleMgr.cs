@@ -43,6 +43,7 @@ public class RoleMgr
     public Entity AddMainRole(long uid, long typeID, string name, int career, Vector3 pos, float curHp, float maxHp)
 	{
         GameObjectEntity roleGameOE = m_GameWorld.Spawn<GameObjectEntity>(ResMgr.GetInstance().GetPrefab("MainRole"));
+        Debug.Log("add main role : "+uid+" "+new System.Diagnostics.StackTrace().ToString());
         roleGameOE.name = "MainRole_"+uid;
         roleGameOE.transform.SetParent(container);
         roleGameOE.transform.localPosition = pos;

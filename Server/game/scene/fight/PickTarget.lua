@@ -35,6 +35,7 @@ local Update = function ( self )
 				local uid = self.aoi:get_user_data(aoi_handle, "uid")
 				local entity = self.sceneMgr:GetEntity(uid)
 				local isBeatable = self.EntityManager:HasComponent(entity, "UMO.Beatable")
+				-- print('Cat:PickTarget.lua[36] uid, entity, isBeatable', uid, entity, isBeatable)
 				if isBeatable then
 					local hpData = self.EntityManager:GetComponentData(entity, "UMO.HP")
 					if hpData.cur > 0 then

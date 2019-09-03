@@ -95,7 +95,6 @@ function RoleMgr:InitPosInfo( baseInfo, targetDoor )
 end
 
 function RoleMgr:RoleEnter( roleID, agent )
-	print('Cat:RoleMgr.lua[role enter] self.roleList[roleID]', self.roleList[roleID], roleID, self.sceneMgr.curSceneID)
 	if not self.roleList[roleID] then
 		local scene_uid = SceneHelper:NewSceneUID(SceneConst.ObjectType.Role)
 		local base_info = self:GetBaseInfoByRoleID(roleID)
@@ -133,20 +132,24 @@ function RoleMgr:RoleEnter( roleID, agent )
 	end
 end
 
-local save_role_pos = function ( role_id, pos_x, pos_y, pos_z, scene_id )
+local save_role_base_info = function ( role_id, base_info )
 	local gameDBServer = skynet.localname(".GameDBServer")
-	is_succeed = skynet.call(gameDBServer, "lua", "update", "RoleBaseInfo", "role_id", role_id, {pos_x=pos_x, pos_y=pos_y, pos_z=pos_z, scene_id=scene_id})
+	is_succeed = skynet.call(gameDBServer, "lua", "update", "RoleBaseInfo", "role_id", role_id, base_info)
 end
 
 function RoleMgr:RoleLeave( roleID )
 	local role_info = self.roleList[roleID]
-	print('Cat:RoleMgr.lua[role_leave_scene] roleID', roleID, role_info, self.sceneMgr.curSceneID)
+	-- print('Cat:RoleMgr.lua[role_leave_scene] roleID', roleID, role_info, self.sceneMgr.curSceneID)
 	if not role_info then return end
 	
 	print('Cat:RoleMgr.lua[role_leave] role_info.scene_uid', role_info.scene_uid, role_info.aoi_handle)
 	self.sceneMgr.aoi:remove(role_info.aoi_handle)
 	-- self.sceneMgr.aoi_handle_uid_map[role_info.aoi_handle] = nil --角色离开后还需要通过aoi_handle获取ta的uid
-	save_role_pos(roleID, role_info.base_info.pos_x, role_info.base_info.pos_y, role_info.base_info.pos_z, self.sceneMgr.curSceneID)	
+	local entity = self.sceneMgr:GetEntity(role_info.scene_uid)
+	role_info.base_info.attr_info = nil--需要存数据库了，属性字段要忽略掉
+	local hp = self.sceneMgr.entityMgr:GetComponentData(entity, "UMO.HP")
+	role_info.base_info.hp = hp.cur
+	save_role_base_info(roleID, role_info.base_info)
 	if role_info.ack_scene_get_objs_info_change then
 		role_info.ack_scene_get_objs_info_change(true, {})
 		role_info.ack_scene_get_objs_info_change = nil
@@ -159,7 +162,6 @@ function RoleMgr:RoleLeave( roleID )
 		role_info.ack_scene_listen_hurt_event(true, {})
 		role_info.ack_scene_listen_hurt_event = nil
 	end
-	local entity = self.sceneMgr:GetEntity(role_info.scene_uid)
 	self.entityMgr:DestroyEntity(entity)
 	self.sceneMgr:SetEntity(role_info.scene_uid, nil)
 	self.roleList[roleID] = nil

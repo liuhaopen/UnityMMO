@@ -55,20 +55,14 @@ public class MonsterMgr
         EntityManager.AddComponentData(monster, new TargetPosition {Value = targetPos});
         EntityManager.AddComponentData(monster, new LocomotionState {LocoState = curHp>0.001f?LocomotionState.State.Idle:LocomotionState.State.Dead, StartTime=0});
         EntityManager.AddComponentData(monster, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
-        // EntityManager.SetComponentData(monster, new UID {Value=uid});
         EntityManager.AddComponentData(monster, new TypeID {Value=typeID});
         EntityManager.AddComponentData(monster, ActionData.Empty);
         EntityManager.AddComponentData(monster, new SceneObjectTypeData {Value=SceneObjectType.Monster});
-        // EntityManager.AddComponentData(monster, new NameboardData {UIResState=NameboardData.ResState.WaitLoad});
-        // EntityManager.AddComponentData(monster, new JumpState {JumpStatus=JumpState.State.None, JumpCount=0, OriginYPos=0, AscentHeight=0});
         EntityManager.AddComponentData(monster, new PosOffset {Value = float3.zero});
         EntityManager.AddComponentData(monster, new HealthStateData {CurHp=curHp, MaxHp=maxHp});
         EntityManager.AddComponentData(monster, new TimelineState {NewStatus=TimelineState.NewState.Allow, InterruptStatus=TimelineState.InterruptState.Allow});
         EntityManager.AddComponentObject(monster, new BeHitEffect{Status=EffectStatus.None, EndTime=0});
         EntityManager.AddComponentObject(monster, new SuckHPEffect{Status=EffectStatus.None, EndTime=0});
-        // var NameboardData = EntityManager.GetComponentObject<NameboardData>(monster);
-        // NameboardData.UIResState = NameboardData.ResState.WaitLoad;
-        // NameboardData.LooksNode = null;
         
         MoveQuery rmq = EntityManager.GetComponentObject<MoveQuery>(monster);
         rmq.Initialize();
@@ -78,30 +72,21 @@ public class MonsterMgr
 
     private void CreateLooks(Entity ownerEntity, long typeID)
     {
-        // var resPath = ResPath.GetMonsterResPath(typeID);
-        // var bodyResID = ConfigMonster.GetInstance().GetBodyResID(typeID);
-        // if (bodyResID == 0)
-        // {
-        //     Debug.LogError("monster body res id 0, typeID:"+typeID);
-        //     return;
-        // }
-        // string bodyPath = resPath+"/model_clothe_"+bodyResID+".prefab";
-        // XLuaFramework.ResourceManager.GetInstance().LoadAsset<GameObject>(bodyPath, delegate(UnityEngine.Object[] objs) {
-            string resID = "MonsterRes_"+typeID;
-            if (ResMgr.GetInstance().HasLoadedPrefab(resID))
+        string resID = "MonsterRes_"+typeID;
+        if (ResMgr.GetInstance().HasLoadedPrefab(resID))
+        {
+            var obj = ResMgr.GetInstance().GetGameObject(resID);
+            InitLooksObj(obj, ownerEntity, typeID);
+        }
+        else
+        {
+            string bodyPath = ResPath.GetMonsterBodyResPath(typeID);
+            ResMgr.GetInstance().LoadPrefab(bodyPath, resID, delegate(GameObject prefab)
             {
                 var obj = ResMgr.GetInstance().GetGameObject(resID);
                 InitLooksObj(obj, ownerEntity, typeID);
-            }
-            else
-            {
-                string bodyPath = ResPath.GetMonsterBodyResPath(typeID);
-                ResMgr.GetInstance().LoadPrefab(bodyPath, resID, delegate(GameObject prefab)
-                {
-                    var obj = ResMgr.GetInstance().GetGameObject(resID);
-                    InitLooksObj(obj, ownerEntity, typeID);
-                });
-            }
+            });
+        }
     }
 
     private void InitLooksObj(GameObject obj, Entity ownerEntity, long typeID)

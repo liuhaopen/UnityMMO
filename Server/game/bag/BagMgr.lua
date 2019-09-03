@@ -190,11 +190,11 @@ function SprotoHandlers.Bag_DropGoods( reqData )
 end
 
 function SprotoHandlers.Bag_GetChangeList( reqData )
-	print('Cat:BagMgr.lua[131] req get change list')
+	-- print('Cat:BagMgr.lua[131] req get change list')
 	if not this.coForGoodsChangeList then
 		if not this.cacheChangeList or #this.cacheChangeList <= 0 then
 			this.coForGoodsChangeList = coroutine.running()
-			print('Cat:BagMgr.lua[134] this.coForGoodsChangeList', this.coForGoodsChangeList)
+			-- print('Cat:BagMgr.lua[134] this.coForGoodsChangeList', this.coForGoodsChangeList)
 			skynet.wait(this.coForGoodsChangeList)
 		end
 		local changeList = this.cacheChangeList
