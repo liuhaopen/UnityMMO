@@ -1,4 +1,6 @@
 local Ac = require "Action"
+local SceneConst = require "game.scene.SceneConst"
+
 local NotifyBuff = Ac.OO.Class {
 	type 	= "NotifyBuff",
 	__index = {

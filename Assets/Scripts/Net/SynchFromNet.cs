@@ -292,6 +292,16 @@ public class SynchFromNet {
                 suckHPEffect.Status = EffectStatus.WaitForRender;
             }
         }
+        else if (buffID == (int)SceneConst.Buff.Dizzy)
+        {
+            var hasLoco = SceneMgr.Instance.EntityManager.HasComponent<LocomotionState>(entity);
+            // if (hasLoco)
+            // {
+            //     var locoState = SceneMgr.Instance.EntityManager.GetComponentData<LocomotionState>(entity);
+            //     locoState.LocoState = LocomotionState.State.Dizzy;
+            //     SceneMgr.Instance.EntityManager.SetComponentData<LocomotionState>(entity, locoState);
+            // }
+        }
     }
 
     private void ApplyChangeInfoSceneChange(Entity entity, SprotoType.info_item change_info)

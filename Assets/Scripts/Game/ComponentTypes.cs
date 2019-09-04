@@ -48,6 +48,7 @@ namespace Component
             InAir,
             BeHit,
             Dead,
+            Dizzy,
             StateNum,
         }
         public State LocoState;
@@ -64,7 +65,7 @@ namespace Component
 
         public bool IsOnGround()
         {
-            return LocoState == LocomotionState.State.Idle || LocoState == LocomotionState.State.Run || LocoState == LocomotionState.State.Sprint || LocoState == LocomotionState.State.BeHit;
+            return LocoState == LocomotionState.State.Idle || LocoState == LocomotionState.State.Run || LocoState == LocomotionState.State.Sprint || LocoState == LocomotionState.State.BeHit || LocoState == LocomotionState.State.Dizzy;
         }
         public bool IsInJump()
         {

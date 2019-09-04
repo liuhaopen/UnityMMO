@@ -13,7 +13,7 @@ function SpeedData:ChangeSpeed( bodName, isSet, offset )
 	if isSet then
 		self.bod[bodName] = offset
 	else
-		table.remove(self.bod, bodName)
+		self.bod[bodName] = nil
 	end
 	self:UpdateSpeed()
 end

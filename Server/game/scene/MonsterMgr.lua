@@ -26,7 +26,7 @@ end
 function MonsterMgr:InitArchetype(  )
 	self.monster_archetype = self.entityMgr:CreateArchetype({
 		"UMO.Position", "UMO.TargetPos", "UMO.UID", "UMO.TypeID", "UMO.HP", "UMO.SceneObjType", "UMO.MonsterAI", "UMO.PatrolInfo", "UMO.MoveSpeed", "UMO.AOIHandle", "UMO.Beatable", "UMO.DamageEvents", "UMO.Buff", 
-		"UMO.BaseAttr", "UMO.FightAttr"
+		"UMO.BaseAttr", "UMO.FightAttr", "UMO.Ability"
 	})
 end
 
@@ -130,13 +130,6 @@ function MonsterMgr:TriggerState( uid, stateName )
 	local fsm = self.fsms[uid]
 	if not fsm then return end
 	fsm:TriggerState(stateName)
-end
-
-function MonsterMgr:ChangeTargetPos( entity, pos )
-	self.entityMgr:SetComponentData(entity, "UMO.TargetPos", pos)
-	local uid = self.entityMgr:GetComponentData(entity, "UMO.UID")
-	local change_target_pos_event_info = {key=SceneConst.InfoKey.TargetPos, value=math.floor(pos.x)..","..math.floor(pos.z), time=Time.timeMS}
-	self.sceneMgr.eventMgr:AddSceneEvent(uid, change_target_pos_event_info)
 end
 
 return MonsterMgr

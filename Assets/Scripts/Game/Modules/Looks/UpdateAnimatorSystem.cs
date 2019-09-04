@@ -70,6 +70,10 @@ public class UpdateAnimatorSystem : BaseComponentSystem
         {
             aniName = "jump3";
         }
+        else if (locoState == LocomotionState.State.Dizzy && !animator.GetCurrentAnimatorStateInfo(0).IsName("dizzy"))
+        {
+            aniName = "dizzy";
+        }
         else if (locoState == LocomotionState.State.Dead && !animator.GetCurrentAnimatorStateInfo(0).IsName("death"))
         {
             aniName = "death";

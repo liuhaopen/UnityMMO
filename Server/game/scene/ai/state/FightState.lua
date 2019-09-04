@@ -49,7 +49,7 @@ function FightState:OnUpdate( )
 				else
 					--离敌人太远或太近了，走位移动到可攻击的目标点
 					local newPos = FightHelper:GetAssailablePos(myPos, enemyPos, self.cfg.ai.attack_area.min_distance, self.cfg.ai.attack_area.max_distance)			
-					self.monsterMgr:ChangeTargetPos(self.entity, newPos)
+					FightHelper:ChangeTargetPos(self.entity, newPos)
 				end
 			end
 		else
@@ -68,6 +68,10 @@ function FightState:Attack(  )
 	self.last_attack_duration = math.random(2, 5)
 	--先随机挑个技能
 	if not self.cfg or not self.cfg.ai.skill_list then return end
+	local ability = self.entityMgr:GetComponentData(self.entity, "UMO.Ability")
+	local canCastSkill = ability.CastSkill.value
+	if not canCastSkill then return end
+	
 	local skill_id = nil
 	local randomNum = math.random(1,100)
 	local elapsedNum = 0

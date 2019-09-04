@@ -14,7 +14,7 @@ local Speed = Ac.OO.Class {
 			return true
 		end,
 		Update = function(self, deltaTime)
-			FightHelper:ChangeSpeed(self.buffData.victim_entity, self.bod, self.is_set, self.value)
+			FightHelper:ChangeSpeed(self.buffData.victim_entity, self.buffData.victim_uid, self.buffData.caster_uid, self.bod, self.is_set, self.value)
 		end,
 	},
 }

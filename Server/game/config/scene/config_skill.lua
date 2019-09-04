@@ -17,28 +17,32 @@ local config = {
 	[110000] = {
 		skill_id = 110000, target_type = 1, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 200, attack_max_num = 2, damage_rate = 10000, area = 600, desc = [[男角普攻1]],
+				condition = {{lv, 1}}, cd = 200, attack_max_num = 2, damage_rate = 10000, area = 600, 
+				desc = [[男角普攻1]],
 			},
 		},	
 	},
 	[110001] = {
 		skill_id = 110001, target_type = 1, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 200, attack_max_num = 3, damage_rate = 10000, area = 600, desc = [[男角普攻2]],
+				condition = {{lv, 1}}, cd = 200, attack_max_num = 3, damage_rate = 10000, area = 600, 
+				desc = [[男角普攻2]],
 			},
 		},	
 	},
 	[110002] = {
 		skill_id = 110002, target_type = 1, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 200, attack_max_num = 4, damage_rate = 10000, area = 600, desc = [[男角普攻3]], 
+				condition = {{lv, 1}}, cd = 200, attack_max_num = 4, damage_rate = 10000, area = 600, 
+				desc = [[男角普攻3]], 
 			},
 		},	
 	},
 	[110003] = {
 		skill_id = 110003, target_type = 1, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 200, attack_max_num = 5, damage_rate = 10000, area = 600, desc = [[男角普攻4]], 
+				condition = {{lv, 1}}, cd = 200, attack_max_num = 5, damage_rate = 10000, area = 600, 
+				desc = [[男角普攻4]], 
 			},
 		},	
 	},
@@ -51,29 +55,39 @@ local config = {
 			},
 			[2] = {
 				condition = {{lv, 2}}, cd = 5000, attack_max_num = 3, damage_rate = 15000, area = 600, 
-				desc = [[男角技能1，造成50点伤害，并有20%概率减对方60%防御]], 
-				buff = {probability=20000,duration=5000,attr_id=3,value=-6000,is_percent=true}
+				desc = [[男角技能1，造成50点伤害，并有15%概率减对方60%防御]], 
+				buff = {probability=1500,duration=5000,attr_id=3,value=-6000,is_percent=true}
 			},
 		},	
 	},
 	[110011] = {
 		skill_id = 110011, target_type = 1, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 8000, attack_max_num = 5, damage_rate = 20000, area = 600, desc = [[男角技能2，造成100点伤害同时有20%的概率让对方防御减少100点]]
+				condition = {{lv, 1}}, cd = 8000, attack_max_num = 5, damage_rate = 20000, area = 600, 
+				desc = [[男角技能2，造成600点伤害同时有10%的概率让对方晕眩3秒]],
+				buff = {probability=10000, duration=30000}
+			},
+			[2] = {
+				condition = {{lv, 2}}, cd = 8000, attack_max_num = 5, damage_rate = 22000, area = 700, 
+				desc = [[男角技能2，造成700点伤害同时有20%的概率让对方晕眩4秒]],
+				buff = {probability=2000, duration=4000}
 			},
 		},	
 	},
 	[110012] = {
 		skill_id = 120012, target_type = 1, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 12000, attack_max_num = 6, damage_rate = 25000, area = 600, desc = [[男角技能3，造成150点伤害同时提升100%自己的技能伤害]]
+				condition = {{lv, 1}}, cd = 12000, attack_max_num = 6, damage_rate = 25000, area = 600, 
+				desc = [[男角技能3，造成250点伤害同时有20%的概率让对方冰冻3秒]],
+				buff = {probability=2000, duration=4000}
 			},
 		},	
 	},
 	[110013] = {
 		skill_id = 110013, target_type = 1, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 15000, attack_max_num = 5, damage_rate = 30000, area = 600, desc = [[男角技能4，5秒内造成500点伤害同时有50%的概率让对方晕眩]]
+				condition = {{lv, 1}}, cd = 15000, attack_max_num = 5, damage_rate = 30000, area = 600, 
+				desc = [[男角技能4，5秒内造成500点伤害同时有50%的概率让对方晕眩]]
 			},
 		},	
 	},
@@ -116,7 +130,9 @@ local config = {
 	[120011] = {
 		skill_id = 120011, target_type = 1, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 8000, attack_max_num = 5, damage_rate = 10000, area = 600,
+				condition = {{lv, 1}}, cd = 1000, attack_max_num = 5, damage_rate = 10000, area = 600,
+				desc = [[女角技能2，造成600点伤害同时有10%的概率让对方晕眩3秒]],
+				buff = {probability=10000, duration=7000}
 			},
 		},	
 	},

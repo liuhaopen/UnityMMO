@@ -1,6 +1,7 @@
 local BP = require("Blueprint")
 local SceneHelper = require "game.scene.SceneHelper"
 local SceneConst = require "game.scene.SceneConst"
+local FightHelper = require("game.scene.FightHelper")
 
 local PatrolState = BP.BaseClass(BP.FSM.FSMState)
 --巡逻有两状态，1是发呆，2是跑去哨点，就是跑一下停一下，期间一旦发现敌人就切换战斗状态
@@ -98,7 +99,7 @@ function PatrolState:EnterSubState( sub_state )
 			local pos_z = self.patrolInfo.z + math.random(-radius, radius)
 			local randomPos = {x=pos_x, y=pos_y, z=pos_z}
 			-- self.entityMgr:SetComponentData(self.entity, "UMO.TargetPos", randomPos)
-			self.monsterMgr:ChangeTargetPos(self.entity, randomPos)
+			FightHelper:ChangeTargetPos(self.entity, randomPos)
 		else
 			print('Cat:PatrolState.lua unkown patrol type:', self.cfg.ai.patrol.type)
 		end
