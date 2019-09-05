@@ -39,9 +39,6 @@ public class MovementUpdateSystem : BaseComponentSystem
             var posOffset = posOffsets[i].Value;
             var curLocoStateObj = locoStates[i];
             var query = moveQuerys[i];
-            // if (speed <= 0 || curLocoStateObj.LocoState==LocomotionState.State.BeHit|| curLocoStateObj.LocoState==LocomotionState.State.Dead)
-            // if (curLocoStateObj.LocoState==LocomotionState.State.BeHit)
-                // continue;
             if (speed <= 0)
                 continue;
             var curTrans = transforms[i];
@@ -61,11 +58,10 @@ public class MovementUpdateSystem : BaseComponentSystem
             {
                 if (isMoveWanted)
                     newLocoState = LocomotionState.State.Run;
-                else if (curLocoStateObj.LocoState!=LocomotionState.State.BeHit)
+                else if (curLocoStateObj.LocoState!=LocomotionState.State.BeHit && curLocoStateObj.LocoState!=LocomotionState.State.Dead)
                     newLocoState = LocomotionState.State.Idle;
             }
             float ySpeed = 0;
-            
             // Jump
             var isCanJump = EntityManager.HasComponent<JumpData>(entities[i]);
             if (isCanJump)

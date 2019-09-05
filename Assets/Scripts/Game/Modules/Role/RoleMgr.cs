@@ -43,7 +43,7 @@ public class RoleMgr
     public Entity AddMainRole(long uid, long typeID, string name, int career, Vector3 pos, float curHp, float maxHp)
 	{
         GameObjectEntity roleGameOE = m_GameWorld.Spawn<GameObjectEntity>(ResMgr.GetInstance().GetPrefab("MainRole"));
-        Debug.Log("add main role : "+uid+" "+new System.Diagnostics.StackTrace().ToString());
+        // Debug.Log("add main role : "+uid+" "+new System.Diagnostics.StackTrace().ToString());
         roleGameOE.name = "MainRole_"+uid;
         roleGameOE.transform.SetParent(container);
         roleGameOE.transform.localPosition = pos;
@@ -94,6 +94,12 @@ public class RoleMgr
         return mainRoleGOE.Entity == entity;
     }
 
+    public bool IsRoleEntity(Entity entity)
+    {
+        var sceneObjectTypeData = EntityManager.GetComponentData<SceneObjectTypeData>(entity);
+        return sceneObjectTypeData.Value == SceneObjectType.Role;
+    }
+
     public Entity AddRole(long uid, long typeID, Vector3 pos, Vector3 targetPos, float curHp, float maxHp)
 	{
         GameObjectEntity roleGameOE = m_GameWorld.Spawn<GameObjectEntity>(ResMgr.GetInstance().GetPrefab("Role"));
@@ -108,9 +114,9 @@ public class RoleMgr
 
     private void InitRole(Entity role, long uid, long typeID, Vector3 pos, Vector3 targetPos, float curHp, float maxHp, bool isNeedNavAgent=false)
     {
-        EntityManager.AddComponentData(role, new MoveSpeed {Value = 2200, BaseValue = 2200});
+        EntityManager.AddComponentData(role, new MoveSpeed {Value = 1200, BaseValue = 1200});
         EntityManager.AddComponentData(role, new TargetPosition {Value = targetPos});
-        EntityManager.AddComponentData(role, new LocomotionState {LocoState = LocomotionState.State.Idle});
+        EntityManager.AddComponentData(role, new LocomotionState {LocoState = curHp>0?LocomotionState.State.Idle:LocomotionState.State.Dead});
         EntityManager.AddComponentData(role, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
         EntityManager.AddComponentData(role, new SceneObjectTypeData {Value=SceneObjectType.Role});
         // EntityManager.AddComponentData(role, new NameboardData {UIResState=NameboardData.ResState.WaitLoad});

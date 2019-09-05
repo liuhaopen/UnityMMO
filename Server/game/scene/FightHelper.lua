@@ -91,6 +91,9 @@ function FightHelper:ChangeHP( entity, hp, offsetValue, attacker )
 end
 
 function FightHelper:ChangeSpeed( entity, victim_uid, caster_uid, bodName, isSet, speed )
+	if not entity then return end
+	local isExist = self.entityMgr:Exists(entity)
+	if not isExist then return end
 	local speedData = self.entityMgr:GetComponentData(entity, "UMO.MoveSpeed")
 	speedData:ChangeSpeed(bodName, isSet, speed)
 	local buffEvent = {

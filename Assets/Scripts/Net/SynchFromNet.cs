@@ -90,10 +90,10 @@ public class SynchFromNet {
                 continue;
             if (entityMgr.HasComponent<LocomotionState>(defenderEntity))
             {
-                var isMainRole = RoleMgr.GetInstance().IsMainRoleEntity(defenderEntity);
+                var isRole = RoleMgr.GetInstance().IsRoleEntity(defenderEntity);
                 //进入受击状态
-                bool playBehit = UnityEngine.Random.RandomRange(0, 100) > 30.0f;
-                if (!isMainRole && playBehit)
+                bool playBehit = UnityEngine.Random.RandomRange(0, 100) > 130.0f;
+                if (!isRole && playBehit)
                 {
                     var locomotionState = entityMgr.GetComponentData<LocomotionState>(defenderEntity);
                     locomotionState.LocoState = LocomotionState.State.BeHit;
@@ -101,7 +101,7 @@ public class SynchFromNet {
                     // locomotionState.StartTime = Time.time;
                     entityMgr.SetComponentData<LocomotionState>(defenderEntity, locomotionState);
                 }
-                bool isNeedShakeCamera = (isMainRole&&playBehit) || !isMainRole;
+                bool isNeedShakeCamera = (isRole&&playBehit) || !isRole;
                 if (isNeedShakeCamera && entityMgr.HasComponent<CinemachineImpulseSource>(defenderEntity))
                 {
                     var impulseCom = entityMgr.GetComponentObject<CinemachineImpulseSource>(defenderEntity);

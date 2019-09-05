@@ -64,8 +64,8 @@ local config = {
 		skill_id = 110011, target_type = 1, shape = 1, duration = 1000, detail = {
 			[1] = {
 				condition = {{lv, 1}}, cd = 8000, attack_max_num = 5, damage_rate = 20000, area = 600, 
-				desc = [[男角技能2，造成600点伤害同时有10%的概率让对方晕眩3秒]],
-				buff = {probability=10000, duration=30000}
+				desc = [[男角技能2，造成600点伤害同时有50%的概率让对方晕眩3秒]],
+				buff = {probability=5000, duration=3000}
 			},
 			[2] = {
 				condition = {{lv, 2}}, cd = 8000, attack_max_num = 5, damage_rate = 22000, area = 700, 
@@ -87,7 +87,8 @@ local config = {
 		skill_id = 110013, target_type = 1, shape = 1, duration = 1000, detail = {
 			[1] = {
 				condition = {{lv, 1}}, cd = 15000, attack_max_num = 5, damage_rate = 30000, area = 600, 
-				desc = [[男角技能4，5秒内造成500点伤害同时有50%的概率让对方晕眩]]
+				desc = [[男主大招，5秒内造成5次范围伤害，每次有100%的概率从对方吸收5%血量]],
+				buff = {probability=10000,suck_interval=0,suck_count=1,value=500,is_percent=true}
 			},
 		},	
 	},
@@ -132,9 +133,9 @@ local config = {
 	[120011] = {
 		skill_id = 120011, target_type = 1, shape = 1, duration = 1000, detail = {
 			[1] = {
-				condition = {{lv, 1}}, cd = 1000, attack_max_num = 5, damage_rate = 10000, area = 600,
-				desc = [[女角技能2，造成600点伤害同时有10%的概率让对方晕眩3秒]],
-				buff = {probability=10000, duration=7000}
+				condition = {{lv, 1}}, cd = 8000, attack_max_num = 5, damage_rate = 10000, area = 600,
+				desc = [[女角技能2，造成600点伤害同时有50%的概率让对方晕眩3秒]],
+				buff = {probability=5000, duration=3000}
 			},
 		},	
 	},
