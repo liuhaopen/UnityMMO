@@ -44,16 +44,17 @@ public class MonsterMgr
         monsterGameOE.transform.localPosition = pos;
         Entity monster = monsterGameOE.Entity;
         monsterGameOE.GetComponent<UIDProxy>().Value = new UID{Value=uid};
-        InitMonster(monster, uid, typeID, pos, targetPos, curHp, maxHp);
+        InitMonster(monsterGameOE, uid, typeID, pos, targetPos, curHp, maxHp);
         return monster;
 	}
 
-    private void InitMonster(Entity monster, long uid, long typeID, Vector3 pos, Vector3 targetPos, float curHp, float maxHp)
+    private void InitMonster(GameObjectEntity monsterGameOE, long uid, long typeID, Vector3 pos, Vector3 targetPos, float curHp, float maxHp)
     {
+        Entity monster = monsterGameOE.Entity;
         var speed = ConfigMonster.GetInstance().GetMoveSpeed(typeID);
         EntityManager.AddComponentData(monster, new MoveSpeed {Value = speed, BaseValue = speed});
         EntityManager.AddComponentData(monster, new TargetPosition {Value = targetPos});
-        EntityManager.AddComponentData(monster, new LocomotionState {LocoState = curHp>0.001f?LocomotionState.State.Idle:LocomotionState.State.Dead, StartTime=0});
+        EntityManager.AddComponentData(monster, new LocomotionState {LocoState = curHp>0.001f?LocomotionState.State.Idle:LocomotionState.State.Dead});
         EntityManager.AddComponentData(monster, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
         EntityManager.AddComponentData(monster, new TypeID {Value=typeID});
         EntityManager.AddComponentData(monster, ActionData.Empty);
@@ -61,9 +62,12 @@ public class MonsterMgr
         EntityManager.AddComponentData(monster, new PosOffset {Value = float3.zero});
         EntityManager.AddComponentData(monster, new HealthStateData {CurHp=curHp, MaxHp=maxHp});
         EntityManager.AddComponentData(monster, new TimelineState {NewStatus=TimelineState.NewState.Allow, InterruptStatus=TimelineState.InterruptState.Allow});
-        EntityManager.AddComponentObject(monster, new BeHitEffect{Status=EffectStatus.None, EndTime=0});
-        EntityManager.AddComponentObject(monster, new SuckHPEffect{Status=EffectStatus.None, EndTime=0});
-        
+        monsterGameOE.gameObject.AddComponent<BeHitEffect>();
+        monsterGameOE.gameObject.AddComponent<SuckHPEffect>();
+        EntityManager.AddComponentObject(monster, monsterGameOE.gameObject.GetComponent<BeHitEffect>());
+        EntityManager.AddComponentObject(monster, monsterGameOE.gameObject.GetComponent<SuckHPEffect>());
+        // EntityManager.AddComponentObject(monster, new BeHitEffect{Status=EffectStatus.None, EndTime=0});
+        // EntityManager.AddComponentObject(monster, new SuckHPEffect{Status=EffectStatus.None, EndTime=0});
         MoveQuery rmq = EntityManager.GetComponentObject<MoveQuery>(monster);
         rmq.Initialize();
 

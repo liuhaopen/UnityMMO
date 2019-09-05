@@ -116,7 +116,8 @@ public class RoleMgr
         // EntityManager.AddComponentData(role, new NameboardData {UIResState=NameboardData.ResState.WaitLoad});
         EntityManager.AddComponentData(role, new TypeID {Value=typeID});
         EntityManager.AddComponentData(role, new GroundInfo {GroundNormal=Vector3.zero, Altitude=0});
-        EntityManager.AddComponentData(role, new JumpState {JumpStatus=JumpState.State.None, JumpCount=0, OriginYPos=0, AscentHeight=0});
+        // EntityManager.AddComponentData(role, new JumpState {JumpStatus=JumpState.State.None, JumpCount=0, OriginYPos=0, AscentHeight=0});
+        EntityManager.AddComponentData(role, new JumpData{JumpCount=0});
         EntityManager.AddComponentData(role, ActionData.Empty);
         EntityManager.AddComponentData(role, new PosOffset {Value = float3.zero});
         EntityManager.AddComponentData(role, new HealthStateData {CurHp=curHp, MaxHp=maxHp});

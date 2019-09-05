@@ -62,11 +62,11 @@ public class SynchFromNet {
         SprotoType.scene_listen_hurt_event.request req = new SprotoType.scene_listen_hurt_event.request();
         NetMsgDispatcher.GetInstance().SendMessage<Protocol.scene_listen_hurt_event>(req, OnAckHurtEvents);
         SprotoType.scene_listen_hurt_event.response ack = result as SprotoType.scene_listen_hurt_event.response;
-        Debug.Log("ack : "+(ack!=null).ToString()+" fightevents:"+(ack.events!=null).ToString());
+        // Debug.Log("ack : "+(ack!=null).ToString()+" fightevents:"+(ack.events!=null).ToString());
         if (ack==null || ack.events==null)
             return;
         var len = ack.events.Count;
-        Debug.Log("lisend hurt event : "+len);
+        // Debug.Log("lisend hurt event : "+len);
         // ack.events.Sort((SprotoType.scene_hurt_event_info a, SprotoType.scene_hurt_event_info b)=>DisallowRefReturnCrossingThisAttribute a.time)
         for (int i = 0; i < len; i++)
         {
@@ -83,23 +83,24 @@ public class SynchFromNet {
         for (int i=0; i<hurtEvent.defenders.Count; i++)
         {
             var defender = hurtEvent.defenders[i];
-            Debug.Log("defender uid : "+defender.uid+" count:"+hurtEvent.defenders.Count+" hp:"+defender.cur_hp+" damagetype:"+defender.flag);
+            // Debug.Log("defender uid : "+defender.uid+" count:"+hurtEvent.defenders.Count+" hp:"+defender.cur_hp+" damagetype:"+defender.flag);
             var defenderEntity = SceneMgr.Instance.GetSceneObject(defender.uid);
-            Debug.Log("has LocomotionState : "+entityMgr.HasComponent<LocomotionState>(defenderEntity)+" isdead:"+ECSHelper.IsDead(defenderEntity, entityMgr)+" isnull:"+defenderEntity.Equals(Entity.Null));
+            // Debug.Log("has LocomotionState : "+entityMgr.HasComponent<LocomotionState>(defenderEntity)+" isdead:"+ECSHelper.IsDead(defenderEntity, entityMgr)+" isnull:"+defenderEntity.Equals(Entity.Null));
             if (defenderEntity.Equals(Entity.Null) || ECSHelper.IsDead(defenderEntity, entityMgr))
                 continue;
             if (entityMgr.HasComponent<LocomotionState>(defenderEntity))
             {
+                var isMainRole = RoleMgr.GetInstance().IsMainRoleEntity(defenderEntity);
                 //进入受击状态
-                bool playBehit = UnityEngine.Random.RandomRange(0, 100) > 50.0f;
-                if (playBehit)
+                bool playBehit = UnityEngine.Random.RandomRange(0, 100) > 30.0f;
+                if (!isMainRole && playBehit)
                 {
                     var locomotionState = entityMgr.GetComponentData<LocomotionState>(defenderEntity);
                     locomotionState.LocoState = LocomotionState.State.BeHit;
-                    locomotionState.StartTime = Time.time;
+                    locomotionState.StateEndType = LocomotionState.EndType.PlayAnimationOnce;
+                    // locomotionState.StartTime = Time.time;
                     entityMgr.SetComponentData<LocomotionState>(defenderEntity, locomotionState);
                 }
-                var isMainRole = RoleMgr.GetInstance().IsMainRoleEntity(defenderEntity);
                 bool isNeedShakeCamera = (isMainRole&&playBehit) || !isMainRole;
                 if (isNeedShakeCamera && entityMgr.HasComponent<CinemachineImpulseSource>(defenderEntity))
                 {
@@ -202,7 +203,7 @@ public class SynchFromNet {
                 // Debug.Log("cur_change_info.key : "+cur_change_info.key.ToString()+" scene_obj:"+(scene_obj!=Entity.Null).ToString()+ " ContainsKey:"+changeFuncDic.ContainsKey((SceneInfoKey)cur_change_info.key).ToString()+" uid"+uid.ToString()+" value:"+cur_change_info.value.ToString());
                 if (cur_change_info.key == (int)SceneInfoKey.EnterView)
                 {
-                    Debug.Log("some one enter scene:uid:"+uid+" scene_obj==null:"+(scene_obj==Entity.Null).ToString()+" info:"+cur_change_info.value);
+                    // Debug.Log("some one enter scene:uid:"+uid+" scene_obj==null:"+(scene_obj==Entity.Null).ToString()+" info:"+cur_change_info.value);
                     if (scene_obj==Entity.Null)
                     {
                         scene_obj = SceneMgr.Instance.AddSceneObject(uid, cur_change_info.value);
@@ -309,7 +310,7 @@ public class SynchFromNet {
         //本条信息变更只会收到自己的
         var mainRoleGOE = RoleMgr.GetInstance().GetMainRole();
         entity = mainRoleGOE!=null?mainRoleGOE.Entity:Entity.Null;
-        Debug.Log("ApplyChangeInfoSceneChange : "+change_info.value+" entity:"+entity);
+        // Debug.Log("ApplyChangeInfoSceneChange : "+change_info.value+" entity:"+entity);
         string[] strs = change_info.value.Split(',');
         int sceneID = int.Parse(strs[0]);
         LoadingView.Instance.SetActive(true);
@@ -377,7 +378,7 @@ public class SynchFromNet {
             // var isRelive = strs[1]=="relive";
             var locoState = SceneMgr.Instance.EntityManager.GetComponentData<LocomotionState>(entity);
             locoState.LocoState = isRelive?LocomotionState.State.Idle:LocomotionState.State.Dead;
-            Debug.Log("Time : "+TimeEx.ServerTime.ToString()+" isRelive:"+isRelive+" state:"+locoState.LocoState.ToString());
+            // Debug.Log("Time : "+TimeEx.ServerTime.ToString()+" isRelive:"+isRelive+" state:"+locoState.LocoState.ToString());
             // locoState.StartTime = Time.time - (TimeEx.ServerTime-change_info.time)/1000.0f;//CAT_TODO:dead time
             SceneMgr.Instance.EntityManager.SetComponentData(entity, locoState);
             if (isDead && RoleMgr.GetInstance().IsMainRoleEntity(entity))

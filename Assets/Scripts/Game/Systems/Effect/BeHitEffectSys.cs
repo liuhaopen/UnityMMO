@@ -10,6 +10,11 @@ namespace UnityMMO
     public class BeHitEffect : MonoBehaviour {
         public long EndTime;
         public EffectStatus Status;
+        public BeHitEffect()
+        {
+            Status = EffectStatus.None;
+            EndTime = 0;
+        }
         public bool IsShowing()
         {
             return Status == EffectStatus.Rendering || Status == EffectStatus.WaitForRender;

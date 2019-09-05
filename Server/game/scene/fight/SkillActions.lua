@@ -39,8 +39,8 @@ function SkillActions:Init(  )
 		注：之所以每个技能都做成一个 function 的形式提供是因为一个技能可能有多个等级，不同等级会有不同效果，所以创建一个技能 action 时需要传入该技能的特定等级的配置即 cfg,其是从 config_skill.lua 里该技能的 detail 字段里当前等级的那条
 	--]]
 	local normal_skill_list = {
-		110000, 110001, 110002, 110003, 110010, 110011, 110012, 
-		120000, 120001, 120002, 120003, 120010, 120011, 120012, 
+		110000, 110001, 110002, 110003, 110012, 
+		120000, 120001, 120002, 120003, 120012, 
 	}
 	--普通的技能，选中攻击目标，然后直接扣血
 	for i,v in ipairs(normal_skill_list) do
@@ -73,15 +73,18 @@ function SkillActions:Init(  )
 	--扣血后有万份之 x 概率触发400000buff(降低防御),具体降低的数值根据技能等级读取配置的
 	self.actions[110010] = function( cfg )
 		return Sequence {
+			Delay {100}, 
 			PickTarget {}, 
 			Hurt {}, 
 			If { Random{cfg.buff.probability}, Buff{400000} } 
 		}
 	end
+	self.actions[120010] = self.actions[110010]
 
 	--扣血后有万份之 x 概率触发400002buff(晕眩)
 	self.actions[110011] = function( cfg )
 		return Sequence {
+			Delay {500}, 
 			PickTarget {}, 
 			Hurt {}, 
 			If { Random{cfg.buff.probability}, Buff{400002} } 

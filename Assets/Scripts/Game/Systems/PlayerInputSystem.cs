@@ -88,7 +88,7 @@ namespace UnityMMO
         void DoJump()
         {
             var roleGameOE = RoleMgr.GetInstance().GetMainRole();
-            var jumpState = EntityManager.GetComponentData<LocomotionState>(roleGameOE.Entity);
+            var jumpState = EntityManager.GetComponentData<JumpData>(roleGameOE.Entity);
             var isMaxJump = jumpState.JumpCount >= GameConst.MaxJumpCount;
             if (isMaxJump)
             {

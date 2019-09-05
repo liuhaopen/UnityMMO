@@ -40,6 +40,8 @@ public class MovementUpdateSystem : BaseComponentSystem
             var curLocoStateObj = locoStates[i];
             var query = moveQuerys[i];
             // if (speed <= 0 || curLocoStateObj.LocoState==LocomotionState.State.BeHit|| curLocoStateObj.LocoState==LocomotionState.State.Dead)
+            // if (curLocoStateObj.LocoState==LocomotionState.State.BeHit)
+                // continue;
             if (speed <= 0)
                 continue;
             var curTrans = transforms[i];
@@ -52,48 +54,58 @@ public class MovementUpdateSystem : BaseComponentSystem
             var isAutoFinding = query.IsAutoFinding;
             bool isMoveWanted = moveDistance>0.01f || isAutoFinding;
             var newLocoState = LocomotionState.State.StateNum;
-            var phaseDuration = Time.time - curLocoStateObj.StartTime;
+            var phaseDuration = TimeEx.ServerTime - curLocoStateObj.StartTime;
             var curLocoState = curLocoStateObj.LocoState;
             bool isOnGround = curLocoStateObj.IsOnGround();
             if (isOnGround)
             {
                 if (isMoveWanted)
                     newLocoState = LocomotionState.State.Run;
-                else
+                else if (curLocoStateObj.LocoState!=LocomotionState.State.BeHit)
                     newLocoState = LocomotionState.State.Idle;
             }
             float ySpeed = 0;
-            bool isClickJump = false;
-            if (EntityManager.HasComponent<ActionData>(entities[i]))
-            {
-                var actionData = EntityManager.GetComponentData<ActionData>(entities[i]);
-                isClickJump = actionData.Jump == 1;
-            }
+            
             // Jump
-            if (isOnGround)
-                curLocoStateObj.JumpCount = 0;
-
-            if (isClickJump && isOnGround)
+            var isCanJump = EntityManager.HasComponent<JumpData>(entities[i]);
+            if (isCanJump)
             {
-                curLocoStateObj.JumpCount = 1;
-                newLocoState = LocomotionState.State.Jump;
-            }
+                var jumpData = EntityManager.GetComponentData<JumpData>(entities[i]);
+                var lastJumpCount = jumpData.JumpCount;
+                if (isOnGround)
+                    jumpData.JumpCount = 0;
 
-            if (isClickJump && curLocoStateObj.IsInJump() && curLocoStateObj.JumpCount < 3)
-            {
-                curLocoStateObj.JumpCount = curLocoStateObj.JumpCount + 1;
-                newLocoState = curLocoStateObj.JumpCount==2?LocomotionState.State.DoubleJump:LocomotionState.State.TrebleJump;
-            }
+                bool isClickJump = false;
+                if (EntityManager.HasComponent<ActionData>(entities[i]))
+                {
+                    var actionData = EntityManager.GetComponentData<ActionData>(entities[i]);
+                    isClickJump = actionData.Jump == 1;
+                }
+                if (isClickJump && isOnGround)
+                {
+                    jumpData.JumpCount = 1;
+                    newLocoState = LocomotionState.State.Jump;
+                }
 
-            if (curLocoStateObj.LocoState == LocomotionState.State.Jump || curLocoStateObj.LocoState == LocomotionState.State.DoubleJump || curLocoStateObj.LocoState == LocomotionState.State.TrebleJump)
-            {
-                if (phaseDuration >= GameConst.JumpAscentDuration[curLocoStateObj.LocoState-LocomotionState.State.Jump])
-                    newLocoState = LocomotionState.State.InAir;
+                if (isClickJump && curLocoStateObj.IsInJump() && jumpData.JumpCount < 3)
+                {
+                    jumpData.JumpCount++;
+                    newLocoState = jumpData.JumpCount==2?LocomotionState.State.DoubleJump:LocomotionState.State.TrebleJump;
+                }
+
+                if (curLocoStateObj.LocoState == LocomotionState.State.Jump || curLocoStateObj.LocoState == LocomotionState.State.DoubleJump || curLocoStateObj.LocoState == LocomotionState.State.TrebleJump)
+                {
+                    if (phaseDuration >= GameConst.JumpAscentDuration[curLocoStateObj.LocoState-LocomotionState.State.Jump])
+                        newLocoState = LocomotionState.State.InAir;
+                }
+                if (jumpData.JumpCount != lastJumpCount)
+                {
+                    EntityManager.SetComponentData(entities[i], jumpData);
+                }
             }
             if (newLocoState != LocomotionState.State.StateNum && newLocoState != curLocoState)
             {
                 curLocoStateObj.LocoState = newLocoState;
-                curLocoStateObj.StartTime = Time.time;
             }
             if (curLocoStateObj.LocoState == LocomotionState.State.Jump || curLocoStateObj.LocoState == LocomotionState.State.DoubleJump || curLocoStateObj.LocoState == LocomotionState.State.TrebleJump)
             {
@@ -200,8 +212,7 @@ class MovementHandleGroundCollision : BaseComponentSystem
                 {
                     locoState.LocoState = LocomotionState.State.InAir;                    
                 }
-                
-                locoState.StartTime = Time.time;
+                // locoState.StartTime = Time.time;
                 // locoStates[i] = locoState;
                 EntityManager.SetComponentData<LocomotionState>(entities[i], locoState);
             }

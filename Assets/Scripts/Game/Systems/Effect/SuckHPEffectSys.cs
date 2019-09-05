@@ -10,6 +10,11 @@ namespace UnityMMO
     public class SuckHPEffect : MonoBehaviour {
         public long EndTime;
         public EffectStatus Status;
+        public SuckHPEffect()
+        {
+            Status = EffectStatus.None;
+            EndTime = 0;
+        }
         public bool IsShowing()
         {
             return Status == EffectStatus.Rendering || Status == EffectStatus.WaitForRender;

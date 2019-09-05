@@ -27,8 +27,6 @@ public class UpdateAnimatorSystem : BaseComponentSystem
         for (int i=0; i<looksInfos.Length; i++)
         {
             var looksInfo = looksInfos[i];
-            // var director = directors[i];
-            // Debug.Log("director.state : "+director.state.ToString());
             if (looksInfo.CurState!=LooksInfo.State.Loaded)
                 continue;
             var looksEntity = looksInfo.LooksEntity;
@@ -44,9 +42,9 @@ public class UpdateAnimatorSystem : BaseComponentSystem
     {
         LocomotionState.State locoState = locoData.LocoState;
         string aniName = "";
-        if (locoState == LocomotionState.State.BeHit)
-            Debug.Log("be hit ani : "+animator.GetCurrentAnimatorStateInfo(0).IsName("behit"));
-        if (locoState == LocomotionState.State.Idle && !animator.GetCurrentAnimatorStateInfo(0).IsName("idle"))
+        // if (locoState == LocomotionState.State.BeHit)
+            // Debug.Log("be hit ani : "+animator.GetCurrentAnimatorStateInfo(0).IsName("behit"));
+        if (locoState == LocomotionState.State.Idle && !IsIdleAnimation(animator))
         {
             aniName = "idle";
         }
@@ -103,5 +101,13 @@ public class UpdateAnimatorSystem : BaseComponentSystem
                 // Debug.Log("locoState : "+locoState+" headTrans:"+(headTrans!=null));
             }
         }
+    }
+
+    public bool IsIdleAnimation(Animator animator)
+    {
+        return animator.GetCurrentAnimatorStateInfo(0).IsName("idle") || animator.GetCurrentAnimatorStateInfo(0).IsName("idle2")
+            || animator.GetCurrentAnimatorStateInfo(0).IsName("idle3") || animator.GetCurrentAnimatorStateInfo(0).IsName("idle4")
+            || animator.GetCurrentAnimatorStateInfo(0).IsName("idle5") || animator.GetCurrentAnimatorStateInfo(0).IsName("idle6")
+            || animator.GetCurrentAnimatorStateInfo(0).IsName("casual") || animator.GetCurrentAnimatorStateInfo(0).IsName("casual2");
     }
 }

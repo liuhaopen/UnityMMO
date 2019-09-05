@@ -12,8 +12,8 @@ namespace UnityMMO
         public const int NetResultOk = 0;
         public const int Gravity = -10;
         public const int MaxJumpCount = 3;
-        public static readonly float[] JumpAscentDuration = new float[]{0.8333f*3/4.0f, 0.8333f*3/4.0f, 1.1666f*3/4.0f};
-        public static readonly float[] JumpAscentHeight = new float[]{3, 3, 3};
+        public static readonly float[] JumpAscentDuration = new float[]{0.8333f*3/4.0f*1000, 0.8333f*3/4.0f*1000, 1.1666f*3/4.0f*1000};
+        public static readonly float[] JumpAscentHeight = new float[]{3000, 3000, 3000};
         public const float MaxFallVelocity = 10;
     }
 }

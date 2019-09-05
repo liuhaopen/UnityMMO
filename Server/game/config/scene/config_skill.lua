@@ -124,6 +124,8 @@ local config = {
 		skill_id = 120010, target_type = 1, shape = 1, duration = 1000, detail = {
 			[1] = {
 				condition = {{lv, 1}}, cd = 5000, attack_max_num = 5, damage_rate = 10000, area = 600,
+				desc = [[女角技能1，造成50点伤害，并有10%概率减对方50%防御]], 
+				buff = {probability=10000,duration=5000,attr_id=3,value=-5000,is_percent=true}
 			},
 		},	
 	},

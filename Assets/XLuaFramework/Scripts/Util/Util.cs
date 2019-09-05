@@ -408,7 +408,7 @@ namespace XLuaFramework {
             int materialIndex = -1;
             for (int i = 0; i < materials.Length; i++)
             {
-                Debug.Log("material name :"+materials[i].name+"  "+materials[i].name.IndexOf(materialName));
+                // Debug.Log("material name :"+materials[i].name+"  "+materials[i].name.IndexOf(materialName));
                 if (-1 != materials[i].name.IndexOf(materialName))
                 {
                     materialIndex = i;

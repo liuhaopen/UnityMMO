@@ -51,17 +51,26 @@ namespace Component
             Dizzy,
             StateNum,
         }
-        public State LocoState;
-        // private State locoState;
-        // public State LocoState
-        // {
-        //     get => locoState;
-        //     set
-        //     {
-        //         locoState = value;
-        //         Debug.Log("set locostate : "+value+" track:"+new System.Diagnostics.StackTrace().ToString());
-        //     }
-        // }
+        public enum EndType {
+            PlayAnimationOnce,//播放完动作就结束当前状态
+            EndTime,//依据状态结束时间
+            None,
+        }
+        // public State LocoState;
+        private State locoState;
+        public State LocoState
+        {
+            get => locoState;
+            set
+            {
+                locoState = value;
+                StateEndType = EndType.None;
+                StartTime = TimeEx.ServerTime;
+                EndTime = 0;
+                // Debug.Log("set locostate : "+value+" track:"+new System.Diagnostics.StackTrace().ToString());
+            }
+        }
+        public EndType StateEndType;
 
         public bool IsOnGround()
         {
@@ -71,7 +80,12 @@ namespace Component
         {
             return LocoState == LocomotionState.State.Jump || LocoState == LocomotionState.State.DoubleJump || LocoState == LocomotionState.State.TrebleJump || LocoState == LocomotionState.State.InAir;
         }
-        public float StartTime;
+        public long StartTime;
+        public long EndTime;
+    }
+
+    public struct JumpData : IComponentData
+    {
         public int JumpCount;
     }
 
@@ -81,49 +95,26 @@ namespace Component
         public static ActionData Empty = new ActionData{Jump=0};
     }
 
-    // public struct NameboardData : IComponentData
-    // {
-    //     public enum ResState 
-    //     {
-    //         WaitLoad,//等待判断是否离主角够近，够近才进入此状态等待加载prefab
-    //         Loading,//加载中
-    //         Loaded,//已加载
-    //         // Deleting,//远离主角，别加载了
-    //         DontLoad,//不需要再加载了
-    //     }
-    //     public ResState UIResState;
-    //     public Entity UIEntity;
-    //     // public void Destroy()
-    //     // {
-    //     //     Debug.Log("Destroy UIResState :"+UIResState+" hasTrans:"+SceneMgr.Instance.EntityManager.HasComponent<Transform>(UIEntity));
-    //     //     if (UIResState == ResState.Loaded && SceneMgr.Instance.EntityManager.HasComponent<Transform>(UIEntity))
-    //     //     {
-    //     //         var trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(UIEntity);
-    //     //         SceneMgr.Instance.World.RequestDespawn(trans.gameObject);
-    //     //     }
-    //     // }
-    // }
-
     public struct PosOffset : IComponentData
     {
         public float3 Value;
     }
 
-    public struct JumpState : IComponentData
-    {
-        public enum State
-        {
-            None = 0,
-            StartJump,
-            InAir,
-            EndJump,
-        }
-        public State JumpStatus;
-        public int JumpCount;
-        public float OriginYPos;
-        public float AscentHeight;
-        // public float StartTime;
-    }
+    // public struct JumpState : IComponentData
+    // {
+    //     public enum State
+    //     {
+    //         None = 0,
+    //         StartJump,
+    //         InAir,
+    //         EndJump,
+    //     }
+    //     public State JumpStatus;
+    //     public int JumpCount;
+    //     public float OriginYPos;
+    //     public float AscentHeight;
+    //     // public float StartTime;
+    // }
 
     public struct ActionInfo : IComponentData
     {

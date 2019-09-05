@@ -37,7 +37,7 @@ function MainUISkillBtnView:AddEvents(  )
 	UI.BindClickEvent(self.jump_obj, on_click)
 
 	local SkillCDChanged = function ( skillID, cdEndTime )
-		print('Cat:MainUISkillBtnView.lua[54] skillID, cdEndTime', skillID, cdEndTime)
+		-- print('Cat:MainUISkillBtnView.lua[54] skillID, cdEndTime', skillID, cdEndTime)
 		for i,v in ipairs(self.btnList) do
 			if v and v.data and v.data.skillID == skillID then
 				v:SetCDEndTime(cdEndTime)

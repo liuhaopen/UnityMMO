@@ -45,6 +45,8 @@ namespace UnityMMO{
             // m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<SkillSpawnSystem>(m_GameWorld));
             //管理 Timeline
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<TimelineSpawnSystem>(m_GameWorld));
+            //管理状态 LocomotionState
+            m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<LocomotionStateSys>(m_GameWorld));
             //管理 Animator
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<UpdateAnimatorSystem>(m_GameWorld));
             m_Systems.Add(m_GameWorld.GetECSWorld().CreateSystem<ResetPosOffsetSystem>(m_GameWorld));
