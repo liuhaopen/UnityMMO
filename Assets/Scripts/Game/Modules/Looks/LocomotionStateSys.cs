@@ -37,8 +37,16 @@ public class LocomotionStateSys : BaseComponentSystem
         LocomotionState.State locoState = locoData.LocoState;
         if (locoData.StateEndType == LocomotionState.EndType.None)
             return;
-        else if (locoData.StateEndType == LocomotionState.EndType.PlayAnimationOnce)
+        // Debug.Log("be end type : "+locoData.StateEndType+" locoData.EndTime:"+locoData.EndTime);
+        if (locoData.StateEndType == LocomotionState.EndType.PlayAnimationOnce)
         {
+            if (locoData.EndTime == 0)
+            {
+                //最少要播放动画一帧
+                locoData.EndTime = 1;
+                EntityManager.SetComponentData<LocomotionState>(entity, locoData);
+                return;
+            }
             var hasLooks = EntityManager.HasComponent<LooksInfo>(entity);
             if (!hasLooks)
             {
@@ -52,6 +60,7 @@ public class LocomotionStateSys : BaseComponentSystem
             Animator animator = EntityManager.GetComponentObject<Animator>(looksEntity);
             if (animator==null)
                 return;
+            // Debug.Log("animator.GetCurrentAnimatorStateInfo(0).normalizedTime : "+animator.GetCurrentAnimatorStateInfo(0).normalizedTime);
             if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
             {
                 BackToLastState(entity, stack);
@@ -59,7 +68,8 @@ public class LocomotionStateSys : BaseComponentSystem
         }
         else if (locoData.StateEndType == LocomotionState.EndType.EndTime)
         {
-            if (locoData.EndTime >= TimeEx.ServerTime)
+            // Debug.Log("locoData.EndTime >= TimeEx.ServerTime : "+(TimeEx.ServerTime >= locoData.EndTime)+" "+locoData.EndTime+" "+TimeEx.ServerTime);
+            if (TimeEx.ServerTime >= locoData.EndTime)
             {
                 BackToLastState(entity, stack);
             }
@@ -68,7 +78,15 @@ public class LocomotionStateSys : BaseComponentSystem
 
     void BackToLastState(Entity entity, LocomotionStateStack stack)
     {
-        var lastState = stack.Stack.Pop();
-        EntityManager.SetComponentData<LocomotionState>(entity, lastState);
+        if (stack.Stack.Count > 0)
+        {
+            var lastState = stack.Stack.Pop();
+            // Debug.Log("ret back state : "+lastState.LocoState+" type:"+lastState.StateEndType+" endTime:"+lastState.EndTime+" "+TimeEx.ServerTime+" "+(TimeEx.ServerTime >= lastState.EndTime));
+            EntityManager.SetComponentData<LocomotionState>(entity, lastState);
+        }
+        else
+        {
+            EntityManager.SetComponentData<LocomotionState>(entity, new LocomotionState{LocoState=LocomotionState.State.Idle});
+        }
     }
 }

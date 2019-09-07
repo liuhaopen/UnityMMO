@@ -95,6 +95,43 @@ function BuffActions:Init(  )
 		return ClearBuff {target=cfg.target, clear_type=cfg.clear_type}
 	end
 
+	--沉默 buff
+	self.actions[400006] = function( cfg )
+		local bod = self:GetBOD(400006, SceneConst.Buff.Silence)
+		return Sequence { 
+			NotifyBuff { SceneConst.Buff.Silence, cfg.duration },
+			Ability { bod=bod, is_set=true, value=false },
+			Delay { cfg.duration },
+			Speed { bod=bod, is_set=false },
+			Ability { bod=bod, is_set=false },
+		}
+	end
+
+	--毒 buff，定时扣血
+	self.actions[400007] = function( cfg )
+		return Sequence { 
+			NotifyBuff { SceneConst.Buff.Poison, cfg.duration*cfg.hurt_count },
+			Repeat { cfg.hurt_count, 
+				Sequence { 
+					Hurt {},
+					Delay { cfg.duration },
+				}
+			}
+		}
+	end
+
+	--火 buff，定时扣血
+	self.actions[400008] = function( cfg )
+		return Sequence { 
+			NotifyBuff { SceneConst.Buff.Fire, cfg.duration*cfg.hurt_count },
+			Repeat { cfg.hurt_count, 
+				Sequence { 
+					Hurt {},
+					Delay { cfg.duration },
+				}
+			}
+		}
+	end
 end
 
 function BuffActions:GetActionCreator( buffID )

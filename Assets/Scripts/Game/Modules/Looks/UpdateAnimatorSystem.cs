@@ -42,8 +42,8 @@ public class UpdateAnimatorSystem : BaseComponentSystem
     {
         LocomotionState.State locoState = locoData.LocoState;
         string aniName = "";
-        // if (locoState == LocomotionState.State.Dead)
-            // Debug.Log("be death ani : "+animator.GetCurrentAnimatorStateInfo(0).IsName("death"));
+        // if (locoState == LocomotionState.State.Dizzy)
+            // Debug.Log("be death ani sdf  : "+animator.GetCurrentAnimatorStateInfo(0).IsName("dizzy"));
         if (locoState == LocomotionState.State.Idle && !IsIdleAnimation(animator))
         {
             aniName = "idle";

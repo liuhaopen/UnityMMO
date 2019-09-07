@@ -7,5 +7,9 @@ namespace UnityMMO
     public class LocomotionStateStack : MonoBehaviour 
     {
         public Stack<LocomotionState> Stack;
+        public LocomotionStateStack()
+        {
+            Stack = new Stack<LocomotionState>();
+        }
     }
 }

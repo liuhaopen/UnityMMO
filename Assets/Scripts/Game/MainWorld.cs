@@ -20,7 +20,7 @@ namespace UnityMMO{
             TimelineManager.GetInstance().Init();
             SceneMgr.Instance.Init(m_GameWorld);
             SynchFromNet.Instance.Init();
-
+            ECSHelper.entityMgr = m_GameWorld.GetEntityManager();
             InitializeSystems();
         }
 

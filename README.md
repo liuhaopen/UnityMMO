@@ -16,7 +16,7 @@
 ```
 Unity version: 2019.1.4f1
 Platforms    : 
-client for Windows and Android(should also support iOS, but I have not tried);  
+client for Windows Android IOS;  
 server only for Linux;
 ```
 
@@ -29,3 +29,4 @@ server only for Linux;
 19.08.11：初步完成基于 action 组件的技能系统,见 Server/lualib/Action及 FightMgr,Hurt 和 PickTarget.lua          
 19.08.13：完成复活流程      
 19.08.28：最近经常在手机上测试，优化了一波：摄像机操作，资源预加载，对象池，和使用了 AutoLOD 插件为各场景节点生成了两级简模（其实很多模型在最远处时是可以用一个面片替代的，就是做成公告板永远面向摄像机，但没美术资源就算了），树的话删了不少上万三角面的了。灯光烘培改成用 Distance ShadowMask,近处实时阴影远处贴图。暂时可以在我的垃圾手机流畅运行了。    
+19.09.07：后端增加 buff:火，毒，冰冻，晕眩，吸血，扣属性(防御、攻击等)，沉默。详见 BuffActions.lua。前端目前只加了吸血和晕眩的效果。  

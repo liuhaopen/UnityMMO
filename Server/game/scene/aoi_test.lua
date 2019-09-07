@@ -1,6 +1,6 @@
 package.path = package.path ..';../?.lua;../../?.lua;../../../?.lua;../../lualib/ECS/?.lua';
 require "Lua.Common.Util.util"
-local lu = require('Tests.luaunit')
+local lu = require('Common.luaunit')
 local aoi = require('aoi')
 
 --在本目录运行本文件即可：lua aoi_test.lua

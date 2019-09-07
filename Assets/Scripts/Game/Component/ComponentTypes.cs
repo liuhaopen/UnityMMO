@@ -35,55 +35,6 @@ namespace Component
         public InterruptState InterruptStatus;
     }
 
-    public struct LocomotionState : IComponentData
-    {
-        public enum State
-        {
-            Idle,
-            Run,
-            Sprint,
-            Jump,
-            DoubleJump,
-            TrebleJump,
-            InAir,
-            BeHit,
-            Dead,
-            Dizzy,
-            StateNum,
-        }
-        public enum EndType {
-            PlayAnimationOnce,//播放完动作就结束当前状态
-            EndTime,//依据状态结束时间
-            None,
-        }
-        // public State LocoState;
-        private State locoState;
-        public State LocoState
-        {
-            get => locoState;
-            set
-            {
-                locoState = value;
-                StateEndType = EndType.None;
-                StartTime = TimeEx.ServerTime;
-                EndTime = 0;
-                // Debug.Log("set locostate : "+value+" track:"+new System.Diagnostics.StackTrace().ToString());
-            }
-        }
-        public EndType StateEndType;
-
-        public bool IsOnGround()
-        {
-            return LocoState == LocomotionState.State.Idle || LocoState == LocomotionState.State.Run || LocoState == LocomotionState.State.Sprint || LocoState == LocomotionState.State.BeHit || LocoState == LocomotionState.State.Dizzy;
-        }
-        public bool IsInJump()
-        {
-            return LocoState == LocomotionState.State.Jump || LocoState == LocomotionState.State.DoubleJump || LocoState == LocomotionState.State.TrebleJump || LocoState == LocomotionState.State.InAir;
-        }
-        public long StartTime;
-        public long EndTime;
-    }
-
     public struct JumpData : IComponentData
     {
         public int JumpCount;
@@ -99,22 +50,6 @@ namespace Component
     {
         public float3 Value;
     }
-
-    // public struct JumpState : IComponentData
-    // {
-    //     public enum State
-    //     {
-    //         None = 0,
-    //         StartJump,
-    //         InAir,
-    //         EndJump,
-    //     }
-    //     public State JumpStatus;
-    //     public int JumpCount;
-    //     public float OriginYPos;
-    //     public float AscentHeight;
-    //     // public float StartTime;
-    // }
 
     public struct ActionInfo : IComponentData
     {
@@ -170,7 +105,6 @@ namespace Component
         // public Collider groundCollider;
         public Vector3 GroundNormal;
         public float Altitude; 
-        // public GroundInfo(){}
     }
 
     public struct HealthStateData : IComponentData      

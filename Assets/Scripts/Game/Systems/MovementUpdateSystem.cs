@@ -41,6 +41,10 @@ public class MovementUpdateSystem : BaseComponentSystem
             var query = moveQuerys[i];
             if (speed <= 0)
                 continue;
+            if (curLocoStateObj.LocoState==LocomotionState.State.BeHit 
+                || curLocoStateObj.LocoState==LocomotionState.State.Dead 
+                || curLocoStateObj.LocoState==LocomotionState.State.Dizzy)
+                continue;
             var curTrans = transforms[i];
             float3 startPos = curTrans.localPosition;
             var moveDir = targetPos-startPos;
@@ -58,7 +62,7 @@ public class MovementUpdateSystem : BaseComponentSystem
             {
                 if (isMoveWanted)
                     newLocoState = LocomotionState.State.Run;
-                else if (curLocoStateObj.LocoState!=LocomotionState.State.BeHit && curLocoStateObj.LocoState!=LocomotionState.State.Dead)
+                else 
                     newLocoState = LocomotionState.State.Idle;
             }
             float ySpeed = 0;
@@ -102,12 +106,13 @@ public class MovementUpdateSystem : BaseComponentSystem
             if (newLocoState != LocomotionState.State.StateNum && newLocoState != curLocoState)
             {
                 curLocoStateObj.LocoState = newLocoState;
+                ECSHelper.ChangeLocoState(entities[i], curLocoStateObj);
             }
             if (curLocoStateObj.LocoState == LocomotionState.State.Jump || curLocoStateObj.LocoState == LocomotionState.State.DoubleJump || curLocoStateObj.LocoState == LocomotionState.State.TrebleJump)
             {
                 ySpeed = GameConst.JumpAscentHeight[curLocoStateObj.LocoState-LocomotionState.State.Jump] / GameConst.JumpAscentDuration[curLocoStateObj.LocoState-LocomotionState.State.Jump] - GameConst.Gravity;
             }
-            EntityManager.SetComponentData<LocomotionState>(entities[i], curLocoStateObj);
+            // EntityManager.SetComponentData<LocomotionState>(entities[i], curLocoStateObj);
             if (isAutoFinding)
             {
                 curTrans.rotation = query.navAgent.transform.rotation;
@@ -210,7 +215,8 @@ class MovementHandleGroundCollision : BaseComponentSystem
                 }
                 // locoState.StartTime = Time.time;
                 // locoStates[i] = locoState;
-                EntityManager.SetComponentData<LocomotionState>(entities[i], locoState);
+                // EntityManager.SetComponentData<LocomotionState>(entities[i], locoState);
+                ECSHelper.ChangeLocoState(entities[i], locoState);
             }
         }
         entities.Dispose();

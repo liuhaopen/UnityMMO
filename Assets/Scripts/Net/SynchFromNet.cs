@@ -86,20 +86,20 @@ public class SynchFromNet {
             // Debug.Log("defender uid : "+defender.uid+" count:"+hurtEvent.defenders.Count+" hp:"+defender.cur_hp+" damagetype:"+defender.flag);
             var defenderEntity = SceneMgr.Instance.GetSceneObject(defender.uid);
             // Debug.Log("has LocomotionState : "+entityMgr.HasComponent<LocomotionState>(defenderEntity)+" isdead:"+ECSHelper.IsDead(defenderEntity, entityMgr)+" isnull:"+defenderEntity.Equals(Entity.Null));
-            if (defenderEntity.Equals(Entity.Null) || ECSHelper.IsDead(defenderEntity, entityMgr))
+            if (defenderEntity.Equals(Entity.Null) || ECSHelper.IsDead(defenderEntity))
                 continue;
             if (entityMgr.HasComponent<LocomotionState>(defenderEntity))
             {
                 var isRole = RoleMgr.GetInstance().IsRoleEntity(defenderEntity);
                 //进入受击状态
-                bool playBehit = UnityEngine.Random.RandomRange(0, 100) > 130.0f;
+                bool playBehit = UnityEngine.Random.RandomRange(0, 100) > 40.0f;
                 if (!isRole && playBehit)
                 {
                     var locomotionState = entityMgr.GetComponentData<LocomotionState>(defenderEntity);
                     locomotionState.LocoState = LocomotionState.State.BeHit;
                     locomotionState.StateEndType = LocomotionState.EndType.PlayAnimationOnce;
-                    // locomotionState.StartTime = Time.time;
-                    entityMgr.SetComponentData<LocomotionState>(defenderEntity, locomotionState);
+                    ECSHelper.ChangeLocoState(defenderEntity, locomotionState);
+                    // entityMgr.SetComponentData<LocomotionState>(defenderEntity, locomotionState);
                 }
                 bool isNeedShakeCamera = (isRole&&playBehit) || !isRole;
                 if (isNeedShakeCamera && entityMgr.HasComponent<CinemachineImpulseSource>(defenderEntity))
@@ -280,7 +280,7 @@ public class SynchFromNet {
 
     private void ApplyChangeInfoBuff(Entity entity, SprotoType.info_item change_info)
     {
-        // Debug.Log("ApplyChangeInfoBuff : "+change_info.value);
+        Debug.Log("ApplyChangeInfoBuff : "+change_info.value);
         string[] strs = change_info.value.Split(',');
         int buffID = int.Parse(strs[0]);
         if (buffID == (int)SceneConst.Buff.SuckHP)
@@ -296,12 +296,17 @@ public class SynchFromNet {
         else if (buffID == (int)SceneConst.Buff.Dizzy)
         {
             var hasLoco = SceneMgr.Instance.EntityManager.HasComponent<LocomotionState>(entity);
-            // if (hasLoco)
-            // {
-            //     var locoState = SceneMgr.Instance.EntityManager.GetComponentData<LocomotionState>(entity);
-            //     locoState.LocoState = LocomotionState.State.Dizzy;
-            //     SceneMgr.Instance.EntityManager.SetComponentData<LocomotionState>(entity, locoState);
-            // }
+            if (hasLoco)
+            {
+                var locoState = SceneMgr.Instance.EntityManager.GetComponentData<LocomotionState>(entity);
+                locoState.LocoState = LocomotionState.State.Dizzy;
+                locoState.StateEndType = LocomotionState.EndType.EndTime;
+                long endTime = Int64.Parse(strs[1]);
+                Debug.Log("dizzy buff : "+endTime+" "+TimeEx.ServerTime);
+                locoState.EndTime = endTime;
+                // SceneMgr.Instance.EntityManager.SetComponentData<LocomotionState>(entity, locoState);
+                ECSHelper.ChangeLocoState(entity, locoState);
+            }
         }
     }
 
