@@ -64,10 +64,14 @@ public class MonsterMgr
         EntityManager.AddComponentData(monster, new TimelineState {NewStatus=TimelineState.NewState.Allow, InterruptStatus=TimelineState.InterruptState.Allow});
         monsterGameOE.gameObject.AddComponent<BeHitEffect>();
         monsterGameOE.gameObject.AddComponent<SuckHPEffect>();
+        monsterGameOE.gameObject.AddComponent<SpeedData>();
         monsterGameOE.gameObject.AddComponent<LocomotionStateStack>();
         EntityManager.AddComponentObject(monster, monsterGameOE.gameObject.GetComponent<BeHitEffect>());
         EntityManager.AddComponentObject(monster, monsterGameOE.gameObject.GetComponent<SuckHPEffect>());
         EntityManager.AddComponentObject(monster, monsterGameOE.gameObject.GetComponent<LocomotionStateStack>());
+        var speedData = monsterGameOE.gameObject.GetComponent<SpeedData>();
+        speedData.InitSpeed((int)(speed/GameConst.SpeedFactor));
+        EntityManager.AddComponentObject(monster, speedData);
         // EntityManager.AddComponentObject(monster, new BeHitEffect{Status=EffectStatus.None, EndTime=0});
         // EntityManager.AddComponentObject(monster, new SuckHPEffect{Status=EffectStatus.None, EndTime=0});
         MoveQuery rmq = EntityManager.GetComponentObject<MoveQuery>(monster);

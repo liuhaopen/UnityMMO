@@ -107,7 +107,7 @@ public class MoveQuery : MonoBehaviour
         }
         else
         {
-            Debug.LogError("has not in navmesh");
+            Debug.Log("has not in navmesh");
         }
         // if (navAgent != null)
         //     GameObject.DestroyImmediate(navAgent);

@@ -16,13 +16,17 @@ end
 function BagController:AddEvents(  )
 	local onGameStart = function (  )
         self.model:Reset()
-        self:ReqBagList(BagConst.Pos.Bag)
-        self:ReqBagList(BagConst.Pos.Warehouse)
-        self:ReqBagList(BagConst.Pos.Equip)
+        self:ReqAllBags()
         self:ListenBagChange()
     end
     GlobalEventSystem:Bind(GlobalEvents.GameStart, onGameStart)
 
+end
+
+function BagController:ReqAllBags(  )
+    self:ReqBagList(BagConst.Pos.Bag)
+    self:ReqBagList(BagConst.Pos.Warehouse)
+    self:ReqBagList(BagConst.Pos.Equip)
 end
 
 function BagController:ReqBagList( pos )

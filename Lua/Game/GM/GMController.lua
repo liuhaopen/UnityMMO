@@ -30,11 +30,23 @@ end
 
 function GMController:ReqExcuteGM( gmStr )
 	print('Cat:GMController.lua[ReqExcuteGM] gmStr', gmStr)
-    NetDispatcher:SendMessage("GM_Excute", {gmStr=gmStr})
+	local onAck = function ( ackData )
+		if ackData.ret == ErrorCode.Succeed then
+			local gmParts = Split(ackData.gmStr, ",")
+			local handleFunc = self["Ack"..(gmParts[1] or "")]
+			if handleFunc then
+				handleFunc(self, ackData)
+			end
+		end
+	end
+    NetDispatcher:SendMessage("GM_Excute", {gmStr=gmStr}, onAck)
+end
+
+function GMController:AckClearAllGoods(  )
+	BagController:GetInstance():ReqAllBags()
 end
 
 function GMController:OpenGMView(  )
-	
 end
 
 return GMController

@@ -162,6 +162,20 @@ local getGoodsByUID = function ( uid )
 	return nil
 end
 
+local clearAllGoods = function()
+	if not this.bagLists then return end
+	
+	this.gameDBServer = this.gameDBServer or skynet.localname(".GameDBServer")
+	skynet.call(this.gameDBServer, "lua", "delete", "Bag", "roleID", this.user_info.cur_role_id)
+	for pos,bagList in pairs(this.bagLists) do
+		bagList.goodsList = {}
+		print('Cat:BagMgr.lua[172] pos', pos)
+		-- for k,goodsInfo in pairs(bagList.goodsList) do
+		-- 	print('Cat:BagMgr.lua[171] goodsInfo.uid', goodsInfo.uid)
+		-- end
+	end
+end
+
 local SprotoHandlers = {}
 function SprotoHandlers.Bag_GetInfo( reqData )
 	local bagList = this.bagLists[reqData.pos]
@@ -214,7 +228,10 @@ function PublicFuncs.ChangeBagGoods( goodsTypeID, diffNum )
 	-- print('Cat:BagMgr.lua[137] goodsTypeID, diffNum', goodsTypeID, diffNum)
 	changeGoodsNum(goodsTypeID, diffNum, BagConst.Pos.Bag, true)
 end
-
+function PublicFuncs.ClearAllGoods()
+	print('Cat:BagMgr.lua[222] ClearAllGoods')
+	clearAllGoods()
+end
 SprotoHandlers.PublicClassName = "Bag"
 SprotoHandlers.PublicFuncs = PublicFuncs
 return SprotoHandlers

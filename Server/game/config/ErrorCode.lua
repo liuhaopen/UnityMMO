@@ -9,6 +9,8 @@ local ErrorCode = {
 	SkillInCD = 200002,
 	UIDErrorOnCastSkill = 200003,
 	CannotFindGoods = 300000,
+	GMArgeWrong = 400000,
+	GMUnknow = 400001,
 }
 
 return ErrorCode

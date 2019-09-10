@@ -33,6 +33,7 @@ public class SceneMgr : MonoBehaviour
     float lastCheckMainRolePosTime = 0;
     Transform moveQueryContainer = null;
     Transform flyWordContainer = null;
+    Transform sceneObjContainer = null;
     public EntityManager EntityManager { get => m_GameWorld.GetEntityManager();}
     public GameWorld World { get => m_GameWorld;}
     public bool IsLoadingScene { get => isLoadingScene; set => isLoadingScene = value; }
@@ -42,6 +43,7 @@ public class SceneMgr : MonoBehaviour
     public SceneInfo CurSceneInfo { get => curSceneInfo; }
     public Transform MoveQueryContainer { get =>moveQueryContainer; }
     public Transform FlyWordContainer { get =>flyWordContainer; }
+    public Transform SceneObjContainer { get =>sceneObjContainer; }
     public int CurSceneID { get => curSceneID; set => curSceneID = value; }
 
     Cinemachine.CinemachineFreeLook freeLookCamera;
@@ -68,6 +70,7 @@ public class SceneMgr : MonoBehaviour
         }
         moveQueryContainer = GameObject.Find("SceneObjContainer/MoveQueryContainer").transform;
         flyWordContainer = GameObject.Find("SceneObjContainer/FlyWordContainer").transform;
+        sceneObjContainer = GameObject.Find("SceneObjContainer").transform;
 	}
 
     void Update()
@@ -208,9 +211,19 @@ public class SceneMgr : MonoBehaviour
         });
     }
 
+    public void StopAllTimeline()
+    {
+        var directors = sceneObjContainer.GetComponentsInChildren<PlayableDirector>();
+        foreach (var director in directors)
+        {
+            director.Stop();
+        }
+    }
+
     public void UnloadScene()
     {
         RoleMgr.GetInstance().StopMainRoleRunning();
+        StopAllTimeline();
         string baseSceneName = "base_world_"+curSceneID;
         // NavMesh.RemoveAllNavMeshData();
         AsyncOperation asy = UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(baseSceneName);

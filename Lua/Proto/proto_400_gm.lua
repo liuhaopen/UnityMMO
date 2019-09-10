@@ -19,7 +19,8 @@ GM_Excute 401 {
 		gmStr 0 : string
 	}
 	response {
-		errorCode 0 : integer
+		ret 0 : integer
+		gmStr 1 : string
 	}
 }
 
