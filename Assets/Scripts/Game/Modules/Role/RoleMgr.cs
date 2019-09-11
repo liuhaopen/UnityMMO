@@ -49,8 +49,7 @@ public class RoleMgr
         roleGameOE.transform.localPosition = pos;
         Entity role = roleGameOE.Entity;
         RoleMgr.GetInstance().SetName(uid, name);
-        InitRole(role, uid, typeID, pos, pos, curHp, maxHp, false);
-        roleGameOE.GetComponent<UIDProxy>().Value = new UID{Value=uid};
+        InitRole(roleGameOE, uid, typeID, pos, pos, curHp, maxHp, false);
         EntityManager.AddComponentData(role, new PosSynchInfo {LastUploadPos = float3.zero});
         EntityManager.AddComponent(role, ComponentType.ReadWrite<UserCommand>());
         var nameboardData = EntityManager.GetComponentObject<NameboardData>(role);
@@ -107,28 +106,35 @@ public class RoleMgr
         roleGameOE.transform.SetParent(container);
         roleGameOE.transform.localPosition = pos;
         Entity role = roleGameOE.Entity;
-        roleGameOE.GetComponent<UIDProxy>().Value = new UID{Value=uid};
-        InitRole(role, uid, typeID, pos, targetPos, curHp, maxHp);
+        InitRole(roleGameOE, uid, typeID, pos, targetPos, curHp, maxHp);
         return role;
 	}
 
-    private void InitRole(Entity role, long uid, long typeID, Vector3 pos, Vector3 targetPos, float curHp, float maxHp, bool isNeedNavAgent=false)
+    private void InitRole(GameObjectEntity roleGOE, long uid, long typeID, Vector3 pos, Vector3 targetPos, float curHp, float maxHp, bool isNeedNavAgent=false)
     {
-        EntityManager.AddComponentData(role, new MoveSpeed {Value = 1200, BaseValue = 1200});
+        Entity role = roleGOE.Entity;
+        roleGOE.GetComponent<UIDProxy>().Value = new UID{Value=uid};
         EntityManager.AddComponentData(role, new TargetPosition {Value = targetPos});
-        EntityManager.AddComponentData(role, new LocomotionState {LocoState = curHp>0?LocomotionState.State.Idle:LocomotionState.State.Dead});
+        var locoStateData = new LocomotionState {LocoState = curHp>0?LocomotionState.State.Idle:LocomotionState.State.Dead};
+        //It should have been dead for a long time
+        if (curHp==0)
+            locoStateData.StartTime = 0;
+        EntityManager.AddComponentData(role, locoStateData);
         EntityManager.AddComponentData(role, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
         EntityManager.AddComponentData(role, new SceneObjectTypeData {Value=SceneObjectType.Role});
-        // EntityManager.AddComponentData(role, new NameboardData {UIResState=NameboardData.ResState.WaitLoad});
         EntityManager.AddComponentData(role, new TypeID {Value=typeID});
         EntityManager.AddComponentData(role, new GroundInfo {GroundNormal=Vector3.zero, Altitude=0});
-        // EntityManager.AddComponentData(role, new JumpState {JumpStatus=JumpState.State.None, JumpCount=0, OriginYPos=0, AscentHeight=0});
         EntityManager.AddComponentData(role, new JumpData{JumpCount=0});
         EntityManager.AddComponentData(role, ActionData.Empty);
         EntityManager.AddComponentData(role, new PosOffset {Value = float3.zero});
         EntityManager.AddComponentData(role, new HealthStateData {CurHp=curHp, MaxHp=maxHp});
         EntityManager.AddComponentData(role, new TimelineState {NewStatus=TimelineState.NewState.Allow, InterruptStatus=TimelineState.InterruptState.Allow});
-        
+
+        roleGOE.gameObject.AddComponent<SpeedData>();
+        var speedData = roleGOE.gameObject.GetComponent<SpeedData>();
+        speedData.InitSpeed(12);
+        EntityManager.AddComponentObject(role, speedData);
+
         MoveQuery rmq = EntityManager.GetComponentObject<MoveQuery>(role);
         rmq.Initialize(isNeedNavAgent);
     }

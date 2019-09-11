@@ -64,11 +64,11 @@ namespace Component
         public Type Value;
     }
 
-    public struct MoveSpeed : IComponentData
-    {
-        public float Value;//实际使用的，变动的
-        public float BaseValue;//基础速度，所有速度加成都以此值为因子
-    }
+    // public struct MoveSpeed : IComponentData
+    // {
+    //     public float Value;//实际使用的，变动的
+    //     public float BaseValue;//基础速度，所有速度加成都以此值为因子
+    // }
     
     public struct TargetPosition : IComponentData
     {

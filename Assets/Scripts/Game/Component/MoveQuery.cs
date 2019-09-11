@@ -154,8 +154,8 @@ public class MoveQuery : MonoBehaviour
 
     public void UpdateSpeed()
     {
-        var moveSpeed = ownerGOE.EntityManager.GetComponentData<MoveSpeed>(ownerGOE.Entity);
-        navAgent.speed = moveSpeed.Value/GameConst.RealToLogic;
+        var moveSpeed = ownerGOE.EntityManager.GetComponentObject<SpeedData>(ownerGOE.Entity);
+        navAgent.speed = moveSpeed.CurSpeed;
     }
 
     public void StopFindWay()

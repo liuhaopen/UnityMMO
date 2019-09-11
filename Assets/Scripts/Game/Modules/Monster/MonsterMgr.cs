@@ -52,9 +52,12 @@ public class MonsterMgr
     {
         Entity monster = monsterGameOE.Entity;
         var speed = ConfigMonster.GetInstance().GetMoveSpeed(typeID);
-        EntityManager.AddComponentData(monster, new MoveSpeed {Value = speed, BaseValue = speed});
         EntityManager.AddComponentData(monster, new TargetPosition {Value = targetPos});
-        EntityManager.AddComponentData(monster, new LocomotionState {LocoState = curHp>0.001f?LocomotionState.State.Idle:LocomotionState.State.Dead});
+        var locoStateData = new LocomotionState {LocoState = curHp>0?LocomotionState.State.Idle:LocomotionState.State.Dead};
+        //It should have been dead for a long time
+        if (curHp==0)
+            locoStateData.StartTime = 0;
+        EntityManager.AddComponentData(monster, locoStateData);
         EntityManager.AddComponentData(monster, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
         EntityManager.AddComponentData(monster, new TypeID {Value=typeID});
         EntityManager.AddComponentData(monster, ActionData.Empty);
@@ -64,16 +67,14 @@ public class MonsterMgr
         EntityManager.AddComponentData(monster, new TimelineState {NewStatus=TimelineState.NewState.Allow, InterruptStatus=TimelineState.InterruptState.Allow});
         monsterGameOE.gameObject.AddComponent<BeHitEffect>();
         monsterGameOE.gameObject.AddComponent<SuckHPEffect>();
-        monsterGameOE.gameObject.AddComponent<SpeedData>();
         monsterGameOE.gameObject.AddComponent<LocomotionStateStack>();
         EntityManager.AddComponentObject(monster, monsterGameOE.gameObject.GetComponent<BeHitEffect>());
         EntityManager.AddComponentObject(monster, monsterGameOE.gameObject.GetComponent<SuckHPEffect>());
         EntityManager.AddComponentObject(monster, monsterGameOE.gameObject.GetComponent<LocomotionStateStack>());
+        monsterGameOE.gameObject.AddComponent<SpeedData>();
         var speedData = monsterGameOE.gameObject.GetComponent<SpeedData>();
-        speedData.InitSpeed((int)(speed/GameConst.SpeedFactor));
+        speedData.InitSpeed(speed/GameConst.SpeedFactor);
         EntityManager.AddComponentObject(monster, speedData);
-        // EntityManager.AddComponentObject(monster, new BeHitEffect{Status=EffectStatus.None, EndTime=0});
-        // EntityManager.AddComponentObject(monster, new SuckHPEffect{Status=EffectStatus.None, EndTime=0});
         MoveQuery rmq = EntityManager.GetComponentObject<MoveQuery>(monster);
         rmq.Initialize();
 

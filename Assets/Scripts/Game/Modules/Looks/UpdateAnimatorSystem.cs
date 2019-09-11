@@ -75,16 +75,17 @@ public class UpdateAnimatorSystem : BaseComponentSystem
         else if (locoState == LocomotionState.State.Dead && !animator.GetCurrentAnimatorStateInfo(0).IsName("death"))
         {
             aniName = "death";
-            // Debug.Log("TimeEx.ServerTime:"+TimeEx.ServerTime+" startTime:"+locoData.StartTime+" "+((Time.time - locoData.StartTime)));
-            // if (Time.time - locoData.StartTime <= 1)
-            // {
-                // ------animator.Play("death");
-            // }
-            // else
-            // {
-            //     //have been dead for a long time
-            //     animator.Play("death", 0, 1.0f);
-            // }
+            Debug.Log("TimeEx.ServerTime:"+TimeEx.ServerTime+" startTime:"+locoData.StartTime+" "+((TimeEx.ServerTime - locoData.StartTime)));
+            if (TimeEx.ServerTime - locoData.StartTime <= 700)
+            {
+                animator.Play("death");
+            }
+            else
+            {
+                //have been dead for a long time
+                animator.Play("death", 0, 1.0f);
+            }
+            return;
         }
         if (aniName != "")
         {

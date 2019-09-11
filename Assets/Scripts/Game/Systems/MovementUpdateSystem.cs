@@ -17,7 +17,7 @@ public class MovementUpdateSystem : BaseComponentSystem
     {
         base.OnCreate();
         // group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(MoveQuery), typeof(LocomotionState), typeof(PosOffset), typeof(PosSynchInfo));
-        group = GetEntityQuery(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(MoveQuery), typeof(LocomotionState), typeof(PosOffset));
+        group = GetEntityQuery(typeof(TargetPosition), typeof(Transform), typeof(SpeedData), typeof(MoveQuery), typeof(LocomotionState), typeof(PosOffset));
     }
 
     protected override void OnUpdate()
@@ -27,7 +27,7 @@ public class MovementUpdateSystem : BaseComponentSystem
         float dt = Time.deltaTime;
         var entities = group.ToEntityArray(Allocator.TempJob);
         var targetPositions = group.ToComponentDataArray<TargetPosition>(Allocator.TempJob);
-        var speeds = group.ToComponentDataArray<MoveSpeed>(Allocator.TempJob);
+        var speeds = group.ToComponentArray<SpeedData>();
         var transforms = group.ToComponentArray<Transform>();
         var moveQuerys = group.ToComponentArray<MoveQuery>();
         var locoStates = group.ToComponentDataArray<LocomotionState>(Allocator.TempJob);
@@ -35,7 +35,7 @@ public class MovementUpdateSystem : BaseComponentSystem
         for (int i=0; i<targetPositions.Length; i++)
         {
             var targetPos = targetPositions[i].Value;
-            var speed = speeds[i].Value;
+            var speed = speeds[i].CurSpeed;
             var posOffset = posOffsets[i].Value;
             var curLocoStateObj = locoStates[i];
             var query = moveQuerys[i];
@@ -120,14 +120,14 @@ public class MovementUpdateSystem : BaseComponentSystem
             else
             {
                 float3 newPos;
-                if (moveDistance < speed/GameConst.SpeedFactor*dt)
+                if (moveDistance < speed*dt)
                 {
                     //目标已经离得很近了
                     newPos = targetPos;
                 }
                 else
                 {
-                    newPos = startPos+groundDir*speed/GameConst.SpeedFactor*dt;
+                    newPos = startPos+groundDir*speed*dt;
                 }
                 newPos.y = startPos.y;
                 //模仿重力，人物需要贴着地面走，有碰撞检测的所以不怕
@@ -155,7 +155,6 @@ public class MovementUpdateSystem : BaseComponentSystem
         }
         entities.Dispose();
         targetPositions.Dispose();
-        speeds.Dispose();
         locoStates.Dispose();
         posOffsets.Dispose();
     }
@@ -236,7 +235,7 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
     protected override void OnCreate()
     {
         base.OnCreate();
-        group = GetEntityQuery(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(PosSynchInfo), typeof(LocomotionState), typeof(MoveQuery));
+        group = GetEntityQuery(typeof(TargetPosition), typeof(Transform), typeof(SpeedData), typeof(PosSynchInfo), typeof(LocomotionState), typeof(MoveQuery));
     }
 
     protected override void OnUpdate()
@@ -245,7 +244,7 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
         var targetPosArray = group.ToComponentDataArray<TargetPosition>(Allocator.TempJob);
         var posArray = group.ToComponentArray<Transform>();
         var moveQuerys = group.ToComponentArray<MoveQuery>();
-        var moveSpeedArray = group.ToComponentDataArray<MoveSpeed>(Allocator.TempJob);
+        var moveSpeedArray = group.ToComponentArray<SpeedData>();
         var locoStates = group.ToComponentDataArray<LocomotionState>(Allocator.TempJob);
         var curLocoStateObj = locoStates[0];
         // Debug.Log("curLocoStateObj.LocoState : "+curLocoStateObj.LocoState);
@@ -261,10 +260,10 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
                 targetDirection.y = 0;
                 targetDirection = Vector3.Normalize(targetDirection);
                 float3 curPos = posArray[0].localPosition;
-                var speed = moveSpeedArray[0].Value;
+                var speed = moveSpeedArray[0].CurSpeed;
                 var newTargetPos = new TargetPosition();
                 if (speed > 0)
-                    newTargetPos.Value = curPos+targetDirection*(speed/GameConst.SpeedFactor*0.10f);//延着方向前进0.10秒为目标坐标
+                    newTargetPos.Value = curPos+targetDirection*(speed*0.10f);//延着方向前进0.10秒为目标坐标
                 else
                     newTargetPos.Value = curPos;
                 newTargetPos.Value.y = targetPosArray[0].Value.y;
@@ -281,7 +280,6 @@ public class CreateTargetPosFromUserInputSystem : BaseComponentSystem
         }
         entities.Dispose();
         targetPosArray.Dispose();
-        moveSpeedArray.Dispose();
         locoStates.Dispose();
     }
 }

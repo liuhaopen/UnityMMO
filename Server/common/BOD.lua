@@ -2,7 +2,7 @@ local BOD = BaseClass()
 
 BOD.Type = {
 	Veto = 1,--一票否决权，即只要有个 false 就结果为 false
-	HalfThrough = 2,--过半数通过
+	Half = 2,--过半数通过
 }
 
 function BOD:Constructor( default, type )
@@ -24,7 +24,7 @@ function BOD:Update(  )
 				break
 			end
 		end
-	elseif self.type == BOD.Type.HalfThrough then
+	elseif self.type == BOD.Type.Half then
 		--useless for now
 	end
 	self.value = newValue

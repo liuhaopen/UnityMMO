@@ -99,10 +99,11 @@ public class SceneMgr : MonoBehaviour
 	{
         m_GameWorld = world;
 
-        // ResMgr.GetInstance().Init();
         RoleMgr.GetInstance().Init(world);
         MonsterMgr.GetInstance().Init(world);
         NPCMgr.GetInstance().Init(world);
+        FightMgr.GetInstance().Init(world);
+        BuffMgr.GetInstance().Init(world);
 	}
 
 	public void OnDestroy()
