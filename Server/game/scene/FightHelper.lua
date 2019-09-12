@@ -98,7 +98,7 @@ function FightHelper:ChangeSpeed( entity, victim_uid, caster_uid, bodName, isSet
 	speedData:ChangeSpeed(bodName, isSet, speed)
 	local buffEvent = {
 		key = SceneConst.InfoKey.Speed, 
-		value = string.format("%s,%s,%s,%s", bodName, isSet, speed and math.floor(speed) or 0, caster_uid),
+		value = string.format("%s,%s,%s,%s", bodName, isSet and 1 or 0, speed and math.floor(speed) or 0, caster_uid),
 	}
 	self.sceneMgr.eventMgr:AddSceneEvent(victim_uid, buffEvent)
 end

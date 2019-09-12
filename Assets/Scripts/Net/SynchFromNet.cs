@@ -12,6 +12,7 @@ using static Protocol;
 namespace UnityMMO {
 public class SynchFromNet {
     private static SynchFromNet instance = null;
+    private EntityManager entityMgr;
     Dictionary<SceneInfoKey, Action<Entity, SprotoType.info_item> > changeFuncDic;
 
     public static SynchFromNet Instance 
@@ -25,6 +26,7 @@ public class SynchFromNet {
         
     public void Init()
     {
+        entityMgr = SceneMgr.Instance.EntityManager;
         changeFuncDic = new Dictionary<SceneInfoKey, Action<Entity, SprotoType.info_item>>();
         changeFuncDic[SceneInfoKey.PosChange] = ApplyChangeInfoPos;
         changeFuncDic[SceneInfoKey.TargetPos] = ApplyChangeInfoTargetPos;
@@ -33,6 +35,7 @@ public class SynchFromNet {
         //The main role may not exist until the scene change event is received
         changeFuncDic[SceneInfoKey.SceneChange] = ApplyChangeInfoSceneChange;
         changeFuncDic[SceneInfoKey.Buff] = ApplyChangeInfoBuff;
+        changeFuncDic[SceneInfoKey.Speed] = ApplyChangeInfoSpeed;
     }
 
     public void StartSynchFromNet()
@@ -154,6 +157,21 @@ public class SynchFromNet {
     private void ApplyChangeInfoBuff(Entity entity, SprotoType.info_item change_info)
     {
         BuffMgr.GetInstance().HandleBuff(entity, change_info.value);
+    }
+
+    private void ApplyChangeInfoSpeed(Entity entity, SprotoType.info_item change_info)
+    {
+        if (!entityMgr.HasComponent<SpeedData>(entity))
+        {
+            Debug.Log(string.Format("SynchFromNet:ApplyChangeInfoSpeed[has no speed data com] entity:{0}", entity));
+            return;
+        }
+        string[] strs = change_info.value.Split(',');
+        string bodName = strs[0];        
+        bool isSet = int.Parse(strs[1])==1;        
+        long value = Int64.Parse(strs[2]);        
+        var speedData = entityMgr.GetComponentObject<SpeedData>(entity);
+        speedData.ChangeSpeed(bodName, isSet, value);
     }
 
     private void ApplyChangeInfoSceneChange(Entity entity, SprotoType.info_item change_info)

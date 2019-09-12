@@ -135,6 +135,10 @@ public class RoleMgr
         speedData.InitSpeed(12);
         EntityManager.AddComponentObject(role, speedData);
 
+        roleGOE.gameObject.AddComponent<ParticleEffects>();
+        var particleEffects = roleGOE.gameObject.GetComponent<ParticleEffects>();
+        EntityManager.AddComponentObject(role, particleEffects);
+        
         MoveQuery rmq = EntityManager.GetComponentObject<MoveQuery>(role);
         rmq.Initialize(isNeedNavAgent);
     }

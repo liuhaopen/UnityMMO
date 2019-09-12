@@ -75,6 +75,9 @@ public class MonsterMgr
         var speedData = monsterGameOE.gameObject.GetComponent<SpeedData>();
         speedData.InitSpeed(speed/GameConst.SpeedFactor);
         EntityManager.AddComponentObject(monster, speedData);
+        monsterGameOE.gameObject.AddComponent<ParticleEffects>();
+        var particleEffects = monsterGameOE.gameObject.GetComponent<ParticleEffects>();
+        EntityManager.AddComponentObject(monster, particleEffects);
         MoveQuery rmq = EntityManager.GetComponentObject<MoveQuery>(monster);
         rmq.Initialize();
 

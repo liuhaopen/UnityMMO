@@ -146,8 +146,8 @@ public class FightMgr
 
         //更新朝向
         Transform trans = SceneMgr.Instance.EntityManager.GetComponentObject<Transform>(scene_entity);
-        // trans.rotation = Quaternion.Euler(trans.eulerAngles.x, skillEvent.direction/100, trans.eulerAngles.z);
-        trans.LookAt(new Vector3(skillEvent.target_pos_x/GameConst.RealToLogic, trans.localPosition.y, skillEvent.target_pos_z/GameConst.RealToLogic));
+        trans.rotation = Quaternion.Euler(trans.eulerAngles.x, skillEvent.direction/GameConst.RealToLogic, trans.eulerAngles.z);
+        // trans.LookAt(new Vector3(skillEvent.target_pos_x/GameConst.RealToLogic, trans.localPosition.y, skillEvent.target_pos_z/GameConst.RealToLogic));
         
         //播放攻击动作
         string assetPath = SkillManager.GetInstance().GetSkillResPath((int)skillEvent.skill_id);
