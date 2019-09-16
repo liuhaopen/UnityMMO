@@ -114,6 +114,7 @@ public class MonsterMgr
         looksInfo.CurState = LooksInfo.State.Loaded;
         looksInfo.LooksEntity = bodyOE.Entity;
         EntityManager.SetComponentData<LooksInfo>(ownerEntity, looksInfo);
+        ECSHelper.UpdateNameboardHeight(ownerEntity, bodyOE.transform);
     }
 
     public string GetName(Entity entity)

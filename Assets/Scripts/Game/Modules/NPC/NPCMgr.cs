@@ -44,12 +44,13 @@ public class NPCMgr
         NPCGameOE.transform.localPosition = pos;
         Entity NPC = NPCGameOE.Entity;
         NPCGameOE.GetComponent<UIDProxy>().Value = new UID{Value=uid};
-        InitNPC(NPC, uid, typeID, pos, targetPos);
+        InitNPC(NPCGameOE, uid, typeID, pos, targetPos);
         return NPC;
 	}
 
-    private void InitNPC(Entity NPC, long uid, long typeID, Vector3 pos, Vector3 targetPos)
+    private void InitNPC(GameObjectEntity NPCGameOE, long uid, long typeID, Vector3 pos, Vector3 targetPos)
     {
+        Entity NPC = NPCGameOE.Entity;
         EntityManager.AddComponentData(NPC, new LocomotionState {LocoState = LocomotionState.State.Idle});
         EntityManager.AddComponentData(NPC, new LooksInfo {CurState=LooksInfo.State.None, LooksEntity=Entity.Null});
         EntityManager.AddComponentData(NPC, new TypeID {Value=typeID});
@@ -57,7 +58,7 @@ public class NPCMgr
         EntityManager.AddComponentData(NPC, new SceneObjectTypeData {Value=SceneObjectType.NPC});
         CreateLooks(NPC, typeID);
     }
-
+    
     private void CreateLooks(Entity ownerEntity, long typeID)
     {
         var resPath = ResPath.GetNPCLooksPath(typeID);
@@ -74,6 +75,7 @@ public class NPCMgr
                 looksInfo.CurState = LooksInfo.State.Loaded;
                 looksInfo.LooksEntity = bodyOE.Entity;
                 EntityManager.SetComponentData<LooksInfo>(ownerEntity, looksInfo);
+                ECSHelper.UpdateNameboardHeight(ownerEntity, bodyOE.transform);
             }
             else
             {

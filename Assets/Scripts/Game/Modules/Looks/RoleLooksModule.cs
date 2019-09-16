@@ -254,6 +254,7 @@ public class HandleRoleLooksSpawnRequests : BaseComponentSystem
                     bodyOE.transform.SetParent(parentTrans);
                     bodyOE.transform.localPosition = Vector3.zero;
                     bodyOE.transform.localRotation = Quaternion.identity;
+                    ECSHelper.UpdateNameboardHeight(request.ownerEntity, bodyOE.transform);
                     LoadHair(hairPath, bodyOE.transform.Find("head"));
                     // Debug.Log("load ok role model");
                     looksInfo.CurState = LooksInfo.State.Loaded;

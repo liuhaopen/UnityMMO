@@ -21,11 +21,13 @@ namespace UnityMMO
         public ResState UIResState;
         public Transform LooksNode;
         public string Name;
+        public float Height;
         public NameboardData()
         {
             UIResState = ResState.WaitLoad;
             LooksNode = null;
             Name = "";
+            Height = 1.6f;
         }
 
         public void SetName(string name)
