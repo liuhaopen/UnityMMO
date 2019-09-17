@@ -1,0 +1,638 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e2cd0de500800e4f8ca12a3c6e5d892, type: 3}
+  m_Name: TFSetting
+  m_EditorClassIdentifier: 
+  standaloneDefault: -1
+  androidDefault: -1
+  iosDefault: -1
+  formatList:
+  - _name: ui
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 12
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    androidSet:
+      format: 47
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    iosSet:
+      format: 56
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/ui
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: fashion
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 10
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    androidSet:
+      format: 45
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    iosSet:
+      format: 32
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/scene/fashion
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: sequence
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 12
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    androidSet:
+      format: 47
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    iosSet:
+      format: 33
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/scene/other/sequence
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: object
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 10
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    androidSet:
+      format: 45
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    iosSet:
+      format: 32
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/scene/object
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: model
+    index: -1
+    iType: 1
+    standaloneSet:
+      format: -1
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    androidSet:
+      format: -1
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    iosSet:
+      format: -1
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/scene/object
+    nonPowerOf2: 0
+    useMipMaps: 1
+    isReadable: 0
+  - _name: effecttexture
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 12
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    androidSet:
+      format: 47
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    iosSet:
+      format: 33
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/scene/effect/texture
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: iconjpg
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 10
+      maxSize: 2048
+      compressionQuality: 100
+      loadType: 0
+    androidSet:
+      format: 45
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    iosSet:
+      format: 32
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/iconjpg
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: sound
+    index: -1
+    iType: 2
+    standaloneSet:
+      format: -1
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 1
+    androidSet:
+      format: -1
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 1
+    iosSet:
+      format: -1
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 1
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/sound
+    nonPowerOf2: 0
+    useMipMaps: 1
+    isReadable: 0
+  - _name: icon
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 12
+      maxSize: 2048
+      compressionQuality: 100
+      loadType: 0
+    androidSet:
+      format: 47
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    iosSet:
+      format: 33
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/icon
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: alphaCommon
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 4
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    androidSet:
+      format: 4
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    iosSet:
+      format: 56
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/ui/alphaCommon
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: alphaMain
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 4
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    androidSet:
+      format: 4
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    iosSet:
+      format: 56
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/ui/alphaMain
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: alphaSingle
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 12
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    androidSet:
+      format: 47
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    iosSet:
+      format: 33
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/ui/alphaSingle
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: mainui
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 2
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    androidSet:
+      format: 13
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    iosSet:
+      format: 13
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/ui/mainUI/texture
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: terraintexture
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 10
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    androidSet:
+      format: 45
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    iosSet:
+      format: 32
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/scene/terrain/map
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: terrainmodel
+    index: -1
+    iType: 1
+    standaloneSet:
+      format: -1
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    androidSet:
+      format: -1
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    iosSet:
+      format: -1
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/scene/terrain/map
+    nonPowerOf2: 0
+    useMipMaps: 1
+    isReadable: 0
+  - _name: terrainlighttex
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 12
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    androidSet:
+      format: 47
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    iosSet:
+      format: 33
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/scene/terrain/objs
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: terrainalphatex
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 12
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    androidSet:
+      format: 47
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    iosSet:
+      format: 33
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/scene/terrain/alphatexture
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: modelalphatex
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 12
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    androidSet:
+      format: 47
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    iosSet:
+      format: 33
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/scene/object/alpha
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: terraintruetex
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 2
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    androidSet:
+      format: 13
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    iosSet:
+      format: 13
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/scene/terrain/truecolour
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: effectmodel
+    index: -1
+    iType: 1
+    standaloneSet:
+      format: -1
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    androidSet:
+      format: -1
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    iosSet:
+      format: -1
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/scene/effect/models
+    nonPowerOf2: 0
+    useMipMaps: 1
+    isReadable: 0
+  - _name: jpgSingle
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 10
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    androidSet:
+      format: 45
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    iosSet:
+      format: 32
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/ui/jpgSingle
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: terraincommodel
+    index: -1
+    iType: 1
+    standaloneSet:
+      format: -1
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    androidSet:
+      format: -1
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    iosSet:
+      format: -1
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/scene/terrain/fbx
+    nonPowerOf2: 0
+    useMipMaps: 1
+    isReadable: 0
+  - _name: texture16bit
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 12
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    androidSet:
+      format: 47
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    iosSet:
+      format: 13
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/ui/tex16bit
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: font
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 4
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    androidSet:
+      format: 4
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    iosSet:
+      format: 4
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/Fonts
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: goodsicon
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 12
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    androidSet:
+      format: 47
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    iosSet:
+      format: 56
+      maxSize: 2048
+      compressionQuality: 100
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/icon/goodsIcon
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: terrainnormaltex
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 10
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    androidSet:
+      format: 45
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    iosSet:
+      format: 32
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/scene/terrain/texture
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
+  - _name: activityicon
+    index: -1
+    iType: 0
+    standaloneSet:
+      format: 2
+      maxSize: 2048
+      compressionQuality: 0
+      loadType: 0
+    androidSet:
+      format: 13
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    iosSet:
+      format: 13
+      maxSize: 2048
+      compressionQuality: 50
+      loadType: 0
+    paths:
+    - Assets/LuaFramework/AssetBundleRes/ui/activityIcon/texture
+    nonPowerOf2: 0
+    useMipMaps: 0
+    isReadable: 0
