@@ -36,6 +36,9 @@ namespace UnityMMO
             var healthData = entityMgr.GetComponentData<HealthStateData>(entity);
             healthData.CurHp = curHp;
             entityMgr.SetComponentData(entity, healthData);
+            var isMainRole = RoleMgr.GetInstance().IsMainRoleEntity(entity);
+            if (isMainRole)
+                XLuaFramework.CSLuaBridge.GetInstance().CallLuaFunc2Num(GlobalEvents.MainRoleHPChanged, hp, (long)healthData.MaxHp);
             bool hasNameboardData = entityMgr.HasComponent<NameboardData>(entity);
             var isRelive = flag==5;//复活
             var isDead = hp==0;//死亡
@@ -76,7 +79,7 @@ namespace UnityMMO
                 // Debug.Log("Time : "+TimeEx.ServerTime.ToString()+" isRelive:"+isRelive+" state:"+locoState.LocoState.ToString());
                 // locoState.StartTime = Time.time - (TimeEx.ServerTime-change_info.time)/1000.0f;//CAT_TODO:dead time
                 entityMgr.SetComponentData(entity, locoState);
-                if (isDead && RoleMgr.GetInstance().IsMainRoleEntity(entity))
+                if (isDead && isMainRole)
                 {
                     // var attackerName = SceneMgr.Instance.GetNameByUID(attackerUID);
                     RoleMgr.GetInstance().StopMainRoleRunning();

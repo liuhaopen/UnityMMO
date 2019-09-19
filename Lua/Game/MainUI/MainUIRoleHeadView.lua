@@ -13,7 +13,7 @@ end
 
 function MainUIRoleHeadView:OnLoad(  )
 	local names = {
-		"money_1","money_2","flag","head_icon:raw","lv","lv_bg","blood_bar",
+		"money_1","money_2","flag","head_icon:raw","lv","lv_bg","blood_bar:img",
 	}
 	UI.GetChildren(self, self.transform, names)
 
@@ -22,23 +22,26 @@ function MainUIRoleHeadView:OnLoad(  )
 end
 
 function MainUIRoleHeadView:AddEvents(  )
-	local on_click = function ( click_btn )
-		-- if click_btn == self.correct_obj then
-  --       	SceneMgr.Instance:CorrectMainRolePos()
-  --   	elseif click_btn == self.skill_1_obj then
-  --   		CS.UnityMMO.GameInput.GetInstance():SetKeyUp(CS.UnityEngine.KeyCode.I, true)
-		-- end
+	local HPChange = function ( curHp, maxHp )
+		self.blood_bar_img.fillAmount = Mathf.Clamp01(curHp/maxHp)
 	end
-	UIHelper.BindClickEvent(self.correct_obj, on_click)
-	UIHelper.BindClickEvent(self.skill_1_obj, on_click)
+	CSLuaBridge.GetInstance():SetLuaFunc2Num(GlobalEvents.MainRoleHPChanged, HPChange)
+end
 
+function MainUIRoleHeadView:UpdateHP(  )
+	local goe = RoleMgr.GetInstance():GetMainRole()
+	local entity = goe.Entity;
+	if not ECS:HasComponent(entity, CS.UnityMMO.Component.HealthStateData) then return end
+	local hpData = ECS:GetComponentData(entity, CS.UnityMMO.Component.HealthStateData)
+	self.blood_bar_img.fillAmount = Mathf.Clamp01(hpData.CurHp/hpData.MaxHp)
 end
 
 function MainUIRoleHeadView:UpdateView(  )
 	local career = MainRole:GetInstance():GetCareer()
-	print('Cat:MainUIRoleHeadView.lua[39] career', career)
 	local headRes = ResPath.GetRoleHeadRes(career, 0)
 	UI.SetRawImage(self, self.head_icon_raw, headRes)
+
+	self:UpdateHP()
 end
 
 return MainUIRoleHeadView
