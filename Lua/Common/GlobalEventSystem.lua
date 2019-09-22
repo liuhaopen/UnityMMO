@@ -13,4 +13,15 @@ function GlobalEventSystem.Init(  )
 		Message:Show(content)
 	end
 	CSLuaBridge.GetInstance():SetLuaFuncStr(GlobalEvents.MessageShow, MessageShow)
+
+	local AlertShow = function ( showData )
+		UI.AlertView.Show(showData)
+	end
+	CSLuaBridge.GetInstance():SetLuaFuncStr(GlobalEvents.AlertShow, AlertShow)
+	
+	local ExpChanged = function ( newExp, isUpgrade )
+		print("Cat:GlobalEventSystem [start:23] ", newExp, isUpgrade)
+		GlobalEventSystem:Fire(GlobalEvents.ExpChanged, newExp, isUpgrade)
+	end
+	CSLuaBridge.GetInstance():SetLuaFunc2Num(GlobalEvents.ExpChanged, ExpChanged)
 end

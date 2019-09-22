@@ -13,7 +13,7 @@ end
 
 function MainUIRoleHeadView:OnLoad(  )
 	local names = {
-		"money_1","money_2","flag","head_icon:raw","lv","lv_bg","blood_bar:img",
+		"money_1","money_2","flag","head_icon:raw","lv:txt","lv_bg","blood_bar:img",
 	}
 	UI.GetChildren(self, self.transform, names)
 
@@ -26,6 +26,12 @@ function MainUIRoleHeadView:AddEvents(  )
 		self.blood_bar_img.fillAmount = Mathf.Clamp01(curHp/maxHp)
 	end
 	CSLuaBridge.GetInstance():SetLuaFunc2Num(GlobalEvents.MainRoleHPChanged, HPChange)
+
+    GlobalEventSystem:Bind(GlobalEvents.ExpChanged, MainUIRoleHeadView.UpdateLv, self)
+end
+
+function MainUIRoleHeadView:UpdateLv(  )
+	self.lv_txt.text = MainRole:GetLv()
 end
 
 function MainUIRoleHeadView:UpdateHP(  )
@@ -36,12 +42,16 @@ function MainUIRoleHeadView:UpdateHP(  )
 	self.blood_bar_img.fillAmount = Mathf.Clamp01(hpData.CurHp/hpData.MaxHp)
 end
 
-function MainUIRoleHeadView:UpdateView(  )
+function MainUIRoleHeadView:UpdateHead(  )
 	local career = MainRole:GetInstance():GetCareer()
 	local headRes = ResPath.GetRoleHeadRes(career, 0)
 	UI.SetRawImage(self, self.head_icon_raw, headRes)
+end
 
+function MainUIRoleHeadView:UpdateView(  )
+	self:UpdateHead()
 	self:UpdateHP()
+	self:UpdateLv()
 end
 
 return MainUIRoleHeadView

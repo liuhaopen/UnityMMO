@@ -10,6 +10,7 @@ namespace XLuaFramework
 public class AssetsHotFixManager : MonoBehaviour
 {
     private List<string> downloadFiles = new List<string>();
+    private WaitForSeconds waitForSeconds = new WaitForSeconds(0.1f);
 
     public static AssetsHotFixManager Instance;
     private void Awake() 
@@ -88,7 +89,7 @@ public class AssetsHotFixManager : MonoBehaviour
         }
         message = "解包完成!!!";
         // facade.SendMessageCommand(NotiData.UPDATE_MESSAGE, message);
-        yield return new WaitForSeconds(0.1f);
+        yield return waitForSeconds;
         on_ok();
     }
 

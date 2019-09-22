@@ -16,7 +16,6 @@ public class MovementUpdateSystem : BaseComponentSystem
     protected override void OnCreate()
     {
         base.OnCreate();
-        // group = GetComponentGroup(typeof(TargetPosition), typeof(Transform), typeof(MoveSpeed), typeof(MoveQuery), typeof(LocomotionState), typeof(PosOffset), typeof(PosSynchInfo));
         group = GetEntityQuery(typeof(TargetPosition), typeof(Transform), typeof(SpeedData), typeof(MoveQuery), typeof(LocomotionState), typeof(PosOffset));
     }
 

@@ -15,6 +15,7 @@ public enum SceneInfoKey
     SceneChange=8,
     Buff=9,
     Speed=10,
+    Exp=11,
 }
 
 public enum SceneObjectType

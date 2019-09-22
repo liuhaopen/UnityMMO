@@ -26,4 +26,17 @@ function MainRole:GetCareer()
 	return self.baseInfo and self.baseInfo.career or 1
 end
 
+function MainRole:UpdateLv( lv )
+	if self.baseInfo and self.baseInfo.base_info then
+		self.baseInfo.base_info.level = lv
+	end
+end
+
+function MainRole:GetLv(  )
+	if self.baseInfo and self.baseInfo.base_info then
+		return self.baseInfo.base_info.level
+	end
+	return 1
+end
+
 return MainRole

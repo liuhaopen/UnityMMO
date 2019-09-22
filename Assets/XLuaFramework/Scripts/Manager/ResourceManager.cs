@@ -29,6 +29,7 @@ public class AssetBundleInfo {
         Dictionary<string, string[]> m_Dependencies = new Dictionary<string, string[]>();
         Dictionary<string, AssetBundleInfo> m_LoadedAssetBundles = new Dictionary<string, AssetBundleInfo>();
         Dictionary<string, List<LoadAssetRequest>> m_LoadRequests = new Dictionary<string, List<LoadAssetRequest>>();
+        WaitForSeconds waitForSeconds = new WaitForSeconds(0.05f);
 
         class LoadAssetRequest {
             public Type assetType;
@@ -168,7 +169,7 @@ public class AssetBundleInfo {
 
         IEnumerator LoadAssetInLocal<T>(string file_path, Action<UObject[]> action = null, LuaFunction func = null) where T : UObject
         {
-            yield return new WaitForSeconds(0.05f);
+            yield return waitForSeconds;
 #if UNITY_EDITOR
             T res = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(file_path);
             if (res != null)

@@ -7,6 +7,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 using UnityMMO.Component;
+using XLuaFramework;
 using static Protocol;
 
 namespace UnityMMO {
@@ -36,6 +37,7 @@ public class SynchFromNet {
         changeFuncDic[SceneInfoKey.SceneChange] = ApplyChangeInfoSceneChange;
         changeFuncDic[SceneInfoKey.Buff] = ApplyChangeInfoBuff;
         changeFuncDic[SceneInfoKey.Speed] = ApplyChangeInfoSpeed;
+        changeFuncDic[SceneInfoKey.Exp] = ApplyChangeInfoExp;
     }
 
     public void StartSynchFromNet()
@@ -172,6 +174,14 @@ public class SynchFromNet {
         long value = Int64.Parse(strs[2]);        
         var speedData = entityMgr.GetComponentObject<SpeedData>(entity);
         speedData.ChangeSpeed(bodName, isSet, value);
+    }
+
+    private void ApplyChangeInfoExp(Entity entity, SprotoType.info_item change_info)
+    {
+        string[] strs = change_info.value.Split(',');
+        long newExp = Int64.Parse(strs[0]);        
+        long isUpgrade = Int64.Parse(strs[1]);        
+        CSLuaBridge.GetInstance().CallLuaFunc2Num(GlobalEvents.ExpChanged, newExp, isUpgrade);
     }
 
     private void ApplyChangeInfoSceneChange(Entity entity, SprotoType.info_item change_info)

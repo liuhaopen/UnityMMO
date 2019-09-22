@@ -15,6 +15,7 @@ local SceneConst = {
         SceneChange=8,
         Buff=9,
         Speed=10,
+		Exp=11,
 	},
 	--有些类型的事件，就算是自己的也要发给前端
 	InterestSelfEvent = {
