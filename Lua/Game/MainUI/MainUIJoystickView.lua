@@ -14,7 +14,9 @@ function MainUIJoystickView:DefaultVar( )
 end
 
 function MainUIJoystickView:OnLoad(  )
-	local names = {}
+	local names = {
+		"chat_btn:obj",
+	}
 	UI.GetChildren(self, self.transform, names)
 
 	self:AddEvents()
@@ -25,7 +27,7 @@ function MainUIJoystickView:AddEvents(  )
 	local on_click = function ( click_btn )
 		
 	end
-	-- UIHelper.BindClickEvent(self.return_btn, on_click)
+	UI.BindClickEvent(self.chat_btn_obj, on_click)
 
 end
 

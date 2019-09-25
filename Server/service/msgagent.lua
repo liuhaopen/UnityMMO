@@ -38,6 +38,14 @@ local registerAllModule = function( user_info )
 			end
 		end
 	end
+	local services = {
+		"chat",
+	}
+	for i = 1, #services do
+		local service = skynet.queryservice(services[i])
+		local handler = skynet.call(service, "lua", "get_handlers")
+		Dispatcher:RegisterSprotoService(service, handler)
+	end
 end
 
 function CMD.execute( source, className, funcName, ... )
@@ -118,7 +126,12 @@ skynet.start(function()
 							response = handler(user_info, content)
 						end
 					else
-						skynet.error("msgagent handle proto failed! cannot find handler:", proto_info.name)
+						local service = Dispatcher:GetSprotoService(proto_info.name)
+						if service then
+							response = skynet.call(service, "lua", proto_info.name, user_info, content)
+						else
+							skynet.error("msgagent handle proto failed! cannot find handler:", proto_info.name)
+						end
 					end
 				end
 				local ok, response_str = pcall(c2s_sproto.response_encode, c2s_sproto, tag, response)

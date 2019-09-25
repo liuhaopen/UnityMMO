@@ -6,7 +6,7 @@ local clientGMList = {
 	{gmName="场景信息", defaultGMStr="sceneInfo"},
 }
 
-function GMModel:__init()
+function GMModel:Constructor()
 	GMModel.Instance = self
 	self:Reset()
 end

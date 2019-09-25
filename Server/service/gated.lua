@@ -102,6 +102,7 @@ function server.register_handler(name)
 	end
 	--加载游戏场景配置信息和场景管理器
 	skynet.uniqueservice("world")
+	skynet.uniqueservice("chat")
 end
 
 msgserver.start(server)

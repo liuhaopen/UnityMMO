@@ -43,6 +43,10 @@ function gmHandler.ClearAllGoods( gmParts )
 	return ErrorCode.GMUnknow
 end
 
+function gmHandler.Attr( gmParts )
+	
+end
+
 local SprotoHandlers = {}
 function SprotoHandlers.GM_GetList( reqData )
 	return {gmList=this.gmList}
