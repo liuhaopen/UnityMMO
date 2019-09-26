@@ -2,14 +2,17 @@ return [[
 
 .chatInfo {
 	roleID 0 : integer
-	roleName 1 : string
+	name 1 : string
 	content 2 : string
 	career 3 : integer
-	headID 4 : integer
-	headUrl 5 : string
-	bubbleID 6 : integer
-	time 7 : integer
-	extra  8 : string
+	lv 4 : integer
+	vip 5 : integer
+	headID 6 : integer
+	headUrl 7 : string
+	bubbleID 8 : integer
+	time 9 : integer
+	channel 10 : integer
+	extra  11 : string
 }
 
 #获取某频道的历史聊天记录

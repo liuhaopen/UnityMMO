@@ -15,4 +15,16 @@ function ChatModel.GetInstance()
 	return ChatModel.Instance
 end
 
+function ChatModel:GetChatList( channel )
+	return self.chat_list[channel]
+end
+
+function ChatModel:SetChatList( channel, value )
+	self.chat_list[channel] = value
+end
+
+function ChatModel:UpdateChatList( newChatInfo )
+	
+end
+
 return ChatModel

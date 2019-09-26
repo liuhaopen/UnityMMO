@@ -1,4 +1,7 @@
 local ChatConst = {
+    Event = {
+        UpdateChatList = "ChatConst.Event.UpdateChatList",
+    },
     -- ChatConst.Channel.World
     Channel = {
         World = 1,--世界频道

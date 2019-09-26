@@ -19,6 +19,7 @@ function ChatController:AddEvents(  )
     end
     GlobalEventSystem:Bind(GlobalEvents.GameStart, onGameStart)
 
+
 end
 
 function ChatController:ReqChatList(  )
@@ -26,6 +27,7 @@ function ChatController:ReqChatList(  )
 		print("Cat:ChatController [start:25] ackData: ", ackData)
         PrintTable(ackData)
         print("Cat:ChatController [end]")
+        self.model:SetChatList(ackData.channel, ackData.list)
 	end
     NetDispatcher:SendMessage("Chat_GetHistory", {channel=ChatConst.Channel.World}, on_ack)
     NetDispatcher:SendMessage("Chat_GetHistory", {channel=ChatConst.Channel.Notify}, on_ack)
@@ -37,6 +39,7 @@ function ChatController:ListenNewChat(  )
         print("Cat:ChatController [start:38] onNewChat ackData:", ackData)
         PrintTable(ackData)
         print("Cat:ChatController [end]")
+        self.model:UpdateChatList(ackData)
     end
     NetDispatcher:Listen("Chat_GetNew", nil, onNewChat)
 end
