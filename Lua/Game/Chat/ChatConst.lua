@@ -1,6 +1,8 @@
 local ChatConst = {
     Event = {
         UpdateChatList = "ChatConst.Event.UpdateChatList",
+        SetChatViewVisible = "ChatConst.Event.SetChatViewVisible",
+        SendChat = "ChatConst.Event.SendChat",
     },
     -- ChatConst.Channel.World
     Channel = {

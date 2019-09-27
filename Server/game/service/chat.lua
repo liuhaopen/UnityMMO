@@ -4,6 +4,7 @@ local ChatConst = require "game.chat.ChatConst"
 local table_insert = table.insert
 local succeed = {ret=ErrorCode.Succeed}
 local unknow = {ret=ErrorCode.Unknow}
+local NORET = {}
 local CMD = {}
 local this = {}
 
@@ -58,7 +59,11 @@ function CMD.Chat_Send( user_info, req_data )
 end
 
 function CMD.Chat_GetNew( user_info, req_data )
-    
+    local ack = this.ackGetNews[user_info.cur_role_id]
+    if not ack then
+        this.ackGetNews[user_info.cur_role_id] = skynet.response()
+    end
+    return NORET
 end
 
 local boardcast = function (  )
@@ -74,6 +79,7 @@ local init = function (  )
     this.cacheRoleInfos = {}
     setmetatable(this.cacheRoleInfos, {__mode = "v"})
     this.db = skynet.localname(".GameDBServer")
+    this.ackGetNews = {}
 end
 
 skynet.start (function ()
@@ -85,7 +91,9 @@ skynet.start (function ()
 		end
 	end)
 	skynet.dispatch ("lua", function (_, _, command, ...)
-		local f = assert(CMD[command])
-		skynet.retpack(f(...))
+        local f = assert(CMD[command])
+        if r ~= NORET then
+			skynet.retpack(f(...))
+		end
 	end)
 end)

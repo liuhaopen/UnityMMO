@@ -10,7 +10,7 @@ end
 
 function ChatItem:OnLoad(  )
 	local names = {
-
+		"content:txt",
 	}
 	UI.GetChildren(self, self.transform, names)
 
@@ -23,7 +23,9 @@ function ChatItem:AddEvents(  )
 end
 
 function ChatItem:OnUpdate(  )
-	
+	if not self.data then return end
+
+	self.content_txt.text = self.data.content
 end
 
 return ChatItem

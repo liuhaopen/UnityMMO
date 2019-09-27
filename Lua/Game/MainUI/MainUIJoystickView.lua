@@ -25,8 +25,7 @@ end
 
 function MainUIJoystickView:AddEvents(  )
 	local on_click = function ( click_btn )
-		self.chatView = require("Game.Chat.ChatView").New()
-		self.chatView:Load()
+		ChatModel:GetInstance():Fire(ChatConst.Event.SetChatViewVisible, true)
 	end
 	UI.BindClickEvent(self.chat_btn_obj, on_click)
 

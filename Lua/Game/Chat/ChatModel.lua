@@ -6,6 +6,7 @@ function ChatModel:Constructor()
 end
 
 function ChatModel:Reset()
+	self.chat_list = {}
 end
 
 function ChatModel.GetInstance()
@@ -24,7 +25,6 @@ function ChatModel:SetChatList( channel, value )
 end
 
 function ChatModel:UpdateChatList( newChatInfo )
-	
 end
 
 return ChatModel

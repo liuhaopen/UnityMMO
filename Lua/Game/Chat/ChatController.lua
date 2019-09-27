@@ -19,7 +19,22 @@ function ChatController:AddEvents(  )
     end
     GlobalEventSystem:Bind(GlobalEvents.GameStart, onGameStart)
 
-
+    self.model:Bind(ChatConst.Event.SetChatViewVisible, function( isShow )
+        if isShow then
+            if self.chatView then
+                self.chatView:SetActive(true)
+            else
+                self.chatView = require("Game.Chat.ChatView").New()
+                self.chatView:Load()
+            end
+        else
+            if self.chatView then
+                self.chatView:Unload()
+                self.chatView = nil
+            end
+        end
+    end)
+    
 end
 
 function ChatController:ReqChatList(  )
