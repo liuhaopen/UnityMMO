@@ -8,5 +8,6 @@ local ChatConst = {
         CS = 5,--跨服
         Count = 6
     },
+    MaxHistoryNum = 50,
 }
 return ChatConst

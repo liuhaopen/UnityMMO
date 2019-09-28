@@ -13,6 +13,7 @@ return [[
 	time 9 : integer
 	channel 10 : integer
 	extra  11 : string
+	id 12 : integer
 }
 
 #获取某频道的历史聊天记录

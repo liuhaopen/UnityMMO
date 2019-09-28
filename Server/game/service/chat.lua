@@ -51,7 +51,9 @@ function CMD.Chat_Send( user_info, req_data )
         content = req_data.content,
         extra = req_data.extra,
         time = Time.timeMS,
+        id = this.ids[req_data.channel],
     }
+    this.ids[req_data.channel] = this.ids[req_data.channel] + 1
     local hisy = this.history[req_data.channel] 
     table_insert(hisy, chatInfo)
     table_insert(this.newChatList, chatInfo)
@@ -66,20 +68,24 @@ function CMD.Chat_GetNew( user_info, req_data )
     return NORET
 end
 
+--Cat_Todo : 要不要改成组播的形式
 local boardcast = function (  )
     
 end
 
 local init = function (  )
     this.history = {}
+    this.ids = {}
     for i = ChatConst.Channel.World, ChatConst.Channel.Count do
         this.history[i] = {}
+        this.ids[i] = 0
     end
     this.newChatList = {}
     this.cacheRoleInfos = {}
     setmetatable(this.cacheRoleInfos, {__mode = "v"})
     this.db = skynet.localname(".GameDBServer")
     this.ackGetNews = {}
+    this.interestChannel = {}
 end
 
 skynet.start (function ()

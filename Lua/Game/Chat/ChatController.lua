@@ -19,13 +19,16 @@ function ChatController:AddEvents(  )
     end
     GlobalEventSystem:Bind(GlobalEvents.GameStart, onGameStart)
 
-    self.model:Bind(ChatConst.Event.SetChatViewVisible, function( isShow )
+    self.model:Bind(ChatConst.Event.SetChatViewVisible, function( isShow, channel )
         if isShow then
             if self.chatView then
                 self.chatView:SetActive(true)
             else
                 self.chatView = require("Game.Chat.ChatView").New()
                 self.chatView:Load()
+            end
+            if channel then
+                self.chatView:SetShowChannel(channel)
             end
         else
             if self.chatView then

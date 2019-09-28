@@ -4,6 +4,7 @@ local ChatConst = {
         SetChatViewVisible = "ChatConst.Event.SetChatViewVisible",
         SendChat = "ChatConst.Event.SendChat",
     },
+    MaxHistoryNum = 50,
     -- ChatConst.Channel.World
     Channel = {
         World = 1,--世界频道

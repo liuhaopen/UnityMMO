@@ -7,6 +7,7 @@ end
 
 function ChatModel:Reset()
 	self.chat_list = {}
+	self.ids = {}
 end
 
 function ChatModel.GetInstance()
@@ -25,6 +26,14 @@ function ChatModel:SetChatList( channel, value )
 end
 
 function ChatModel:UpdateChatList( newChatInfo )
+end
+
+function ChatModel:SetLastReadChatID( channel, id )
+	self.ids[channel] = id
+end
+
+function ChatModel:GetLastReadChatID( channel )
+	return self.ids[channel]
 end
 
 return ChatModel
