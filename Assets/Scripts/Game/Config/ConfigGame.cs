@@ -36,7 +36,7 @@ namespace UnityMMO
         public bool Load()
         {
             isLoaded = true;
-            Debug.Log("Confgi Game FilePath : "+FilePath+" isexist:"+File.Exists(FilePath));
+            Debug.Log("Config Game FilePath : "+FilePath+" isexist:"+File.Exists(FilePath));
             if (File.Exists(FilePath))
             {
                 string json = File.ReadAllText(FilePath);

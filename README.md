@@ -14,7 +14,7 @@
 
 # Status & Prerequisites
 ```
-Unity version: 2019.1.4f1
+Unity version: 2019.2.0f1
 Platforms    : 
 client for Windows Android IOS;  
 server only for Linux;
