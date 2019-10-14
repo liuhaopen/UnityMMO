@@ -10,7 +10,7 @@
 后端:  
 )安装虚拟机,我使用的是 CentOS7,然后设置整个项目目录为虚拟机的共享目录, cd到 Server 目录,先编译 skynet:[skynet 主页](https://github.com/cloudwu/skynet "skynet 主页")  
 )在虚拟机安装 mysql 并导入 Server/data/ 里的两个数据库文件  
-)运行: ./run.sh 跑起服务端(如果你要把 Server 目录单独提取到其它机器运行时，记得把 UnityMMO/Lua 里的 Config,Proto,Common 三个目录也复制过去并保持目录层级关系)  
+)运行: ./run.sh 跑起服务端(如果你要把 Server 目录单独提取到其它机器运行时，记得把 UnityMMO/Lua 目录(连同里面的 Config,Proto,Common)复制过去并保持目录层级关系)  
 
 # Status & Prerequisites
 ```

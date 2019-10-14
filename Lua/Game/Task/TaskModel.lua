@@ -126,4 +126,8 @@ function TaskModel:GetTaskInfoByType( taskType )
 	return nil
 end
 
+function TaskModel:IsTaskFinished( taskID )
+	return true
+end
+
 return TaskModel

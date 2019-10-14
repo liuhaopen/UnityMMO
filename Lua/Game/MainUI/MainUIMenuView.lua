@@ -71,17 +71,15 @@ end
 --获取所有符合条件的图标数据
 function MainUIMenuView:GetOpenFunctionIcon()
     local list = {}
-    local roleVo = RoleManager:getInstance():GetMainRoleVo()
+    local roleVo = RoleManager:GetInstance():GetMainRoleVo()
     if not roleVo then return end
     
     local myLv = roleVo.level
-    local openDay = ServerTimeModel:getInstance():GetOpenServerDay()
-    for k, v in pairs(Config.ConfigFunctionIcon.LeftBottom) do
+    for k, v in pairs(MainUIConst.MainIcons) do
         local openLv = v.open_lv <= myLv
-        local openTaskOk = not v.open_task or TaskModel:getInstance():IsTaskFinished(v.open_task)
-        local openDayOK = (v.open_day or 0) <= openDay
-        if openLv and openTaskOk and openDayOK then
-            list[v.icon_type] = v
+        local openTaskOk = not v.open_task or TaskModel:GetInstance():IsTaskFinished(v.open_task)
+        if openLv and openTaskOk then
+            list[v.id] = v
         end
     end
     return list

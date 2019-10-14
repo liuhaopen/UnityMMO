@@ -98,7 +98,7 @@ namespace UnityMMO
                 {
                     var nameboardData = entityMgr.GetComponentObject<NameboardData>(entity);
                     nameboardData.Height = meshRender.bounds.size.y;
-                    Debug.Log(string.Format("RoleLooksModule[264] nameboardData.Height:{0}", nameboardData.Height));
+                    // Debug.Log(string.Format("RoleLooksModule[264] nameboardData.Height:{0}", nameboardData.Height));
                 }
             }
         }

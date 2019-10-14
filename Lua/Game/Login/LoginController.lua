@@ -5,12 +5,10 @@ local crypt = require "crypt"
 LoginController = {}
 
 function LoginController:Init(  )
-	print('Cat:LoginController.lua[Init]')
 	self:InitEvents()
 
     self.loginView = require("Game/Login/LoginView").New()
     self.loginView:Load()
-    -- UIMgr:Show(self.loginView)
 end
 
 function LoginController:InitEvents(  )
@@ -20,7 +18,6 @@ function LoginController:InitEvents(  )
     GlobalEventSystem:Bind(NetDispatcher.Event.OnReceiveLine, LoginController.OnReceiveLine, self)
 
     local LoginSucceed = function (  )
-        print('Cat:LoginController.lua[LoginSucceed]')
         --登录成功后就请求角色列表
         local on_ack = function ( ack_data )
             print("Cat:LoginController [start:27] ack_data:", ack_data)
@@ -75,7 +72,6 @@ function LoginController:ReqMainRole(  )
         local role_info = ack_data.role_info
         local pos = Vector3.New(role_info.pos_x/GameConst.RealToLogic, role_info.pos_y/GameConst.RealToLogic, role_info.pos_z/GameConst.RealToLogic)
         SceneMgr.Instance:AddMainRole(role_info.scene_uid, role_info.role_id, role_info.name, role_info.career, pos, role_info.cur_hp, role_info.max_hp)
-        -- SceneMgr.Instance:LoadScene(role_info.scene_id)
         
         MainRole:GetInstance():SetBaseInfo(role_info)
         GameVariable.IsNeedSynchSceneInfo = true
@@ -108,9 +104,9 @@ function LoginController:StartLogin(login_info)
 end
 
 function LoginController:OnReceiveLine(bytes) 
-    print('Cat:LoginController.lua[114] bytes', bytes)
+    -- print('Cat:LoginController.lua[114] bytes', bytes)
     local code = tostring(bytes)
-    print('Cat:LoginController.lua[145] code|'..code.."|login state:"..self.login_state)
+    -- print('Cat:LoginController.lua[145] code|'..code.."|login state:"..self.login_state)
     if self.login_state == LoginConst.Status.WaitForLoginServerChanllenge then
         self.challenge = crypt.base64decode(code)
         self.clientkey = crypt.randomkey()
@@ -143,11 +139,11 @@ function LoginController:OnReceiveLine(bytes)
         self.login_state = LoginConst.Status.WaitForLoginServerAuthorResult
     elseif self.login_state == LoginConst.Status.WaitForLoginServerAuthorResult then
         local result = tonumber(string.sub(code, 1, 3))
-        print('Cat:LoginController.lua[194] result', result)
+        -- print('Cat:LoginController.lua[194] result', result)
         if result == 200 then
             print('Cat:LoginController.lua login succeed!')
             self.subid = crypt.base64decode(string.sub(code, 5))
-            print('Cat:LoginController.lua[login ok] subid', self.subid)
+            -- print('Cat:LoginController.lua[login ok] subid', self.subid)
             self:StartConnectGameServer()
         else
             self.error_map = self.error_map or {
@@ -157,20 +153,20 @@ function LoginController:OnReceiveLine(bytes)
                 [406] = "该用户已经在登陆中",
             }
             local error_str = self.error_map[result] or "未知错误"
-            print('Cat:LoginController.lua[147] self.error_map[result]', error_str)
+            -- print('Cat:LoginController.lua[147] self.error_map[result]', error_str)
             Message:Show(error_str)
         end
     end
 end
 
 function LoginController:Connect()
-	print('Cat:LoginController.lua[Connect] self.login_state : ', self.login_state)
+	-- print('Cat:LoginController.lua[Connect] self.login_state : ', self.login_state)
 	if self.login_state == LoginConst.Status.WaitForGameServerConnect then
 		--刚连接上游戏服务器时需要进行一次握手校验
 		local handshake = string.format("%s@%s#%s:%d", crypt.base64encode(self.token.user), crypt.base64encode(self.token.server),crypt.base64encode(self.subid) , 1)
 		local hmac = crypt.hmac64(crypt.hashkey(handshake), self.secret)
 		local handshake_str = handshake .. ":" .. crypt.base64encode(hmac)
-		print('Cat:LoginController.lua[132] handshake_str', handshake_str)
+		-- print('Cat:LoginController.lua[132] handshake_str', handshake_str)
         NetMgr:SendBytes(handshake_str)
         --接下来的处理就在OnReceiveMsg函数里
         self.login_state = LoginConst.Status.WaitForGameServerHandshake

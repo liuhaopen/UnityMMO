@@ -2,6 +2,7 @@
 local skynet = require "skynet"
 local ChatConst = require "game.chat.ChatConst"
 local table_insert = table.insert
+local ErrorCode = require "game.config.ErrorCode"
 local succeed = {ret=ErrorCode.Succeed}
 local unknow = {ret=ErrorCode.Unknow}
 local NORET = {}
@@ -32,6 +33,7 @@ end
 
 function CMD.Chat_GetHistory( user_info, req_data )
     print("Cat:chat [start:11] ", user_info, req_data)
+    return {channel=req_data.channel, list={}}
 end
 
 function CMD.Chat_Send( user_info, req_data )
