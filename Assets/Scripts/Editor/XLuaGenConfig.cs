@@ -133,7 +133,7 @@ public static class XLuaGenConfig
         {
             Type[] types = Assembly.Load("Assembly-CSharp").GetTypes();
             List<Type> list = (from type in types
-                               where (type.Namespace == "UnityMMO" || type.Namespace == "XLuaFramework")
+                               where (type.Namespace == "UnityMMO" || type.Namespace == "XLuaFramework" || type.Namespace == "Cocos")
                                select type).ToList();
             return list;
         }

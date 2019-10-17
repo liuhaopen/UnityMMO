@@ -1,7 +1,8 @@
 local MainUIMenuIcon = BaseClass(UINode)
 MainUIMenuIcon.Width = 90
-function MainUIMenuIcon:Constructor( )
+function MainUIMenuIcon:Constructor( parentTrans )
 	self.viewCfg = {
+		parentTrans = parentTrans,
 		prefabPath = "Assets/AssetBundleRes/ui/mainui/MainUIMenuIcon.prefab",
 	}
 end
@@ -13,9 +14,10 @@ function MainUIMenuIcon:OnLoad()
     self:GetChildren(nodes)
 
 	self:AddEvents()
-	if self.need_refreshData then
-		self:SetData(self.data)
-	end
+	if self.cache_move_to_info then
+    	self:MoveToPos(self.cache_move_to_info[1], self.cache_move_to_info[2])
+    	self.cache_move_to_info = nil
+    end
 end
 
 function MainUIMenuIcon:AddEvents()

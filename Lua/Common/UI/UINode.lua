@@ -282,4 +282,10 @@ function UINode:SetUnloadCallBack( callBack )
 	self.unloadCallBack = callBack
 end
 
+function UINode:AddAction( action, node )
+	self.action_nodes = self.action_nodes or {}
+	table.insert(self.action_nodes, node)
+	cc.ActionManager:getInstance():addAction(action, node)
+end
+
 return UINode

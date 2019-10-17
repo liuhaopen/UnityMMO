@@ -12,6 +12,12 @@ function MainUIController:AddEvents(  )
     GlobalEventSystem:Bind(GlobalEvents.GameStart, MainUIController.InitMainUIViews, self)
     
     GlobalEventSystem:Bind(GlobalEvents.SetMainUIVisible, MainUIController.SetMainUIVisible, self)
+
+    self.model:Bind(MainUIConst.Event.VoteToHideMainMenu, function()
+        
+    end)
+    
+    
 end
 
 function MainUIController:InitMainUIViews(  )
@@ -37,9 +43,9 @@ function MainUIController:InitMainUIViews(  )
     view:Load()
     self.views[MainUIConst.View.ActIcon] = view
     
-    local view = require("Game.MainUI.MainUIMenuView").New()
-    view:Load()
-    self.views[MainUIConst.View.MainMenu] = view
+    self.mainMenu = require("Game.MainUI.MainUIMenuView").New()
+    self.mainMenu:Load()
+    self.views[MainUIConst.View.MainMenu] = self.mainMenu
 end
 
 --Cat_Todo : untested
