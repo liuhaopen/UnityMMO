@@ -4,7 +4,8 @@ require("Game.MainUI.MainUIModel")
 MainUIController = {}
 
 function MainUIController:Init(  )
-    
+    self.model = MainUIModel:GetInstance()
+
     self:AddEvents()
 end		
 
@@ -13,11 +14,8 @@ function MainUIController:AddEvents(  )
     
     GlobalEventSystem:Bind(GlobalEvents.SetMainUIVisible, MainUIController.SetMainUIVisible, self)
 
-    self.model:Bind(MainUIConst.Event.VoteToHideMainMenu, function()
-        
-    end)
-    
-    
+    -- self.model:Bind(MainUIConst.Event.VoteToHideMainMenu, function()
+    -- end)
 end
 
 function MainUIController:InitMainUIViews(  )

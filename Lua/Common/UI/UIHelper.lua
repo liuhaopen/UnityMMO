@@ -4,6 +4,7 @@ local LuaEventListener = LuaEventListener
 local LuaClickListener = LuaClickListener
 local LuaDragListener = LuaDragListener
 local WordManager = WordManager
+local Jury = require("Common.Util.Jury")
 
 UI = BaseClass(CS.XLuaFramework.UIHelper)
 --下列接口会尝试多种设置的，如果你已经知道你的节点是什么类型的就别用下列接口了

@@ -1,4 +1,4 @@
-TaskModel = BaseClass(EventDispatcher)
+local TaskModel = BaseClass(EventDispatcher)
 
 function TaskModel:Constructor(  )
 	self:Reset()

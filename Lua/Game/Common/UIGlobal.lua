@@ -18,6 +18,7 @@ NPCMgr = CS.UnityMMO.NPCMgr
 LogError = CS.UnityEngine.Debug.LogError
 Entity = CS.Unity.Entities.Entity
 SkillManager = CS.UnityMMO.SkillManager
+Cocos = CS.Cocos
 
 LRoleMgr = require("Game.Scene.LRoleMgr")
 ErrorCode = require("Game.Error.ErrorCode")

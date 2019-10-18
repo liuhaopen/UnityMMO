@@ -66,21 +66,24 @@ end
 function cc.Wrapper.GetAlpha( node )
 	if node then
 		local alpha = nil
-		if cc.Wrapper.TryGet(node, "alpha") then
-			alpha = node.alpha
-		elseif cc.Wrapper.TryGet(node, "color") then
+		if cc.Wrapper.TryGet(node, "color") and node.color then
 			alpha = node.color.a
+		elseif cc.Wrapper.TryGet(node, "alpha") and node.alpha then
+			alpha = node.alpha
 		else
 			local image = node:GetComponent("Image")
 			if image ~= nil then
 				local r,g,b,a = image.color:Get()
 				alpha = a
 			else
-				local imageEx = node:GetComponent("ImageExtend")
-				alpha = imageEx.alpha
-				if imageEx ~= nil then
-					local text = node:GetComponent("Text")
-					alpha = text.alpha
+				local text = node:GetComponent("Text")
+				if text ~= nil then
+					alpha = text.color.a
+				else
+					local imageEx = node:GetComponent("ImageExtend")
+					if imageEx then
+						alpha = imageEx.alpha
+					end
 				end
 			end
 		end
@@ -88,11 +91,30 @@ function cc.Wrapper.GetAlpha( node )
 	end
 end
 
+function cc.Wrapper.SetChildrenAlpha( node, alpha, childCon )
+	local childrenList
+	if childCon and childCon.childrenListForActionWrapper then
+		childrenList = childCon.childrenListForActionWrapper
+	else
+		childrenList = node:GetComponentsInChildren(typeof(UnityEngine.RectTransform))
+		if childCon then
+			childCon.childrenListForActionWrapper = childrenList
+		end
+	end
+	if not childrenList then return end
+    for i=0,childrenList.Length-1 do
+        local child = childrenList[i]
+        cc.Wrapper.SetAlpha(child, alpha)
+    end
+end
+
 function cc.Wrapper.SetAlpha( node, alpha )
 	if node and alpha then
-		if cc.Wrapper.TryGet(node, "color") then
+		if cc.Wrapper.TryGet(node, "color") and node.color then
 			node.color = Color(node.color.r,node.color.g,node.color.b,alpha)
-		elseif cc.Wrapper.TryGet(node, "SetAlpha") then	
+		elseif cc.Wrapper.TryGet(node, "alpha") and node.alpha then
+			node.alpha = alpha
+		elseif cc.Wrapper.TryGet(node, "SetAlpha") and node.SetAlpha then	
 			node:SetAlpha(alpha)
 		else
 			--尽量为特定的action用setTarget传入特定的组件
@@ -101,12 +123,14 @@ function cc.Wrapper.SetAlpha( node, alpha )
 				local r,g,b,a = image.color:Get()
 				image.color = Color.New(r,g,b,alpha)
 			else
-				local imageEx = node:GetComponent("ImageExtend")
-				if imageEx ~= nil then
-					imageEx.alpha = alpha
-				else
-					local text = node:GetComponent("Text")
+				local text = node:GetComponent("Text")
+				if text ~= nil then
 					text.color = Color(text.color.r,text.color.g,text.color.b,alpha)
+				else
+					local imageEx = node:GetComponent("ImageExtend")
+					if imageEx ~= nil then
+						imageEx.alpha = alpha
+					end
 				end
 			end
 		end

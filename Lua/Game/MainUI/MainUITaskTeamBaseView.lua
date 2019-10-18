@@ -6,6 +6,7 @@ function MainUITaskTeamBaseView:Constructor( )
 		canvasName = "MainUI",
 		curTabID = nil,
 	}
+	-- print('Cat:MainUITaskTeamBaseView.lua[9] TaskModel', TaskModel)
 	self.model = TaskModel:GetInstance()
 end
 

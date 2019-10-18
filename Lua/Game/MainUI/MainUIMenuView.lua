@@ -17,7 +17,7 @@ end
 
 function MainUIMenuView:OnLoad(  )
 	local names = {
-		"bag:obj","swith_btn:obj","icon_con",
+		"bag:obj","swith_btn:obj","icon_con:obj",
 	}
 	UI.GetChildren(self, self.transform, names)
 
@@ -81,10 +81,8 @@ end
 --获取所有符合条件的图标数据
 function MainUIMenuView:GetOpenFunctionIcon()
     local list = {}
-    local roleVo = RoleManager:GetInstance():GetMainRoleVo()
-    if not roleVo then return end
-    
-    local myLv = roleVo.level
+
+    local myLv = MainRole:GetInstance():GetLv()
     for k, v in pairs(MainUIConst.MainIcons) do
         local openLv = v.open_lv <= myLv
         local openTaskOk = not v.open_task or TaskModel:GetInstance():IsTaskFinished(v.open_task)
@@ -131,8 +129,8 @@ function MainUIMenuView:CalculateIconPos( i )
 end
 
 function MainUIMenuView:PlayActionForSwitchBtn(  )
-    local runner = self.swith_btn_obj.AddComponent(typeof(Cocos.ActionRunner))
-    local moveAction = Cocos.MoveBy.CreateLocal(1, Vector3(50,30,40))
+    local runner = self.swith_btn_obj:AddComponent(typeof(Cocos.ActionRunner))
+    local moveAction = Cocos.MoveBy.CreateLocal(1, Vector3(5,5,0))
     local action = Cocos.Sequence.Create(moveAction, Cocos.DelayTime.Create(1), Cocos.FadeIn.Create(0.5))
     runner:PlayAction(action)   
 end
@@ -174,7 +172,7 @@ function MainUIMenuView:ShowMenuList(show_menu, is_force)
         end, 0.1)
     end
     self:UpdateSwithIconRed()
-    GlobalEventSystem:Fire(EventName.BROADCAST_SWITCH_BTN_STATE, self.show_menu)
+    -- GlobalEventSystem:Fire(EventName.BROADCAST_SWITCH_BTN_STATE, self.show_menu)
 end
 
 return MainUIMenuView
