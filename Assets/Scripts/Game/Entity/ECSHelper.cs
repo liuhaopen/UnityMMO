@@ -93,7 +93,7 @@ namespace UnityMMO
             if (entityMgr.HasComponent<NameboardData>(entity))
             {
                 var meshRender = looksTrans.GetComponentInChildren<SkinnedMeshRenderer>();
-                Debug.Log(string.Format("RoleLooksModule[260] (meshRender!=null):{0}", (meshRender!=null)));
+                // Debug.Log(string.Format("RoleLooksModule[260] (meshRender!=null):{0}", (meshRender!=null)));
                 if (meshRender != null)
                 {
                     var nameboardData = entityMgr.GetComponentObject<NameboardData>(entity);

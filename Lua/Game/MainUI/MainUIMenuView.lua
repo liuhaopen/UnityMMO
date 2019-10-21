@@ -34,7 +34,8 @@ function MainUIMenuView:AddEvents(  )
 			local view = require("Game.Bag.BagMainView").New()
     		view:Load()
 		elseif self.swith_btn_obj == click_obj then
-            self:ShowMenuList(not self.show_menu)
+            Message:Show("尚未开放其它系统")
+            -- self:ShowMenuList(not self.show_menu)
 		end
 	end
 	UI.BindClickEvent(self.swith_btn_obj, on_click)
@@ -65,6 +66,7 @@ function MainUIMenuView:UpdateIcons(  )
         item:SetData(v)
         item:SetActive(true)
         local posX, posY = self:CalculateIconPos(v.visual_index)
+        print('Cat:MainUIMenuView.lua[68] posX, posY', posX, posY)
         item:SetPosition(posX, posY)
     end
 end
@@ -96,12 +98,15 @@ end
 --因为开启系统图标时，新手指导系统需要先拿到图标的坐标，所以图标的最终坐标需要先单独计算，不需要拿真实节点的，因为有可能图标还没创建成功呢
 function MainUIMenuView:UpdateIconsLogicPos(  )
     local openIcons = self:GetOpenFunctionIcon()
+    print("Cat:MainUIMenuView [start:99] openIcons: ", openIcons)
+    PrintTable(openIcons)
+    print("Cat:MainUIMenuView [end]")
     self.icon_infos = {}
     for k,v in pairs(openIcons) do
         table.insert(self.icon_infos, v)
     end
     local sort_func = function ( a, b )
-        return a.pos_index < b.pos_index
+        return a.order < b.order
     end
     table.sort(self.icon_infos, sort_func)
     local visual_counter = 1

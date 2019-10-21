@@ -100,8 +100,9 @@ skynet.start (function ()
 	end)
 	skynet.dispatch ("lua", function (_, _, command, ...)
         local f = assert(CMD[command])
+        local r = f(...)
         if r ~= NORET then
-			skynet.retpack(f(...))
+			skynet.retpack(r)
 		end
 	end)
 end)

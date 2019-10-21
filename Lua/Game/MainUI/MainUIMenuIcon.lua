@@ -53,7 +53,9 @@ function MainUIMenuIcon:OnUpdate()
 	if not self.data then return end
 	
 	self.gameObject.name = self.data.icon_type
-	UI:SetImage(self.icon_img, "mainUI_asset", self.data.icon_name, true)
+	local resPath = ResPath.GetFullUIPath("mainui/"..self.data.icon_res..".png")
+	print('Cat:MainUIMenuIcon.lua[57] resPath', resPath)
+	UI:SetImage(self.icon_img, resPath, true)
 	self:UpdateRedDot()
 end
 
