@@ -34,8 +34,8 @@ function MainUIMenuView:AddEvents(  )
 			local view = require("Game.Bag.BagMainView").New()
     		view:Load()
 		elseif self.swith_btn_obj == click_obj then
-            Message:Show("尚未开放其它系统")
-            -- self:ShowMenuList(not self.show_menu)
+            -- Message:Show("尚未开放其它系统")
+            self:ShowMenuList(not self.show_menu)
 		end
 	end
 	UI.BindClickEvent(self.swith_btn_obj, on_click)
@@ -134,8 +134,9 @@ function MainUIMenuView:CalculateIconPos( i )
 end
 
 function MainUIMenuView:PlayActionForSwitchBtn(  )
-    local runner = self.swith_btn_obj:AddComponent(typeof(Cocos.ActionRunner))
-    local moveAction = Cocos.MoveBy.CreateLocal(1, Vector3(5,5,0))
+    -- local runner = self.swith_btn_obj:AddComponent(typeof(Cocos.ActionRunner))
+    local runner = Cocos.ActionRunner.GetOrCreate(self.swith_btn_obj)
+    local moveAction = Cocos.RotateBy.CreateLocal(1, Vector3(5,5,0))
     local action = Cocos.Sequence.Create(moveAction, Cocos.DelayTime.Create(1), Cocos.FadeIn.Create(0.5))
     runner:PlayAction(action)   
 end

@@ -6,7 +6,7 @@ using XLua;
 namespace XLuaFramework {
 	public class ClickTriggerListener : MonoBehaviour, IPointerClickHandler{
 		public delegate void VoidDelegate (GameObject go,float x,float y);
-    	// Action<GameObject, float, float> onClick = null;
+    	
 		public LuaFunction onClick;
 		static public ClickTriggerListener Get (GameObject go)
 		{

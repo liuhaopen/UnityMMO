@@ -46,9 +46,9 @@ function MainUIController:InitMainUIViews(  )
     self.views[MainUIConst.View.MainMenu] = self.mainMenu
 end
 
---Cat_Todo : untested
 function MainUIController:SetMainUIVisible( viewType, reson, visible )
     local view = self.views[viewType]
+    print('Cat:MainUIController.lua[51] viewType, reson, visible', viewType, reson, visible, view)
     if not view then
         print("Cat:MainUIController [SetMainUIVisible] unknow view type:", viewType)
         return
