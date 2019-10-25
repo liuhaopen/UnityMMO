@@ -10,9 +10,6 @@ namespace Cocos
         Anchored,
     } 
 
-    //
-    // MoveBy
-    //
     public class MoveBy : ActionInterval
     {
         protected Vector3 positionDelta;
@@ -33,10 +30,12 @@ namespace Cocos
         {
             return Create(duration, deltaPosition, CoordinateStyle.Local);
         }
+
         public static MoveBy CreateAbs(float duration, Vector3 deltaPosition)
         {
             return Create(duration, deltaPosition, CoordinateStyle.Abs);
         }
+
         public static MoveBy CreateAnchored(float duration, Vector3 deltaPosition)
         {
             return Create(duration, deltaPosition, CoordinateStyle.Anchored);
@@ -82,6 +81,7 @@ namespace Cocos
                     break;
                 }
                 default:
+                    Debug.LogError("cannot support coordinate style for move action : "+style);
                     break;
             }
         }
@@ -131,9 +131,6 @@ namespace Cocos
         }
     }
 
-    //
-    // MoveTo
-    //
     public class MoveTo : MoveBy
     {
         Vector3 endPosition;
@@ -149,10 +146,12 @@ namespace Cocos
         {
             return Create(duration, position, CoordinateStyle.Local);
         }
+
         public static new MoveTo CreateAbs(float duration, Vector3 position)
         {
             return Create(duration, position, CoordinateStyle.Abs);
         }
+
         public static new MoveTo CreateAnchored(float duration, Vector3 position)
         {
             return Create(duration, position, CoordinateStyle.Anchored);

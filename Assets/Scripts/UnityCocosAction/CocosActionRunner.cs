@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Cocos
 {
+    
 [DisallowMultipleComponent]
 public class ActionRunner : MonoBehaviour
 {

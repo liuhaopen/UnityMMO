@@ -13,9 +13,6 @@ function MainUIController:AddEvents(  )
     GlobalEventSystem:Bind(GlobalEvents.GameStart, MainUIController.InitMainUIViews, self)
     
     GlobalEventSystem:Bind(GlobalEvents.SetMainUIVisible, MainUIController.SetMainUIVisible, self)
-
-    -- self.model:Bind(MainUIConst.Event.VoteToHideMainMenu, function()
-    -- end)
 end
 
 function MainUIController:InitMainUIViews(  )
@@ -48,7 +45,7 @@ end
 
 function MainUIController:SetMainUIVisible( viewType, reson, visible )
     local view = self.views[viewType]
-    print('Cat:MainUIController.lua[51] viewType, reson, visible', viewType, reson, visible, view)
+    -- print('Cat:MainUIController.lua[51] viewType, reson, visible', viewType, reson, visible, view)
     if not view then
         print("Cat:MainUIController [SetMainUIVisible] unknow view type:", viewType)
         return

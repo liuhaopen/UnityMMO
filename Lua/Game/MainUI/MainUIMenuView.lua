@@ -66,7 +66,6 @@ function MainUIMenuView:UpdateIcons(  )
         item:SetData(v)
         item:SetActive(true)
         local posX, posY = self:CalculateIconPos(v.visual_index)
-        print('Cat:MainUIMenuView.lua[68] posX, posY', posX, posY)
         item:SetPosition(posX, posY)
     end
 end
@@ -134,7 +133,6 @@ function MainUIMenuView:CalculateIconPos( i )
 end
 
 function MainUIMenuView:PlayActionForSwitchBtn(  )
-    -- local runner = self.swith_btn_obj:AddComponent(typeof(Cocos.ActionRunner))
     local runner = Cocos.ActionRunner.GetOrCreate(self.swith_btn_obj)
     local moveAction = Cocos.RotateBy.CreateLocal(1, Vector3(5,5,0))
     local action = Cocos.Sequence.Create(moveAction, Cocos.DelayTime.Create(1), Cocos.FadeIn.Create(0.5))
@@ -149,11 +147,9 @@ function MainUIMenuView:ShowMenuList(show_menu, is_force)
     local animate_time = 0.3
     if show_menu then
         GlobalEventSystem:Fire(GlobalEvents.SetMainUIVisible, MainUIConst.View.SkillBtn, true, "ForMainMenu")
-        -- GlobalEventSystem:Fire(EventName.HIDE_MAIN_CHAT_VIEW, true, MainUIModel.OTHER_MODE, true)
-        -- GlobalEventSystem:Fire(EventName.HIDE_RIGHT_BOTTOM_VIEW, true, MainUIModel.OTHER_MODE, true)
+        GlobalEventSystem:Fire(GlobalEvents.SetMainUIVisible, MainUIConst.View.SmallChat, true, "ForMainMenu")
         
         self:PlayActionForSwitchBtn(-360, animate_time)
-        -- TweenLite.to(self, self.swith_btn_img, TweenLite.UiAnimationType.ROTATION, -360, animate_time)
         self.icon_con_obj:SetActive(true)
 
         for k,item in pairs(self.item_list) do
@@ -163,11 +159,9 @@ function MainUIMenuView:ShowMenuList(show_menu, is_force)
         end
     else
         GlobalEventSystem:Fire(GlobalEvents.SetMainUIVisible, MainUIConst.View.SkillBtn, false, "ForMainMenu")
-        -- GlobalEventSystem:Fire(EventName.HIDE_MAIN_CHAT_VIEW, false, MainUIModel.OTHER_MODE, true)
-        -- GlobalEventSystem:Fire(EventName.HIDE_RIGHT_BOTTOM_VIEW, false, MainUIModel.OTHER_MODE, true)
+        GlobalEventSystem:Fire(GlobalEvents.SetMainUIVisible, MainUIConst.View.SmallChat, false, "ForMainMenu")
 
         self:PlayActionForSwitchBtn(360, animate_time)
-        -- TweenLite.to(self, self.swith_btn_img, TweenLite.UiAnimationType.ROTATION, 360, animate_time)
         
         for k,item in pairs(self.item_list) do
             item:MoveToPos(Vector2(self.icon_start_pos_x, self.icon_start_pos_y), animate_time)
@@ -178,7 +172,6 @@ function MainUIMenuView:ShowMenuList(show_menu, is_force)
         end, 0.1)
     end
     self:UpdateSwithIconRed()
-    -- GlobalEventSystem:Fire(EventName.BROADCAST_SWITCH_BTN_STATE, self.show_menu)
 end
 
 return MainUIMenuView
