@@ -119,6 +119,12 @@ function UINode:OnDestroy(  )
 		end
 		self.viewCfg.loadedComponents = nil
 	end
+	if self.action_nodes then
+		for k,v in pairs(self.action_nodes) do
+			cc.ActionManager:getInstance():removeAllActionsFromTarget(v)
+		end
+		self.action_nodes = nil
+	end
 	GameObject.Destroy(self.gameObject)
 	if self.unloadCallBack then
 		self.unloadCallBack()
@@ -284,7 +290,8 @@ end
 
 function UINode:AddAction( action, node )
 	self.action_nodes = self.action_nodes or {}
-	table.insert(self.action_nodes, node)
+	self.action_nodes[node] = node
+	-- table.insert(self.action_nodes, node)
 	cc.ActionManager:getInstance():addAction(action, node)
 end
 

@@ -30,7 +30,7 @@ end
 function UI.UpdateVisibleByJury( obj, is_show, reason )
 	if not obj then return end
 	local tab_str = tostring(obj)
-	print('Cat:UIHelper.lua[33] tab_str, obj, is_show, reason', tab_str, obj, is_show, reason)
+	-- print('Cat:UIHelper.lua[33] tab_str, obj, is_show, reason', tab_str, obj, is_show, reason)
 	UI.UpdateVisibleJuryTableForValue[tab_str] = obj
 	if not UI.UpdateVisibleJuryTable[obj] then
 		local jury = Jury.New()
@@ -38,7 +38,7 @@ function UI.UpdateVisibleByJury( obj, is_show, reason )
 		local on_jury_change = function (  )
 			--之所以用UpdateVisibleJuryTableForValue弱表是因为直接引用obj的话将影响到obj的gc,因为Jury等着obj释放时跟着自动释放,但Jury引用了本函数,而本函数又引用obj的话就循环引用了(想依赖弱引用做自动回收是会有这个问题的)
 			local showNode = UI.UpdateVisibleJuryTableForValue[tab_str]
-			print('Cat:UIHelper.lua[40] showNode', showNode, jury:IsNoneVote())
+			-- print('Cat:UIHelper.lua[40] showNode', showNode, jury:IsNoneVote())
 			if showNode then
 				--没人投票的话就说明可以显示啦
 				showNode:SetActive(jury:IsNoneVote())

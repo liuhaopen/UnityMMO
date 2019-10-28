@@ -43,7 +43,7 @@ function MainUIController:InitMainUIViews(  )
     self.views[MainUIConst.View.MainMenu] = self.mainMenu
 end
 
-function MainUIController:SetMainUIVisible( viewType, reson, visible )
+function MainUIController:SetMainUIVisible( viewType, visible, reson )
     local view = self.views[viewType]
     -- print('Cat:MainUIController.lua[51] viewType, reson, visible', viewType, reson, visible, view)
     if not view then

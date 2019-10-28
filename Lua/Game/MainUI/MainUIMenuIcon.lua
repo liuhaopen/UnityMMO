@@ -11,7 +11,8 @@ function MainUIMenuIcon:OnLoad()
 	local nodes = {
         "red:obj","effect","icon:img",
     }
-    self:GetChildren(nodes)
+    UI.GetChildren(self, self.transform, nodes)
+	UI.SetLocalPositionXYZ(self.transform, 0, 0, 0)
 
 	self:AddEvents()
 	if self.cache_move_to_info then
@@ -26,14 +27,14 @@ function MainUIMenuIcon:AddEvents()
 			self:BtnCall()
 		end
 	end
-    AddClickEvent(self.gameObject,OnItemClick,1)
+    UI.BindClickEvent(self.gameObject, OnItemClick)
 
-    local UpdateFunIcon = function (icon_type)
-    	if self.icon_type == icon_type then
-    		self:RefreshRedPoint()
-    	end
-    end
-    self:BindEvent(GlobalEventSystem, EventName.REFRESH_FUNCTION_ICON_RED_DOT, UpdateFunIcon)
+    -- local UpdateFunIcon = function (icon_type)
+    -- 	if self.icon_type == icon_type then
+    -- 		self:RefreshRedPoint()
+    -- 	end
+    -- end
+    -- self:BindEvent(GlobalEventSystem, EventName.REFRESH_FUNCTION_ICON_RED_DOT, UpdateFunIcon)
 end
 
 function MainUIMenuIcon:BtnCall(  )
@@ -50,6 +51,7 @@ function MainUIMenuIcon:BtnCall(  )
 end
 
 function MainUIMenuIcon:OnUpdate()
+	print('Cat:MainUIMenuIcon.lua[53] self.data', self.data)
 	if not self.data then return end
 	
 	self.gameObject.name = self.data.icon_type
@@ -59,10 +61,23 @@ function MainUIMenuIcon:OnUpdate()
 	self:UpdateRedDot()
 end
 
-function MainUIMenuIcon:UpdateRedDot()
-	local isRed = MainUIModel:GetInstance():GetRedDot(self.data.icon_type)
-	self.red_obj:SetActive(isRed)
+function MainUIMenuIcon:MoveToPos( pos, animate_time )
+	if self.isLoaded then
+    	cc.ActionManager:getInstance():removeAllActionsFromTarget(self.transform)
+    	local action = cc.MoveTo.createAnchoredType(animate_time, pos.x, pos.y)
+    	self:AddAction(action, self.transform)
+    else
+    	self.cache_move_to_info = {pos, animate_time}
+    end
 end
 
-function MainUIMenuIcon:__delete()
+function MainUIMenuIcon:UpdateRedDot()
+	-- local isRed = MainUIModel:GetInstance():GetRedDot(self.data.icon_type)
+	-- self.red_obj:SetActive(isRed)
 end
+
+function MainUIMenuIcon:GetVisualIndex(  )
+	return self.data and self.data.visual_index or 1
+end
+
+return MainUIMenuIcon

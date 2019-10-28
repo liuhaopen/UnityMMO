@@ -1,4 +1,5 @@
 local MainUIMenuView = BaseClass(UINode)
+local MainUIMenuIcon = require("Game.MainUI.MainUIMenuIcon")
 
 MainUIMenuView.IconWidth = 74
 MainUIMenuView.IconHeight = 74
@@ -21,8 +22,8 @@ function MainUIMenuView:OnLoad(  )
 	}
 	UI.GetChildren(self, self.transform, names)
 
-	self.icon_start_pos_x = self.icon_con.sizeDelta.x - MainUIMenuView.IconWidth - 20
-    self.icon_start_pos_y = self.icon_con.sizeDelta.y - MainUIMenuView.IconHeight
+	self.icon_start_pos_x = self.icon_con.sizeDelta.x - MainUIMenuView.IconWidth - 24
+    self.icon_start_pos_y = -15
 
 	self:AddEvents()
 	self:OnUpdate()
@@ -35,7 +36,7 @@ function MainUIMenuView:AddEvents(  )
     		view:Load()
 		elseif self.swith_btn_obj == click_obj then
             -- Message:Show("尚未开放其它系统")
-            self:ShowMenuList(not self.show_menu)
+            self:SetActive(not self.show_menu)
 		end
 	end
 	UI.BindClickEvent(self.swith_btn_obj, on_click)
@@ -45,7 +46,7 @@ end
 
 function MainUIMenuView:OnUpdate(  )
 	self:UpdateIconsLogicPos()
-    if not self.is_loaded then return end
+    if not self.isLoaded then return end
 
     self:UpdateIcons()
     self:UpdateRed()
@@ -66,7 +67,7 @@ function MainUIMenuView:UpdateIcons(  )
         item:SetData(v)
         item:SetActive(true)
         local posX, posY = self:CalculateIconPos(v.visual_index)
-        item:SetPosition(posX, posY)
+        item:SetPositionXYZ(posX, posY, 0)
     end
 end
 
@@ -134,37 +135,37 @@ end
 
 function MainUIMenuView:PlayActionForSwitchBtn(  )
     local runner = Cocos.ActionRunner.GetOrCreate(self.swith_btn_obj)
-    local moveAction = Cocos.RotateBy.CreateLocal(1, Vector3(5,5,0))
-    local action = Cocos.Sequence.Create(moveAction, Cocos.DelayTime.Create(1), Cocos.FadeIn.Create(0.5))
-    runner:PlayAction(action)   
+    runner:Stop()
+    local moveAction = Cocos.RotateBy.CreateLocal(0.3, Vector3(0,0,360))
+    runner:PlayAction(moveAction)   
 end
 
 --先收缩 后伸展
-function MainUIMenuView:ShowMenuList(show_menu, is_force)
+function MainUIMenuView:SetActive(show_menu, is_force)
     if self.show_menu == show_menu and not is_force then return end
     self.callback_afr_move:Stop()
     self.show_menu = show_menu
     local animate_time = 0.3
     if show_menu then
-        GlobalEventSystem:Fire(GlobalEvents.SetMainUIVisible, MainUIConst.View.SkillBtn, true, "ForMainMenu")
-        GlobalEventSystem:Fire(GlobalEvents.SetMainUIVisible, MainUIConst.View.SmallChat, true, "ForMainMenu")
+        GlobalEventSystem:Fire(GlobalEvents.SetMainUIVisible, MainUIConst.View.SkillBtn, false, "ForMainMenu")
+        GlobalEventSystem:Fire(GlobalEvents.SetMainUIVisible, MainUIConst.View.SmallChat, false, "ForMainMenu")
         
         self:PlayActionForSwitchBtn(-360, animate_time)
         self.icon_con_obj:SetActive(true)
 
         for k,item in pairs(self.item_list) do
-            item:SetPosition(self.icon_start_pos_x, self.icon_start_pos_y)
+            item:SetPositionXYZ(self.icon_start_pos_x, self.icon_start_pos_y, 0)
             local posX, posY = self:CalculateIconPos(item:GetVisualIndex())
-            item:MoveToPos(Vector2(posX, posY), animate_time)
+            item:MoveToPos({x=posX, y=posY}, animate_time)
         end
     else
-        GlobalEventSystem:Fire(GlobalEvents.SetMainUIVisible, MainUIConst.View.SkillBtn, false, "ForMainMenu")
-        GlobalEventSystem:Fire(GlobalEvents.SetMainUIVisible, MainUIConst.View.SmallChat, false, "ForMainMenu")
+        GlobalEventSystem:Fire(GlobalEvents.SetMainUIVisible, MainUIConst.View.SkillBtn, true, "ForMainMenu")
+        GlobalEventSystem:Fire(GlobalEvents.SetMainUIVisible, MainUIConst.View.SmallChat, true, "ForMainMenu")
 
         self:PlayActionForSwitchBtn(360, animate_time)
         
         for k,item in pairs(self.item_list) do
-            item:MoveToPos(Vector2(self.icon_start_pos_x, self.icon_start_pos_y), animate_time)
+            item:MoveToPos({x=self.icon_start_pos_x, y=self.icon_start_pos_y}, animate_time)
         end
 
         self.callback_afr_move:DelayCallByLeftTime(animate_time, function()

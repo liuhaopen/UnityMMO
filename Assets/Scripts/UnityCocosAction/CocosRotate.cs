@@ -5,13 +5,13 @@ namespace Cocos
 {
     public class RotateBy : ActionInterval
     {
-        protected Quaternion rotationDelta;
-        protected Quaternion previousRotation;
-        protected Quaternion startRotation;
+        protected Vector3 rotationDelta;
+        protected Vector3 previousRotation;
+        protected Vector3 startRotation;
         protected CoordinateStyle style;
         protected RectTransform rectTrans;
         
-        public static RotateBy Create(float duration, Quaternion deltaRotation, CoordinateStyle style=CoordinateStyle.Local)
+        public static RotateBy Create(float duration, Vector3 deltaRotation, CoordinateStyle style=CoordinateStyle.Local)
         {
             RotateBy ret = new RotateBy();
             if (ret != null && ret.InitWithStyle(duration, deltaRotation, style))
@@ -19,17 +19,17 @@ namespace Cocos
             return null;
         }
 
-        public static RotateBy CreateLocal(float duration, Quaternion deltaRotation)
+        public static RotateBy CreateLocal(float duration, Vector3 deltaRotation)
         {
             return Create(duration, deltaRotation, CoordinateStyle.Local);
         }
 
-        public static RotateBy CreateAbs(float duration, Quaternion deltaRotation)
+        public static RotateBy CreateAbs(float duration, Vector3 deltaRotation)
         {
             return Create(duration, deltaRotation, CoordinateStyle.Abs);
         }
 
-        private bool InitWithStyle(float duration, Quaternion deltaRotation, CoordinateStyle style)
+        private bool InitWithStyle(float duration, Vector3 deltaRotation, CoordinateStyle style)
         {
             bool ret = false;
             if (base.InitWithDuration(duration))
@@ -54,12 +54,12 @@ namespace Cocos
             {
                 case CoordinateStyle.Local:
                 {
-                    previousRotation = startRotation = target.localRotation;
+                    previousRotation = startRotation = target.localEulerAngles;
                     break;
                 }
                 case CoordinateStyle.Abs:
                 {
-                    previousRotation = startRotation = target.rotation;
+                    previousRotation = startRotation = target.eulerAngles;
                     break;
                 }
                 default:
@@ -79,21 +79,21 @@ namespace Cocos
             {
                 case CoordinateStyle.Local:
                 {
-                    var currentPos = target.localRotation;
+                    var currentPos = target.localEulerAngles;
                     var diff = currentPos - previousRotation;
                     startRotation = startRotation + diff;
                     var newPos = startRotation + (rotationDelta*t);
-                    target.localRotation = newPos;
+                    target.localEulerAngles = newPos;
                     previousRotation = newPos;
                     break;
                 }
                 case CoordinateStyle.Abs:
                 {
-                    var currentPos = target.Rotation;
+                    var currentPos = target.eulerAngles;
                     var diff = currentPos - previousRotation;
                     startRotation = startRotation + diff;
                     var newPos = startRotation + (rotationDelta*t);
-                    target.rotation = newPos;
+                    target.eulerAngles = newPos;
                     previousRotation = newPos;
                     break;
                 }
@@ -108,8 +108,8 @@ namespace Cocos
     //
     public class RotateTo : RotateBy
     {
-        Quaternion endRotation;
-        public static new RotateTo Create(float duration, Quaternion rotation, CoordinateStyle style=CoordinateStyle.Local)
+        Vector3 endRotation;
+        public static new RotateTo Create(float duration, Vector3 rotation, CoordinateStyle style=CoordinateStyle.Local)
         {
             RotateTo ret = new RotateTo();
             if (ret != null && ret.InitWithDuration(duration, rotation, style))
@@ -117,20 +117,17 @@ namespace Cocos
             return null;
         }
 
-        public static new RotateTo CreateLocal(float duration, Quaternion rotation)
+        public static new RotateTo CreateLocal(float duration, Vector3 rotation)
         {
             return Create(duration, rotation, CoordinateStyle.Local);
         }
-        public static new RotateTo CreateAbs(float duration, Quaternion rotation)
+        
+        public static new RotateTo CreateAbs(float duration, Vector3 rotation)
         {
             return Create(duration, rotation, CoordinateStyle.Abs);
         }
-        public static new RotateTo CreateAnchored(float duration, Quaternion rotation)
-        {
-            return Create(duration, rotation, CoordinateStyle.Anchored);
-        }
 
-        private bool InitWithDuration(float duration, Quaternion rotation, CoordinateStyle style)
+        private bool InitWithDuration(float duration, Vector3 rotation, CoordinateStyle style)
         {
             bool ret = false;
             if (base.InitWithDuration(duration))
@@ -154,12 +151,12 @@ namespace Cocos
             {
                 case CoordinateStyle.Local:
                 {
-                    rotationDelta = endRotation - target.localRotation;
+                    rotationDelta = endRotation - target.localEulerAngles;
                     break;
                 }
                 case CoordinateStyle.Abs:
                 {
-                    rotationDelta = endRotation - target.rotation;
+                    rotationDelta = endRotation - target.eulerAngles;
                     break;
                 }
                 default:

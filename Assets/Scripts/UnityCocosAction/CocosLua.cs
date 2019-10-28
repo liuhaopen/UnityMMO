@@ -16,9 +16,9 @@ namespace Cocos
             return null;
         }
 
-        public virtual void Init(Action<Transform> startWithFunc, Action<float> updateFunc)
+        public virtual bool Init(Action<Transform> startWithFunc, Action<float> updateFunc)
         {
-
+            return true;
         }
 
         public virtual void StartWithTarget(Transform target)
