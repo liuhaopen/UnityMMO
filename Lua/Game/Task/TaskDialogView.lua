@@ -92,13 +92,13 @@ function TaskDialogView:ProcessBtnNameAndCallBack( flag )
     	flagInfo.func(self)
 	end
 	self.countdown = self.countdown or self:AddUIComponent(UI.Countdown)
-  	self.countdown:CountdownByLeftTime(8000, function(leftTime)
+  	self.countdown:CountdownByLeftTime(8, function(leftTime)
   		if leftTime > 0 then
   			self.left_time_txt.text = string.format("%s秒后自动", math.floor(leftTime/1000))
   		else
 			self:HandleBtnClick()
 		end
-	end, 200)
+	end, 0.2)
 end
 
 function TaskDialogView:ProcessTaskInfo(  )

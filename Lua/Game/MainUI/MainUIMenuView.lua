@@ -67,7 +67,7 @@ function MainUIMenuView:UpdateIcons(  )
         item:SetData(v)
         item:SetActive(true)
         local posX, posY = self:CalculateIconPos(v.visual_index)
-        item:SetPositionXYZ(posX, posY, 0)
+        item:SetLocalPositionXYZ(posX, posY, 0)
     end
 end
 
@@ -154,7 +154,7 @@ function MainUIMenuView:SetActive(show_menu, is_force)
         self.icon_con_obj:SetActive(true)
 
         for k,item in pairs(self.item_list) do
-            item:SetPositionXYZ(self.icon_start_pos_x, self.icon_start_pos_y, 0)
+            item:SetLocalPositionXYZ(self.icon_start_pos_x, self.icon_start_pos_y, 0)
             local posX, posY = self:CalculateIconPos(item:GetVisualIndex())
             item:MoveToPos({x=posX, y=posY}, animate_time)
         end
@@ -165,7 +165,7 @@ function MainUIMenuView:SetActive(show_menu, is_force)
         self:PlayActionForSwitchBtn(360, animate_time)
         
         for k,item in pairs(self.item_list) do
-            item:MoveToPos({x=self.icon_start_pos_x, y=self.icon_start_pos_y}, animate_time)
+            item:MoveToPos({x=self.icon_start_pos_x, y=self.icon_start_pos_y+20}, animate_time)
         end
 
         self.callback_afr_move:DelayCallByLeftTime(animate_time, function()

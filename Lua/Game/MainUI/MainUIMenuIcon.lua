@@ -9,11 +9,12 @@ end
 
 function MainUIMenuIcon:OnLoad()
 	local nodes = {
-        "red:obj","effect","icon:img",
+        "red:obj","effect","icon:img:obj",
     }
     UI.GetChildren(self, self.transform, nodes)
 	UI.SetLocalPositionXYZ(self.transform, 0, 0, 0)
 
+	self.red_obj:SetActive(false)
 	self:AddEvents()
 	if self.cache_move_to_info then
     	self:MoveToPos(self.cache_move_to_info[1], self.cache_move_to_info[2])
@@ -23,11 +24,11 @@ end
 
 function MainUIMenuIcon:AddEvents()
 	local function OnItemClick(target)
-		if target == self.gameObject then
+		if target == self.icon_obj then
 			self:BtnCall()
 		end
 	end
-    UI.BindClickEvent(self.gameObject, OnItemClick)
+    UI.BindClickEvent(self.icon_obj, OnItemClick)
 
     -- local UpdateFunIcon = function (icon_type)
     -- 	if self.icon_type == icon_type then
@@ -40,9 +41,13 @@ end
 function MainUIMenuIcon:BtnCall(  )
 	if not self.data then return end
 	
+	do 
+		Message:Show("功能未开启")
+		return
+	end
 	--Cat_Todo : open func
-	local open_func = self.data.open_func
-	if open_func then
+	local func_id = self.data.func_id
+	if func_id then
 		local ids = Split(open_func, "@")
 		OpenFun.Open(ids[1], ids[2])
 	else
@@ -51,12 +56,10 @@ function MainUIMenuIcon:BtnCall(  )
 end
 
 function MainUIMenuIcon:OnUpdate()
-	print('Cat:MainUIMenuIcon.lua[53] self.data', self.data)
 	if not self.data then return end
 	
 	self.gameObject.name = self.data.icon_type
 	local resPath = ResPath.GetFullUIPath("mainui/"..self.data.icon_res..".png")
-	print('Cat:MainUIMenuIcon.lua[57] resPath', resPath)
 	UI:SetImage(self.icon_img, resPath, true)
 	self:UpdateRedDot()
 end

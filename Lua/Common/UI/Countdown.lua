@@ -12,7 +12,7 @@ function UI.Countdown:CountdownByEndTime( end_time, step_call_back, duration )
 	if not self.timer then
 		local function step_countdown( )
 			local curTime = Time:GetServerTime()
-			local left_time = self.end_time - curTime
+			local left_time = self.end_time - curTime/1000
 			if left_time <= 0 then
 				self:OnClose()
 			else
@@ -20,17 +20,17 @@ function UI.Countdown:CountdownByEndTime( end_time, step_call_back, duration )
 			end
 			self.step_call_back(left_time)
 		end
-		self.timer = Timer.New(step_countdown, duration and duration/1000 or 1, -1)
+		self.timer = Timer.New(step_countdown, duration and duration or 1, -1)
 		self.timer:Start()
 		step_countdown()
 	elseif duration then
-		self.timer:SetDuration(duration/1000)
+		self.timer:SetDuration(duration)
 	end
 end
 
 function UI.Countdown:CountdownByLeftTime( left_time, step_call_back, duration )
 	local curTime = Time:GetServerTime()
-	self:CountdownByEndTime(curTime+left_time, step_call_back, duration)
+	self:CountdownByEndTime(curTime/1000+left_time, step_call_back, duration)
 end
 
 function UI.Countdown:DelayCallByLeftTime( left_time, step_call_back, duration )
