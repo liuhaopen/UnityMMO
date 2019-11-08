@@ -308,4 +308,19 @@ function RoleMgr:Relive( roleID, reliveType )
 	return ret
 end
 
+function Role:ChangeAttr(roldID, attrList)
+	local role_info = self.roleList[roldID]
+	if not role_info then
+		return
+	end
+	local entity = self.sceneMgr:GetEntity(role_info.scene_uid)
+	local fightAttr = self.entityMgr:GetComponentData(entity, "UMO.FightAttr")
+	for i, v in ipairs(attrList) do
+		fightAttr[v[1]] = tonumber(v[2])
+	end
+	print("Role:ChangeAttr fightAttr start : ", fightAttr)
+	PrintTable(fightAttr)
+	print("Role:ChangeAttr fightAttr end")
+end
+
 return RoleMgr

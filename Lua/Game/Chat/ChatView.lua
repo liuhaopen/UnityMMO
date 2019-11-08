@@ -84,6 +84,7 @@ function ChatView:OnUpdate(  )
 		item:SetData(chatList[i])
 		local height = item:GetHeight()
 		local posY = self:GetItemPosY(i, height)
+		item:SetPosition(0, posY)
 	end
 end
 

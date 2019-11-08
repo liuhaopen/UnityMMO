@@ -87,6 +87,10 @@ function CMD.scene_relive( user_info, req_data )
 	return {result=ret, relive_type=req_data.relive_type}
 end
 
+function CMD.change_attr( role_id, attr_list )
+	sceneMgr.roleMgr:ChangeAttr(user_info.cur_role_id, attr_list)
+end
+
 skynet.start(function()
 	skynet.dispatch("lua", function(session, source, command, ...)
 		local f = assert(CMD[command])

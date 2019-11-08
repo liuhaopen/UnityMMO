@@ -44,7 +44,16 @@ function gmHandler.ClearAllGoods( gmParts )
 end
 
 function gmHandler.Attr( gmParts )
-	
+	local world = skynet.uniqueservice("world")
+	local scene_service = skynet.call(world, "lua", "get_role_scene_service", this.user_info.cur_role_id)
+	skynet.error("gmHandler.Attr scene_service : "+scene_service)
+	if scene_service then
+		local attrList = {}
+		for i = 2, #gmParts, 2 do
+			table.insert(attrList, {gmParts[i], gmParts[i+1]})
+		end
+		skynet.send(scene_service, "lua", "change_attr", this.user_info.cur_role_id, attrList)
+	end
 end
 
 local SprotoHandlers = {}
