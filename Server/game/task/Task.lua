@@ -1,5 +1,5 @@
 local skynet = require "skynet"
-require "Common.Util.TableUtil"
+require "common.TableUtil"
 local TaskConst = require "game.task.TaskConst"
 
 local user_info

@@ -1,5 +1,5 @@
 local skynet = require "skynet"
-require "Common.Util.util"
+require "common.util"
 local queue = require "skynet.queue"
 local cs = queue()
 

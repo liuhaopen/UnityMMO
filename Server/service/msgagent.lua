@@ -2,7 +2,7 @@ local skynet = require "skynet"
 local sproto = require "Common.Util.sproto"
 local sprotoloader = require "Common.Util.sprotoloader"
 local print_r = require "Common.Util.print_r"
-require "Common.Util.util"
+require "common.util"
 ErrorCode = require "game.config.ErrorCode"
 local Dispatcher = require "game.util.Dispatcher"
 

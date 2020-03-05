@@ -18,6 +18,10 @@ public class XLuaManager : MonoBehaviour
 
     protected void Awake()
     {
+        if (Instance != null) {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
     }
 

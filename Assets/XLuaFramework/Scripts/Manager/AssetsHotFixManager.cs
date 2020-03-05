@@ -151,8 +151,6 @@ public class AssetsHotFixManager : MonoBehaviour
             }
             if (canUpdate) {   //本地缺少文件
                 Debug.Log(fileUrl);
-                message = "downloading>>" + fileUrl;
-                // facade.SendMessageCommand(NotiData.UPDATE_MESSAGE, message);
                 //这里都是资源文件，用线程下载
                 BeginDownload(fileUrl, localfile);
                 while (!(IsDownOK(localfile))) { yield return new WaitForEndOfFrame(); }
@@ -162,7 +160,6 @@ public class AssetsHotFixManager : MonoBehaviour
 
         message = "更新完成!!";
         Debug.Log(message);
-        // facade.SendMessageCommand(NotiData.UPDATE_MESSAGE, message);
         on_ok("");
     }
 

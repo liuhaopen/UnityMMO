@@ -1,7 +1,7 @@
 local skynet = require "skynet"
 local sprotoparser = require "sprotoparser"
 local sprotoloader = require "sprotoloader"
-require "Common.Util.util"
+require "common.util"
 
 --某协议有语法错误时，只解析该协议文件，方便定位。不然报错中的行数很难定位,因为是所有协议文件合并成一个整体的行数：syntax error at [=text] line (210)
 -- local test_files = {

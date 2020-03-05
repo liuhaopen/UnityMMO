@@ -206,8 +206,7 @@ namespace XLuaFramework {
                 {
                     return null;
                 }
-
-                File.SetAttributes(inFile, FileAttributes.Normal);
+                // File.SetAttributes(inFile, FileAttributes.Normal);
                 return File.ReadAllBytes(inFile);
             }
             catch (System.Exception ex)

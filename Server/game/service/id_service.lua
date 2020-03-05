@@ -1,4 +1,4 @@
-require "Common.Util.util"
+require "common.util"
 local skynet = require "skynet"
 require "skynet.manager"
 
