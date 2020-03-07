@@ -1,18 +1,12 @@
 #!/bin/sh
 export ROOT=$(cd `dirname $0`; pwd)
 export DAEMON=false
-
-while getopts "Dk" arg
-do
-	case $arg in
-		D)
-			export DAEMON=true
-			;;
-		k)
-			kill `cat $ROOT/skynet.pid`
-			exit 0;
-			;;
-	esac
-done
-
-$ROOT/skynet/skynet $ROOT/config
+if [ ! -d "log" ]; then
+  mkdir log
+fi
+if [ $(ps e -u ${USER} | grep -v grep | grep $(pwd) | grep skynet | wc -l) != 0 ]
+then
+    echo "server is already running, please execute ./stop.sh"
+else
+$ROOT/skynet/skynet $ROOT/config > log/$(date "+%Y%m%d-%H%M").log &
+fi

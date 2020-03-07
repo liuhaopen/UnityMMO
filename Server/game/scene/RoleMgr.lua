@@ -308,7 +308,7 @@ function RoleMgr:Relive( roleID, reliveType )
 	return ret
 end
 
-function Role:ChangeAttr(roldID, attrList)
+function RoleMgr:ChangeAttr(roldID, attrList)
 	local role_info = self.roleList[roldID]
 	if not role_info then
 		return

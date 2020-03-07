@@ -1,0 +1,82 @@
+[:01000002] LAUNCH snlua bootstrap
+[:01000003] LAUNCH snlua launcher
+[:01000004] LAUNCH snlua cmaster
+[:01000004] master listen socket 0.0.0.0:2013
+[:01000005] LAUNCH snlua cslave
+[:01000005] slave connect to master 127.0.0.1:2013
+[:01000004] connect from 127.0.0.1:52192 4
+[:01000006] LAUNCH harbor 1 16777221
+[:01000004] Harbor 1 (fd=4) report 127.0.0.1:2526
+[:01000005] Waiting for 0 harbors
+[:01000005] Shakehand ready
+[:01000007] LAUNCH snlua datacenterd
+[:01000008] LAUNCH snlua service_mgr
+[:01000009] LAUNCH snlua main
+[:01000009] Server start
+[:0100000a] LAUNCH snlua protoloader
+[:0100000b] LAUNCH snlua console
+[:0100000b] lua call [0 to :100000b : 0 msgsz = 56] error : [31m/home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:616: /home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:183: /home/cat/UnityMMO/Server/skynet/lualib/skynet/socket.lua:311: assertion failed!
+stack traceback:
+	[C]: in function 'assert'
+	/home/cat/UnityMMO/Server/skynet/lualib/skynet/socket.lua:311: in function 'skynet.socket.readline'
+	/home/cat/UnityMMO/Server/skynet/service/console.lua:16: in upvalue 'f'
+	/home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:113: in function </home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:112>
+stack traceback:
+	[C]: in function 'assert'
+	/home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:616: in function 'skynet.dispatch_message'[0m
+[:0100000c] LAUNCH snlua debug_console 8000
+[:0100000c] Start debug console at 127.0.0.1:8000
+[:0100000d] LAUNCH snlua logind
+[:0100000e] LAUNCH snlua logind
+[:0100000f] LAUNCH snlua logind
+[:01000010] LAUNCH snlua logind
+[:01000011] LAUNCH snlua logind
+[:01000012] LAUNCH snlua logind
+[:01000013] LAUNCH snlua logind
+[:01000014] LAUNCH snlua logind
+[:01000015] LAUNCH snlua logind
+[:0100000d] login server listen at : 0.0.0.0 8001
+[:01000016] LAUNCH snlua gated 16777229 1 1
+[:01000016] Listen on 0.0.0.0:8888
+[:01000017] LAUNCH snlua msgagent
+[:01000018] LAUNCH snlua msgagent
+[:01000019] LAUNCH snlua msgagent
+[:0100001a] LAUNCH snlua msgagent
+[:0100001b] LAUNCH snlua msgagent
+[:0100001c] LAUNCH snlua msgagent
+[:0100001d] LAUNCH snlua msgagent
+[:0100001e] LAUNCH snlua msgagent
+[:0100001f] LAUNCH snlua msgagent
+[:01000020] LAUNCH snlua msgagent
+[:01000021] LAUNCH snlua world
+[:01000022] LAUNCH snlua scene 16777249
+[:01000023] LAUNCH snlua scene 16777249
+[:01000024] LAUNCH snlua chat
+[:01000025] LAUNCH snlua dbserver
+[:01000025] Connect to 127.0.0.1:3306 failed (Connection refused)
+[:01000025] lua call [0 to :1000025 : 0 msgsz = 42] error : [31m/home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:616: /home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:183: [Error: socket]
+stack traceback:
+	[C]: in function 'error'
+	...t/UnityMMO/Server/skynet/lualib/skynet/socketchannel.lua:383: in function <...t/UnityMMO/Server/skynet/lualib/skynet/socketchannel.lua:357>
+	(...tail calls...)
+	/home/cat/UnityMMO/Server/skynet/lualib/skynet/db/mysql.lua:609: in function 'skynet.db.mysql.connect'
+	/home/cat/UnityMMO/Server/service/dbserver.lua:35: in local 'f'
+	/home/cat/UnityMMO/Server/service/dbserver.lua:152: in upvalue 'f'
+	/home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:140: in function </home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:112>
+stack traceback:
+	[C]: in function 'assert'
+	/home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:616: in function 'skynet.dispatch_message'[0m
+[:01000009] init service failed: /home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:358: call failed
+stack traceback:
+	[C]: in function 'error'
+	/home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:358: in upvalue 'yield_call'
+	/home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:375: in function 'skynet.call'
+	/home/cat/UnityMMO/Server/service/main.lua:24: in local 'start'
+	/home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:720: in function </home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:717>
+	[C]: in function 'xpcall'
+	/home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:724: in function 'skynet.pcall'
+	/home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:728: in function 'skynet.init_service'
+	/home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:741: in upvalue 'f'
+	/home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:113: in function </home/cat/UnityMMO/Server/skynet/lualib/skynet.lua:112>
+[:01000009] KILL self
+[:01000002] KILL self
