@@ -26,7 +26,8 @@ function MainUIMenuView:OnLoad(  )
     self.icon_start_pos_y = -15
 
 	self:AddEvents()
-	self:OnUpdate()
+    self:OnUpdate()
+    self:SetActive(false)
 end
 
 function MainUIMenuView:AddEvents(  )
@@ -45,7 +46,7 @@ function MainUIMenuView:AddEvents(  )
 end
 
 function MainUIMenuView:OnUpdate(  )
-	self:UpdateIconsLogicPos()
+    self:UpdateIconsLogicPos()
     if not self.isLoaded then return end
 
     self:UpdateIcons()

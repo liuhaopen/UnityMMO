@@ -241,11 +241,11 @@ public class SplitTerrain : EditorWindow
         if (center == null)
             return;
         Terrain centerTerrain = center.GetComponent<Terrain>();
-        float[,] centerHeights = centerTerrain.terrainData.GetHeights(0, 0, centerTerrain.terrainData.heightmapWidth, centerTerrain.terrainData.heightmapHeight);
+        float[,] centerHeights = centerTerrain.terrainData.GetHeights(0, 0, centerTerrain.terrainData.heightmapResolution, centerTerrain.terrainData.heightmapResolution);
         if (top != null)
         {
             Terrain topTerrain = top.GetComponent<Terrain>();
-            float[,] topHeights = topTerrain.terrainData.GetHeights(0, 0, topTerrain.terrainData.heightmapWidth, topTerrain.terrainData.heightmapHeight);
+            float[,] topHeights = topTerrain.terrainData.GetHeights(0, 0, topTerrain.terrainData.heightmapResolution, topTerrain.terrainData.heightmapResolution);
             if (topHeights.GetLength(0) != centerHeights.GetLength(0))
             {
                 Debug.Log("Terrain sizes must be equal");
@@ -259,7 +259,7 @@ public class SplitTerrain : EditorWindow
         if (left != null)
         {
             Terrain leftTerrain = left.GetComponent<Terrain>();
-            float[,] leftHeights = leftTerrain.terrainData.GetHeights(0, 0, leftTerrain.terrainData.heightmapWidth, leftTerrain.terrainData.heightmapHeight);
+            float[,] leftHeights = leftTerrain.terrainData.GetHeights(0, 0, leftTerrain.terrainData.heightmapResolution, leftTerrain.terrainData.heightmapResolution);
             if (leftHeights.GetLength(0) != centerHeights.GetLength(0))
             {
                 Debug.Log("Terrain sizes must be equal");
