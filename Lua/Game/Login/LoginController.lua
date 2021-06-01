@@ -160,7 +160,7 @@ function LoginController:OnReceiveLine(bytes)
 end
 
 function LoginController:Connect()
-	-- print('Cat:LoginController.lua[Connect] self.login_state : ', self.login_state)
+	print('Cat:LoginController.lua[Connect] self.login_state : ', self.login_state)
 	if self.login_state == LoginConst.Status.WaitForGameServerConnect then
 		--刚连接上游戏服务器时需要进行一次握手校验
 		local handshake = string.format("%s@%s#%s:%d", crypt.base64encode(self.token.user), crypt.base64encode(self.token.server),crypt.base64encode(self.subid) , 1)

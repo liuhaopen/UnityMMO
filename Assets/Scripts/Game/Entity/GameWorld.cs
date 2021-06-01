@@ -50,7 +50,6 @@ public struct DespawningEntity : IComponentData
 {
 }
 
-
 [InternalBufferCapacity(16)]
 public struct EntityGroupChildren : IBufferElementData
 {
