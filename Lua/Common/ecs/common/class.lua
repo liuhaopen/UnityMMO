@@ -1,21 +1,18 @@
 local call_construc
-call_construc = function(obj, on_new, arge1, ...)
-	local parent = obj.__parent_cls__
+call_construc = function(obj, cls, on_new, ...)
+	local parent = cls.__parent_cls__
 	if parent then
-		call_construc(parent, parent.on_new, arge1, ...)
+		call_construc(obj, parent, parent.on_new, ...)
 	end
 	if on_new then
-		if obj.__cls__ == arge1 then
-			on_new(obj, ...)
-		else
-			on_new(obj, arge1, ...)
-		end
+		on_new(obj, ...)
 	end
 end
 
 local function class(name, parent)
 	local cls = {
 		__cls_name__ = name,
+		__parent_cls__ = parent,
 	}
 	cls.__index = cls
 	
@@ -25,7 +22,7 @@ local function class(name, parent)
 			__cls__ = cls,
 			__parent_cls__ = parent,
 		}, cls)
-		call_construc(obj, obj.on_new, arge1, ...)
+		call_construc(obj, cls, obj.on_new, ...)
 		return obj
     end
 
