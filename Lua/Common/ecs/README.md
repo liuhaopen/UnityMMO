@@ -22,10 +22,12 @@ local move_info = entity_mgr:get_component(entity, "com.move_info")
 local move_sys = base_class(ecs.system)
 
 function move_sys:on_update()
-	local filter = self:all(self:any(), self:no())
-	ecs.entities:foreach(filter, function(e)
-		e.move_info.x = 3 
-		e.speed = 4
+	self.filter = self.filter or ecs.all("com1", "com2")
+	--or complecate version:
+	self.filter = ecs.all(ecs.any("com1", "com2"), ecs.any("com3", "com4"), ecs.no("com5", "com6"))
+	self:foreach(self.filter, function(e)
+		e.com1.x = 3 
+		e.com2 = 4
     end)
 end
 
