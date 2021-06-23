@@ -1,5 +1,5 @@
 local global = {}
 
--- global.class = require("")
+global.class = require("Common.class")
 
 return global
