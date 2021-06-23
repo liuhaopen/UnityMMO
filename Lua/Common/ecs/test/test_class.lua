@@ -61,5 +61,13 @@ function test_class:test_class_func()
     lu.assert_true(c.must_has_b)
     lu.assert_true(c.must_has_c)
     lu.assert_equals(test_on_new_num, 4)
+
+    local class_d = class("class_d", class_c)
+    class_d.on_new = function(t, arge)
+        t.d_val = arge
+    end
+    local d = class_d:new(666)
+    lu.assert_not_is_nil(d)
+    lu.assert_equals(d.d_val, 666)
 end
 

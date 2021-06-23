@@ -14,6 +14,7 @@ function mt.any(...)
 	}
 end
 
+--I wanted to use "not", but "not" is a keyword
 function mt.no(...)
 	return {
 		type = "no",

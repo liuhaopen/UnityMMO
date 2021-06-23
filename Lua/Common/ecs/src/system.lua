@@ -1,8 +1,18 @@
---没必要继承 system 类，只要有 on_update 函数就够了，下面是模板而已
-local mt = {}
+local class = require "common.class"
+
+local mt = class("system")
+
+function mt:add_to_world(world)
+	self.world = world
+end
+
+function mt:foreach(filter, cb)
+	assert(self.world, "has not add to world!")
+	self.world.entity_mgr:foreach(filter, cb)
+end
 
 function mt:on_update()
-
+	--override me
 end
 
 return mt

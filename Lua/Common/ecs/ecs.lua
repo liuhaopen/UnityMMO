@@ -1,8 +1,9 @@
 local ecs = {}
 
+ecs.class = require "common.class"
 ecs.world = require "src.world"
 ecs.entity_mgr = require "src.entity_mgr"
-ecs.entities = require "src.entities"
+ecs.system = require "src.system"
 
 --inject : ecs.all ecs.any ecs.no
 local filters = require "src.filter"
