@@ -56,8 +56,10 @@ function Game:InitControllers()
         "Game/Test/TestController",
         "Game/Login/LoginController", 
         "Game/MainUI/MainUIController", 
+        "Game/Scene/actor_mgr", 
+        "Game/Scene/scene_mgr", 
+        "Game/Scene/main_world", 
         "Game/Task/TaskController", 
-        "Game/Scene/SceneController", 
         "Game/Bag/BagController", 
         "Game/GM/GMController", 
         "Game/Chat/ChatController", 
@@ -66,7 +68,11 @@ function Game:InitControllers()
         local ctrl = require(v)
         if type(ctrl) ~= "boolean" then
             --调用每个Controller的Init函数
-            ctrl:Init()
+            if ctrl.init then
+                ctrl:init()
+            elseif ctrl.Init then
+                ctrl:Init()
+            end
             table.insert(Ctrls, ctrl)
         else
             --Controller类忘记了在最后return

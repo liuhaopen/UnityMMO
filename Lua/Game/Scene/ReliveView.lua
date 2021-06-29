@@ -1,3 +1,5 @@
+local scene_const = require("Game.Scene.scene_const")
+
 local ReliveView = BaseClass(UINode)
 
 function ReliveView:Constructor( )
@@ -34,9 +36,9 @@ function ReliveView:AddEvents(  )
     end
 	local on_click = function ( click_obj )
 		if self.relive_obj == click_obj then
-		    NetDispatcher:SendMessage("scene_relive", {relive_type=SceneConst.ReliveType.Inplace}, on_ack_relive)
+		    NetDispatcher:SendMessage("scene_relive", {relive_type=scene_const.ReliveType.Inplace}, on_ack_relive)
 		elseif self.safe_relive_obj == click_obj then
-		    NetDispatcher:SendMessage("scene_relive", {relive_type=SceneConst.ReliveType.SafeArea}, on_ack_relive)
+		    NetDispatcher:SendMessage("scene_relive", {relive_type=scene_const.ReliveType.SafeArea}, on_ack_relive)
 		end
 	end
 	UI.BindClickEvent(self.safe_relive_obj, on_click)

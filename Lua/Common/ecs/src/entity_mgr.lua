@@ -72,6 +72,10 @@ function mt:create_entity_by_archetype(archetype)
 	return e
 end
 
+function mt:is_entity_exist(e)
+	return self.e_to_arche_map[e] ~= nil
+end
+
 function mt:destroy_entity(e)
 	local archetype = self.e_to_arche_map[e]
 	archetype.chunk[e] = nil

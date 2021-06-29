@@ -1,9 +1,9 @@
-local SceneConst = {
-	--SceneConst.SceneConst.ObjectType.Role
+local scene_const = {
+	--scene_const.scene_const.ObjectType.Role
 	ObjectType={
 		Role=1,Monster=2,NPC=3,
 	},
-	--SceneConst.InfoKey.EnterView
+	--scene_const.InfoKey.EnterView
 	InfoKey = {
 		EnterView=1,
 	    LeaveView=2,
@@ -23,11 +23,11 @@ local SceneConst = {
 		Def = 4,
 		Dodge = 5,
 	},
-	--SceneConst.ReliveType.SafeArea
+	--scene_const.ReliveType.SafeArea
 	ReliveType = {
 		SafeArea = 1,
 		Inplace = 2,
 	},
 }
 
-return SceneConst
+return scene_const

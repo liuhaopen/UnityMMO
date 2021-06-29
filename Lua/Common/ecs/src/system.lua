@@ -4,6 +4,7 @@ local mt = class("system")
 
 function mt:add_to_world(world)
 	self.world = world
+	self.entity_mgr = self.world.entity_mgr
 end
 
 function mt:foreach(filter, cb)

@@ -1,28 +1,21 @@
-SceneConst = require("Game.Scene.SceneConst")
+local scene_const = require("Game.Scene.scene_const")
 
-local SceneController = {}
+local mt = {}
 
-function SceneController:Init(  )
+function mt:init()
 	print('Cat:SceneController.lua[Init]')
     self.sceneNode = GameObject.Find("UICanvas/Scene")
     self.sceneNode:SetActive(false)
 	self.mainCamera = Camera.main
-	self:InitEvents()
+	self:init_events()
 end
 
-function SceneController:InitEvents(  )
+function mt:init_events()
 	local on_start_game = function (  )
         self.sceneNode:SetActive(true)
 		ECS:Init(SceneMgr.Instance.EntityManager)
 	end
     GlobalEventSystem:Bind(GlobalEvents.GameStart, on_start_game)
-
- --    local on_down = function ( target, x, y )
- --    	print('Cat:SceneController.lua[down] x, y', target, x, y)
- --    	self.touch_begin_x = x
- --    	self.touch_begin_y = y
- --    end
-	-- UI.BindClickEvent(self.sceneNode, on_down)
 
 	local on_up = function ( target, x, y )
     	print('Cat:SceneController.lua[up] x, y', target, x, y, self.is_dragged)
@@ -100,7 +93,10 @@ function SceneController:InitEvents(  )
     print('Cat:SceneController.lua[66] GlobalEvents.MainRoleDie', GlobalEvents.MainRoleDie, CSLuaBridge.GetInstance())
     print('Cat:SceneController.lua[67] CSLuaBridge.GetInstance:SetLuaFuncNum', CSLuaBridge.GetInstance().SetLuaFuncNum)
     CSLuaBridge.GetInstance():SetLuaFuncNum(GlobalEvents.MainRoleDie, MainRoleDie)
-
 end
 
-return SceneController
+function mt:on_actor_enter()
+    global.actor_mgr:add_actor(info)
+end
+
+return mt

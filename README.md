@@ -1,5 +1,5 @@
 # UnityMMO
-很多东西不好在工作项目上尝试(比如 ECS),所以就有了本项目,我打算利用业余时间从头制作一个 3D-MMO 游戏,大部分功能虽然都多少接触过,但我想换个做法,不然就不好玩了.前端的玩法系统用 c#,界面用 lua 开发.后端用 skynet.  
+很多东西不好在工作项目上尝试(比如 ECS),所以就有了本项目,我打算利用业余时间从头制作一个 3D-MMO 游戏,大部分功能虽然都多少接触过,但我想换个做法,不然就不好玩了.前端主要用 lua 开发.后端用 skynet.  
 详细的设计和进度见：[Wiki](https://github.com/liuhaopen/UnityMMO/wiki "Wiki")  
 
 # Usage
@@ -12,13 +12,14 @@
 
 # Status & Prerequisites
 ```
-Unity version: 2019.2.0f1
+Unity version: 2019.4.28f1
 Platforms    : 
 client for Windows Android IOS;  
 server only for Linux;
 ```
 
 # Recent GIF
+21.06.28：决定不用 Unity 的 Entities 了，主要是不好热更，而且又不好用，所以还是用 lua 另外实现了一套 [ecs](https://github.com/liuhaopen/ecs "ecs")，后面也会把战斗，场景相关的逻辑也挪到 lua 上，做成可以实际用的项目吧。
 20.03.08：把服务器代码分隔到另外的 git 项目
 19.07.03：初步实现了自动寻路去找 npc 对话和打怪两种任务：    
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/auto_talk_and_fight.gif)     

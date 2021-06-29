@@ -95,6 +95,31 @@ function test_entity_mgr:test_foreach_any()
     end)
 end
 
+function test_entity_mgr:test_destroy_entity()
+    local mgr = ecs.entity_mgr:new()
+    local e1 = mgr:create_entity("com1")
+    lu.assert_not_is_nil(e1)
+    lu.assert_true(mgr:is_entity_exist(e1))
+    mgr:destroy_entity(e1)
+    lu.assert_false(mgr:is_entity_exist(e1))
+end
+
+function test_entity_mgr:test_destroy_entity_in_foreach()
+    local mgr = ecs.entity_mgr:new()
+    local e1 = mgr:create_entity("com1")
+    local e2 = mgr:create_entity("com1")
+    lu.assert_not_is_nil(e1)
+    lu.assert_true(mgr:is_entity_exist(e1))
+    local run_times = 0
+    mgr:foreach(ecs.any("com1", "com3"), function(ed)
+        run_times = run_times + 1
+        mgr:destroy_entity(ed.entity)
+    end)
+    lu.assert_equals(run_times, 2)
+    lu.assert_false(mgr:is_entity_exist(e1))
+    lu.assert_false(mgr:is_entity_exist(e2))
+end
+
 function test_entity_mgr:test_foreach_no()
 end
 
