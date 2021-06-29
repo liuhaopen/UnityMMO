@@ -1,4 +1,4 @@
-local class = require "common.class"
+local class = require "ecs.common.class"
 
 test_class = {}
 

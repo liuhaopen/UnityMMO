@@ -1,5 +1,5 @@
-local class = require "common.class"
-local entity_mgr = require "src.entity_mgr"
+local class = require "ecs.common.class"
+local entity_mgr = require "ecs.src.entity_mgr"
 
 local mt = class("entity_mgr")
 

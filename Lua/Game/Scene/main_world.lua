@@ -17,10 +17,10 @@ end
 
 function mt:start_game()
 	local systems = {
-		"systems.movement_system",
-		"systems.aoi_system",
-		"systems.visual_system",
-		"systems.aoi_system",
+		"Game.systems.movement_system",
+		"Game.systems.aoi_system",
+		"Game.systems.visual_system",
+		"Game.systems.aoi_system",
 	}
 	for i,sys_path in ipairs(systems) do
 		local sys = require(sys_path):new()
