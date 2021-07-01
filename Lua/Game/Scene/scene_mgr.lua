@@ -93,6 +93,11 @@ function mt:init_events()
     print('Cat:SceneController.lua[66] GlobalEvents.MainRoleDie', GlobalEvents.MainRoleDie, CSLuaBridge.GetInstance())
     print('Cat:SceneController.lua[67] CSLuaBridge.GetInstance:SetLuaFuncNum', CSLuaBridge.GetInstance().SetLuaFuncNum)
     CSLuaBridge.GetInstance():SetLuaFuncNum(GlobalEvents.MainRoleDie, MainRoleDie)
+
+    local on_actor_enter = function ( ack )
+        
+    end
+    NetDispatcher:Listen("Bag_GetChangeList", nil, on_actor_enter)
 end
 
 function mt:on_actor_enter()

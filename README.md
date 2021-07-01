@@ -19,9 +19,9 @@ server only for Linux;
 ```
 
 # Recent GIF
-21.06.28：决定不用 Unity 的 Entities 了，主要是不好热更，而且又不好用，所以还是用 lua 另外实现了一套 [ecs](https://github.com/liuhaopen/ecs "ecs")，后面也会把战斗，场景相关的逻辑也挪到 lua 上，做成可以实际用的项目吧。
+21.06.28：决定不用 Unity 的 Entities 了，主要是不好热更，而且又不好用，所以还是用 lua 另外实现了一套 [ecs](https://github.com/liuhaopen/ecs "ecs")，后面也会把战斗，场景相关的逻辑也挪到 lua 上，做成可以实际用的项目吧。  
 20.03.08：把服务器代码分隔到另外的 git 项目
-19.07.03：初步实现了自动寻路去找 npc 对话和打怪两种任务：    
+19.07.03：初步实现了自动寻路去找 npc 对话和打怪两种任务：   
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/auto_talk_and_fight.gif)     
 19.07.10：增加一个副本场景：    
 ![image](https://github.com/liuhaopen/ReadmeResources/blob/master/UnityMMO/change_scene.gif)     
